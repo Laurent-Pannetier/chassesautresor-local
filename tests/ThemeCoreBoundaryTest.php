@@ -1123,6 +1123,25 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testAccountNavigationHooksBelongToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/AccountPresentationHookHandler.php'
+        );
+        $functions = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/account-functions.php'
+        );
+
+        foreach (['modifier_titre_onglet', 'ca_orders_endpoint_title', 'ca_profile_endpoint_title'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $theme);
+        }
+        self::assertStringNotContainsString('function is_woocommerce_account_page(', $theme);
+        self::assertStringContainsString('function is_woocommerce_account_page(', $functions);
+        self::assertStringContainsString('woocommerce_endpoint_orders_title', $handler);
+        self::assertStringContainsString("__('Profil', 'chassesautresor-com')", $handler);
+    }
+
     public function testAccountOrderRenderingBelongsToCore(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');

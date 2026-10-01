@@ -542,6 +542,11 @@ Le cent-douzième lot déplace la requête et le tableau compact des commandes W
 `user-functions.php` ne connaît plus l'API de commande. Le libellé de produit de repli est désormais traduit et le
 renderer échoue proprement lorsque WooCommerce n'est pas disponible.
 
+Le cent-treizième lot transfère les filtres de titres de l'espace compte et la détection des endpoints WooCommerce.
+`AccountPresentationHookHandler` enregistre ces filtres depuis le plugin et corrige le domaine de traduction du
+libellé « Profil ». La détection normalise maintenant le chemin de l'URL sans être perturbée par sa query string.
+Changer de thème ne supprime donc plus ces libellés ni ce contrat de navigation.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
