@@ -53,7 +53,13 @@ class HuntCompletionService
 
     protected function getHuntId(int $riddleId): int
     {
-        return (int) recuperer_id_chasse_associee($riddleId);
+        $temporaryHuntId = (int) get_option('chasse_associee_temp');
+        if ($temporaryHuntId > 0) {
+            delete_option('chasse_associee_temp');
+            return $temporaryHuntId;
+        }
+
+        return $this->normalizeId(get_field('enigme_chasse_associee', $riddleId));
     }
 
     protected function getEndMode(int $huntId): string
@@ -64,7 +70,34 @@ class HuntCompletionService
     /** @return int[] */
     protected function getRiddleIds(int $huntId): array
     {
-        return array_map('intval', (array) recuperer_enigmes_associees($huntId));
+        $values = get_field('chasse_cache_enigmes', $huntId);
+        if (!is_array($values)) {
+            return [];
+        }
+
+        $riddleIds = [];
+        foreach ($values as $value) {
+            $riddleId = $this->normalizeId($value);
+            if ($riddleId > 0 && get_post_type($riddleId) === 'enigme') {
+                $riddleIds[$riddleId] = $riddleId;
+            }
+        }
+
+        return array_values($riddleIds);
+    }
+
+    /** @param mixed $value */
+    private function normalizeId($value): int
+    {
+        if (is_array($value)) {
+            $value = reset($value);
+        }
+
+        if (is_object($value) && isset($value->ID)) {
+            return (int) $value->ID;
+        }
+
+        return (int) $value;
     }
 
     /**

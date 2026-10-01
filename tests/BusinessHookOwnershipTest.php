@@ -8,6 +8,7 @@ use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
 use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
+use ChassesAuTresor\Core\Progress\HuntCompletionHookHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
 use PHPUnit\Framework\TestCase;
 
@@ -102,6 +103,22 @@ final class BusinessHookOwnershipTest extends TestCase
 
         self::assertSame(
             ['admin_post_traiter_validation_chasse', [HuntModerationRequestHandler::class, 'handle']],
+            $hooks[0]
+        );
+    }
+
+    public function testHuntCompletionHookIsRegisteredByCore(): void
+    {
+        $hooks = [];
+
+        HuntCompletionHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            ['enigme_resolue', [HuntCompletionHookHandler::class, 'handle'], 10, 2],
             $hooks[0]
         );
     }

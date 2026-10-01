@@ -41,14 +41,6 @@ function cat_classify_hunt_riddles(array $riddleIds): array
     return (new ChassesAuTresor\Core\Progress\HuntRiddleClassifier())->classify($riddleIds);
 }
 
-function cat_get_hunt_completion_service(): ChassesAuTresor\Core\Progress\HuntCompletionService
-{
-    return new ChassesAuTresor\Core\Progress\HuntCompletionService(
-        cat_get_hunt_progress_service(),
-        new ChassesAuTresor\Core\Progress\HuntRiddleClassifier()
-    );
-}
-
 // ==================================================
 // 📚 SOMMAIRE DU FICHIER : gamify-functions.php
 // ==================================================
@@ -318,46 +310,6 @@ function compter_enigmes_resolues($chasse_id, $user_id): int
 
     return $progress['completed'];
 }
-
-/**
- * 🏁 Vérifie si l'utilisateur a terminé toutes les énigmes d'une chasse.
- *
- * 🔎 Si toutes les énigmes sont résolues :
- * - Attribue le trophée de la chasse (si présent).
- * - Si la chasse est de type "enjeu" :
- *   - Met à jour le gagnant, la date de découverte et le statut à "terminé".
- *
- * @param int $user_id  ID de l'utilisateur.
- * @param int $enigme_id ID de l'énigme résolue.
- */
-function verifier_fin_de_chasse($user_id, $enigme_id)
-{
-    cat_debug("🔍 Vérification de fin de chasse pour l'utilisateur {$user_id} (énigme : {$enigme_id})");
-
-    $completion = cat_get_hunt_completion_service()->evaluate((int) $user_id, (int) $enigme_id);
-    $chasse_id = $completion['hunt_id'];
-
-    if (!$chasse_id) {
-        cat_debug("❌ Aucune chasse associée trouvée.");
-        return;
-    }
-
-    if (!$completion['is_automatic']) {
-        return; // 🔁 La complétion se fait manuellement
-    }
-
-    if (!$completion['has_riddles']) {
-        cat_debug("⚠️ Pas d'énigmes associées à la chasse (ID: {$chasse_id})");
-        return;
-    }
-
-    if ($completion['is_complete']) {
-        gerer_chasse_terminee($chasse_id);
-    }
-}
-add_action('enigme_resolue', function($user_id, $enigme_id) {
-    verifier_fin_de_chasse($user_id, $enigme_id); // 🎯 Vérifie et termine la chasse si besoin
-}, 10, 2);
 
 /**
  * Retrieve points history for a user with pagination.

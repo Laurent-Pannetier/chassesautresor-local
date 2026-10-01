@@ -95,6 +95,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('wp_verify_nonce(', $contents);
     }
 
+    public function testThemeDoesNotOwnHuntCompletionHook(): void
+    {
+        $path = self::THEME_PATH . '/inc/gamify-functions.php';
+        $contents = (string) file_get_contents($path);
+
+        self::assertStringNotContainsString("add_action('enigme_resolue'", $contents);
+        self::assertStringNotContainsString('function verifier_fin_de_chasse', $contents);
+        self::assertStringNotContainsString('cat_get_hunt_completion_service', $contents);
+    }
+
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(
