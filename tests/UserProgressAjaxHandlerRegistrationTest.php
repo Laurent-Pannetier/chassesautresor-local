@@ -30,8 +30,6 @@ final class UserProgressAjaxHandlerRegistrationTest extends TestCase {
             static fn (): string => ''
         );
         UserAttemptsAjaxHandler::configure(
-            static function (): void {},
-            static fn (): array => [],
             static fn (): string => '',
             static fn (): string => ''
         );

@@ -82,7 +82,10 @@ thème ne fournit plus que le rendu HTML des lignes correspondantes.
 Le vingt-deuxième lot a transféré au plugin la lecture, le filtrage d’accès et la pagination des chasses engagées d’un
 utilisateur. Le thème ne fournit plus que le rendu des cartes et de leur pagination.
 
-Estimation après ce lot : **99,998 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le vingt-troisième lot a transféré au plugin la recherche, les agrégats et la pagination des tentatives de l’espace
+compte. Le thème ne fournit plus que le rendu des lignes et du pager.
+
+Estimation après ce lot : **99,999 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

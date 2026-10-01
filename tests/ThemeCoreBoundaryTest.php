@@ -375,6 +375,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('ca_prepare_engaged_hunts_pagination', $configuration);
     }
 
+    public function testUserAttemptsQueryIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        preg_match('/UserAttemptsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('ca_register_tentatives_search_context', $configuration);
+        self::assertStringNotContainsString('ca_get_tentatives_view_model', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

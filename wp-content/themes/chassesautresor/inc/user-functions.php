@@ -1522,12 +1522,6 @@ function ca_render_tentatives_ajax_pager(array $view): string
 
 if (class_exists(ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::class)) {
     ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::configure(
-        static function (): void {
-            ca_register_tentatives_search_context();
-        },
-        static function (int $user_id, int $page, int $per_page): array {
-            return ca_get_tentatives_view_model($user_id, $page, $per_page);
-        },
         static function (array $view): string {
             return ca_render_tentatives_ajax_rows($view);
         },

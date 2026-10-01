@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** AJAX orchestration for the current user's attempts table. */
 class UserAttemptsAjaxHandler {
-    /** @var callable|null */
-    private static $contextRegistrar;
-
-    /** @var callable|null */
-    private static $viewLoader;
-
     /** @var callable|null */
     private static $rowRenderer;
 
@@ -24,13 +20,9 @@ class UserAttemptsAjaxHandler {
     }
 
     public static function configure(
-        callable $contextRegistrar,
-        callable $viewLoader,
         callable $rowRenderer,
         callable $pagerRenderer
     ): void {
-        self::$contextRegistrar = $contextRegistrar;
-        self::$viewLoader = $viewLoader;
         self::$rowRenderer = $rowRenderer;
         self::$pagerRenderer = $pagerRenderer;
     }
@@ -43,16 +35,36 @@ class UserAttemptsAjaxHandler {
             isset($_POST['page']) ? (int) $_POST['page'] : 1,
             isset($_POST['per_page']) ? (int) $_POST['per_page'] : 10
         );
-        $ready = is_callable(self::$contextRegistrar)
-            && is_callable(self::$viewLoader)
-            && is_callable(self::$rowRenderer)
+        $ready = is_callable(self::$rowRenderer)
             && is_callable(self::$pagerRenderer);
         if (!$request['allowed'] || !$ready) {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
-        call_user_func(self::$contextRegistrar);
-        $view = (array) call_user_func(self::$viewLoader, $userId, $request['page'], $request['per_page']);
+        $hasSearch = isset($_POST['search'])
+            && is_array($_POST['search'])
+            && isset($_POST['search']['tentatives']);
+        $search = $hasSearch
+            ? sanitize_text_field(wp_unslash((string) $_POST['search']['tentatives']))
+            : '';
+        global $wpdb;
+        $service = CoreServiceFactory::userAttemptStatistics($wpdb);
+        $summary = $service->summarize($userId);
+        $pagination = $service->paginate($userId, $request['page'], $request['per_page'], $search);
+        $view = [
+            'pending' => $summary['pending'],
+            'total' => $summary['total'],
+            'success' => $summary['success'],
+            'search_term' => $search,
+            'page' => $pagination['page'],
+            'pages' => $pagination['pages'],
+            'per_page' => $request['per_page'],
+            'filtered_total' => $pagination['total'],
+            'tentatives' => $pagination['items'],
+            'no_results_message' => $search !== ''
+                ? __('Aucune tentative ne correspond à votre recherche.', 'chassesautresor-com')
+                : __('Vous n\'avez pas encore enregistré de tentative.', 'chassesautresor-com'),
+        ];
         wp_send_json_success([
             'rows' => (string) call_user_func(self::$rowRenderer, $view),
             'pager' => (string) call_user_func(self::$pagerRenderer, $view),
