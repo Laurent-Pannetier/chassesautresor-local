@@ -188,105 +188,6 @@ function verifier_acces_conversion($user_id) {
 }
 
 /**
- * Génère le contenu HTML du modal de conversion en fonction des droits d'accès.
- */
-function render_conversion_modal_content($access_message = null): string
-{
-    if ($access_message === null) {
-        $access_message = verifier_acces_conversion(get_current_user_id());
-    }
-    $organisateur_id = get_organisateur_from_user(get_current_user_id());
-    $points_minimum  = get_points_conversion_min();
-
-    ob_start();
-
-    if ($access_message === 'INSUFFICIENT_POINTS') {
-        ?>
-        <span class="close-modal">&times;</span>
-        <div class="points-modal-message">
-            <i class="fa-solid fa-circle-exclamation modal-icon" aria-hidden="true"></i>
-            <h2>solde insuffisant</h2>
-            <p>Conversion possible à partir de <?php echo esc_html($points_minimum); ?> points</p>
-            <button type="button" class="close-modal">Fermer</button>
-        </div>
-        <?php
-    } elseif ($access_message === 'MISSING_BANK_DETAILS') {
-        ?>
-        <span class="close-modal">&times;</span>
-        <div class="points-modal-message">
-            <i class="fa-solid fa-building-columns modal-icon" aria-hidden="true"></i>
-            <h2><?php esc_html_e('Coordonnées bancaires manquantes', 'chassesautresor-com'); ?></h2>
-            <p><?php esc_html_e("Nous avons besoin d'enregistrer vos coordonnées bancaires pour vous envoyer un versement", 'chassesautresor-com'); ?></p>
-            <p>
-                <a
-                    id="ouvrir-coordonnees-modal"
-                    class="champ-modifier"
-                    href="#"
-                    aria-label="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
-                    data-champ="coordonnees_bancaires"
-                    data-cpt="organisateur"
-                    data-post-id="<?php echo esc_attr($organisateur_id); ?>"
-                    data-label-add="<?php esc_attr_e('Ajouter', 'chassesautresor-com'); ?>"
-                    data-label-edit="<?php esc_attr_e('Éditer', 'chassesautresor-com'); ?>"
-                    data-aria-add="<?php esc_attr_e('Ajouter des coordonnées bancaires', 'chassesautresor-com'); ?>"
-                    data-aria-edit="<?php esc_attr_e('Modifier les coordonnées bancaires', 'chassesautresor-com'); ?>"
-                ><?php esc_html_e('renseigner coordonnées bancaires', 'chassesautresor-com'); ?></a>
-            </p>
-            <button type="button" class="close-modal">Fermer</button>
-        </div>
-        <?php
-    } elseif (is_string($access_message) && $access_message !== '') {
-        ?>
-        <span class="close-modal">&times;</span>
-        <p><?php echo esc_html($access_message); ?></p>
-        <?php
-    } else {
-        ?>
-        <?php
-        $taux_conversion = get_taux_conversion_actuel();
-        $user_points     = get_user_points();
-        ?>
-        <span class="close-modal">&times;</span>
-        <span class="conversion-rate-badge">
-            <?php printf(esc_html__('1 000 points = %s €', 'chassesautresor-com'), esc_html($taux_conversion)); ?>
-        </span>
-        <i class="fa-solid fa-right-left modal-top-icon" aria-hidden="true"></i>
-        <h2 class="modal-title"><?php esc_html_e('Demande de conversion', 'chassesautresor-com'); ?></h2>
-        <p class="modal-description">
-            <?php printf(esc_html__('Transformez vos %d points en euros.', 'chassesautresor-com'), esc_html($user_points)); ?>
-        </p>
-        <form action="" method="POST">
-            <div class="conversion-row">
-                <label for="points-a-convertir"><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></label>
-                <input
-                    type="number"
-                    name="points_a_convertir"
-                    id="points-a-convertir"
-                    min="<?php echo esc_attr($points_minimum); ?>"
-                    max="<?php echo esc_attr($user_points); ?>"
-                    step="1"
-                    value=""
-                    data-taux="<?php echo esc_attr($taux_conversion); ?>"
-                >
-                <span class="points-unit"><?php esc_html_e('points', 'chassesautresor-com'); ?></span>
-            </div>
-            <p class="conversion-equivalent">
-                <span class="label"><?php esc_html_e('contre valeur', 'chassesautresor-com'); ?></span>
-                <span class="amount"><span id="montant-equivalent">0.00</span> €</span>
-            </p>
-            <input type="hidden" name="demander_paiement" value="1">
-            <?php wp_nonce_field('demande_paiement_action', 'demande_paiement_nonce'); ?>
-            <div class="modal-actions">
-                <button type="submit" disabled><?php esc_html_e('Convertir', 'chassesautresor-com'); ?></button>
-            </div>
-        </form>
-        <?php
-    }
-
-    return ob_get_clean();
-}
-
-/**
  * AJAX : renvoie le contenu du modal de conversion actualisé.
  */
 function ajax_conversion_modal_content(): void
@@ -294,13 +195,6 @@ function ajax_conversion_modal_content(): void
     ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::handle();
 }
 
-if (class_exists(ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::class)) {
-    ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::configure(
-        static function ($access_message): string {
-            return render_conversion_modal_content($access_message);
-        }
-    );
-}
 
 /**
  * Affiche le tableau des demandes de paiement d'un organisateur.

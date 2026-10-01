@@ -1014,12 +1014,12 @@ final class ThemeCoreBoundaryTest extends TestCase
 
     public function testConversionAccessIsNotInjectedByTheme(): void
     {
-        $source = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
-        preg_match('/ConversionModalAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/ConversionModalAjaxHandler.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('verifier_acces_conversion', $configuration);
+        self::assertStringNotContainsString('verifier_acces_conversion', $handler);
+        self::assertStringContainsString('ConversionAccessService', $handler);
     }
 
     public function testHuntNavigationAccessIsNotInjectedByTheme(): void
@@ -1064,6 +1064,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_render_unlocked_hint', $source);
         self::assertStringContainsString("[new HintUnlockRenderer(), 'render']", $handler);
         self::assertStringContainsString('class HintUnlockRenderer', $renderer);
+    }
+
+    public function testConversionModalRenderingIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/ConversionModalAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/ConversionModalRenderer.php'
+        );
+
+        self::assertStringNotContainsString('ConversionModalAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function render_conversion_modal_content', $source);
+        self::assertStringContainsString('new ConversionModalRenderer()', $handler);
+        self::assertStringContainsString('class ConversionModalRenderer', $renderer);
     }
 
     public function testAdminConversionServiceIsNotInjectedByTheme(): void

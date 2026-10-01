@@ -21,18 +21,30 @@ class ConversionModalAjaxHandler {
     }
 
     public static function handle(): void {
-        if (!is_user_logged_in() || !is_callable(self::$renderer)) {
+        if (!is_user_logged_in()) {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
         global $wpdb;
+        $userId = (int) get_current_user_id();
+        $points = CoreServiceFactory::points($wpdb);
+        $organizers = new OrganizerRepository($wpdb);
         $access = (new ConversionAccessService(
             CoreServiceFactory::conversion($wpdb),
-            CoreServiceFactory::points($wpdb),
-            new OrganizerRepository($wpdb)
-        ))->resolve((int) get_current_user_id());
+            $points,
+            $organizers
+        ))->resolve($userId);
+        $html = is_callable(self::$renderer)
+            ? (string) call_user_func(self::$renderer, $access)
+            : (new ConversionModalRenderer())->render(
+                $access,
+                $organizers->findIdForUser($userId) ?? 0,
+                (int) apply_filters('points_conversion_min', 500),
+                $points->getBalance($userId),
+                (new ConversionSettingsService())->getRate()
+            );
         wp_send_json_success([
-            'html' => (string) call_user_func(self::$renderer, $access),
+            'html' => $html,
             'access' => $access === true,
         ]);
     }

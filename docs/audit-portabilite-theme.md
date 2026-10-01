@@ -350,12 +350,17 @@ l'image miniature et son lien vers l'original sont maintenant composés par `Hin
 `HintUnlockAjaxHandler` utilise ce renderer par défaut et le thème ne lui injecte plus de callback, ce qui ramène les
 configurations résiduelles de contrôleurs à douze.
 
+Le soixante-dix-huitième lot déplace le contenu du modal de conversion dans `ConversionModalRenderer`. Le contrôleur
+résout désormais lui-même l'organisateur, le solde, le minimum et le taux nécessaires au rendu de secours. Les chaînes
+historiques non traduites du cas « solde insuffisant » sont internationalisées au passage. Le thème n'injecte plus ce
+renderer et ne conserve que son wrapper d'endpoint, ce qui ramène les configurations résiduelles à onze.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **95 %** | Inchangée : trois grands view-models mixtes restent dans le thème |
-| Remplaçabilité effective du thème | **39 %** | Deux rendus AJAX ne dépendent plus du thème |
+| Remplaçabilité effective du thème | **40 %** | Trois rendus AJAX ne dépendent plus du thème |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -383,7 +388,7 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **12 configurations de contrôleurs par le thème**, toutes destinées à des
+  été inventoriées. Le plugin conserve **11 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
@@ -402,8 +407,8 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. L'extraction apporte 38 points et deux des quatorze parcours de rendu injectés recensés au début de ce bloc
-sont maintenant autonomes, soit **environ 39 % de remplaçabilité effective du thème** après arrondi. Aucun point
+à 10 %. L'extraction apporte 38 points et trois des quatorze parcours de rendu injectés recensés au début de ce bloc
+sont maintenant autonomes, soit **environ 40 % de remplaçabilité effective du thème** après arrondi. Aucun point
 n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
