@@ -131,7 +131,13 @@ la résolution de la pièce jointe sont désormais orchestrés dans le plugin. L
 indépendantes du thème. Le contrôleur d'administration des conversions ne recherche plus non plus le logger
 `cat_debug()` du thème.
 
-Estimation prudente après ce lot : **environ 83 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le trente-cinquième lot a rendu autonome le contrôleur de navigation des pages d'énigme. La résolution de la chasse,
+la synchronisation du cache relationnel, les engagements chasse/énigme, les prérequis, la visibilité, la complétude,
+l'association organisateur et les tentatives en attente sont maintenant résolus par les services du plugin. Le
+contrôleur n'appelle plus les douze adaptateurs métier correspondants du thème ; celui-ci conserve les vues et les
+helpers encore employés par ces vues.
+
+Estimation prudente après ce lot : **environ 87 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
 l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.
@@ -144,12 +150,12 @@ Le thème enregistre toujours notamment :
 
 - des endpoints, variables de requête et sélections de templates dans `inc/user-functions.php` et
   `inc/organisateur-functions.php` ;
-- les adaptateurs de politique appelés par le contrôle d’accès aux énigmes dans plusieurs fichiers `inc/` ;
+- des adaptateurs de politique d'accès aux énigmes encore utilisés par les vues et les panneaux d'édition ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
 
 L'audit ciblé des messages importants et des écrans WordPress natifs ne relève plus de dépendance vers les helpers
 globaux du thème. Les configurations `*Handler::configure()` inventoriées ne transmettent actuellement que des
-fonctions de rendu. Les adaptateurs d'accès aux énigmes utilisés ailleurs restent en revanche à migrer complètement.
+fonctions de rendu. Les adaptateurs d'accès encore utilisés par les vues restent en revanche à qualifier et migrer.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.

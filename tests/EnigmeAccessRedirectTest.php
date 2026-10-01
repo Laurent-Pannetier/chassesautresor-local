@@ -30,6 +30,12 @@ if (!function_exists('utilisateur_peut_modifier_post')) {
         return false;
     }
 }
+if (!function_exists('get_field')) {
+    function get_field($name, $id)
+    {
+        return $name === 'enigme_chasse_associee' ? 123 : null;
+    }
+}
 if (!function_exists('recuperer_id_chasse_associee')) {
     function recuperer_id_chasse_associee($id)
     {
@@ -65,6 +71,7 @@ if (!function_exists('wp_redirect')) {
     }
 }
 
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Relationships/RelationshipService.php';
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleAccessRedirectHandler.php';
 
 /**

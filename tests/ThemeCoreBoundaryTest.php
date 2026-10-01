@@ -183,6 +183,26 @@ final class ThemeCoreBoundaryTest extends TestCase
         $violations = $this->findPhpMatches('/handle_single_enigme_access/');
 
         self::assertSame([], $violations, $this->formatViolations($violations));
+
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleAccessRedirectHandler.php'
+        );
+        foreach ([
+            'recuperer_id_chasse_associee',
+            'verifier_et_synchroniser_cache_enigmes_si_autorise',
+            'utilisateur_est_engage_dans_chasse',
+            'utilisateur_est_engage_dans_enigme',
+            'utilisateur_peut_engager_enigme',
+            'marquer_enigme_comme_engagee',
+            'enigme_est_visible_pour',
+            'enigme_pre_requis_remplis',
+            'utilisateur_peut_modifier_enigme',
+            'verifier_ou_mettre_a_jour_cache_complet',
+            'utilisateur_est_organisateur_associe_a_chasse',
+            'compter_tentatives_en_attente',
+        ] as $themeHelper) {
+            self::assertStringNotContainsString($themeHelper, $handler);
+        }
     }
 
     public function testThemeDoesNotOwnOrganizerContactRoute(): void {
