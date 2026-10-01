@@ -46,7 +46,10 @@ redirections vers le tableau de bord canonique.
 Le dixième lot a transféré au plugin la protection globale du site par mot de passe. Le thème ne conserve qu’un
 chargeur de compatibilité pour les appels historiques directs.
 
-Estimation après ce lot : **95 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le onzième lot a transféré au plugin le contrôleur d’accès aux pages d’énigmes, y compris l’engagement automatique,
+les prérequis et les redirections vers les panneaux d’édition ou de soumission.
+
+Estimation après ce lot : **97 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 
@@ -58,7 +61,7 @@ Le thème enregistre toujours notamment :
 
 - des endpoints, variables de requête et sélections de templates dans `inc/user-functions.php` et
   `inc/organisateur-functions.php` ;
-- le contrôle d'accès aux énigmes dans `inc/enigme/access.php` ;
+- les adaptateurs de politique appelés par le contrôle d’accès aux énigmes dans plusieurs fichiers `inc/` ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le

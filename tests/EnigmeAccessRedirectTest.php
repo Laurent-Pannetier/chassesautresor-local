@@ -65,7 +65,7 @@ if (!function_exists('wp_redirect')) {
     }
 }
 
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/access.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleAccessRedirectHandler.php';
 
 /**
  * @runTestsInSeparateProcesses
@@ -84,7 +84,7 @@ class EnigmeAccessRedirectTest extends TestCase
     public function test_guest_is_redirected_to_related_chasse(): void
     {
         try {
-            handle_single_enigme_access();
+            ChassesAuTresor\Core\Content\RiddleAccessRedirectHandler::handle();
         } catch (Exception $e) {
             // Intercepts exit triggered by the handler.
         }

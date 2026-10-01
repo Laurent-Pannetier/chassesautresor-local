@@ -19,10 +19,26 @@ use ChassesAuTresor\Core\Progress\HuntCompletionHookHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
 use ChassesAuTresor\Core\Media\ProtectedAssetRouteHandler;
 use ChassesAuTresor\Core\Messages\AccountLegacyRouteHandler;
+use ChassesAuTresor\Core\Content\RiddleAccessRedirectHandler;
 use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testRiddleAccessRedirectIsRegisteredByCore(): void {
+        $hooks = [];
+
+        RiddleAccessRedirectHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            [['template_redirect', [RiddleAccessRedirectHandler::class, 'handle']]],
+            $hooks
+        );
+    }
+
     public function testLegacyAccountRoutesAreRegisteredByCore(): void {
         $actions = [];
         $filters = [];

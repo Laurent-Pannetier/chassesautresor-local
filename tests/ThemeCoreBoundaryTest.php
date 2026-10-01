@@ -141,6 +141,12 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString("add_action('init', 'ca_site_password_protection')", $coreProtection);
     }
 
+    public function testThemeDoesNotOwnRiddleAccessRedirect(): void {
+        $violations = $this->findPhpMatches('/handle_single_enigme_access/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(
