@@ -1124,6 +1124,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testFunctionalShortcodesAndAnswerPolicyBelongToCore(): void
+    {
+        $shortcodes = (string) file_get_contents(self::THEME_PATH . '/inc/shortcodes-init.php');
+        $answers = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/reponses.php');
+        $registrar = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/CoreShortcodeRegistrar.php'
+        );
+        $functions = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-answer-functions.php'
+        );
+
+        self::assertStringNotContainsString('add_shortcode(', $shortcodes);
+        self::assertStringNotContainsString("add_shortcode('formulaire_reponse_manuelle'", $answers);
+        foreach (['utilisateur_peut_repondre_manuelle', 'calculer_contexte_points'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $answers);
+            self::assertStringContainsString("function {$functionName}(", $functions);
+        }
+        self::assertStringContainsString('formulaire_reponse_manuelle', $registrar);
+        self::assertStringContainsString('afficher_points_utilisateur', $registrar);
+    }
+
     public function testAccountDashboardHooksBelongToCore(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');

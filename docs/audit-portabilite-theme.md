@@ -557,6 +557,11 @@ Le cent-quinzième lot regroupe la politique de visibilité et les view-models i
 lui-même les services de tentatives et ne construit plus leur pagination métier. Le même service alimente désormais
 le thème historique et les fallbacks portables, ce qui retire le dernier grand view-model PHP mixte inventorié.
 
+Le cent-seizième lot regroupe les deux shortcodes fonctionnels encore enregistrés par le thème. Le solde de points et
+le formulaire de réponse manuelle sont maintenant enregistrés par `CoreShortcodeRegistrar`, avec des fallbacks HTML
+portables. La politique de statut et le contexte de coût/solde du formulaire rejoignent
+`RiddleAnswerContextService`; le thème conserve uniquement son formulaire enrichi et ses assets lorsqu'il est actif.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
