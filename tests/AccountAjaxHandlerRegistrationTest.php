@@ -11,10 +11,7 @@ require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages
 
 final class AccountAjaxHandlerRegistrationTest extends TestCase {
     public function testAcceptsLazyThemeCallbacks(): void {
-        AccountSectionAjaxHandler::configure(
-            static fn (): string => '',
-            static fn (): array => []
-        );
+        AccountSectionAjaxHandler::configure(static fn (): string => '');
         $this->addToAssertionCount(1);
     }
 

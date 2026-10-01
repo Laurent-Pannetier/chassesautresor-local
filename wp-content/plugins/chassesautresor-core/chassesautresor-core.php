@@ -270,6 +270,7 @@ require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
+require_once __DIR__ . '/src/Messages/important-messages.php';
 require_once __DIR__ . '/src/Messages/AccountMessageDismissalAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/AccountSectionAccessService.php';
 require_once __DIR__ . '/src/Messages/AccountSectionAjaxHandler.php';

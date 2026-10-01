@@ -104,7 +104,11 @@ Le vingt-neuvième lot a rendu autonome l’invalidation du cache d’affichage 
 statistiques. Le contrôleur d’administration ne reçoit désormais du thème que le moteur de rendu du tableau des
 paiements ; le plugin connaît et invalide lui-même son cache objet et son transient.
 
-Estimation après ce lot : **99,99997 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le trentième lot a déplacé dans le plugin la composition et le rendu des messages importants de l’espace personnel.
+Le contrôleur AJAX des sections de compte ne reçoit plus ce traitement du thème, qui conserve uniquement le rendu
+du fragment de section demandé.
+
+Estimation après ce lot : **99,99998 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

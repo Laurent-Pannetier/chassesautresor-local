@@ -449,6 +449,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('ca_home_filter_chasse_ids', $configuration);
     }
 
+    public function testAccountImportantMessagesAreNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        preg_match('/AccountSectionAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('myaccount_get_important_messages', $configuration);
+        self::assertStringNotContainsString('function myaccount_get_important_messages', $source);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

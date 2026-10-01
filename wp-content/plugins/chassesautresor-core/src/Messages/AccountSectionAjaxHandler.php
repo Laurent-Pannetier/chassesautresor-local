@@ -9,16 +9,12 @@ class AccountSectionAjaxHandler {
     /** @var callable|null */
     private static $renderer;
 
-    /** @var callable|null */
-    private static $messageLoader;
-
     public static function register(callable $addAction): void {
         $addAction('wp_ajax_cta_load_admin_section', [self::class, 'handle']);
     }
 
-    public static function configure(callable $renderer, callable $messageLoader): void {
+    public static function configure(callable $renderer): void {
         self::$renderer = $renderer;
-        self::$messageLoader = $messageLoader;
     }
 
     public static function handle(): void {
@@ -31,13 +27,13 @@ class AccountSectionAjaxHandler {
         if ($decision['error'] === 'not_found') {
             wp_send_json_error(['message' => __('Section not found', 'chassesautresor-com')], 404);
         }
-        if ($decision['error'] !== null || !is_callable(self::$renderer) || !is_callable(self::$messageLoader)) {
+        if ($decision['error'] !== null || !is_callable(self::$renderer)) {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
         wp_send_json_success([
             'html' => (string) call_user_func(self::$renderer, $decision['template']),
-            'messages' => call_user_func(self::$messageLoader),
+            'messages' => \myaccount_get_important_messages(),
         ]);
     }
 }
