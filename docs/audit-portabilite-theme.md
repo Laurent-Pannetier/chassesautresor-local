@@ -289,6 +289,11 @@ Le soixante-cinquième lot corrige la collision fatale observée en environnemen
 gardées de `cat_get_hunt_progress_service()` ont été retirées. Un test transversal compare maintenant toutes les
 fonctions globales déclarées par le thème et le plugin pour empêcher toute nouvelle redéclaration.
 
+Le soixante-sixième lot termine `statut-functions.php` et `badge-functions.php`. La composition portable des badges de
+statut appartient maintenant à `HuntStatusBadgeService` et le contrôleur AJAX ne dépend plus d'un filtre de rendu du
+thème. Le helper de contexte `is_canevas_creation()`, sans appel de production, a été supprimé. Ces deux fichiers du
+thème ne déclarent désormais plus aucune fonction.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -305,7 +310,7 @@ find wp-content/themes/chassesautresor -type f -name '*.php' | rg '/(templates|t
 
 Résultats obtenus après ce lot :
 
-- **69 enregistrements de hooks** demeurent dans le thème. Leur revue ligne par ligne ne trouve **plus aucun hook métier**. Les 69 hooks concernent le rendu,
+- **68 enregistrements de hooks** demeurent dans le thème. Leur revue ligne par ligne ne trouve **plus aucun hook métier**. Les 68 hooks concernent le rendu,
   l'intégration Astra/WooCommerce/ACF, les shortcodes ou le chargement d'assets ;
 - **aucune écriture** WordPress, SQL, de cache ou de transient n’est désormais détectée dans le thème et aucune
   planification de tâche n’y demeure ;
@@ -325,7 +330,7 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 60 %, soit **environ 92 % pour l'extraction du métier PHP inventorié**.
+100 % et 65 %, soit **environ 93 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie

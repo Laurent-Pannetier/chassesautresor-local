@@ -39,6 +39,8 @@ require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/riddle-progress-functions.php';
 require_once __DIR__ . '/src/Progress/HuntStatusService.php';
+require_once __DIR__ . '/src/Progress/HuntStatusBadgeService.php';
+require_once __DIR__ . '/src/Progress/hunt-status-badge-functions.php';
 require_once __DIR__ . '/src/Progress/HuntNavigationAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntNavigationAccessService.php';
 require_once __DIR__ . '/src/Progress/HuntValidationAjaxHandler.php';

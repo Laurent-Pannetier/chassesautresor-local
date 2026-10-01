@@ -26,9 +26,7 @@ class HuntStatusAjaxHandler {
             wp_send_json_error('statut_indisponible');
         }
         $validation = get_field('chasse_cache_statut_validation', $huntId);
-        $badge = (array) apply_filters(
-            'chassesautresor_render_hunt_status_badge',
-            [],
+        $badge = (new HuntStatusBadgeService())->build(
             $status,
             is_string($validation) ? $validation : null
         );

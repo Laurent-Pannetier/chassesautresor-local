@@ -761,6 +761,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testThemeDoesNotOwnHuntStatusBadgePolicy(): void
+    {
+        $status = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        $badge = (string) file_get_contents(self::THEME_PATH . '/inc/badge-functions.php');
+
+        self::assertStringNotContainsString('cat_render_hunt_status_badge', $status);
+        self::assertStringNotContainsString('is_canevas_creation', $status);
+        self::assertStringNotContainsString('function chasse_preparer_badge_statut', $badge);
+    }
+
     public function testThemeDoesNotRedeclareCoreGlobalFunctions(): void
     {
         $pluginPath = __DIR__ . '/../wp-content/plugins/chassesautresor-core';

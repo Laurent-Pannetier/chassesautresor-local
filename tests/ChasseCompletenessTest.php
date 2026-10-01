@@ -5,6 +5,8 @@ require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/completion-functions.php';
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-status-badge-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
 
 if (!function_exists('get_post_type')) {
