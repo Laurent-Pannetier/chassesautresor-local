@@ -104,13 +104,18 @@ Le vingt-neuvième lot a rendu autonome l’invalidation du cache d’affichage 
 statistiques. Le contrôleur d’administration ne reçoit désormais du thème que le moteur de rendu du tableau des
 paiements ; le plugin connaît et invalide lui-même son cache objet et son transient.
 
-Le trentième lot a déplacé dans le plugin la composition et le rendu des messages importants de l’espace personnel.
+Le trentième lot a déplacé dans le plugin la composition et le rendu des messages importants de l'espace personnel.
 Le contrôleur AJAX des sections de compte ne reçoit plus ce traitement du thème, qui conserve uniquement le rendu
 du fragment de section demandé.
 
-Estimation après ce lot : **99,99998 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
-responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
-sur le nombre de lignes. Il sera réévalué après chaque lot.
+Le trente-et-unième lot a rendu ces messages réellement autonomes. Le plugin lit maintenant lui-même les messages
+persistants et éphémères, résout leur contexte chasse/énigme, interroge les conversions et la relation organisateur,
+et recherche les chasses à modérer. Il ne dépend plus des helpers globaux du thème pour ces opérations. Les deux
+lecteurs de messages ont été retirés du thème et la frontière interdit le retour de ces dépendances implicites.
+
+Estimation prudente après ce lot : **environ 95 % de la migration métier inventoriée**. Cette estimation remplace le
+pourcentage excessivement précis du lot précédent : les routes, politiques et callbacks résiduels ci-dessous doivent
+encore être qualifiés et migrés, puis un audit avec un thème neutre doit confirmer l'autonomie réelle du plugin.
 
 ## Éléments bloquants observés
 
@@ -122,6 +127,10 @@ Le thème enregistre toujours notamment :
   `inc/organisateur-functions.php` ;
 - les adaptateurs de politique appelés par le contrôle d’accès aux énigmes dans plusieurs fichiers `inc/` ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
+
+L'audit ciblé des messages importants ne relève plus de dépendance vers les helpers globaux du thème. Il reste en
+revanche à auditer de bout en bout les configurations `*Handler::configure()` et les adaptateurs d'accès aux énigmes ;
+leur présence dans la couche de présentation ne permet pas encore de conclure qu'ils sont tous purement visuels.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.

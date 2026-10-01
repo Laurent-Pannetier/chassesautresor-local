@@ -458,6 +458,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertIsString($configuration);
         self::assertStringNotContainsString('myaccount_get_important_messages', $configuration);
         self::assertStringNotContainsString('function myaccount_get_important_messages', $source);
+        self::assertStringNotContainsString('function myaccount_get_persistent_messages', $source);
+        self::assertStringNotContainsString('function myaccount_get_flash_messages', $source);
+
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/important-messages.php'
+        );
+        self::assertStringNotContainsString('recuperer_organisateurs_pending', $core);
+        self::assertStringNotContainsString('cat_get_conversion_service', $core);
+        self::assertStringNotContainsString('est_organisateur(', $core);
+        self::assertStringNotContainsString('get_organisateur_from_user', $core);
+        self::assertStringNotContainsString('recuperer_id_chasse_associee', $core);
     }
 
     public function testThemeDoesNotOwnHuntModerationEmails(): void

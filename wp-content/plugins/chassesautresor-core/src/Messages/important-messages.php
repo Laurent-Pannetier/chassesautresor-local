@@ -2,6 +2,118 @@
 
 declare(strict_types=1);
 
+use ChassesAuTresor\Core\Content\OrganizerRoleService;
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
+/**
+ * Retrieve persistent account messages visible in the current content context.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function myaccount_get_persistent_messages(int $userId): array
+{
+    global $wpdb;
+
+    $messages = CoreServiceFactory::accountMessages($wpdb)->getPersistent($userId);
+    $currentId = get_queried_object_id();
+    $currentType = get_post_type($currentId);
+    $currentHunt = 0;
+
+    if ($currentType === 'chasse') {
+        $currentHunt = $currentId;
+    } elseif ($currentType === 'enigme') {
+        $currentHunt = (new RelationshipService())->normalizeId(
+            get_field('enigme_chasse_associee', $currentId)
+        ) ?? 0;
+    }
+
+    $attempts = [];
+    foreach ($messages as $key => $message) {
+        $item = is_array($message)
+            ? $message
+            : ['text' => $message, 'type' => 'info', 'dismissible' => false];
+        if (strpos((string) $key, 'tentative_') !== 0) {
+            $messages[$key] = $item;
+            continue;
+        }
+
+        $text = (string) ($item['text'] ?? '');
+        $attempts[] = preg_match('/<a[^>]*>.*?<\/a>/', $text, $matches) ? $matches[0] : $text;
+        unset($messages[$key]);
+    }
+
+    $output = [];
+    foreach ($messages as $key => $message) {
+        if (!is_array($message) || !isset($message['text'])) {
+            continue;
+        }
+
+        $scope = isset($message['chasse_scope']) ? (int) $message['chasse_scope'] : 0;
+        if (
+            ($scope > 0 && ($scope !== $currentHunt ||
+                (empty($message['include_enigmes']) && $currentType === 'enigme')))
+            || ($scope === 0 && $currentType === 'enigme')
+        ) {
+            continue;
+        }
+
+        $output[] = [
+            'key' => (string) $key,
+            'text' => (string) $message['text'],
+            'message_key' => (string) ($message['message_key'] ?? ''),
+            'locale' => (string) ($message['locale'] ?? ''),
+            'type' => (string) ($message['type'] ?? 'info'),
+            'dismissible' => !empty($message['dismissible']),
+        ];
+    }
+
+    if (count($attempts) === 1) {
+        $output[] = [
+            'text' => sprintf(
+                __('Votre demande de résolution de l\'énigme %s est en cours de traitement. Vous recevrez une '
+                    . 'notification dès que votre demande sera traitée.', 'chassesautresor-com'),
+                $attempts[0]
+            ),
+            'type' => 'info',
+        ];
+    } elseif (count($attempts) > 1) {
+        $links = array_map(
+            static fn (string $anchor): string => str_replace('<a ', '<a class="etiquette" ', $anchor),
+            $attempts
+        );
+        $output[] = [
+            'text' => sprintf(
+                __('Vos demandes de résolution d\'énigmes sont en cours de traitement : %s. Vous recevrez une '
+                    . 'notification dès que vos demandes seront traitées.', 'chassesautresor-com'),
+                implode(' ', $links)
+            ),
+            'type' => 'info',
+        ];
+    }
+
+    return $output;
+}
+
+/** @return array<int, array<string, mixed>> */
+function myaccount_get_flash_messages(int $userId): array
+{
+    global $wpdb;
+
+    $messages = [];
+    foreach (CoreServiceFactory::accountMessages($wpdb)->pullFlash($userId) as $message) {
+        if (isset($message['text'])) {
+            $messages[] = [
+                'text' => (string) $message['text'],
+                'type' => (string) ($message['type'] ?? 'info'),
+                'dismissible' => !empty($message['dismissible']),
+            ];
+        }
+    }
+
+    return $messages;
+}
+
 /**
  * Get pre-formatted HTML for the important message section in My Account pages.
  *
@@ -22,36 +134,37 @@ function myaccount_get_important_messages(): string {
     }
 
     if (current_user_can('administrator')) {
-        if (function_exists('recuperer_organisateurs_pending')) {
-            $pending = array_filter(
-                recuperer_organisateurs_pending(),
-                function ($entry) {
-                    return !empty($entry['chasse_id']) && $entry['validation'] === 'en_attente';
-                }
+        $pending = get_posts([
+            'post_type' => 'chasse',
+            'post_status' => ['publish', 'pending', 'draft'],
+            'numberposts' => -1,
+            'fields' => 'ids',
+            'meta_key' => 'chasse_cache_statut_validation',
+            'meta_value' => 'en_attente',
+        ]);
+
+        if (!empty($pending)) {
+            $links = array_map(
+                function ($huntId) {
+                    $url   = esc_url(get_permalink($huntId));
+                    $title = esc_html(get_the_title($huntId));
+                    return '<a href="' . $url . '">' . $title . '</a>';
+                },
+                $pending
             );
 
-            if (!empty($pending)) {
-                $links = array_map(
-                    function ($entry) {
-                        $url   = esc_url(get_permalink($entry['chasse_id']));
-                        $title = esc_html(get_the_title($entry['chasse_id']));
-                        return '<a href="' . $url . '">' . $title . '</a>';
-                    },
-                    $pending
-                );
+            $label = count($pending) > 1
+                ? __('Chasses à valider :', 'chassesautresor-com')
+                : __('Chasse à valider :', 'chassesautresor-com');
 
-                $label = count($pending) > 1
-                    ? __('Chasses à valider :', 'chassesautresor-com')
-                    : __('Chasse à valider :', 'chassesautresor-com');
-
-                $messages[] = [
-                    'text' => $label . ' ' . implode(', ', $links),
-                    'type' => 'info',
-                ];
-            }
+            $messages[] = [
+                'text' => $label . ' ' . implode(', ', $links),
+                'type' => 'info',
+            ];
         }
 
-        $pendingRequests = cat_get_conversion_service()->getRequests(null, 'pending');
+        global $wpdb;
+        $pendingRequests = CoreServiceFactory::conversion($wpdb)->getRequests(null, 'pending');
 
         if (!empty($pendingRequests)) {
             $messages[] = [
@@ -61,11 +174,19 @@ function myaccount_get_important_messages(): string {
         }
     }
 
-    if (est_organisateur()) {
-        $current_user_id   = get_current_user_id();
-        $organisateur_id   = get_organisateur_from_user($current_user_id);
+    $user = wp_get_current_user();
+    $organizerRole = defined('ROLE_ORGANISATEUR') ? ROLE_ORGANISATEUR : 'organisateur';
+    $creationRole = defined('ROLE_ORGANISATEUR_CREATION')
+        ? ROLE_ORGANISATEUR_CREATION
+        : 'organisateur_creation';
+    $isOrganizer = (new OrganizerRoleService())->isOrganizer((array) $user->roles, $organizerRole, $creationRole);
 
-        $pendingOwn = cat_get_conversion_service()->getRequests($current_user_id, 'pending');
+    if ($isOrganizer) {
+        $current_user_id   = get_current_user_id();
+        global $wpdb;
+        $organisateur_id = CoreServiceFactory::organizer($wpdb)->findIdForUser($current_user_id);
+
+        $pendingOwn = CoreServiceFactory::conversion($wpdb)->getRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
             $conversion_url = $organisateur_id
                 ? esc_url(
