@@ -9,6 +9,13 @@ if (!defined('HOUR_IN_SECONDS')) {
     define('HOUR_IN_SECONDS', 3600);
 }
 
+if (!function_exists('wp_create_nonce')) {
+    function wp_create_nonce($action)
+    {
+        return 'nonce-' . $action;
+    }
+}
+
 if (!function_exists('get_option')) {
     function get_option($name, $default = false)
     {

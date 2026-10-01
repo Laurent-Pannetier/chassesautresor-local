@@ -209,6 +209,10 @@ function chasse_lister_participants(int $chasse_id, int $limit, int $offset, str
  */
 function ajax_chasse_recuperer_stats()
 {
+    if (!wp_verify_nonce((string) ($_POST['nonce'] ?? ''), 'statistics_management')) {
+        wp_send_json_error('invalid_nonce', 403);
+    }
+
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;
     if ($chasse_id <= 0) {
         wp_send_json_error('missing_chasse', 400);
@@ -276,6 +280,9 @@ function ajax_chasse_lister_participants()
 {
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
+    }
+    if (!wp_verify_nonce((string) ($_POST['nonce'] ?? ''), 'statistics_management')) {
+        wp_send_json_error('invalid_nonce', 403);
     }
 
     $chasse_id = isset($_POST['chasse_id']) ? (int) $_POST['chasse_id'] : 0;

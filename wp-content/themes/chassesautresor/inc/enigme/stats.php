@@ -122,6 +122,10 @@ function enigme_lister_participants(
  */
 function ajax_enigme_recuperer_stats()
 {
+    if (!wp_verify_nonce((string) ($_POST['nonce'] ?? ''), 'statistics_management')) {
+        wp_send_json_error('invalid_nonce', 403);
+    }
+
     $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
     if ($enigme_id <= 0) {
         wp_send_json_error('missing_enigme', 400);
@@ -186,6 +190,9 @@ add_action('enigme_tentative_created', 'enigme_clear_stats_cache');
 function ajax_enigme_lister_participants() {
     if (!is_user_logged_in()) {
         wp_send_json_error('non_connecte');
+    }
+    if (!wp_verify_nonce((string) ($_POST['nonce'] ?? ''), 'statistics_management')) {
+        wp_send_json_error('invalid_nonce', 403);
     }
 
     $enigme_id = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;

@@ -24,6 +24,7 @@ require_once __DIR__ . '/src/Progress/HuntStatusUpdater.php';
 require_once __DIR__ . '/src/Progress/HuntStatusSaveHookHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAnswerService.php';
+require_once __DIR__ . '/src/Progress/RiddleAnswerEvaluationService.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateService.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateUpdater.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateSaveHookHandler.php';
