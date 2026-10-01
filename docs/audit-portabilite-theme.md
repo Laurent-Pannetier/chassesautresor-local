@@ -311,6 +311,10 @@ placés en tête de `inc/chasse-functions.php` : champs structurés, table et d�
 Le thème ne conserve dans ce fichier que les assembleurs et fonctions de rendu. La frontière vérifie désormais
 explicitement la propriété core de cette API.
 
+Le soixante-dixième lot complète cette API avec le calcul de progression d'un joueur, le comptage des participants et
+l'enregistrement d'un engagement. Ces trois décisions utilisent désormais directement les services du plugin ; leur
+absence dans le thème et leur présence dans le core sont couvertes par le test de frontière transversal.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

@@ -105,46 +105,6 @@ function afficher_chasse_associee_callback()
  * @return bool
  */
 /**
- * Calcule la progression d'un joueur dans une chasse.
- *
- * @param int $chasse_id ID de la chasse.
- * @param int $user_id   ID de l'utilisateur.
- * @return array{
- *     engagees:int,
- *     total:int,
- *     resolues:int,
- *     resolvables:int
- * }
- */
-function chasse_calculer_progression_utilisateur(int $chasse_id, int $user_id): array
-{
-    $enigmes = recuperer_enigmes_associees($chasse_id);
-    $total   = count($enigmes);
-    $resolvables = 0;
-    if ($total > 0) {
-        $resolvables = cat_get_hunt_progress_service()->countValidatableRiddles($enigmes);
-    }
-
-    $engagees = 0;
-    $resolues = 0;
-
-    if ($user_id && $total > 0) {
-        $engagees = cat_get_hunt_progress_service()->countEngagedRiddles($user_id, $enigmes);
-    }
-
-    if ($user_id && function_exists('compter_enigmes_resolues')) {
-        $resolues = compter_enigmes_resolues($chasse_id, $user_id);
-    }
-
-    return [
-        'engagees'    => $engagees,
-        'total'       => $total,
-        'resolues'    => $resolues,
-        'resolvables' => $resolvables,
-    ];
-}
-
-/**
  * Génère le bouton d'action et le message d'explication pour une chasse.
  *
  * @param int      $chasse_id ID de la chasse.
@@ -340,51 +300,6 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         'cta_message' => $message,
         'type'        => $type,
     ];
-}
-
-/**
- * Compte le nombre de joueurs ayant engagé au moins une énigme de la chasse.
- *
- * @param int $chasse_id ID de la chasse.
- * @return int Nombre de joueurs uniques engagés.
- */
-function compter_joueurs_engages_chasse(int $chasse_id): int
-{
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        return 0;
-    }
-
-    return cat_get_hunt_engagement_service()->countPlayers($chasse_id);
-}
-
-/**
- * Enregistre un engagement à une chasse pour un utilisateur.
- *
- * @param int $user_id
- * @param int $chasse_id
- * @return bool true si un enregistrement a été effectué, false sinon.
- */
-function enregistrer_engagement_chasse(int $user_id, int $chasse_id): bool
-{
-    if (!$user_id || !$chasse_id) {
-        return false;
-    }
-
-    if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return false;
-    }
-
-    $inserted = cat_get_hunt_engagement_service()->engage(
-        $user_id,
-        $chasse_id,
-        current_time('mysql', 1)
-    );
-
-    if ($inserted) {
-        do_action('chasse_engagement_created', $chasse_id);
-    }
-
-    return (bool) $inserted;
 }
 
 /**

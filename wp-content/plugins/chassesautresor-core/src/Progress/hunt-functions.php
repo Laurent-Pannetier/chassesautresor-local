@@ -72,3 +72,49 @@ function utilisateur_est_engage_dans_chasse(int $userId, int $huntId): bool
 {
     return cat_get_hunt_engagement_service()->isEngaged($userId, $huntId);
 }
+
+/** @return array{engagees:int,total:int,resolues:int,resolvables:int} */
+function chasse_calculer_progression_utilisateur(int $huntId, int $userId): array
+{
+    $riddleIds = recuperer_enigmes_associees($huntId);
+    $total = count($riddleIds);
+    $progress = cat_get_hunt_progress_service();
+
+    return [
+        'engagees' => $userId > 0 && $total > 0
+            ? $progress->countEngagedRiddles($userId, $riddleIds)
+            : 0,
+        'total' => $total,
+        'resolues' => $userId > 0 && function_exists('compter_enigmes_resolues')
+            ? compter_enigmes_resolues($huntId, $userId)
+            : 0,
+        'resolvables' => $total > 0 ? $progress->countValidatableRiddles($riddleIds) : 0,
+    ];
+}
+
+function compter_joueurs_engages_chasse(int $huntId): int
+{
+    if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
+        return 0;
+    }
+
+    return cat_get_hunt_engagement_service()->countPlayers($huntId);
+}
+
+function enregistrer_engagement_chasse(int $userId, int $huntId): bool
+{
+    if ($userId <= 0 || $huntId <= 0) {
+        return false;
+    }
+
+    if (current_user_can('administrator') || utilisateur_est_organisateur_associe_a_chasse($userId, $huntId)) {
+        return false;
+    }
+
+    $inserted = cat_get_hunt_engagement_service()->engage($userId, $huntId, current_time('mysql', true));
+    if ($inserted) {
+        do_action('chasse_engagement_created', $huntId);
+    }
+
+    return (bool) $inserted;
+}

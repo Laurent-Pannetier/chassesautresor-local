@@ -258,6 +258,9 @@ final class ThemeCoreBoundaryTest extends TestCase
             'compter_chasses_gagnees',
             'chasse_get_champs',
             'utilisateur_est_engage_dans_chasse',
+            'chasse_calculer_progression_utilisateur',
+            'compter_joueurs_engages_chasse',
+            'enregistrer_engagement_chasse',
         ] as $functionName) {
             self::assertStringNotContainsString("function {$functionName}(", $theme);
             self::assertStringContainsString("function {$functionName}(", $core);
