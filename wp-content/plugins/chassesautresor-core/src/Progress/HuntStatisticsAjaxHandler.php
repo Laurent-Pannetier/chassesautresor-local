@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** Secure AJAX orchestration for hunt statistics and participant lists. */
 class HuntStatisticsAjaxHandler {
-    private static $authorizer;
-    private static $summaryBuilder;
-    private static $participantLoader;
-    private static $participantCounter;
     private static $participantRenderer;
 
     public static function register(callable $addAction): void {
@@ -18,16 +16,8 @@ class HuntStatisticsAjaxHandler {
     }
 
     public static function configure(
-        callable $authorizer,
-        callable $summaryBuilder,
-        callable $participantLoader,
-        callable $participantCounter,
         callable $participantRenderer
     ): void {
-        self::$authorizer = $authorizer;
-        self::$summaryBuilder = $summaryBuilder;
-        self::$participantLoader = $participantLoader;
-        self::$participantCounter = $participantCounter;
         self::$participantRenderer = $participantRenderer;
     }
 
@@ -37,7 +27,7 @@ class HuntStatisticsAjaxHandler {
         if ($huntId <= 0) {
             wp_send_json_error('missing_chasse', 400);
         }
-        if (!is_callable(self::$authorizer) || !call_user_func(self::$authorizer, $huntId)) {
+        if (!self::application()->canManage((int) get_current_user_id(), $huntId)) {
             wp_send_json_error('forbidden', 403);
         }
 
@@ -45,10 +35,7 @@ class HuntStatisticsAjaxHandler {
         $cache = new StatisticsCacheService();
         $stats = $cache->get('chasse', $huntId, $period);
         if ($stats === false) {
-            if (!is_callable(self::$summaryBuilder)) {
-                wp_send_json_error('forbidden', 403);
-            }
-            $stats = (array) call_user_func(self::$summaryBuilder, $huntId, $period);
+            $stats = self::application()->summary($huntId, $period);
             $cache->put('chasse', $huntId, $period, $stats, HOUR_IN_SECONDS);
         }
         wp_send_json_success($stats);
@@ -63,7 +50,7 @@ class HuntStatisticsAjaxHandler {
         if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
             wp_send_json_error('post_invalide');
         }
-        if (!is_callable(self::$authorizer) || !call_user_func(self::$authorizer, $huntId)) {
+        if (!self::application()->canManage((int) get_current_user_id(), $huntId)) {
             wp_send_json_error('acces_refuse');
         }
 
@@ -75,21 +62,18 @@ class HuntStatisticsAjaxHandler {
         $allowedOrderBy = ['inscription', 'username', 'participation', 'resolution'];
         $orderBy = sanitize_text_field($_POST['orderby'] ?? 'inscription');
         $orderBy = in_array($orderBy, $allowedOrderBy, true) ? $orderBy : 'inscription';
-        if (!is_callable(self::$participantLoader)
-            || !is_callable(self::$participantCounter)
-            || !is_callable(self::$participantRenderer)
-        ) {
+        if (!is_callable(self::$participantRenderer)) {
             wp_send_json_error('acces_refuse');
         }
-        $rows = (array) call_user_func(
-            self::$participantLoader,
+        $application = self::application();
+        $rows = $application->participants(
             $huntId,
             $request['limit'],
             $request['offset'],
             $orderBy,
             $request['order']
         );
-        $total = (int) call_user_func(self::$participantCounter, $huntId);
+        $total = $application->participantCount($huntId);
         $pages = (int) ceil($total / $request['limit']);
         $html = (string) call_user_func(
             self::$participantRenderer,
@@ -107,5 +91,14 @@ class HuntStatisticsAjaxHandler {
         if (!wp_verify_nonce((string) ($_POST['nonce'] ?? ''), 'statistics_management')) {
             wp_send_json_error('invalid_nonce', 403);
         }
+    }
+
+    private static function application(): HuntStatisticsApplicationService {
+        global $wpdb;
+
+        return new HuntStatisticsApplicationService(
+            CoreServiceFactory::huntStatistics($wpdb),
+            CoreServiceFactory::huntEngagement($wpdb)
+        );
     }
 }

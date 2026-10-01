@@ -77,6 +77,7 @@ require_once __DIR__ . '/src/Progress/RiddleStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsService.php';
 require_once __DIR__ . '/src/Progress/StatisticsParticipantRequestService.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/HuntStatisticsApplicationService.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleStatisticsApplicationService.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementRepository.php';

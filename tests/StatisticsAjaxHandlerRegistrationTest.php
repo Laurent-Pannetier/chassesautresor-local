@@ -28,10 +28,6 @@ final class StatisticsAjaxHandlerRegistrationTest extends TestCase {
 
     public function testAcceptsDeferredThemeCallbacks(): void {
         HuntStatisticsAjaxHandler::configure(
-            static fn (): bool => false,
-            static fn (): array => [],
-            static fn (): array => [],
-            static fn (): int => 0,
             static fn (): string => ''
         );
         RiddleStatisticsAjaxHandler::configure(

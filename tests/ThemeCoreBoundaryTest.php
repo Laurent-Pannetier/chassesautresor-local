@@ -343,6 +343,18 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('enigme_lister_participants', $configuration);
     }
 
+    public function testHuntStatisticsBusinessCallbacksAreNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/chasse/stats.php');
+        preg_match('/HuntStatisticsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('utilisateur_est_organisateur_associe_a_chasse', $configuration);
+        self::assertStringNotContainsString('chasse_compter_', $configuration);
+        self::assertStringNotContainsString('chasse_lister_participants', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(
