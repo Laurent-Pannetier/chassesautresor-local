@@ -91,6 +91,7 @@ if (!function_exists('date_i18n')) {
 
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
+require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-cta-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
 /**

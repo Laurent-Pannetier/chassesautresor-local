@@ -77,6 +77,7 @@ require_once __DIR__ . '/src/Progress/HuntWinnersTable.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementRepository.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementService.php';
 require_once __DIR__ . '/src/Progress/hunt-functions.php';
+require_once __DIR__ . '/src/Progress/hunt-cta-functions.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementApplicationService.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementRouteHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatisticsRepository.php';

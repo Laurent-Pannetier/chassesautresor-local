@@ -319,12 +319,17 @@ Le soixante-et-onzième lot transfère les quatre fonctions de requête et de vi
 le fichier de compatibilité déjà possédé par le plugin, sans créer une seconde API ni modifier le rendu HTML conservé
 dans le thème. La frontière interdit désormais leur redéclaration dans `inc/chasse-functions.php`.
 
+Le soixante-douzième lot déplace le view-model CTA des chasses et ses deux formulaires de validation dans le plugin.
+Il retire ainsi `inc/chasse-functions.php` de la liste des grands assembleurs mixtes : le thème en conserve désormais
+trois. Le plugin fournit en contrepartie ce fragment d'interface minimal, nécessaire pour éviter toute dépendance
+silencieuse vers un callback de rendu du thème.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
-| Extraction du métier PHP inventorié | **93 %** | Stable : autonomie renforcée, quatre view-models mixtes inchangés |
-| Remplaçabilité effective du thème | **37 %** | Stable : aucun parcours de secours ni recette sous thème neutre |
+| Extraction du métier PHP inventorié | **95 %** | Un grand view-model mixte retiré du thème ; trois restent |
+| Remplaçabilité effective du thème | **38 %** | Le plugin fournit le CTA, mais aucun parcours complet de secours |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -354,7 +359,7 @@ Résultats obtenus après ce lot :
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
   été inventoriées. Le plugin conserve **15 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
-- la revue ciblée relève **4 grands assembleurs de view-models mixtes** : `inc/chasse-functions.php`,
+- la revue ciblée relève **3 grands assembleurs de view-models mixtes** :
   `inc/enigme/affichage.php`, `inc/sidebar.php` et `inc/user-functions.php`. Ils combinent
   encore données WordPress, progression ou accès avec CTA et HTML ;
 - **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
@@ -365,11 +370,11 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 65 %, soit **environ 93 % pour l'extraction du métier PHP inventorié**.
+100 % et 75 %, soit **environ 95 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. Seul le premier axe est partiellement satisfait : **environ 37 % de remplaçabilité effective du thème**.
+à 10 %. Seul le premier axe est partiellement satisfait : **environ 38 % de remplaçabilité effective du thème**.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

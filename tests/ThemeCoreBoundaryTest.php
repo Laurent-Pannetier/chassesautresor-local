@@ -287,6 +287,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testThemeDoesNotOwnHuntCtaViewModel(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-cta-functions.php'
+        );
+
+        foreach ([
+            'generer_cta_chasse',
+            'render_form_validation_chasse',
+            'render_form_annulation_validation_chasse',
+        ] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $theme);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(
