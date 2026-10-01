@@ -328,6 +328,7 @@ require_once __DIR__ . '/src/Messages/account-message-functions.php';
 require_once __DIR__ . '/src/Messages/important-messages.php';
 require_once __DIR__ . '/src/Messages/AccountMessageDismissalAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/AccountSectionAccessService.php';
+require_once __DIR__ . '/src/Messages/AccountStatisticsRenderer.php';
 require_once __DIR__ . '/src/Messages/AccountSectionAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
 require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';

@@ -1261,6 +1261,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testAccountStatisticsRenderingBelongsToCore(): void
+    {
+        $template = (string) file_get_contents(
+            self::THEME_PATH . '/templates/myaccount/content-statistiques.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountStatisticsRenderer.php'
+        );
+
+        self::assertStringNotContainsString('cat_get_points_service()', $template);
+        self::assertStringNotContainsString('compter_chasses_gagnees(', $template);
+        self::assertStringContainsString('new ChassesAuTresor\\Core\\Messages\\AccountStatisticsRenderer', $template);
+        self::assertStringContainsString('class AccountStatisticsRenderer', $renderer);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

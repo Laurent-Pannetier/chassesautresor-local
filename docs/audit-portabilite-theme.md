@@ -421,6 +421,11 @@ conversions. Les vues historiques conservent leurs appels, mais la résolution d
 maintenant fournie par le plugin. La section de statistiques du compte ne dépend donc plus de `gamify-functions.php`
 pour obtenir son service de points. Les indicateurs restent inchangés tant que son rendu appartient au thème.
 
+Le quatre-vingt-douzième lot déplace la composition et le rendu de la section administrative « Statistiques » dans
+`AccountStatisticsRenderer`. Le template historique n'est plus qu'un adaptateur vers le plugin et le domaine de
+traduction incorrect de ses deux libellés est corrigé. La configuration AJAX commune reste néanmoins nécessaire aux
+sections « Organisateurs » et « Outils » ; les indicateurs globaux restent donc inchangés.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
