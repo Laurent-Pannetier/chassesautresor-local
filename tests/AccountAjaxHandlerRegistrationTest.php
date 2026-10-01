@@ -10,6 +10,14 @@ require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountSectionAjaxHandler.php';
 
 final class AccountAjaxHandlerRegistrationTest extends TestCase {
+    public function testAcceptsLazyThemeCallbacks(): void {
+        AccountSectionAjaxHandler::configure(
+            static fn (): string => '',
+            static fn (): array => []
+        );
+        $this->addToAssertionCount(1);
+    }
+
     public function testRegistersAuthenticatedEndpoints(): void {
         $hooks = [];
         $register = static function ($hook, $callback) use (&$hooks): void {

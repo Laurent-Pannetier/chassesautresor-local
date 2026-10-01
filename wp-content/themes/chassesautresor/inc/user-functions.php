@@ -1725,8 +1725,12 @@ function ca_load_admin_section(): void
 
 if (class_exists(ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::class)) {
     ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::configure(
-        'ca_render_admin_section',
-        'myaccount_get_important_messages'
+        static function (string $template_name): string {
+            return ca_render_admin_section($template_name);
+        },
+        static function (): array {
+            return myaccount_get_important_messages();
+        }
     );
 }
 
