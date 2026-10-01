@@ -448,6 +448,11 @@ statistiques et la politique de visibilité du menu d'énigme. Les vues historiq
 mais leur résolution de service et leur décision d'accès appartiennent désormais au plugin. Le fichier reste un grand
 assembleur mixte et les deux indicateurs globaux restent donc inchangés.
 
+Le quatre-vingt-dix-septième lot transfère les quatre renderers de barres statistiques vers `RiddleBarRenderer`.
+Le plugin fournit également l'aide accessible sans appeler le template part `help-icon` du thème, tandis que les
+fonctions globales historiques deviennent de simples façades core. `inc/enigme/affichage.php` demeure un assembleur
+mixte pour ses blocs principaux ; les indicateurs restent donc inchangés.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

@@ -35,3 +35,35 @@ function enigme_user_can_see_menu(int $user_id, int $chasse_id, string $chasse_s
 
     return !in_array($chasse_stat, ['revision', 'a_venir'], true);
 }
+
+function enigme_render_bar_row(string $label, int $rate, string $fill_style = ''): string {
+    return (new ChassesAuTresor\Core\Progress\RiddleBarRenderer())->row($label, $rate, $fill_style);
+}
+
+function enigme_render_bar_section(string $title, int $user_rate, int $avg_rate, string $section_class): string {
+    return (new ChassesAuTresor\Core\Progress\RiddleBarRenderer())
+        ->section($title, $user_rate, $avg_rate, $section_class);
+}
+
+function enigme_render_bar_subsection(
+    string $title,
+    int $user_rate,
+    int $avg_rate,
+    string $section_class,
+    string $help_message = '',
+    string $help_label = ''
+): string {
+    return (new ChassesAuTresor\Core\Progress\RiddleBarRenderer())
+        ->subsection($title, $user_rate, $avg_rate, $section_class, $help_message, $help_label);
+}
+
+function enigme_render_single_bar_subsection(
+    string $title,
+    int $rate,
+    string $section_class,
+    string $help_message = '',
+    string $help_label = ''
+): string {
+    return (new ChassesAuTresor\Core\Progress\RiddleBarRenderer())
+        ->singleSubsection($title, $rate, $section_class, $help_message, $help_label);
+}

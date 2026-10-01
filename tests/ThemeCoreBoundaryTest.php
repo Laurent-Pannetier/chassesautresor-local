@@ -1338,6 +1338,28 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_riddle_statistics_service(', $stats);
     }
 
+    public function testRiddleStatisticsBarsBelongToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $functions = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-display-functions.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleBarRenderer.php'
+        );
+
+        foreach ([
+            'enigme_render_bar_row',
+            'enigme_render_bar_section',
+            'enigme_render_bar_subsection',
+            'enigme_render_single_bar_subsection',
+        ] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $functions);
+        }
+        self::assertStringNotContainsString('get_template_part', $renderer);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

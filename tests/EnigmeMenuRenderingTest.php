@@ -242,6 +242,12 @@ if (!function_exists('esc_html__')) {
         return $text;
     }
 }
+if (!function_exists('__')) {
+    function __($text, $domain = null)
+    {
+        return $text;
+    }
+}
 
 if (!function_exists('esc_attr')) {
     function esc_attr($text)
