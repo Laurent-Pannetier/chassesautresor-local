@@ -16,6 +16,21 @@ class HintUnlockRepository
         $this->wpdb = $wpdb;
     }
 
+    public function beginTransaction(): void
+    {
+        $this->wpdb->query('START TRANSACTION');
+    }
+
+    public function commit(): void
+    {
+        $this->wpdb->query('COMMIT');
+    }
+
+    public function rollBack(): void
+    {
+        $this->wpdb->query('ROLLBACK');
+    }
+
     public function exists(int $userId, int $hintId): bool
     {
         $table = $this->wpdb->prefix . 'indices_deblocages';

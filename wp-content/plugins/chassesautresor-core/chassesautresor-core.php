@@ -57,6 +57,8 @@ require_once __DIR__ . '/src/Progress/RiddleEngagementService.php';
 require_once __DIR__ . '/src/Progress/RiddleEngagementApplicationService.php';
 require_once __DIR__ . '/src/Progress/HintUnlockRepository.php';
 require_once __DIR__ . '/src/Progress/HintUnlockService.php';
+require_once __DIR__ . '/src/Progress/HintUnlockPolicy.php';
+require_once __DIR__ . '/src/Progress/HintUnlockAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptAccessPolicy.php';
@@ -278,6 +280,7 @@ ChassesAuTresor\Core\Content\RiddlePrerequisiteAjaxHandler::register('add_action
 ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatisticsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\HintUnlockAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,

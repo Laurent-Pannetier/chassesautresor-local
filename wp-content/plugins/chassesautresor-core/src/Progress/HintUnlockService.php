@@ -45,10 +45,7 @@ class HintUnlockService
         $huntId = $huntId !== null && $huntId > 0 ? $huntId : null;
         $riddleId = $riddleId !== null && $riddleId > 0 ? $riddleId : null;
 
-        if ($pointsSpent > 0) {
-            $this->pointsService->deduct($userId, $pointsSpent, $pointsReason, 'indice', $hintId);
-        }
-
+        $this->repository->beginTransaction();
         if (!$this->repository->insertUnlock(
             $userId,
             $hintId,
@@ -57,15 +54,26 @@ class HintUnlockService
             $pointsSpent,
             $unlockedAt
         )) {
+            $this->repository->rollBack();
             return false;
         }
 
-        return $this->repository->insertEngagement(
+        if (!$this->repository->insertEngagement(
             $userId,
             $hintId,
             $huntId,
             $riddleId,
             $unlockedAt
-        );
+        )) {
+            $this->repository->rollBack();
+            return false;
+        }
+
+        if ($pointsSpent > 0) {
+            $this->pointsService->deduct($userId, $pointsSpent, $pointsReason, 'indice', $hintId);
+        }
+        $this->repository->commit();
+
+        return true;
     }
 }

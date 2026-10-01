@@ -20,9 +20,25 @@ class HintUnlockRepositoryStub extends HintUnlockRepository
     public bool $engagementInserted = true;
     public array $unlockArguments = [];
     public array $engagementArguments = [];
+    public array $transactionEvents = [];
 
     public function __construct()
     {
+    }
+
+    public function beginTransaction(): void
+    {
+        $this->transactionEvents[] = 'begin';
+    }
+
+    public function commit(): void
+    {
+        $this->transactionEvents[] = 'commit';
+    }
+
+    public function rollBack(): void
+    {
+        $this->transactionEvents[] = 'rollback';
     }
 
     public function exists(int $userId, int $hintId): bool
@@ -129,6 +145,7 @@ class HintUnlockServiceTest extends TestCase
         $this->assertTrue($service->recordUnlock(7, 10, 20, 30, 5, '2026-09-29 12:00:00'));
         $this->assertSame([7, 10, 20, 30, 5, '2026-09-29 12:00:00'], $repository->unlockArguments);
         $this->assertSame([7, 10, 20, 30, '2026-09-29 12:00:00'], $repository->engagementArguments);
+        $this->assertSame(['begin', 'commit'], $repository->transactionEvents);
 
         $this->assertFalse($service->recordUnlock(0, 10, 20, 30, 5, '2026-09-29 12:00:00'));
         $this->assertFalse($service->recordUnlock(7, 10, 20, 30, -1, '2026-09-29 12:00:00'));
@@ -138,6 +155,19 @@ class HintUnlockServiceTest extends TestCase
         $this->assertFalse($service->recordUnlock(7, 10, 0, 0, 5, '2026-09-29 12:00:00'));
         $this->assertSame([7, 10, null, null, 5, '2026-09-29 12:00:00'], $repository->unlockArguments);
         $this->assertSame([], $repository->engagementArguments);
+        $this->assertSame('rollback', end($repository->transactionEvents));
+    }
+
+    public function testRecordUnlockRollsBackWithoutChargingWhenEngagementFails(): void
+    {
+        $repository = new HintUnlockRepositoryStub();
+        $repository->engagementInserted = false;
+        $pointsService = new HintUnlockPointsServiceStub();
+        $service = new HintUnlockService($repository, $pointsService);
+
+        $this->assertFalse($service->recordUnlock(7, 10, 20, 30, 5, '2026-09-29 12:00:00'));
+        $this->assertSame(['begin', 'rollback'], $repository->transactionEvents);
+        $this->assertSame([], $pointsService->deductArguments);
     }
 
     public function testRecordUnlockDelegatesHintPointDeduction(): void
