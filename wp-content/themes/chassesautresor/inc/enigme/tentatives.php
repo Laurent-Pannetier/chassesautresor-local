@@ -387,7 +387,11 @@ function traiter_tentative(
     }
 
     if ($envoyer_mail && $outcome['notify']) {
-        envoyer_mail_resultat_joueur($user_id, $enigme_id, $resultat);
+        (new ChassesAuTresor\Core\Progress\AnswerResultNotificationService())->notify(
+            $user_id,
+            $enigme_id,
+            $resultat
+        );
     }
 
     return $uid;
