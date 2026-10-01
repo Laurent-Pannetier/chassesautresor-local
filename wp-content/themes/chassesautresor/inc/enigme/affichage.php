@@ -117,66 +117,9 @@ require_once __DIR__ . '/indices.php';
 
         $content = '';
 
-        $chasse_id = recuperer_id_chasse_associee($enigme_id);
-
-        $indices_enigme = function_exists('get_posts')
-            ? get_posts([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft', 'future', 'pending'],
-                'meta_query'     => [
-                    [
-                        'key'     => 'indice_cible_type',
-                        'value'   => 'enigme',
-                        'compare' => '=',
-                    ],
-                    [
-                        'key'     => 'indice_enigme_linked',
-                        'value'   => $enigme_id,
-                        'compare' => '=',
-                    ],
-                    [
-                        'key'     => 'indice_cache_etat_systeme',
-                        'value'   => ['accessible', 'programme'],
-                        'compare' => 'IN',
-                    ],
-                ],
-                'orderby'        => 'date',
-                'order'          => 'ASC',
-                'fields'         => 'ids',
-                'no_found_rows'  => true,
-                'posts_per_page' => -1,
-            ])
-            : [];
-
-        $indices_chasse = [];
-        if ($chasse_id && function_exists('get_posts')) {
-            $indices_chasse = get_posts([
-                'post_type'      => 'indice',
-                'post_status'    => ['publish', 'draft', 'future', 'pending'],
-                'meta_query'     => [
-                    [
-                        'key'     => 'indice_cible_type',
-                        'value'   => 'chasse',
-                        'compare' => '=',
-                    ],
-                    [
-                        'key'     => 'indice_chasse_linked',
-                        'value'   => $chasse_id,
-                        'compare' => '=',
-                    ],
-                    [
-                        'key'     => 'indice_cache_etat_systeme',
-                        'value'   => ['accessible', 'programme'],
-                        'compare' => 'IN',
-                    ],
-                ],
-                'orderby'        => 'date',
-                'order'          => 'ASC',
-                'fields'         => 'ids',
-                'no_found_rows'  => true,
-                'posts_per_page' => -1,
-            ]);
-        }
+        $hintIds = (new ChassesAuTresor\Core\Progress\RiddleParticipationService())->hintIds($enigme_id);
+        $indices_enigme = $hintIds['riddle'];
+        $indices_chasse = $hintIds['hunt'];
 
         if ($bloc_reponse !== '') {
             $content .= '<div class="zone-reponse">' . $bloc_reponse . '</div>';

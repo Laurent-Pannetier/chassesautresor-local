@@ -1388,6 +1388,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('get_template_part', $core);
     }
 
+    public function testRiddleParticipationHintQueriesBelongToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $service = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleParticipationService.php'
+        );
+
+        self::assertStringNotContainsString("'post_type'      => 'indice'", $source);
+        self::assertStringContainsString('new ChassesAuTresor\\Core\\Progress\\RiddleParticipationService', $source);
+        self::assertStringContainsString("'post_type' => 'indice'", $service);
+        self::assertStringContainsString("'indice_enigme_linked'", $service);
+        self::assertStringContainsString("'indice_chasse_linked'", $service);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

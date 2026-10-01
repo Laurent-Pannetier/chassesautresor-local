@@ -463,6 +463,11 @@ gagnants vers `RiddleSidebarRenderer`. Le rendu initial et les endpoints AJAX pa
 core, sans chargement du partial thématique des gagnants. Les blocs principaux d'énigme maintiennent encore le fichier
 dans la liste des assembleurs mixtes et les indicateurs restent inchangés.
 
+Le centième lot extrait les deux requêtes d'indices du panneau de participation dans `RiddleParticipationService`.
+Le service résout la chasse associée et sélectionne séparément les indices accessibles ou programmés de l'énigme et
+de la chasse. Le thème conserve encore la composition visuelle, le déblocage et les informations de tentative ; les
+indicateurs restent donc inchangés.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
