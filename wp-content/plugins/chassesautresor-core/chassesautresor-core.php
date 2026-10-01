@@ -185,6 +185,7 @@ require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/HuntValidationAccessResolver.php';
 require_once __DIR__ . '/src/Messages/HuntCorrectionMessageService.php';
+require_once __DIR__ . '/src/Messages/HuntValidationMessageHookHandler.php';
 require_once __DIR__ . '/src/Content/hunt-validation-functions.php';
 require_once __DIR__ . '/src/Content/HuntModerationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationMutationService.php';
@@ -370,6 +371,7 @@ ChassesAuTresor\Core\Content\SolutionManagementAjaxHandler::register('add_action
 ChassesAuTresor\Core\Media\RiddleImageProtectionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Messages\HuntValidationMessageHookHandler::register('add_action');
 ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Messages\AccountLegacyRouteHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::register('add_action');

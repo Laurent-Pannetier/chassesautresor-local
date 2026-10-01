@@ -198,6 +198,11 @@ et de ses énigmes ainsi que leurs statuts, sans helpers du thème. La route de 
 et le service de messages du core. Les fonctions globales restent disponibles pour les vues historiques, mais leurs
 implémentations résident désormais dans le plugin.
 
+Le quarante-septième lot a déplacé le cycle du message informant qu'une chasse est éligible à la validation. La
+résolution chasse/énigme, le rafraîchissement de complétude, la politique d'éligibilité et la persistance ou suppression
+du message sont maintenant orchestrés par un gestionnaire de hook du plugin. `user-functions.php` ne possède plus ce
+traitement exécuté sur `template_redirect` et le plugin ne dépend plus des helpers de chasse du thème pour ce parcours.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

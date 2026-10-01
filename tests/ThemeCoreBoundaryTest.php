@@ -576,6 +576,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('myaccount_clear_correction_message(', $route);
     }
 
+    public function testThemeDoesNotOwnHuntValidationAccountMessageLifecycle(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+
+        self::assertStringNotContainsString('function myaccount_maybe_add_validation_message', $source);
+        self::assertStringNotContainsString(
+            "add_action('template_redirect', 'myaccount_maybe_add_validation_message')",
+            $source
+        );
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
