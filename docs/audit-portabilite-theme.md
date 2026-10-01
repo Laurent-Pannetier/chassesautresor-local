@@ -186,6 +186,12 @@ chasses soumises via ACF est maintenant une politique du plugin, y compris les r
 démarrage immédiat. La redirection des pages individuelles d'indice vers leur chasse ou leur énigme est désormais
 enregistrée directement par le contrôleur core, sans adaptateur dans `edition-indice.php`.
 
+Le quarante-cinquième lot a transféré les fonctions publiques du cycle de demande organisateur. La création et le
+renvoi du jeton, son état, sa suppression et l'envoi de l'email sont maintenant exposés par le plugin sans callbacks du
+thème. La confirmation effective reste traitée par la route autonome du core, qui crée le profil et attribue le rôle.
+L'ancien template de confirmation ne lit plus le jeton, ne crée plus de CPT et ne modifie plus les rôles ; il ne conserve
+qu'un message de présentation de secours.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

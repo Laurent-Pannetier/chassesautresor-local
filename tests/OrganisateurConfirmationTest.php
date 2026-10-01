@@ -1,97 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 
-if (!defined('ROLE_ORGANISATEUR_CREATION')) {
-    define('ROLE_ORGANISATEUR_CREATION', 'organisateur_creation');
-}
-if (!defined('DAY_IN_SECONDS')) {
-    define('DAY_IN_SECONDS', 86400);
-}
-
-if (!function_exists('get_user_meta')) {
-    function get_user_meta($user_id, $key, $single = false)
-    {
-        global $cat_test_user_meta;
-        return $cat_test_user_meta[$user_id][$key] ?? '';
-    }
-}
-
-if (!function_exists('delete_user_meta')) {
-    function delete_user_meta($user_id, $key): void
-    {
-        global $cat_test_user_meta;
-        unset($cat_test_user_meta[$user_id][$key]);
-    }
-}
-
-if (!function_exists('creer_organisateur_pour_utilisateur')) {
-    function creer_organisateur_pour_utilisateur($user_id)
-    {
-        return 123;
-    }
-}
-
-if (!function_exists('current_time')) {
-    function current_time(string $type)
-    {
-        return $type === 'mysql' ? gmdate('Y-m-d H:i:s', time()) : time();
-    }
-}
-
-if (!class_exists('WP_User')) {
-    class WP_User
-    {
-        public int $ID;
-        public array $roles = [];
-
-        public function __construct(int $ID)
-        {
-            $this->ID = $ID;
-        }
-
-        public function add_role($role): void
-        {
-            $this->roles[] = $role;
-        }
-    }
-}
-
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/organisateur-functions.php';
-
-/**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
- */
-class OrganisateurConfirmationTest extends TestCase
+final class OrganisateurConfirmationTest extends TestCase
 {
-    protected function setUp(): void
+    public function testOrganizerRequestFunctionsAreOwnedByCore(): void
     {
-        global $cat_test_user_meta;
-        $cat_test_user_meta = [];
+        $core = (string) file_get_contents(
+            __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Relationships/organizer-request-functions.php'
+        );
+        $theme = (string) file_get_contents(
+            __DIR__ . '/../wp-content/themes/chassesautresor/inc/organisateur-functions.php'
+        );
+
+        foreach ([
+            'cat_clear_organisateur_request',
+            'cat_get_organisateur_request_status',
+            'envoyer_email_confirmation_organisateur',
+            'lancer_demande_organisateur',
+            'renvoyer_email_confirmation_organisateur',
+        ] as $function) {
+            self::assertStringContainsString('function ' . $function, $core);
+            self::assertStringNotContainsString('function ' . $function, $theme);
+        }
     }
 
-    public function test_confirmer_demande_organisateur_token_expire(): void
+    public function testLegacyConfirmationTemplateDoesNotMutateBusinessState(): void
     {
-        global $cat_test_user_meta;
-        $user_id = 1;
-        $now = strtotime(current_time('mysql'));
-        $cat_test_user_meta[$user_id] = [
-            'organisateur_demande_token' => 'abc',
-            'organisateur_demande_date' => gmdate('Y-m-d H:i:s', $now - 3 * DAY_IN_SECONDS),
-        ];
-        $this->assertNull(confirmer_demande_organisateur($user_id, 'abc'));
-    }
+        $template = (string) file_get_contents(
+            __DIR__ . '/../wp-content/themes/chassesautresor/templates/page-confirmation-organisateur.php'
+        );
 
-    public function test_confirmer_demande_organisateur_token_valide(): void
-    {
-        global $cat_test_user_meta;
-        $user_id = 2;
-        $now = strtotime(current_time('mysql'));
-        $cat_test_user_meta[$user_id] = [
-            'organisateur_demande_token' => 'def',
-            'organisateur_demande_date' => gmdate('Y-m-d H:i:s', $now - DAY_IN_SECONDS),
-        ];
-        $this->assertSame(123, confirmer_demande_organisateur($user_id, 'def'));
+        self::assertStringNotContainsString('confirmer_demande_organisateur', $template);
+        self::assertStringNotContainsString('$_GET', $template);
+        self::assertStringContainsString('esc_html_e', $template);
     }
 }

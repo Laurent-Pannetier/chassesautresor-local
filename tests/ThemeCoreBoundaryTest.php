@@ -538,6 +538,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("add_action('template_redirect'", $hint);
     }
 
+    public function testThemeDoesNotOwnOrganizerRequestLifecycle(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
+        $template = (string) file_get_contents(
+            self::THEME_PATH . '/templates/page-confirmation-organisateur.php'
+        );
+
+        foreach ([
+            'function cat_clear_organisateur_request',
+            'function cat_get_organisateur_request_status',
+            'function lancer_demande_organisateur',
+            'function renvoyer_email_confirmation_organisateur',
+            'function confirmer_demande_organisateur',
+        ] as $businessFunction) {
+            self::assertStringNotContainsString($businessFunction, $source);
+        }
+
+        self::assertStringNotContainsString('confirmer_demande_organisateur', $template);
+        self::assertStringNotContainsString('WP_User', $source);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

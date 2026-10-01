@@ -108,6 +108,7 @@ require_once __DIR__ . '/src/Relationships/OrganizerRequestService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRequestLifecycleService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerConfirmationRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerConfirmationEmailService.php';
+require_once __DIR__ . '/src/Relationships/organizer-request-functions.php';
 require_once __DIR__ . '/src/Relationships/OrganizerContactRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerCtaDecisionService.php';
 require_once __DIR__ . '/src/Relationships/RelationshipService.php';
