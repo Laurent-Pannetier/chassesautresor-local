@@ -88,7 +88,10 @@ compte. Le thème ne fournit plus que le rendu des lignes et du pager.
 Le vingt-quatrième lot a transféré au plugin la politique d’accès à la conversion de points : rôle, profil, demandes
 en cours, délai depuis le dernier règlement, solde minimal et coordonnées bancaires.
 
-Estimation après ce lot : **99,9995 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le vingt-cinquième lot a transféré au plugin l’autorisation de navigation dans une chasse selon le rôle, l’association
+à l’organisateur et l’engagement du joueur. Le thème ne fournit plus que la construction visuelle du menu.
+
+Estimation après ce lot : **99,9997 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

@@ -396,6 +396,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('verifier_acces_conversion', $configuration);
     }
 
+    public function testHuntNavigationAccessIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/sidebar.php');
+        preg_match('/HuntNavigationAjaxHandler::configure\([\s\S]*?^        \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('HuntNavigationAccessService', $configuration);
+        self::assertStringNotContainsString('utilisateur_est_engage_dans_chasse', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** AJAX transport for hunt navigation refreshes. */
 class HuntNavigationAjaxHandler {
-    private static $accessChecker;
     private static $navigationBuilder;
 
     public static function register(callable $addAction): void {
@@ -14,8 +16,7 @@ class HuntNavigationAjaxHandler {
         $addAction('wp_ajax_nopriv_chasse_recuperer_navigation', [self::class, 'handle']);
     }
 
-    public static function configure(callable $accessChecker, callable $navigationBuilder): void {
-        self::$accessChecker = $accessChecker;
+    public static function configure(callable $navigationBuilder): void {
         self::$navigationBuilder = $navigationBuilder;
     }
 
@@ -28,7 +29,7 @@ class HuntNavigationAjaxHandler {
             wp_send_json_error('post_invalide', 400);
         }
         $userId = (int) get_current_user_id();
-        if (!is_callable(self::$accessChecker) || !call_user_func(self::$accessChecker, $userId, $huntId)) {
+        if (!self::canView($userId, $huntId)) {
             wp_send_json_error('non_engage', 403);
         }
         if (!is_callable(self::$navigationBuilder)) {
@@ -41,5 +42,22 @@ class HuntNavigationAjaxHandler {
             'html' => implode('', (array) ($data['menu_items'] ?? [])),
             'ids' => array_values((array) ($data['visible_ids'] ?? [])),
         ]);
+    }
+
+    private static function canView(int $userId, int $huntId): bool {
+        global $wpdb;
+
+        $relationships = new RelationshipService();
+        $organizerId = $relationships->normalizeId(get_field('chasse_cache_organisateur', $huntId));
+        $organizerUsers = $organizerId !== null
+            ? $relationships->normalizeIds((array) get_field('utilisateurs_associes', $organizerId))
+            : [];
+
+        return (new HuntNavigationAccessService())->canView(
+            $userId,
+            current_user_can('manage_options'),
+            in_array($userId, $organizerUsers, true),
+            CoreServiceFactory::huntEngagement($wpdb)->isEngaged($userId, $huntId)
+        );
     }
 }
