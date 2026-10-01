@@ -167,6 +167,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], array_values(array_unique($violations)), $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnManualAttemptReview(): void
+    {
+        $attempts = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');
+
+        self::assertStringNotContainsString('function traiter_tentative_manuelle', $attempts);
+        self::assertStringNotContainsString('function traiter_tentative(', $attempts);
+    }
+
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(

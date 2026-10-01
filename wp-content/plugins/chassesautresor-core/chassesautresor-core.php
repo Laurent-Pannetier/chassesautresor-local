@@ -58,6 +58,8 @@ require_once __DIR__ . '/src/Progress/HuntCompletionService.php';
 require_once __DIR__ . '/src/Progress/HuntCompletionHookHandler.php';
 require_once __DIR__ . '/src/Progress/ManualAnswerNotificationService.php';
 require_once __DIR__ . '/src/Progress/AnswerResultNotificationService.php';
+require_once __DIR__ . '/src/Progress/ManualAttemptReviewService.php';
+require_once __DIR__ . '/src/Progress/ManualAttemptReviewHandler.php';
 require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
 require_once __DIR__ . '/src/Progress/HuntWinnersTable.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementRepository.php';

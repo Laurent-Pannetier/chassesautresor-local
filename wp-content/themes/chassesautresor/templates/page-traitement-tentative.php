@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_traitement'], 
 
   if ($uid_post === $uid && in_array($action, ['valider', 'invalider'], true)) {
     $resultat = $action === 'valider' ? 'bon' : 'faux';
-    $effectue = traiter_tentative_manuelle($uid, $resultat);
+    $effectue = ChassesAuTresor\Core\Progress\ManualAttemptReviewHandler::process($uid, $resultat);
     wp_safe_redirect(add_query_arg('done', $effectue ? '1' : '0'));
     exit;
   }
