@@ -284,6 +284,11 @@ Le soixante-quatrième lot complète ce bloc en transférant les quatre décisio
 participation, visibilité et autorisation d'engagement. Le plugin résout directement chasse, organisateur, engagements
 et prérequis. `statut-functions.php` ne conserve plus que le filtre de rendu du badge et le contexte visuel de création.
 
+Le soixante-cinquième lot corrige la collision fatale observée en environnement WordPress complet :
+`enigme_get_bonnes_reponses()` existait encore sans garde dans `inc/enigme/reponses.php`. Cette copie et les deux copies
+gardées de `cat_get_hunt_progress_service()` ont été retirées. Un test transversal compare maintenant toutes les
+fonctions globales déclarées par le thème et le plugin pour empêcher toute nouvelle redéclaration.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).

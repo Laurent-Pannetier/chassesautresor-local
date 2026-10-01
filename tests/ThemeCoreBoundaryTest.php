@@ -761,6 +761,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testThemeDoesNotRedeclareCoreGlobalFunctions(): void
+    {
+        $pluginPath = __DIR__ . '/../wp-content/plugins/chassesautresor-core';
+        $coreFunctions = $this->findDeclaredFunctions($pluginPath);
+        $themeFunctions = $this->findDeclaredFunctions(self::THEME_PATH);
+
+        self::assertSame([], array_values(array_intersect($themeFunctions, $coreFunctions)));
+    }
+
     public function testThemeDoesNotResolveProtectedImagePaths(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/visuels.php');
@@ -1000,6 +1009,30 @@ final class ThemeCoreBoundaryTest extends TestCase
 
         sort($violations);
         return $violations;
+    }
+
+    /** @return string[] */
+    private function findDeclaredFunctions(string $root): array
+    {
+        $functions = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS)
+        );
+        foreach ($iterator as $file) {
+            $path = str_replace('\\', '/', $file->getPathname());
+            if (!$file->isFile() || $file->getExtension() !== 'php' || strpos($path, '/tests/') !== false) {
+                continue;
+            }
+            preg_match_all(
+                '/\bfunction\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/',
+                (string) file_get_contents($file->getPathname()),
+                $matches
+            );
+            $functions = array_merge($functions, $matches[1]);
+        }
+        $functions = array_values(array_unique($functions));
+        sort($functions);
+        return $functions;
     }
 
     /** @param string[] $violations */

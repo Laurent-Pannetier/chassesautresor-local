@@ -66,16 +66,7 @@ if (!function_exists('cat_get_hunt_engagement_service')) {
     }
 }
 
-if (!function_exists('cat_get_hunt_progress_service')) {
-    /**
-     * Create the service responsible for hunt progress.
-     */
-    function cat_get_hunt_progress_service(): ChassesAuTresor\Core\Progress\HuntProgressService
-    {
-        global $wpdb;
-        return ChassesAuTresor\Core\Support\CoreServiceFactory::huntProgress($wpdb);
-    }
-}
+
 
 /**
  * Insert or update a hunt winner.
