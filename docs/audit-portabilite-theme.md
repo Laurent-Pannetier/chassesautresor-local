@@ -40,7 +40,10 @@ avec maintien des politiques historiques lorsqu’elles sont disponibles et repl
 Le huitième lot a transféré au plugin les routes et les contrôleurs HTTP servant les fichiers de solution et les
 images protégées des énigmes. Les contrôleurs échouent de façon fermée si un adaptateur d’accès manque.
 
-Estimation après ce lot : **92 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le neuvième lot a transféré au plugin les anciennes routes de l’espace compte, leurs variables de requête et leurs
+redirections vers le tableau de bord canonique.
+
+Estimation après ce lot : **93 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

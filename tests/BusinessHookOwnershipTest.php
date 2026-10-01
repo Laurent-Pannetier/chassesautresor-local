@@ -18,10 +18,34 @@ use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
 use ChassesAuTresor\Core\Progress\HuntCompletionHookHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
 use ChassesAuTresor\Core\Media\ProtectedAssetRouteHandler;
+use ChassesAuTresor\Core\Messages\AccountLegacyRouteHandler;
 use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testLegacyAccountRoutesAreRegisteredByCore(): void {
+        $actions = [];
+        $filters = [];
+
+        AccountLegacyRouteHandler::register(
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            },
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame([['init', [AccountLegacyRouteHandler::class, 'registerRoutes']]], $actions);
+        self::assertSame(
+            [
+                ['query_vars', [AccountLegacyRouteHandler::class, 'addQueryVariables']],
+                ['template_include', [AccountLegacyRouteHandler::class, 'redirectLegacyRoute']],
+            ],
+            $filters
+        );
+    }
+
     public function testProtectedAssetRoutesAreRegisteredByCore(): void {
         $actions = [];
         $filters = [];

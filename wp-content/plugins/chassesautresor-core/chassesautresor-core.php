@@ -267,6 +267,7 @@ require_once __DIR__ . '/src/Messages/AccountSectionAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
 require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';
 require_once __DIR__ . '/src/Messages/LegacySiteMessageCleanup.php';
+require_once __DIR__ . '/src/Messages/AccountLegacyRouteHandler.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
@@ -339,6 +340,7 @@ ChassesAuTresor\Core\Media\RiddleImageProtectionAjaxHandler::register('add_actio
 ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Messages\AccountLegacyRouteHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::register('add_action');

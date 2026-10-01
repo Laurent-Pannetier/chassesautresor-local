@@ -122,6 +122,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnLegacyAccountRoutes(): void {
+        $violations = $this->findPhpMatches(
+            '/function\s+(?:ajouter_rewrite_rules|ajouter_query_vars|charger_template_utilisateur)\s*\(/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(
