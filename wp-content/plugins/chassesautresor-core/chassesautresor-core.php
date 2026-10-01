@@ -157,6 +157,7 @@ require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationMutationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationRequestHandler.php';
+require_once __DIR__ . '/src/Content/HuntModerationOrganizerService.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationService.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';

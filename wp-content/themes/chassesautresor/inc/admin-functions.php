@@ -1117,21 +1117,19 @@ function traiter_validation_chasse_admin() {
     }
 
     if ($action === 'valider') {
-        if ($organisateur_id) {
-            if (get_post_status($organisateur_id) === 'pending') {
-                wp_update_post([
-                    'ID'          => $organisateur_id,
-                    'post_status' => 'publish',
-                ]);
-            }
-
-            $user_id = $user_ids ? $user_ids[0] : 0;
-            if ($user_id) {
+        (new ChassesAuTresor\Core\Content\HuntModerationOrganizerService())->promote(
+            (int) $organisateur_id,
+            $user_ids,
+            'get_post_status',
+            static function (int $id): void {
+                wp_update_post(['ID' => $id, 'post_status' => 'publish']);
+            },
+            static function (int $user_id): void {
                 $user = new WP_User($user_id);
                 $user->add_role(ROLE_ORGANISATEUR);
                 $user->remove_role(ROLE_ORGANISATEUR_CREATION);
             }
-        }
+        );
 
         $flash = sprintf(
             __('Votre demande de validation pour la chasse « %s » a été acceptée.', 'chassesautresor-com'),
