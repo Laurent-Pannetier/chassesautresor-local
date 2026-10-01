@@ -145,6 +145,19 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('trouver_chemin_image', $imageController);
         self::assertStringNotContainsString('utilisateur_peut_voir_enigme', $imageController);
         self::assertStringContainsString('ProtectedRiddleAssetService', $imageController);
+
+        $solutionController = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-solution-file.php'
+        );
+        self::assertStringNotContainsString('solution_recuperer_par_objet', $solutionController);
+        self::assertStringNotContainsString('utilisateur_peut_voir_solution_', $solutionController);
+        self::assertStringNotContainsString('cat_debug', $solutionController);
+        self::assertStringContainsString('ProtectedSolutionAssetService', $solutionController);
+
+        $adminController = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Admin/AdminAjaxHandler.php'
+        );
+        self::assertStringNotContainsString('cat_debug', $adminController);
     }
 
     public function testThemeDoesNotOwnLegacyAccountRoutes(): void {

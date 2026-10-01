@@ -1,93 +1,65 @@
 <?php
 
-if (
-    !function_exists('solution_recuperer_par_objet')
-    || !function_exists('utilisateur_peut_voir_solution_enigme')
-) {
-    status_header(503);
-    exit(__('Service temporairement indisponible', 'chassesautresor-com'));
-}
+declare(strict_types=1);
 
+use ChassesAuTresor\Core\Media\ProtectedSolutionAssetService;
 
-$log_prefix = '[voir-fichier.php]';
+$log = static function (string $message): void {
+    error_log('[protected-solution-file] ' . $message);
+};
 
-function logf($message) {
-    cat_debug("[voir-fichier.php] $message");
-}
-
-// Vérifier l'utilisateur connecté
-$user_id = get_current_user_id();
-if (!$user_id) {
-    logf("Utilisateur non connecté → 403");
+$userId = get_current_user_id();
+if ($userId <= 0) {
+    $log('Unauthenticated request denied.');
     status_header(403);
-    exit('Accès refusé (non connecté).');
+    exit(__('Accès refusé : vous devez être connecté.', 'chassesautresor-com'));
 }
 
-$post_id   = isset($_GET['id']) ? intval($_GET['id']) : 0;
-$post_type = get_post_type($post_id);
-logf("Requête reçue pour post ID : $post_id (type $post_type)");
-logf("✅ [$user_id] a consulté la solution du post #$post_id");
-
-if (!$post_id || !in_array($post_type, ['enigme', 'chasse'], true)) {
-    logf("ID invalide ou post non supporté → 404");
+$targetId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$targetType = (string) get_post_type($targetId);
+if ($targetId <= 0 || !in_array($targetType, ['enigme', 'chasse'], true)) {
+    $log('Unsupported target requested.');
     status_header(404);
-    exit(__('Fichier introuvable (ID).', 'chassesautresor-com'));
+    exit(__('Fichier introuvable.', 'chassesautresor-com'));
 }
 
-// Récupérer la solution liée
-$solution = solution_recuperer_par_objet($post_id, $post_type);
-if (!$solution) {
-    logf("Aucune solution liée trouvée → 404");
+$assets = new ProtectedSolutionAssetService();
+$solution = $assets->findSolution($targetId, $targetType);
+if ($solution === null) {
+    $log('No active solution found for target ' . $targetId . '.');
     status_header(404);
     exit(__('Solution introuvable.', 'chassesautresor-com'));
 }
 
-// Vérifie les droits d'accès
-if (
-    ($post_type === 'enigme' && !utilisateur_peut_voir_solution_enigme($post_id, $user_id)) ||
-    ($post_type === 'chasse' && function_exists('utilisateur_peut_voir_solution_chasse')
-        && !utilisateur_peut_voir_solution_chasse($post_id, $user_id))
-) {
-    logf("Utilisateur $user_id non autorisé à voir le post $post_id → 403");
+if (!$assets->canView($targetId, $targetType, $userId)) {
+    $log('User denied for target ' . $targetId . '.');
     status_header(403);
     exit(__('Accès non autorisé à cette solution.', 'chassesautresor-com'));
 }
 
-logf("Utilisateur $user_id autorisé.");
-
-// Récupérer l'ID du fichier depuis le post solution
-$fichier_id = get_field('solution_fichier', $solution->ID, false);
-if (!$fichier_id) {
-    logf("Aucun fichier trouvé dans solution_fichier → 404");
+$path = $assets->findFilePath($solution);
+if ($path === null || !is_file($path)) {
+    $log('Attachment missing for target ' . $targetId . '.');
     status_header(404);
-    exit(__('Aucun fichier PDF lié à cette solution.', 'chassesautresor-com'));
+    exit(__('Fichier de solution introuvable.', 'chassesautresor-com'));
 }
 
-// Obtenir le chemin physique
-$chemin_fichier = get_attached_file($fichier_id);
-logf("Chemin absolu détecté : $chemin_fichier");
-
-if (!$chemin_fichier || !file_exists($chemin_fichier)) {
-    logf("Le fichier n'existe pas → 404");
-    status_header(404);
-    exit('Fichier non trouvé sur le serveur.');
-}
-
-if (!is_readable($chemin_fichier)) {
-    logf("Le fichier existe mais n’est pas lisible (permissions ?) → 403");
+if (!is_readable($path)) {
+    $log('Attachment unreadable for target ' . $targetId . '.');
     status_header(403);
-    exit('Fichier non lisible sur le serveur.');
+    exit(__('Fichier de solution illisible.', 'chassesautresor-com'));
 }
 
-// Tentative de lecture
-$filename = basename($chemin_fichier);
-$filesize = filesize($chemin_fichier);
+$filename = sanitize_file_name(basename($path));
+$filesize = filesize($path);
+if ($filesize === false) {
+    status_header(500);
+    exit(__('Impossible de lire le fichier de solution.', 'chassesautresor-com'));
+}
 
-logf("Fichier prêt à être servi : $filename ($filesize octets)");
-
+nocache_headers();
 header('Content-Type: application/pdf');
 header('Content-Disposition: inline; filename="' . $filename . '"');
 header('Content-Length: ' . $filesize);
-
-readfile($chemin_fichier);
+readfile($path);
 exit;

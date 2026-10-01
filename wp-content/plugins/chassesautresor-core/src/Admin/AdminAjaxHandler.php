@@ -107,9 +107,6 @@ final class AdminAjaxHandler
             wp_send_json_error();
             return;
         }
-        if (function_exists('cat_debug')) {
-            cat_debug("✅ Statut mis à jour pour l'entrée {$paymentId} : {$result['status']}");
-        }
         if ($result['paid_amount'] > 0) {
             $option = 'total_paiements_effectues_mensuel_' . date('Y_m');
             update_option($option, (float) get_option($option, 0) + $result['paid_amount']);

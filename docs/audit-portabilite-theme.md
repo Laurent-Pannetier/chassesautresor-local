@@ -123,11 +123,18 @@ résolution des relations joueur/organisateur et la recherche du fichier image o
 un service du plugin. Cette route ne teste et n'appelle plus `utilisateur_peut_voir_enigme()` ni
 `trouver_chemin_image()`, qui restent dans le thème uniquement pour ses propres vues historiques.
 
-Estimation prudente après ce lot : **environ 81 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le trente-quatrième lot a rendu autonome la seconde route de média protégé, celle des fichiers de solution. La recherche
+de la solution active, les politiques d'accès aux solutions de chasse et d'énigme, les engagements, la progression et
+la résolution de la pièce jointe sont désormais orchestrés dans le plugin. Le contrôleur ne dépend plus de
+`solution_recuperer_par_objet()`, `utilisateur_peut_voir_solution_enigme()`,
+`utilisateur_peut_voir_solution_chasse()` ni du logger du thème. Les deux routes de médias protégés sont donc maintenant
+indépendantes du thème. Le contrôleur d'administration des conversions ne recherche plus non plus le logger
+`cat_debug()` du thème.
+
+Estimation prudente après ce lot : **environ 83 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
-aux politiques d'édition encore enregistrées par le thème, à la route de fichiers de solution qui appelle des helpers
-du thème et à l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces
-catégories.
+aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
+l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.
 
 ## Éléments bloquants observés
 
@@ -139,12 +146,10 @@ Le thème enregistre toujours notamment :
   `inc/organisateur-functions.php` ;
 - les adaptateurs de politique appelés par le contrôle d’accès aux énigmes dans plusieurs fichiers `inc/` ;
 - des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
-- le contrôleur des fichiers de solution appelle encore des fonctions d'accès et de résolution définies par le thème ;
 
 L'audit ciblé des messages importants et des écrans WordPress natifs ne relève plus de dépendance vers les helpers
 globaux du thème. Les configurations `*Handler::configure()` inventoriées ne transmettent actuellement que des
-fonctions de rendu. Les adaptateurs d'accès aux énigmes utilisés ailleurs et le contrôleur des fichiers de solution
-restent en revanche à migrer complètement.
+fonctions de rendu. Les adaptateurs d'accès aux énigmes utilisés ailleurs restent en revanche à migrer complètement.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.
