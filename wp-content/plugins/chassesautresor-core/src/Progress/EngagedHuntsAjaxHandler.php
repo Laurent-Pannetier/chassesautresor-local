@@ -38,15 +38,12 @@ class EngagedHuntsAjaxHandler {
         if (!wp_verify_nonce($nonce, 'ca-engaged-hunts')) {
             wp_send_json_error(['message' => __('Security check failed.', 'chassesautresor-com')], 400);
         }
-        if (!is_callable(self::$renderer)) {
-            wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-        }
-
         global $wpdb;
         $application = new EngagedHuntsApplicationService(CoreServiceFactory::huntEngagement($wpdb));
         $huntIds = $application->getVisibleHuntIds($userId);
         $pagination = $application->paginate($huntIds, $request['page'], $request['per_page']);
-        $html = (string) call_user_func(self::$renderer, $pagination);
+        $renderer = self::$renderer ?? [new EngagedHuntsRenderer(), 'render'];
+        $html = (string) call_user_func($renderer, $pagination);
         wp_send_json_success([
             'html' => $html,
             'page' => $pagination['page'],

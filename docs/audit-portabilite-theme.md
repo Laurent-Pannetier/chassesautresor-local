@@ -397,12 +397,17 @@ des chasses engagées : paramètre de page, lecture filtrée des engagements et 
 rendu des cartes et son callback AJAX ; les indicateurs pondérés et les trois configurations résiduelles restent donc
 inchangés jusqu'à la fourniture d'un parcours de rendu réellement autonome.
 
+Le quatre-vingt-huitième lot autonomise le rendu AJAX des chasses engagées. Le plugin fournit maintenant des cartes
+de secours construites uniquement avec les API WordPress, un état vide et la pagination core, sans template part,
+asset ou fonction du thème. Le contrôleur conserve un override explicite pour les intégrations tierces, mais utilise
+ce renderer par défaut. Le thème ne configure plus ce parcours et les configurations résiduelles passent à deux.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **97 %** | Deux grands view-models mixtes restent dans le thème |
-| Remplaçabilité effective du thème | **47 %** | Navigation latérale et onze rendus AJAX sont autonomes |
+| Remplaçabilité effective du thème | **48 %** | Navigation latérale et douze rendus AJAX sont autonomes |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -430,7 +435,7 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **3 configurations de contrôleurs par le thème**, toutes destinées à des
+  été inventoriées. Le plugin conserve **2 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
@@ -449,8 +454,8 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. L'extraction apporte environ 39 points et onze des quatorze parcours de rendu injectés recensés au début de ce
-bloc sont maintenant autonomes, soit **environ 47 % de remplaçabilité effective du thème** après arrondi. Aucun point
+à 10 %. L'extraction apporte environ 39 points et douze des quatorze parcours de rendu injectés recensés au début de ce
+bloc sont maintenant autonomes, soit **environ 48 % de remplaçabilité effective du thème** après arrondi. Aucun point
 n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent

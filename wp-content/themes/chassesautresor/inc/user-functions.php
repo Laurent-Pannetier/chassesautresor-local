@@ -618,36 +618,6 @@ function ca_render_dashboard_engaged_hunts(): void
 add_action('woocommerce_account_dashboard', 'ca_render_dashboard_engaged_hunts', 10);
 
 /**
- * AJAX handler for engaged hunts pagination.
- *
- * @return void
- */
-function ca_ajax_get_engaged_hunts(): void
-{
-    ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::handle();
-}
-
-function ca_render_engaged_hunts_ajax_content(array $pagination): string
-{
-    return ca_get_engaged_hunts_content_html(
-        $pagination['ids'],
-        $pagination['page'],
-        $pagination['total_pages'],
-        'cards-grid myaccount-chasses-engagees-grid',
-        'carte',
-        ca_get_engaged_hunts_page_param()
-    );
-}
-
-if (class_exists(ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::class)) {
-    ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::configure(
-        static function (array $pagination): string {
-            return ca_render_engaged_hunts_ajax_content($pagination);
-        }
-    );
-}
-
-/**
  * Register the search context used for the tentatives table.
  *
  * @return void

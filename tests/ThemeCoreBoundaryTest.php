@@ -1051,18 +1051,24 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class ConversionHistoryRenderer', $renderer);
     }
 
-    public function testEngagedHuntsBusinessCallbacksAreNotInjectedByTheme(): void
+    public function testEngagedHuntsRenderingIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/EngagedHuntsAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/EngagedHuntsRenderer.php'
+        );
         $core = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/engaged-hunt-functions.php'
         );
-        preg_match('/EngagedHuntsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('ca_get_user_engaged_hunt_ids', $configuration);
-        self::assertStringNotContainsString('ca_prepare_engaged_hunts_pagination', $configuration);
+        self::assertStringNotContainsString('EngagedHuntsAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function ca_render_engaged_hunts_ajax_content', $source);
+        self::assertStringNotContainsString('function ca_ajax_get_engaged_hunts', $source);
+        self::assertStringContainsString("[new EngagedHuntsRenderer(), 'render']", $handler);
+        self::assertStringContainsString('class EngagedHuntsRenderer', $renderer);
         foreach ([
             'ca_get_engaged_hunts_page_param',
             'ca_get_user_engaged_hunt_ids',
