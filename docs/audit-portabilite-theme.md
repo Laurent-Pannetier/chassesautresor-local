@@ -58,7 +58,10 @@ Le quatorzième lot a rendu la route de confirmation d’un organisateur autonom
 profil, attribution du rôle et suppression des messages sont désormais orchestrées par le plugin, sans callbacks
 fournis par le thème.
 
-Estimation après ce lot : **99,5 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le quinzième lot a retiré du thème les politiques d’autorisation et de résolution de relation utilisées par
+l’annulation et le rafraîchissement de la validation d’une chasse. Le thème ne fournit plus que le rendu HTML du CTA.
+
+Estimation après ce lot : **99,8 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

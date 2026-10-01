@@ -298,6 +298,21 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testHuntValidationPoliciesAreNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        preg_match(
+            '/HuntValidationAjaxHandler::configure\([\s\S]*?^    \);/m',
+            $source,
+            $matches
+        );
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('utilisateur_est_organisateur_associe_a_chasse', $configuration);
+        self::assertStringNotContainsString('recuperer_id_chasse_associee', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

@@ -758,10 +758,6 @@ function cat_build_hunt_validation_cta(int $chasse_id, int $enigme_id): string
 
 if (class_exists(ChassesAuTresor\Core\Progress\HuntValidationAjaxHandler::class)) {
     ChassesAuTresor\Core\Progress\HuntValidationAjaxHandler::configure(
-        static function (int $user_id, int $hunt_id): bool {
-            return utilisateur_est_organisateur_associe_a_chasse($user_id, $hunt_id);
-        },
-        static fn (int $riddle_id): int => (int) recuperer_id_chasse_associee($riddle_id),
         static function (int $hunt_id, int $riddle_id): string {
             return cat_build_hunt_validation_cta($hunt_id, $riddle_id);
         }

@@ -29,11 +29,7 @@ final class HuntAjaxHandlerRegistrationTest extends TestCase {
 
     public function testAcceptsDeferredThemeCallbacks(): void {
         HuntNavigationAjaxHandler::configure(static fn (): bool => false, static fn (): array => []);
-        HuntValidationAjaxHandler::configure(
-            static fn (): bool => false,
-            static fn (): int => 0,
-            static fn (): string => ''
-        );
+        HuntValidationAjaxHandler::configure(static fn (): string => '');
         $this->addToAssertionCount(1);
     }
 }

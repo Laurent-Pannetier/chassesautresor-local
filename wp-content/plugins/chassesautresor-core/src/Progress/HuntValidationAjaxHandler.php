@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Relationships\RelationshipService;
+
 /** AJAX transport for hunt validation cancellation and CTA refreshes. */
 class HuntValidationAjaxHandler {
-    private static $organizerChecker;
-    private static $huntResolver;
     private static $ctaBuilder;
 
     public static function register(callable $addAction): void {
@@ -16,13 +16,7 @@ class HuntValidationAjaxHandler {
         $addAction('wp_ajax_actualiser_cta_validation_chasse', [self::class, 'refreshCta']);
     }
 
-    public static function configure(
-        callable $organizerChecker,
-        callable $huntResolver,
-        callable $ctaBuilder
-    ): void {
-        self::$organizerChecker = $organizerChecker;
-        self::$huntResolver = $huntResolver;
+    public static function configure(callable $ctaBuilder): void {
         self::$ctaBuilder = $ctaBuilder;
     }
 
@@ -42,7 +36,7 @@ class HuntValidationAjaxHandler {
             wp_die(__('Vérification de sécurité échouée.', 'chassesautresor-com'));
         }
         $allowed = current_user_can('administrator')
-            || (is_callable(self::$organizerChecker) && call_user_func(self::$organizerChecker, $userId, $huntId));
+            || self::isOrganizerAssociatedWithHunt($userId, $huntId);
         if (!$allowed) {
             wp_die(__('Conditions non remplies.', 'chassesautresor-com'));
         }
@@ -73,7 +67,7 @@ class HuntValidationAjaxHandler {
         if ($riddleId <= 0 || get_post_type($riddleId) !== 'enigme') {
             wp_send_json_error('post_invalide');
         }
-        $huntId = is_callable(self::$huntResolver) ? (int) call_user_func(self::$huntResolver, $riddleId) : 0;
+        $huntId = self::resolveHuntId($riddleId);
         if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
             wp_send_json_error('chasse_invalide');
         }
@@ -82,5 +76,23 @@ class HuntValidationAjaxHandler {
         }
 
         wp_send_json_success(['html' => (string) call_user_func(self::$ctaBuilder, $huntId, $riddleId)]);
+    }
+
+    private static function isOrganizerAssociatedWithHunt(int $userId, int $huntId): bool {
+        $relationships = new RelationshipService();
+        $organizerId = $relationships->normalizeId(get_field('chasse_cache_organisateur', $huntId));
+        if ($organizerId === null) {
+            return false;
+        }
+
+        $associatedUsers = $relationships->normalizeIds((array) get_field('utilisateurs_associes', $organizerId));
+
+        return in_array($userId, $associatedUsers, true);
+    }
+
+    private static function resolveHuntId(int $riddleId): int {
+        return (int) ((new RelationshipService())->normalizeId(
+            get_field('enigme_chasse_associee', $riddleId)
+        ) ?? 0);
     }
 }
