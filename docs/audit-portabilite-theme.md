@@ -339,12 +339,18 @@ compatibilité du contrôleur de prérequis et visibilité des chasses. Le plugi
 et ne reprend aucun appel à `cat_debug()`. Le fichier historique du thème ne déclare désormais plus aucune fonction ;
 les tests isolés chargent directement les wrappers core et la frontière protège l'ensemble de cette API.
 
+Le soixante-seizième lot rend autonome le contrôleur AJAX de la barre latérale des énigmes. Le plugin construit
+désormais les fragments des gagnants et de progression avec ses services de statistiques, ses relations et un moteur
+de rendu de secours propre. Le thème n'injecte plus ses deux callbacks dans `RiddleSidebarAjaxHandler`, ce qui ramène
+les configurations résiduelles de contrôleurs à treize et fournit un premier fragment de barre latérale utilisable
+sans template du thème.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
-| Extraction du métier PHP inventorié | **95 %** | Un grand view-model mixte retiré du thème ; trois restent |
-| Remplaçabilité effective du thème | **38 %** | Le plugin fournit le CTA, mais aucun parcours complet de secours |
+| Extraction du métier PHP inventorié | **95 %** | Inchangée : trois grands view-models mixtes restent dans le thème |
+| Remplaçabilité effective du thème | **39 %** | Un rendu AJAX de barre latérale ne dépend plus du thème |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -372,7 +378,7 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **14 configurations de contrôleurs par le thème**, toutes destinées à des
+  été inventoriées. Le plugin conserve **13 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
@@ -391,7 +397,9 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. Seul le premier axe est partiellement satisfait : **environ 38 % de remplaçabilité effective du thème**.
+à 10 %. L'extraction apporte 38 points et le premier des quatorze parcours de rendu injectés recensés au début de ce
+bloc est maintenant autonome, soit **environ 39 % de remplaçabilité effective du thème** après arrondi. Aucun point
+n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

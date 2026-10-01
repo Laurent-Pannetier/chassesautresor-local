@@ -6,6 +6,7 @@ namespace ChassesAuTresor\Core\Progress;
 
 use ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** AJAX transport for winners and player progression sidebar fragments. */
 class RiddleSidebarAjaxHandler {
@@ -38,14 +39,11 @@ class RiddleSidebarAjaxHandler {
         if ($error !== null) {
             wp_send_json_error($error, $error === 'invalid_nonce' ? 403 : 400);
         }
-        if (!is_callable(self::$winnersRenderer)) {
-            wp_send_json_error('missing_enigme', 400);
-        }
-
         $page = max(1, (int) ($_POST['page'] ?? 1));
+        $renderer = self::$winnersRenderer ?? [self::renderer(), 'winners'];
         wp_send_json_success([
             'html' => (string) call_user_func(
-                self::$winnersRenderer,
+                $renderer,
                 $riddleId,
                 (int) get_current_user_id(),
                 $page
@@ -71,19 +69,26 @@ class RiddleSidebarAjaxHandler {
         if ($error !== null) {
             wp_send_json_error($error, $error === 'non_connecte' || $error === 'invalid_nonce' ? 403 : 400);
         }
-        if (!is_callable(self::$progressionRenderer)) {
-            wp_send_json_error('missing_chasse', 400);
-        }
-
         $userId = (int) get_current_user_id();
         RiddleRenderCacheHookHandler::clearSidebar($huntId, $userId);
         wp_cache_delete('enigme_sidebar_resolution_' . $riddleId, 'chassesautresor');
+        $renderer = self::$progressionRenderer ?? [self::renderer(), 'progression'];
         wp_send_json_success([
-            'html' => (string) call_user_func(self::$progressionRenderer, $huntId, $riddleId, $userId),
+            'html' => (string) call_user_func($renderer, $huntId, $riddleId, $userId),
         ]);
     }
 
     private static function nonceValid(): bool {
         return wp_verify_nonce((string) ($_POST['nonce'] ?? ''), 'riddle_sidebar') !== false;
+    }
+
+    private static function renderer(): RiddleSidebarRenderer
+    {
+        global $wpdb;
+
+        return new RiddleSidebarRenderer(
+            CoreServiceFactory::riddleStatistics($wpdb),
+            CoreServiceFactory::riddleSidebarStatistics($wpdb)
+        );
     }
 }

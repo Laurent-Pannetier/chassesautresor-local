@@ -21,7 +21,7 @@ final class RiddleSidebarAjaxHandlerTest extends TestCase {
         ], $hooks);
     }
 
-    public function testAcceptsDeferredThemeCallbacks(): void {
+    public function testAcceptsOptionalRenderingOverrides(): void {
         RiddleSidebarAjaxHandler::configure(
             static fn (): string => '',
             static fn (): string => ''

@@ -921,20 +921,6 @@ if (!function_exists('cat_get_riddle_statistics_service')) {
         ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::progression();
     }
 
-    if (class_exists(ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::class)) {
-        ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::configure(
-            static function (int $riddle_id, int $user_id, int $page): string {
-                return enigme_sidebar_gagnants_html($riddle_id, $user_id, $page);
-            },
-            static function (int $hunt_id, int $riddle_id, int $user_id): string {
-                $html = '<h3>' . esc_html__('Statistiques', 'chassesautresor-com') . '</h3>';
-                $html .= enigme_sidebar_metas_html($riddle_id);
-                $html .= enigme_sidebar_progression_html($hunt_id, $user_id);
-                return $html . enigme_sidebar_resolution_html($riddle_id);
-            }
-        );
-    }
-
     /**
      * Enqueue scripts for the winners pager.
      */
