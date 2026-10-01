@@ -36,6 +36,11 @@ if (!class_exists(ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater::class,
         . '/plugins/chassesautresor-core/src/Progress/RiddleSystemStateUpdater.php';
 }
 
+if (!class_exists(ChassesAuTresor\Core\Progress\RiddleParticipationPolicyService::class, false)) {
+    require_once dirname(__DIR__, 3)
+        . '/plugins/chassesautresor-core/src/Progress/RiddleParticipationPolicyService.php';
+}
+
 if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
     require_once dirname(__DIR__, 3)
         . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
@@ -273,83 +278,24 @@ function enigme_verifier_verrouillage(int $enigme_id, int $user_id): array
  */
 function traiter_statut_enigme(int $enigme_id, ?int $user_id = null): array
 {
-    $user_id     = $user_id ?: get_current_user_id();
-    $statut       = enigme_get_statut_utilisateur($enigme_id, $user_id);
-    $chasse_id    = recuperer_id_chasse_associee($enigme_id);
-    $post_status  = get_post_status($enigme_id);
-
-    // 🔓 Accès total pour l'administrateur
-    if (current_user_can('manage_options')) {
-        return [
-            'etat' => $statut,
-            'rediriger' => false,
-            'url' => null,
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    // 🚫 Contenu brouillon : aucun accès hors administrateur
-    if ($post_status === 'draft') {
-        return [
-            'etat' => $statut,
-            'rediriger' => true,
-            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    // ✅ Organisateur associé : accès standard
-    if (utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id)) {
-        return [
-            'etat' => $statut,
-            'rediriger' => false,
-            'url' => null,
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    // ✅ Chasse terminée = accès libre à toutes les énigmes
-    $statut_chasse = get_field('chasse_cache_statut', $chasse_id);
-    if ($statut_chasse === 'termine') {
-        return [
-            'etat' => 'terminee',
-            'rediriger' => false,
-            'url' => null,
-            'afficher_formulaire' => true,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    // 🔒 Joueur non engagé dans la chasse ou l'énigme
-    if (
-        !utilisateur_est_engage_dans_chasse($user_id, $chasse_id) ||
-        !utilisateur_est_engage_dans_enigme($user_id, $enigme_id)
-    ) {
-        return [
-            'etat' => $statut,
-            'rediriger' => true,
-            'url' => $chasse_id ? get_permalink($chasse_id) : home_url('/'),
-            'afficher_formulaire' => false,
-            'afficher_message' => false,
-            'message_html' => '',
-        ];
-    }
-
-    $condition_acces = get_field('enigme_acces_condition', $enigme_id) ?? 'immediat';
-    if ($condition_acces === 'pre_requis' && !enigme_pre_requis_remplis($enigme_id, $user_id)) {
-        $statut = 'bloquee_pre_requis';
-    }
-
-    $state = cat_get_hunt_progress_service()->getRiddleParticipationState($statut);
+    $user_id = $user_id ?: get_current_user_id();
+    $status = enigme_get_statut_utilisateur($enigme_id, $user_id);
+    $huntId = (int) recuperer_id_chasse_associee($enigme_id);
+    $condition = (string) (get_field('enigme_acces_condition', $enigme_id) ?? 'immediat');
+    $prerequisitesMet = $condition !== 'pre_requis'
+        || enigme_pre_requis_remplis($enigme_id, $user_id);
+    $state = (new ChassesAuTresor\Core\Progress\RiddleParticipationPolicyService())->decide(
+        $status,
+        current_user_can('manage_options'),
+        get_post_status($enigme_id) === 'draft',
+        utilisateur_est_organisateur_associe_a_chasse($user_id, $huntId),
+        get_field('chasse_cache_statut', $huntId) === 'termine',
+        utilisateur_est_engage_dans_chasse($user_id, $huntId),
+        utilisateur_est_engage_dans_enigme($user_id, $enigme_id),
+        $prerequisitesMet
+    );
     $state['url'] = $state['rediriger']
-        ? ($chasse_id ? get_permalink($chasse_id) : home_url('/'))
+        ? ($huntId > 0 ? get_permalink($huntId) : home_url('/'))
         : null;
 
     return $state;

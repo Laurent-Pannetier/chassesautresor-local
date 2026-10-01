@@ -27,6 +27,7 @@ require_once __DIR__ . '/src/Progress/RiddleAnswerService.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateService.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateUpdater.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateSaveHookHandler.php';
+require_once __DIR__ . '/src/Progress/RiddleParticipationPolicyService.php';
 require_once __DIR__ . '/src/Progress/HuntRiddleClassifier.php';
 require_once __DIR__ . '/src/Progress/HuntCompletionService.php';
 require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
