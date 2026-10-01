@@ -12,7 +12,8 @@ final class FunctionalAssetManager {
 
     public static function enqueue(): void {
         $postTypes = ['chasse', 'enigme', 'organisateur'];
-        if (!is_singular($postTypes) && !is_post_type_archive($postTypes)) {
+        $accountPage = function_exists('is_account_page') && is_account_page();
+        if (!is_singular($postTypes) && !is_post_type_archive($postTypes) && !$accountPage) {
             return;
         }
         if (get_stylesheet() === 'chassesautresor') {
@@ -42,5 +43,20 @@ final class FunctionalAssetManager {
             'unlockHint' => __('Débloquer cet indice', 'chassesautresor-com'),
             'close' => __('Fermer', 'chassesautresor-com'),
         ]);
+        if ($accountPage) {
+            wp_enqueue_script(
+                'chassesautresor-core-account',
+                $baseUrl . 'assets/js/account.js',
+                [],
+                (string) filemtime($basePath . '/assets/js/account.js'),
+                true
+            );
+            wp_localize_script('chassesautresor-core-account', 'chassesAuTresorAccount', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('cat_account_section'),
+                'loading' => __('Chargement…', 'chassesautresor-com'),
+                'error' => __('Impossible de charger cette section.', 'chassesautresor-com'),
+            ]);
+        }
     }
 }

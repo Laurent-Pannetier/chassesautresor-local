@@ -24,8 +24,12 @@ sont exposées sous `organizer_id`, `riddles`, `hunt_id`, `visible` ou `hunts`.
 6. Ouvrir la même énigme déconnecté et vérifier la proposition de connexion.
 7. Ouvrir un organisateur et vérifier son contenu ainsi que la liste de ses chasses.
 8. Vérifier avec un compte organisateur que les liens d’édition sont présents uniquement sur ses contenus.
-9. Rejouer `vendor/bin/phpunit -c tests/phpunit.xml` : les tests de résolution, surcharge, fallback, assets et frontière
+9. Ouvrir le tableau de bord WooCommerce d’un organisateur et vérifier son profil, ses chasses et ses commandes récentes.
+10. Ouvrir le même tableau de bord avec un administrateur, charger successivement les sections Organisateurs,
+    Statistiques et Outils, puis vérifier que chaque URL reste utilisable sans JavaScript.
+11. Rejouer `vendor/bin/phpunit -c tests/phpunit.xml` : les tests de résolution, surcharge, fallback, assets et frontière
    plugin/thème constituent la preuve automatisée de ce socle.
 
-Les écrans de compte avancés, les formulaires frontaux complets d’édition et la recette WooCommerce restent hors du
-périmètre de ce premier socle et doivent rester signalés comme dépendances tant que leurs fallbacks ne sont pas livrés.
+Les formulaires frontaux complets d’édition et la recette WooCommerce des commandes, adresses et moyens de paiement
+restent hors du périmètre de ce socle et doivent rester signalés comme dépendances tant que leurs fallbacks ne sont
+pas validés.

@@ -584,12 +584,19 @@ coût et réutilise le panneau Core pour les indices d'énigme et de chasse. Son
 de réponse ainsi que la consultation et le déblocage payant des indices. La recette ciblée vérifie désormais ces
 variantes ; elle demeure distincte de la recette globale encore requise pour les comptes et WooCommerce.
 
+Le cent-vingtième lot rend accessibles les renderers de compte déjà autonomisés depuis le tableau de bord standard de
+WooCommerce. Avec un thème tiers, l'administrateur dispose de liens avec repli HTTP vers les sections Organisateurs,
+Statistiques et Outils, et l'organisateur retrouve son profil, ses chasses et ses commandes récentes. Le chargement
+asynchrone de l'administration possède maintenant un asset Core et un nonce partagé avec le contrôleur ; le script du
+thème historique adopte le même contrat sans changer son rendu. Ce lot couvre le point d'entrée des trois rôles, mais
+ne valide pas encore tous les templates WooCommerce ni les formulaires frontaux d'édition.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **100 %** | Aucun grand view-model métier mixte ne reste dans le thème |
-| Remplaçabilité effective du thème | **58 %** | Trois pages publiques, leurs assets minimaux et leur recette ciblée ont un fallback Core |
+| Remplaçabilité effective du thème | **61 %** | Les pages publiques et les tableaux de bord des trois rôles ont un fallback Core ciblé |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -640,7 +647,10 @@ assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le th�
 à 10 %. L'extraction apporte 40 points, les quatorze rendus asynchrones sont autonomes et les deux sections joueur
 du tableau de bord disposent maintenant d'un fallback Core. Les trois pages publiques ajoutent une couverture réelle,
 deux assets fonctionnels indépendants et une recette neutre ciblée. Ils ajoutent trois points prudents à la grille,
-soit **environ 58 % de remplaçabilité effective du thème**. Aucun point de recette complète n'est encore accordé.
+pour atteindre 58 %. Le point d'entrée neutre des tableaux de bord organisateur et administrateur, avec navigation
+HTTP et AJAX testée, ajoute trois points prudents à cette couverture, soit **environ 61 % de remplaçabilité effective
+du thème**. Aucun
+point de recette WooCommerce complète n'est encore accordé.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

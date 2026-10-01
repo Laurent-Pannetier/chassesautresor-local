@@ -65,6 +65,23 @@
     display: none;
 }
 
+.cat-core-account-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-end: 1.5rem;
+}
+
+.cat-core-account-organizer,
+.cat-core-account-admin,
+#cat-core-account-section {
+    margin-block-end: 2rem;
+}
+
+.cat-core-account-organizer .stats-table {
+    width: 100%;
+}
+
 @media (min-width: 48rem) {
     .cat-core-view {
         padding: 2rem;
