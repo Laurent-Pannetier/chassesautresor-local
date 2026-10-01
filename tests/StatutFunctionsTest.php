@@ -8,6 +8,8 @@ if (!function_exists('remove_accents')) {
     }
 }
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/completion-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
 
 final class StatutFunctionsTest extends TestCase

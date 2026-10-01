@@ -272,6 +272,10 @@ Le soixante-et-unième lot a déplacé dans le plugin les cinq fonctions de comp
 rafraîchissement individuel ou par chasse, callback historique de sauvegarde, endpoint de recalcul et lecture de l'état.
 `statut-functions.php` conserve les décisions de participation encore utilisées par les vues, mais plus ce cycle de vie.
 
+Le soixante-deuxième lot, volontairement plus large, a transféré les dix fonctions publiques de complétude des
+organisateurs, chasses et énigmes. Le plugin résout lui-même les énigmes d'une chasse, les modes de validation, les
+bonnes réponses et le cycle du cache de complétude. Le thème ne conserve plus ces wrappers métier.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -308,11 +312,11 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 40 %, soit **environ 88 % pour l'extraction du métier PHP inventorié**.
+100 % et 45 %, soit **environ 89 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. Seul le premier axe est partiellement satisfait : **environ 35 % de remplaçabilité effective du thème**.
+à 10 %. Seul le premier axe est partiellement satisfait : **environ 36 % de remplaçabilité effective du thème**.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

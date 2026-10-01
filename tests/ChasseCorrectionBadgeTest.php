@@ -64,7 +64,9 @@ class ChasseCorrectionBadgeTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-status-functions.php';
-        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
+        require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Content/completion-functions.php';
+require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
 
         verifier_ou_recalculer_statut_chasse(123);
 

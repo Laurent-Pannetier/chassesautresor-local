@@ -722,6 +722,25 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testThemeDoesNotOwnCompletionCompatibilityApi(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        foreach ([
+            'cat_get_completion_cache_manager',
+            'organisateur_est_complet',
+            'organisateur_mettre_a_jour_complet',
+            'chasse_has_validatable_enigme',
+            'chasse_est_complet',
+            'chasse_mettre_a_jour_complet',
+            'enigme_est_complet',
+            'enigme_mettre_a_jour_complet',
+            'mettre_a_jour_cache_complet_automatiquement',
+            'verifier_ou_mettre_a_jour_cache_complet',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+    }
+
     public function testThemeDoesNotResolveProtectedImagePaths(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/visuels.php');

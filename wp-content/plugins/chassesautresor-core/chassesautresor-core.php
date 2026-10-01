@@ -137,6 +137,7 @@ require_once __DIR__ . '/src/Content/HuntFilterRequestService.php';
 require_once __DIR__ . '/src/Content/HuntFilterAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntFilterApplicationService.php';
 require_once __DIR__ . '/src/Content/CompletionCacheManager.php';
+require_once __DIR__ . '/src/Content/completion-functions.php';
 require_once __DIR__ . '/src/Content/CompletionCacheSaveHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntFeatureCacheManager.php';
 require_once __DIR__ . '/src/Content/HuntFeatureCacheSaveHookHandler.php';
