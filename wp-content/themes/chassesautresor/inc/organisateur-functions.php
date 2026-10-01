@@ -296,9 +296,6 @@ function ajax_conversion_modal_content(): void
 
 if (class_exists(ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::class)) {
     ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::configure(
-        static function (int $user_id) {
-            return verifier_acces_conversion($user_id);
-        },
         static function ($access_message): string {
             return render_conversion_modal_content($access_message);
         }

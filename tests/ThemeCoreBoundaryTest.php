@@ -386,6 +386,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('ca_get_tentatives_view_model', $configuration);
     }
 
+    public function testConversionAccessIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
+        preg_match('/ConversionModalAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('verifier_acces_conversion', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

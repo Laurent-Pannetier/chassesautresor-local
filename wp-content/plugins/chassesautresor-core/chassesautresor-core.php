@@ -34,6 +34,7 @@ require_once __DIR__ . '/src/Points/HistoryPaginationRequestService.php';
 require_once __DIR__ . '/src/Points/PointsHistoryAjaxHandler.php';
 require_once __DIR__ . '/src/Points/ConversionHistoryAjaxHandler.php';
 require_once __DIR__ . '/src/Points/ConversionModalAjaxHandler.php';
+require_once __DIR__ . '/src/Points/ConversionAccessService.php';
 require_once __DIR__ . '/src/Progress/HuntProgressRepository.php';
 require_once __DIR__ . '/src/Progress/HuntProgressService.php';
 require_once __DIR__ . '/src/Progress/HuntStatusService.php';
