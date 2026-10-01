@@ -71,6 +71,14 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDelegatesHuntModerationPolicyToCore(): void
+    {
+        $path = self::THEME_PATH . '/inc/admin-functions.php';
+        $contents = (string) file_get_contents($path);
+
+        self::assertStringContainsString('HuntModerationService', $contents);
+    }
+
     public function testRemovedCompatibilityLoadersStayRemoved(): void
     {
         $loaders = [

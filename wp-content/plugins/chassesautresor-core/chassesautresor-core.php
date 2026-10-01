@@ -154,6 +154,7 @@ require_once __DIR__ . '/src/Content/HintCacheSaveHookHandler.php';
 require_once __DIR__ . '/src/Content/HintRedirectHandler.php';
 require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
+require_once __DIR__ . '/src/Content/HuntModerationService.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationService.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';

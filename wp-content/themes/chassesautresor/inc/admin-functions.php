@@ -1065,15 +1065,21 @@ function traiter_validation_chasse_admin() {
         return;
     }
 
-    if (!current_user_can('administrator')) {
-        wp_die( __( 'Accès refusé.', 'chassesautresor-com' ) );
-    }
-
     $chasse_id = isset($_POST['chasse_id']) ? intval($_POST['chasse_id']) : 0;
-    $action    = sanitize_text_field($_POST['validation_admin_action']);
+    $action = sanitize_text_field(wp_unslash($_POST['validation_admin_action']));
+    $moderation = new ChassesAuTresor\Core\Content\HuntModerationService();
+    $error = $moderation->requestError(
+        current_user_can('administrator'),
+        $chasse_id,
+        (string) get_post_type($chasse_id),
+        $action
+    );
 
-    if (!$chasse_id || get_post_type($chasse_id) !== 'chasse') {
-        wp_die( __( 'ID de chasse invalide.', 'chassesautresor-com' ) );
+    if ($error === 'access') {
+        wp_die(__('Accès refusé.', 'chassesautresor-com'));
+    }
+    if ($error !== null) {
+        wp_die(__('Requête de modération invalide.', 'chassesautresor-com'));
     }
 
     if (!isset($_POST['validation_admin_nonce']) || !wp_verify_nonce($_POST['validation_admin_nonce'], 'validation_admin_' . $chasse_id)) {
@@ -1095,21 +1101,22 @@ function traiter_validation_chasse_admin() {
     );
     $titre_chasse     = get_the_title($chasse_id);
     $url_chasse       = get_permalink($chasse_id);
+    $plan             = $moderation->plan($action);
 
     if ($action === 'valider') {
         wp_update_post([
             'ID'          => $chasse_id,
-            'post_status' => 'publish',
+            'post_status' => $plan['hunt_status'],
         ]);
 
         $cache = get_field('champs_caches', $chasse_id) ?: [];
-        $cache['chasse_cache_statut_validation'] = 'valide';
+        $cache['chasse_cache_statut_validation'] = $plan['validation_status'];
         update_field('champs_caches', $cache, $chasse_id);
-        update_field('chasse_cache_statut_validation', 'valide', $chasse_id);
+        update_field('chasse_cache_statut_validation', $plan['validation_status'], $chasse_id);
         mettre_a_jour_statuts_chasse($chasse_id);
 
         foreach ($enigmes as $eid) {
-            wp_update_post(['ID' => $eid, 'post_status' => 'publish']);
+            wp_update_post(['ID' => $eid, 'post_status' => $plan['riddle_status']]);
             enigme_mettre_a_jour_etat_systeme($eid);
         }
 
@@ -1141,13 +1148,13 @@ function traiter_validation_chasse_admin() {
 
     } elseif ($action === 'correction') {
         $cache = get_field('champs_caches', $chasse_id) ?: [];
-        $cache['chasse_cache_statut_validation'] = 'correction';
+        $cache['chasse_cache_statut_validation'] = $plan['validation_status'];
         update_field('champs_caches', $cache, $chasse_id);
-        update_field('chasse_cache_statut_validation', 'correction', $chasse_id);
+        update_field('chasse_cache_statut_validation', $plan['validation_status'], $chasse_id);
 
         wp_update_post([
             'ID'          => $chasse_id,
-            'post_status' => 'pending',
+            'post_status' => $plan['hunt_status'],
         ]);
 
         mettre_a_jour_statuts_chasse($chasse_id);
@@ -1159,9 +1166,9 @@ function traiter_validation_chasse_admin() {
         foreach ($enigmes as $eid) {
             wp_update_post([
                 'ID'          => $eid,
-                'post_status' => 'pending',
+                'post_status' => $plan['riddle_status'],
             ]);
-            update_field('enigme_cache_etat_systeme', 'bloquee_chasse', $eid);
+            update_field('enigme_cache_etat_systeme', $plan['riddle_state'], $eid);
         }
 
         envoyer_mail_demande_correction($organisateur_id, $chasse_id, $message);
@@ -1207,16 +1214,16 @@ function traiter_validation_chasse_admin() {
     } elseif ($action === 'bannir') {
         wp_update_post([
             'ID'          => $chasse_id,
-            'post_status' => 'draft',
+            'post_status' => $plan['hunt_status'],
         ]);
 
         $cache = get_field('champs_caches', $chasse_id) ?: [];
-        $cache['chasse_cache_statut_validation'] = 'banni';
+        $cache['chasse_cache_statut_validation'] = $plan['validation_status'];
         update_field('champs_caches', $cache, $chasse_id);
-        update_field('chasse_cache_statut_validation', 'banni', $chasse_id);
+        update_field('chasse_cache_statut_validation', $plan['validation_status'], $chasse_id);
 
         foreach ($enigmes as $eid) {
-            wp_update_post(['ID' => $eid, 'post_status' => 'draft']);
+            wp_update_post(['ID' => $eid, 'post_status' => $plan['riddle_status']]);
         }
 
         envoyer_mail_chasse_bannie($organisateur_id, $chasse_id);

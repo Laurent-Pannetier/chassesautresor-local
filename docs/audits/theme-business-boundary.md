@@ -12,14 +12,14 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (29 777 lignes). Vingt-huit fichiers référencent directement les
-classes du plugin, pour 205 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
+Le thème compte 146 fichiers PHP hors tests (29 784 lignes). Vingt-huit fichiers référencent directement les
+classes du plugin, pour 206 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 85 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 86 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -34,14 +34,14 @@ Le lot de migration associé à cet audit a sorti du thème :
   sont plus que des façades de lecture et d'écriture vers `ConversionSettingsService` ;
 - la validation, le débit, l'enregistrement et la notification des demandes de conversion en euros ;
 - l'ajustement manuel des points par un administrateur, y compris les contrôles de solde et de permission.
+- la politique de modération des chasses, avec les transitions autorisées et leurs statuts cibles.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un seul lot le **back-office de modération** encore présent dans `inc/admin-functions.php` : workflow
-complet de validation, correction, bannissement et suppression des chasses. Ce lot est la plus grande tranche
-cohérente qui puisse être revue et testée rapidement : il centralise les transitions et notifications
-administrateur dans Core sans mélanger la demande organisateur ou les politiques d'accès. Cible après ce lot :
-**89 %**.
+Extraire en un seul lot le **contrôleur de modération** encore présent dans `inc/admin-functions.php` : mutations,
+messages de compte et courriels de validation, correction, bannissement et suppression. La politique et ses statuts
+cibles sont désormais dans Core ; ce prochain lot déplacera les effets applicatifs et le hook `admin_post_*`.
+Cible après ce lot : **89 %**.
 
 ## Critères utilisés
 
