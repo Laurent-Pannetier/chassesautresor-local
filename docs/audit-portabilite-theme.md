@@ -488,6 +488,9 @@ désormais résolue par `RiddleRelationshipService` à partir du champ relationn
 préchargés, en conservant le titre personnalisé ou le format historique « Indice #N ». Une garde de frontière interdit
 le retour de ces deux appels dans `RiddleParticipationService`. Cette autonomie ciblée ne suffit pas à retirer
 `inc/enigme/affichage.php` de la liste des grands assembleurs mixtes et ne change donc pas les indicateurs.
+Les valeurs historiques « Nouvel indice » et `clue-` sont aussi disponibles comme replis lorsque les constantes du
+thème ne sont pas chargées. Le test couvre en outre deux énigmes liées à des chasses différentes pendant la même
+requête afin d'empêcher la réintroduction d'un cache de relation partagé entre plusieurs énigmes.
 
 Le cent-et-unième lot transfère les deux lectures encore appelées par les informations de participation : solde de
 points de l'utilisateur et nombre de tentatives du jour. Leurs façades historiques délèguent maintenant aux services

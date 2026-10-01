@@ -58,8 +58,8 @@ final class RiddleParticipationService {
         }
 
         $title = (string) $post->post_title;
-        $default = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : '';
-        $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : '';
+        $default = defined('TITRE_DEFAUT_INDICE') ? TITRE_DEFAUT_INDICE : 'Nouvel indice';
+        $prefix = defined('INDICE_DEFAULT_PREFIX') ? INDICE_DEFAULT_PREFIX : 'clue-';
         $isGenerated = $title === ''
             || $title === $default
             || ($prefix !== '' && strpos($title, $prefix) === 0);

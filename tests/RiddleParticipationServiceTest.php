@@ -28,6 +28,8 @@ final class RiddleParticipationServiceTest extends TestCase {
      * @preserveGlobalState disabled
      */
     public function testLoadsRiddleAndHuntHintsWithPortableQueries(): void {
+        define('TITRE_DEFAUT_INDICE', 'Nouvel indice');
+        define('INDICE_DEFAULT_PREFIX', 'clue-');
         $GLOBALS['hint_queries'] = [];
         $GLOBALS['hint_field_calls'] = [];
         function get_posts(array $args): array {
@@ -40,7 +42,9 @@ final class RiddleParticipationServiceTest extends TestCase {
         function get_field(string $field, int $hintId) {
             $GLOBALS['hint_field_calls'][] = [$field, $hintId];
             if ($field === 'enigme_chasse_associee') {
-                return $hintId === 12 ? (object) ['ID' => 34] : null;
+                $huntIds = [12 => 34, 13 => 35];
+
+                return isset($huntIds[$hintId]) ? (object) ['ID' => $huntIds[$hintId]] : null;
             }
             $values = [
                 'indice_cout_points' => 5,
@@ -51,9 +55,15 @@ final class RiddleParticipationServiceTest extends TestCase {
             return $values[$field] ?? null;
         }
         function get_post(int $hintId): object {
+            $titles = [
+                5 => '',
+                6 => 'Titre personnalisé',
+                7 => 'clue-generated-title',
+            ];
+
             return (object) [
                 'ID' => $hintId,
-                'post_title' => $hintId === 5 ? '' : 'Indice ' . $hintId,
+                'post_title' => $titles[$hintId] ?? 'Indice ' . $hintId,
             ];
         }
         function get_post_meta(int $hintId, string $key, bool $single): int {
@@ -79,6 +89,9 @@ final class RiddleParticipationServiceTest extends TestCase {
         self::assertFalse($GLOBALS['hint_queries'][0]['update_post_term_cache']);
         self::assertArrayNotHasKey('fields', $GLOBALS['hint_queries'][0]);
 
+        (new RiddleParticipationService())->hintIds(13);
+        self::assertSame(35, $GLOBALS['hint_queries'][3]['meta_query'][1]['value']);
+
         $GLOBALS['hint_queries'] = [];
         $GLOBALS['hint_field_calls'] = [];
         $unlockService = new ParticipationHintUnlockServiceStub();
@@ -86,7 +99,8 @@ final class RiddleParticipationServiceTest extends TestCase {
         self::assertSame(5, $hints['riddle'][0]['cost']);
         self::assertTrue($hints['riddle'][0]['unlocked']);
         self::assertSame('Indice #5', $hints['riddle'][0]['title']);
-        self::assertSame('Indice 7', $hints['hunt'][0]['title']);
+        self::assertSame('Titre personnalisé', $hints['riddle'][1]['title']);
+        self::assertSame('Indice #7', $hints['hunt'][0]['title']);
         self::assertSame([[9, [5, 6, 7]]], $unlockService->calls);
         self::assertCount(10, $GLOBALS['hint_field_calls']);
     }
