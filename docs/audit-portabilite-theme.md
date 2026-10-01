@@ -378,12 +378,17 @@ renderer core compose les énigmes engagées, les ratios de participation et de 
 Le helper de pager partagé a rejoint le plugin pour éviter une dépendance indirecte vers `inc/pager.php`. Les
 configurations résiduelles passent à six.
 
+Le quatre-vingt-quatrième lot déplace la construction de la navigation latérale des énigmes dans le plugin. La requête,
+les décisions de visibilité, les classes de progression et les liens d'édition sont maintenant fournis par le même
+builder core aux vues historiques et au contrôleur AJAX. `inc/sidebar.php` ne conserve que l'assemblage visuel des
+sections : il sort donc de la liste des grands assembleurs mixtes. Les configurations résiduelles passent à cinq.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
-| Extraction du métier PHP inventorié | **95 %** | Inchangée : trois grands view-models mixtes restent dans le thème |
-| Remplaçabilité effective du thème | **44 %** | Huit rendus AJAX ne dépendent plus du thème |
+| Extraction du métier PHP inventorié | **97 %** | Deux grands view-models mixtes restent dans le thème |
+| Remplaçabilité effective du thème | **45 %** | Navigation latérale et neuf rendus AJAX sont autonomes |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -411,12 +416,12 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **6 configurations de contrôleurs par le thème**, toutes destinées à des
+  été inventoriées. Le plugin conserve **5 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
-- la revue ciblée relève **3 grands assembleurs de view-models mixtes** :
-  `inc/enigme/affichage.php`, `inc/sidebar.php` et `inc/user-functions.php`. Ils combinent
+- la revue ciblée relève **2 grands assembleurs de view-models mixtes** :
+  `inc/enigme/affichage.php` et `inc/user-functions.php`. Ils combinent
   encore données WordPress, progression ou accès avec CTA et HTML ;
 - **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
   dépôt ne contient toujours aucune preuve de recette complète avec un thème neutre.
@@ -426,12 +431,12 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 75 %, soit **environ 95 % pour l'extraction du métier PHP inventorié**.
+100 % et 83 %, soit **environ 97 % pour l'extraction du métier PHP inventorié** après arrondi.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. L'extraction apporte 38 points et huit des quatorze parcours de rendu injectés recensés au début de ce bloc
-sont maintenant autonomes, soit **environ 44 % de remplaçabilité effective du thème** après arrondi. Aucun point
+à 10 %. L'extraction apporte environ 39 points et neuf des quatorze parcours de rendu injectés recensés au début de ce
+bloc sont maintenant autonomes, soit **environ 45 % de remplaçabilité effective du thème** après arrondi. Aucun point
 n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent

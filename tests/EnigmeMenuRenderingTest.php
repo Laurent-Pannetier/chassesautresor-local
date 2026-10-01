@@ -361,6 +361,8 @@ require_once __DIR__
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-status-badge-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/statut-functions.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-navigation-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/affichage.php';
 
 /**

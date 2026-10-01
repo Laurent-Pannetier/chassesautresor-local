@@ -32,12 +32,9 @@ class HuntNavigationAjaxHandler {
         if (!self::canView($userId, $huntId)) {
             wp_send_json_error('non_engage', 403);
         }
-        if (!is_callable(self::$navigationBuilder)) {
-            wp_send_json_error('non_engage', 403);
-        }
-
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
-        $data = (array) call_user_func(self::$navigationBuilder, $huntId, $userId, $riddleId);
+        $builder = self::$navigationBuilder ?? 'sidebar_prepare_chasse_nav';
+        $data = (array) call_user_func($builder, $huntId, $userId, $riddleId);
         wp_send_json_success([
             'html' => implode('', (array) ($data['menu_items'] ?? [])),
             'ids' => array_values((array) ($data['visible_ids'] ?? [])),

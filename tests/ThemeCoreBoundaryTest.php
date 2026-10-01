@@ -1086,12 +1086,17 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testHuntNavigationAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/sidebar.php');
-        preg_match('/HuntNavigationAjaxHandler::configure\([\s\S]*?^        \);/m', $source, $matches);
-        $configuration = $matches[0] ?? null;
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntNavigationAjaxHandler.php'
+        );
+        $builder = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-navigation-functions.php'
+        );
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('HuntNavigationAccessService', $configuration);
-        self::assertStringNotContainsString('utilisateur_est_engage_dans_chasse', $configuration);
+        self::assertStringNotContainsString('HuntNavigationAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function sidebar_prepare_chasse_nav', $source);
+        self::assertStringContainsString("?? 'sidebar_prepare_chasse_nav'", $handler);
+        self::assertStringContainsString('function sidebar_prepare_chasse_nav', $builder);
     }
 
     public function testRiddleSidebarRenderingIsNotInjectedByTheme(): void

@@ -49,6 +49,7 @@ require_once __DIR__ . '/src/Progress/HuntStatusBadgeService.php';
 require_once __DIR__ . '/src/Progress/hunt-status-badge-functions.php';
 require_once __DIR__ . '/src/Progress/HuntNavigationAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntNavigationAccessService.php';
+require_once __DIR__ . '/src/Progress/hunt-navigation-functions.php';
 require_once __DIR__ . '/src/Progress/HuntValidationAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusScheduler.php';

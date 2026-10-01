@@ -114,7 +114,8 @@ if (!function_exists('get_cta_enigme')) {
     }
 }
 
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/sidebar.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-navigation-functions.php';
 
 /**
  * @runTestsInSeparateProcesses
@@ -164,4 +165,3 @@ class SidebarPrepareChasseNavTest extends TestCase
         $this->assertSame([2, 1], $data['visible_ids']);
     }
 }
-
