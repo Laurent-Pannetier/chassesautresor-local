@@ -11,6 +11,13 @@ if (!function_exists('is_user_logged_in')) {
     }
 }
 
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability): bool
+    {
+        return $capability === 'manage_options';
+    }
+}
+
 
 if (!function_exists('check_ajax_referer')) {
     function check_ajax_referer($action, $queryArg) { return true; }
@@ -108,6 +115,8 @@ if (!function_exists('recuperer_id_chasse_associee')) {
 }
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
 final class SupprimerIndiceEnigmeAjaxTest extends TestCase
 {
@@ -153,4 +162,3 @@ final class SupprimerIndiceEnigmeAjaxTest extends TestCase
         $this->assertTrue($foundEnigme);
     }
 }
-

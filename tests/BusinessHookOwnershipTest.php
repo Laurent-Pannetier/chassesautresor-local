@@ -12,6 +12,7 @@ use ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler;
 use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
 use ChassesAuTresor\Core\Content\HuntDisplayCacheInvalidationHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
+use ChassesAuTresor\Core\Content\HintRelationshipFieldHookHandler;
 use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
@@ -26,6 +27,19 @@ use PHPUnit\Framework\TestCase;
 
 final class BusinessHookOwnershipTest extends TestCase
 {
+    public function testHintRelationshipFieldPolicyIsRegisteredByCore(): void
+    {
+        $filters = [];
+        HintRelationshipFieldHookHandler::register(
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame('acf/load_field/name=indice_chasse_linked', $filters[0][0]);
+        self::assertSame([HintRelationshipFieldHookHandler::class, 'prefillLinkedHunt'], $filters[0][1]);
+    }
+
     public function testOrganizerContactRouteIsRegisteredByCore(): void {
         $actions = [];
         $filters = [];

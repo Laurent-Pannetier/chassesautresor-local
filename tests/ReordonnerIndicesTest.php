@@ -90,6 +90,8 @@ namespace ReordonnerIndicesTest {
         {
             global $updated_posts, $captured_args;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             (new \ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(5, 'chasse');
 
@@ -110,6 +112,8 @@ namespace ReordonnerIndicesTest {
             global $updated_posts, $simulate_recursion;
             $simulate_recursion = 1;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             (new \ChassesAuTresor\Core\Content\HintOrderingApplicationService())->applyTarget(5, 'chasse');
 
@@ -127,6 +131,8 @@ namespace ReordonnerIndicesTest {
         {
             global $updated_posts;
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             \ChassesAuTresor\Core\Content\HintOrderingLifecycleHookHandler::handleSaved(99);
 
@@ -147,6 +153,8 @@ namespace ReordonnerIndicesTest {
             $get_field_overrides['indice_chasse_linked'] = 5;
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             \ChassesAuTresor\Core\Content\HintOrderingLifecycleHookHandler::requestForHint(99);
 

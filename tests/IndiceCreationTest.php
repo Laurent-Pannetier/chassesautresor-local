@@ -24,6 +24,18 @@ namespace {
         function get_current_user_id() { return 1; }
     }
 
+    if (!function_exists('current_user_can')) {
+        function current_user_can($capability) { global $can_edit; return $can_edit; }
+    }
+
+    if (!function_exists('get_field')) {
+        function get_field($field, $postId) { return null; }
+    }
+
+    if (!function_exists('get_post_status')) {
+        function get_post_status($postId) { return 'pending'; }
+    }
+
     if (!function_exists('get_organisateur_from_chasse')) {
         function get_organisateur_from_chasse($chasse_id) { return 7; }
     }
@@ -65,6 +77,8 @@ class IndiceCreationTest extends TestCase
         $can_edit     = true;
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
         $result = \creer_indice_pour_objet(42, 'chasse');
         $this->assertInstanceOf(\WP_Error::class, $result);
@@ -83,6 +97,8 @@ class IndiceCreationTest extends TestCase
         $can_edit     = true;
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
         $result = \creer_indice_pour_objet(42, 'chasse');
         $this->assertInstanceOf(\WP_Error::class, $result);
@@ -101,6 +117,8 @@ class IndiceCreationTest extends TestCase
         $can_edit     = false;
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
         $result = \creer_indice_pour_objet(42, 'chasse');
         $this->assertInstanceOf(\WP_Error::class, $result);

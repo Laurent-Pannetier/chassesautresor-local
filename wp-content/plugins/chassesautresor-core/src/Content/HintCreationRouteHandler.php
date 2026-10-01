@@ -28,13 +28,12 @@ class HintCreationRouteHandler {
         $supportedType = $service->isSupportedTargetType($targetType);
         $targetMatches = $supportedType && get_post_type($targetId) === $targetType;
         $authenticated = is_user_logged_in();
-        $canManage = $canManage ?? static fn (string $type, int $id): bool => (bool) apply_filters(
-            'chassesautresor_can_manage_hint',
-            false,
-            'create',
-            $type,
-            $id
-        );
+        $canManage = $canManage
+            ?? static fn (string $type, int $id): bool => (new RelatedContentAccessResolver())->canPerform(
+                'create',
+                $type,
+                $id
+            );
         $canCreate = $targetMatches && $authenticated && $canManage($targetType, $targetId);
         $relationships = new RelationshipService();
         $findHuntId = $findHuntId ?? static fn (int $riddleId): ?int => $relationships->normalizeId(

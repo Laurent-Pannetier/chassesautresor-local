@@ -226,25 +226,42 @@ plugin ; leurs wrappers inutilisés ont été supprimés. La fonction historique
 maintenant avec les autres fonctions de compatibilité dans `solution-functions.php` côté core. Le fichier du thème ne
 conserve plus que le moteur de rendu du tableau de solutions.
 
-Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
-centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
-aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
-l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.
+Le cinquante-deuxième lot a transféré la dernière politique ACF et les derniers adaptateurs de route
+d'`edition-indice.php`. Le préremplissage de la chasse liée résout maintenant directement dans le plugin la cible chasse
+ou la relation énigme/chasse. La création globale historique vit désormais dans `hint-functions.php` ; l'enregistrement
+et le rafraîchissement de la route sont déjà détenus par le core. Enfin, les contrôleurs de création et de suppression
+n'utilisent plus le filtre `chassesautresor_can_manage_hint` : ils appliquent directement `RelatedContentAccessResolver`.
+Le fichier du thème ne conserve que les moteurs de rendu et leurs view-models.
+
+L'estimation précédente de 98 % était trop optimiste et donnait une fausse impression de proximité avec la fin. Une
+estimation plus honnête, fondée sur les catégories encore observées plutôt que sur le nombre de lots, est désormais :
+
+- **environ 90 % pour l'extraction du métier PHP inventorié** ;
+- **environ 70 % pour la remplaçabilité effective du thème**, car les parcours produit, leurs assets et de nombreux
+  view-models restent exclusivement fournis par `chassesautresor` et aucune recette sous thème neutre n'a été exécutée.
+
+Ces valeurs sont des ordres de grandeur, pas des métriques de complétion. Le prochain audit doit les recalculer depuis
+un inventaire reproductible des dépendances restantes et ne doit pas reprendre automatiquement ces pourcentages.
 
 ## Éléments bloquants observés
 
 ### Contrôleurs, politiques et routes encore attachés au thème
 
-Le thème enregistre toujours notamment :
+Le thème conserve encore notamment :
 
-- des endpoints, variables de requête et sélections de templates dans `inc/user-functions.php` et
-  `inc/organisateur-functions.php` ;
-- des adaptateurs de politique d'accès aux énigmes encore utilisés par les vues et les panneaux d'édition ;
-- des politiques d'édition et des callbacks métier échangés avec le plugin dans les fichiers `inc/edition/*.php` ;
+- des view-models volumineux qui assemblent directement règles d'accès, progression, CTA et données WordPress ;
+- le filtre ACF de condition d'accès aux énigmes dans `inc/access-functions.php`, encore à qualifier et migrer ;
+- le callback de contrôle de fraîcheur des statuts dans `inc/statut-functions.php` ;
+- plusieurs caches de données construits pendant le rendu dans `inc/chasse-functions.php` et `inc/enigme/*` ;
+- l'ensemble des parcours produit et de leurs assets, qui n'ont pas encore de rendu de secours fourni par le plugin.
 
 L'audit ciblé des messages importants et des écrans WordPress natifs ne relève plus de dépendance vers les helpers
 globaux du thème. Les configurations `*Handler::configure()` inventoriées ne transmettent actuellement que des
 fonctions de rendu. Les adaptateurs d'accès encore utilisés par les vues restent en revanche à qualifier et migrer.
+
+Le prochain fil doit commencer par produire un inventaire chiffré et reproductible de ces catégories, puis recalculer
+les deux estimations ci-dessus. Il doit explicitement ignorer l'ancienne valeur de 98 % et ne relever aucun pourcentage
+sans preuve par recherche statique, tests de frontière et recette sous thème neutre.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.

@@ -93,6 +93,8 @@ namespace {
         function wp_update_post($args) { return true; }
     }
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 }
 
 namespace ModifierIndiceImmediateDateTest {

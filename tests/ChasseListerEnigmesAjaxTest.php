@@ -112,6 +112,8 @@ class ChasseListerEnigmesAjaxTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
         $_POST = [
             'chasse_id' => 10,
@@ -170,6 +172,8 @@ class ChasseListerEnigmesAjaxTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
         $_POST = [
             'chasse_id' => 10,

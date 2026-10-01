@@ -117,6 +117,8 @@ namespace MettreAJourCacheIndiceTest {
             ];
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             \ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::handle($post_id);
 
@@ -145,6 +147,8 @@ namespace MettreAJourCacheIndiceTest {
             ];
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             \ChassesAuTresor\Core\Content\HintCacheSaveHookHandler::handle($post_id);
 

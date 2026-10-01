@@ -648,6 +648,30 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('verifier_ou_mettre_a_jour_cache_complet', $edition);
     }
 
+    public function testThemeDoesNotOwnHintRelationshipFieldPolicy(): void
+    {
+        $source = (string) file_get_contents(
+            self::THEME_PATH . '/inc/edition/edition-indice.php'
+        );
+
+        self::assertStringNotContainsString('pre_remplir_indice_chasse_linked', $source);
+        self::assertStringNotContainsString('acf/load_field/name=indice_chasse_linked', $source);
+        self::assertStringNotContainsString('recuperer_id_chasse_associee', $source);
+        self::assertStringNotContainsString('function creer_indice_pour_objet', $source);
+        self::assertStringNotContainsString('function register_endpoint_creer_indice', $source);
+        self::assertStringNotContainsString('function flush_rewrite_rules_creer_indice', $source);
+
+        $creation = (string) file_get_contents(
+            __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Content/HintCreationRouteHandler.php'
+        );
+        $deletion = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HintDeletionAjaxHandler.php'
+        );
+        self::assertStringNotContainsString('chassesautresor_can_manage_hint', $creation);
+        self::assertStringNotContainsString('chassesautresor_can_manage_hint', $deletion);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

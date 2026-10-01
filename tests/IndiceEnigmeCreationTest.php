@@ -64,7 +64,7 @@ if (!function_exists('wp_send_json_success')) {
 }
 
 if (!function_exists('get_post_type')) {
-    function get_post_type($id) { return 'enigme'; }
+    function get_post_type($id) { return $id === 1 ? 'chasse' : 'enigme'; }
 }
 
 if (!function_exists('indice_action_autorisee')) {
@@ -167,6 +167,8 @@ if (!function_exists('wp_date')) {
 }
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
 class IndiceEnigmeCreationTest extends TestCase
 {

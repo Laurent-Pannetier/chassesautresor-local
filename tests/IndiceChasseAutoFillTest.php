@@ -26,6 +26,8 @@ namespace {
         function recuperer_id_chasse_associee($id) { return 99; }
     }
     require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 }
 
 namespace IndiceChasse {

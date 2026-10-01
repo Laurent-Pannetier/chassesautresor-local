@@ -36,10 +36,9 @@ class HintDeletionAjaxHandler {
                 );
             }
         );
-        if ($context === null
-            || !apply_filters(
-                'chassesautresor_can_manage_hint',
-                false,
+        if (
+            $context === null
+            || !(new RelatedContentAccessResolver())->canPerform(
                 'delete',
                 $context['target_type'],
                 $context['target_id']

@@ -48,9 +48,6 @@ function cat_get_hint_relationship_service(): ChassesAuTresor\Core\Content\HintR
 // ==================================================
 // 💡 GESTION DES INDICES
 // ==================================================
-// 🔹 register_endpoint_creer_indice() → Enregistre /creer-indice
-// 🔹 creer_indice_pour_objet() → Crée un indice lié à une chasse ou une énigme
-// 🔹 creer_indice_et_rediriger_si_appel() → Crée un indice et redirige
 // 🔹 modifier_champ_indice() → Mise à jour AJAX (champ ACF ou natif)
 
 /**
@@ -98,50 +95,6 @@ function prochain_rang_indice(int $objet_id, string $objet_type): int
     return count($existing_indices) + 1;
 }
 
-/**
- * Crée un indice lié à une chasse ou une énigme.
- *
- * @param int      $objet_id   ID de la chasse ou de l’énigme.
- * @param string   $objet_type Type de cible ('chasse' ou 'enigme').
- * @param int|null $user_id    ID utilisateur (null = courant).
- * @return int|WP_Error
- */
-function creer_indice_pour_objet(int $objet_id, string $objet_type, ?int $user_id = null)
-{
-    return ChassesAuTresor\Core\Content\HintCreationRouteHandler::create(
-        $objet_id,
-        $objet_type,
-        $user_id,
-        static fn (string $type, int $id): bool => utilisateur_peut_modifier_post($id),
-        static fn (int $riddleId): ?int => recuperer_id_chasse_associee($riddleId)
-    );
-}
-
-/**
- * Enregistre l’URL personnalisée /creer-indice/
- *
- * @return void
- */
-function register_endpoint_creer_indice(): void
-{
-    ChassesAuTresor\Core\Content\HintRouteRegistrar::register();
-}
-
-/**
- * S'assure que les règles de réécriture prennent en compte /creer-indice/.
- *
- * Cette fonction est exécutée lors de l'activation du thème ou
- * automatiquement une fois si les règles n'ont pas encore été mises à jour.
- *
- * @return void
- */
-function flush_rewrite_rules_creer_indice(): void
-{
-    ChassesAuTresor\Core\Content\HintRouteRegistrar::flush();
-}
-
-
-
 function rendre_carte_indices(string $html, int $huntId): string
 {
     ob_start();
@@ -186,37 +139,3 @@ function rendre_table_indices(
     return (string) ob_get_clean();
 }
 add_filter('chassesautresor_render_hint_table', 'rendre_table_indices', 10, 9);
-
-/**
- * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.
- *
- * @param array $field Paramètres du champ ACF.
- * @return array Champ modifié.
- */
-function pre_remplir_indice_chasse_linked(array $field): array
-{
-    global $post;
-
-    if (!$post || get_post_type($post->ID) !== 'indice') {
-        return $field;
-    }
-
-    $existing = get_post_meta($post->ID, 'indice_chasse_linked', true);
-    if (!empty($existing)) {
-        return $field;
-    }
-
-    $chasse_id = cat_get_hint_relationship_service()->resolveLinkedHuntId(
-        (string) get_field('indice_cible_type', $post->ID),
-        get_field('indice_enigme_linked', $post->ID),
-        isset($_GET['chasse_id']) ? (int) $_GET['chasse_id'] : null,
-        static fn (int $riddleId) => recuperer_id_chasse_associee($riddleId)
-    );
-
-    if ($chasse_id) {
-        $field['value'] = $chasse_id;
-    }
-
-    return $field;
-}
-add_filter('acf/load_field/name=indice_chasse_linked', 'pre_remplir_indice_chasse_linked');

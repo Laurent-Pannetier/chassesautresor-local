@@ -90,6 +90,8 @@ if (!function_exists('get_template_part')) {
 }
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
 class IndicesListerTableChasseTest extends TestCase {
     protected function setUp(): void {

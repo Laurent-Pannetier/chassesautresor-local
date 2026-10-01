@@ -29,6 +29,8 @@ namespace ProchainRangIndice {
             global $captured_args;
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             $rank = \prochain_rang_indice(42, 'enigme');
 
@@ -48,6 +50,8 @@ namespace ProchainRangIndice {
             global $captured_args;
 
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-indice.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/hint-functions.php';
 
             $rank = \prochain_rang_indice(5, 'chasse');
 
