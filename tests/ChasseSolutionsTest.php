@@ -206,6 +206,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'objet_id'   => 3,
@@ -272,6 +274,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'objet_id'   => 3,
@@ -339,6 +343,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'objet_id'   => 3,
@@ -449,6 +455,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'objet_id'   => 3,
@@ -503,6 +511,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'objet_id'   => 3,
@@ -559,6 +569,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         \mettre_a_jour_cache_solution($post_id);
 
@@ -614,6 +626,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         solution_planifier_publication($solution_id);
 
@@ -668,6 +682,8 @@ class ChasseSolutionsTest extends TestCase
         }
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         solution_planifier_publication($solution_id);
 

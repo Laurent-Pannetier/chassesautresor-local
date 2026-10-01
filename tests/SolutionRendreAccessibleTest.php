@@ -83,6 +83,8 @@ namespace SolutionRendreAccessibleTest {
             require_once __DIR__
                 . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionPublicationService.php';
             require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+            require_once __DIR__
+                . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
             \solution_rendre_accessible(123);
 

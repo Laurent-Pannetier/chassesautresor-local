@@ -432,8 +432,6 @@ function injection_classe_edition_active( array $classes ): array
         in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) &&
         ! get_field( 'organisateur_cache_complet', $post->ID )
     ) {
-        verifier_ou_mettre_a_jour_cache_complet( $post->ID );
-
         if (
             get_post_status( $post ) === 'pending' &&
             ! get_field( 'organisateur_cache_complet', $post->ID )
@@ -453,8 +451,6 @@ function injection_classe_edition_active( array $classes ): array
         $associes        = is_array( $associes ) ? array_map( 'strval', $associes ) : [];
 
         if ( in_array( (string) $user_id, $associes, true ) ) {
-            verifier_ou_mettre_a_jour_cache_complet( $post->ID );
-
             $validation = get_field( 'chasse_cache_statut_validation', $post->ID );
             $statut     = get_field( 'chasse_cache_statut', $post->ID );
 

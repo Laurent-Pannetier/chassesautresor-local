@@ -215,6 +215,11 @@ thème, concurrents et plus permissifs, ont été retirés. La limitation du cha
 de l'organisateur est maintenant enregistrée par `WordPressAccessPolicyHookHandler`. Les classes et styles purement
 visuels des écrans d'édition restent dans le thème.
 
+Le cinquantième lot a transféré les six fonctions de compatibilité du cycle des solutions : planification, publication,
+traitement cron, mise à jour du cache et sauvegarde ACF sont maintenant exposés par le plugin. `edition-solution.php` ne
+conserve plus ces points d'entrée mutationnels. Le filtre de classes CSS d'`edition-core.php` ne force également plus de
+recalcul de complétude pendant le rendu ; les gestionnaires de sauvegarde et de vue du core possèdent déjà ce cycle.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à

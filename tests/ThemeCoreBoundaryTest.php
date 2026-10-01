@@ -623,6 +623,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testThemeDoesNotOwnSolutionLifecycleCompatibilityFunctions(): void
+    {
+        $solution = (string) file_get_contents(
+            self::THEME_PATH . '/inc/edition/edition-solution.php'
+        );
+        $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-core.php');
+
+        foreach ([
+            'function solution_planifier_publication',
+            'function solution_rendre_accessible',
+            'function basculer_solutions_programme',
+            'function planifier_tache_basculer_solutions_programme',
+            'function mettre_a_jour_cache_solution',
+            'function solution_acf_save_post',
+        ] as $lifecycleFunction) {
+            self::assertStringNotContainsString($lifecycleFunction, $solution);
+        }
+
+        self::assertStringNotContainsString('verifier_ou_mettre_a_jour_cache_complet', $edition);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

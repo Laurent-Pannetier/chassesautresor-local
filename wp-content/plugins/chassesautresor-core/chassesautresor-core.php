@@ -215,6 +215,7 @@ require_once __DIR__ . '/src/Content/HuntInitializationHookHandler.php';
 require_once __DIR__ . '/src/Content/SolutionAvailabilityService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheService.php';
 require_once __DIR__ . '/src/Content/SolutionCacheUpdater.php';
+require_once __DIR__ . '/src/Content/solution-functions.php';
 require_once __DIR__ . '/src/Content/SolutionCreationService.php';
 require_once __DIR__ . '/src/Content/SolutionCreationRouteHandler.php';
 require_once __DIR__ . '/src/Content/SolutionDeletionService.php';
