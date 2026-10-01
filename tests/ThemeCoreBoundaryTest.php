@@ -587,6 +587,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
     }
 
+    public function testThemeDoesNotOwnAccountMessagePersistenceOrOrganizerCreation(): void
+    {
+        $account = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        $organizer = (string) file_get_contents(
+            self::THEME_PATH . '/inc/edition/edition-organisateur.php'
+        );
+
+        foreach ([
+            'function cat_get_account_message_service',
+            'function myaccount_add_persistent_message',
+            'function myaccount_remove_persistent_message',
+            'function myaccount_add_flash_message',
+        ] as $persistenceFunction) {
+            self::assertStringNotContainsString($persistenceFunction, $account);
+        }
+
+        self::assertStringNotContainsString('function creer_organisateur_pour_utilisateur', $organizer);
+        self::assertStringNotContainsString("'wp_insert_post'", $organizer);
+        self::assertStringNotContainsString("'update_field'", $organizer);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

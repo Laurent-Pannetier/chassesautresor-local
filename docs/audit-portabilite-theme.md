@@ -203,6 +203,12 @@ résolution chasse/énigme, le rafraîchissement de complétude, la politique d'
 du message sont maintenant orchestrés par un gestionnaire de hook du plugin. `user-functions.php` ne possède plus ce
 traitement exécuté sur `template_redirect` et le plugin ne dépend plus des helpers de chasse du thème pour ce parcours.
 
+Le quarante-huitième lot a transféré les dernières fonctions d'écriture des messages du compte : ajout persistant,
+message éphémère, suppression et construction du service sont maintenant fournis par le plugin. Les templates
+historiques peuvent conserver leurs appels à cette API globale sans que sa persistance appartienne au thème. L'ancien
+adaptateur de création d'un organisateur, devenu inutilisé depuis l'autonomisation de la route de confirmation, a aussi
+été supprimé d'`edition-organisateur.php`, avec ses injections de `wp_insert_post` et `update_field`.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
