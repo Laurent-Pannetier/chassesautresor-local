@@ -28,14 +28,14 @@ class HuntFieldMutationAjaxHandler {
         if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
             wp_send_json_error('⚠️ post_invalide');
         }
-        if (!apply_filters('chassesautresor_can_modify_hunt', false, $huntId)) {
+        if (!utilisateur_peut_modifier_post($huntId)) {
             wp_send_json_error('⚠️ acces_refuse');
         }
 
         $requiresFullAccess = !self::isClosureField($field, $value)
             && $field !== 'chasse_principale_liens';
         if ($requiresFullAccess
-            && !apply_filters('chassesautresor_can_edit_hunt_fields', false, $huntId)
+            && !(new WordPressContentAccessResolver())->canEditFields($huntId)
         ) {
             wp_send_json_error('⚠️ acces_refuse');
         }
@@ -75,12 +75,26 @@ class HuntFieldMutationAjaxHandler {
             $recalculateStatus = $recalculateStatus || $mutation['recalculate_status'];
         }
 
-        $closure = apply_filters(
-            'chassesautresor_apply_hunt_closure',
-            ['handled' => false, 'error' => null],
+        $closure = (new HuntClosureService())->apply(
             $huntId,
             $field,
-            $value
+            $value,
+            'update_field',
+            static function (int $id): array {
+                return array_map(
+                    'intval',
+                    get_posts((new \ChassesAuTresor\Core\Relationships\HuntRiddleQueryService())
+                        ->getRiddleIdsQueryArgs($id))
+                );
+            },
+            [RiddleSolutionFileScheduler::class, 'schedule'],
+            static function (int $id, string $type) {
+                $query = (new SolutionQueryService())->getActiveSolutionQueryArgs($id, $type);
+                $solutions = $query === [] ? [] : get_posts($query);
+                return $solutions[0] ?? null;
+            },
+            [SolutionPublicationPlanner::class, 'plan'],
+            [\ChassesAuTresor\Core\Progress\HuntCompletionHookHandler::class, 'completeHunt']
         );
         self::sendMutationError(is_array($closure) ? ($closure['error'] ?? null) : 'echec_mise_a_jour');
         $handled = $handled || (is_array($closure) && !empty($closure['handled']));

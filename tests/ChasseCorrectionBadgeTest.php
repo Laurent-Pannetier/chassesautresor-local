@@ -44,6 +44,7 @@ class ChasseCorrectionBadgeTest extends TestCase
         eval('function chasse_clear_infos_affichage_cache($cid){global $cache_cleared; $cache_cleared = true;}');
         eval('function cat_debug($msg){}');
         eval('function is_user_logged_in(){return true;}');
+        eval('function utilisateur_peut_modifier_post($id){return true;}');
         eval('function check_ajax_referer($action, $field){return true;}');
         eval('function apply_filters($hook, $value, ...$args){'
             . 'if ($hook === "chassesautresor_can_modify_hunt") return true;'

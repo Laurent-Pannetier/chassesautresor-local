@@ -143,7 +143,13 @@ plugin. L'initialisation, le recalcul d'état système et le rafraîchissement d
 par un gestionnaire de hooks du core. `edition-enigme.php` ne conserve plus que le chargement des scripts et l'adaptateur
 de création utilisé par la présentation.
 
-Estimation prudente après ce lot : **environ 90 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le trente-septième lot applique la même séparation aux mutations de chasse. Les autorisations de dates et de champs,
+la clôture, la publication planifiée des solutions et les recalculs de statut sont maintenant orchestrés par le plugin.
+Les six filtres et callbacks métier correspondants ont été retirés de `edition-chasse.php`. Le hook général de
+rafraîchissement du statut, auparavant encore relié au thème, est également détenu par le gestionnaire de cycle de vie
+du core.
+
+Estimation prudente après ce lot : **environ 93 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
 l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.

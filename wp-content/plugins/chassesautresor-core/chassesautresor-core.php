@@ -191,6 +191,7 @@ require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';
 require_once __DIR__ . '/src/Content/HuntRewardMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationAjaxHandler.php';
+require_once __DIR__ . '/src/Content/HuntMutationLifecycleHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntClosureService.php';
 require_once __DIR__ . '/src/Content/HuntValidationRequestRouteHandler.php';
 require_once __DIR__ . '/src/Content/HuntWelcomeModalViewHookHandler.php';
@@ -315,6 +316,7 @@ ChassesAuTresor\Core\Content\WordPressAccessPolicyHookHandler::register('add_act
 ChassesAuTresor\Core\Content\BackOfficeAccessHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleMutationLifecycleHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntMutationLifecycleHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\ContentScreenAccessHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleAccessRedirectHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');

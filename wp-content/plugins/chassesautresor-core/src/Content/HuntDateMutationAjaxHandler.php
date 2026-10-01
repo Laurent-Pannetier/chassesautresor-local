@@ -28,7 +28,9 @@ class HuntDateMutationAjaxHandler {
             wp_send_json_error('post_invalide');
         }
 
-        if (!apply_filters('chassesautresor_can_edit_hunt_dates', false, $huntId)) {
+        if (!utilisateur_peut_modifier_post($huntId)
+            || !(new WordPressContentAccessResolver())->canEditFields($huntId)
+        ) {
             wp_send_json_error('acces_refuse');
         }
 

@@ -399,6 +399,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("apply_filters('chassesautresor_can_edit_riddle_fields'", $handler);
     }
 
+    public function testThemeDoesNotOwnHuntMutationPoliciesOrLifecycle(): void
+    {
+        $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-chasse.php');
+        foreach ([
+            'chassesautresor_can_edit_hunt_dates',
+            'chassesautresor_hunt_dates_updated',
+            'chassesautresor_can_modify_hunt',
+            'chassesautresor_can_edit_hunt_fields',
+            'chassesautresor_apply_hunt_closure',
+            'chassesautresor_hunt_fields_updated',
+        ] as $businessHook) {
+            self::assertStringNotContainsString($businessHook, $edition);
+        }
+
+        $fieldHandler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntFieldMutationAjaxHandler.php'
+        );
+        self::assertStringNotContainsString("apply_filters('chassesautresor_can_", $fieldHandler);
+        self::assertStringNotContainsString("'chassesautresor_apply_hunt_closure'", $fieldHandler);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
