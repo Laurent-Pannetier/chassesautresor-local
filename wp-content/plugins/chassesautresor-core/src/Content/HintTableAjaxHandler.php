@@ -26,7 +26,7 @@ class HintTableAjaxHandler {
         ) {
             wp_send_json_error('post_invalide');
         }
-        if (!apply_filters('chassesautresor_can_manage_hint', false, 'edit', $targetType, $targetId)) {
+        if (!(new HintAccessResolver())->canPerform('edit', $targetType, $targetId)) {
             wp_send_json_error('acces_refuse');
         }
 

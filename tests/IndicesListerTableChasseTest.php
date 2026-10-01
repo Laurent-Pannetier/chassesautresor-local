@@ -33,6 +33,15 @@ if (!function_exists('apply_filters')) {
 if (!function_exists('is_user_logged_in')) {
     function is_user_logged_in() { return true; }
 }
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability) { return $capability === 'manage_options'; }
+}
+if (!function_exists('get_current_user_id')) {
+    function get_current_user_id() { return 1; }
+}
+if (!function_exists('get_post_status')) {
+    function get_post_status($id) { return 'pending'; }
+}
 if (!function_exists('get_post_type')) {
     function get_post_type($id) { return $id === 3 ? 'chasse' : 'enigme'; }
 }

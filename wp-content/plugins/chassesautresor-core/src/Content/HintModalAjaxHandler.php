@@ -26,7 +26,7 @@ class HintModalAjaxHandler {
         )) {
             wp_send_json_error('post_invalide');
         }
-        if (!apply_filters('chassesautresor_can_manage_hint', false, 'create', $targetType, $targetId)) {
+        if (!(new HintAccessResolver())->canPerform('create', $targetType, $targetId)) {
             wp_send_json_error('acces_refuse');
         }
 
@@ -50,7 +50,7 @@ class HintModalAjaxHandler {
         if ($hintId <= 0 || get_post_type($hintId) !== 'indice') {
             wp_send_json_error('indice_invalide');
         }
-        if (!apply_filters('chassesautresor_can_manage_hint', false, 'edit', $targetType, $targetId)) {
+        if (!(new HintAccessResolver())->canPerform('edit', $targetType, $targetId)) {
             wp_send_json_error('acces_refuse');
         }
 

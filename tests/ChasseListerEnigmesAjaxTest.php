@@ -57,6 +57,7 @@ class ChasseListerEnigmesAjaxTest extends TestCase
     {
         if (!function_exists('is_user_logged_in')) {
             function is_user_logged_in() { return true; }
+            function current_user_can($capability) { return $capability === 'manage_options'; }
         }
         if (!function_exists('get_post_type')) {
             function get_post_type($id) { return $id === 10 ? 'chasse' : 'enigme'; }
@@ -117,6 +118,7 @@ class ChasseListerEnigmesAjaxTest extends TestCase
     {
         if (!function_exists('is_user_logged_in')) {
             function is_user_logged_in() { return true; }
+            function current_user_can($capability) { return $capability === 'manage_options'; }
         }
         if (!function_exists('get_post_type')) {
             function get_post_type($id) { return $id === 10 ? 'chasse' : 'enigme'; }

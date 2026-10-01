@@ -20,6 +20,12 @@ if (!function_exists('__')) {
 if (!function_exists('is_user_logged_in')) {
     function is_user_logged_in(): bool { return true; }
 }
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability): bool { return $capability === 'manage_options'; }
+}
+if (!function_exists('get_post_status')) {
+    function get_post_status($id) { return 'pending'; }
+}
 
 if (!function_exists('check_ajax_referer')) {
     function check_ajax_referer($action, $queryArg) { return true; }

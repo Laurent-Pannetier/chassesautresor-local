@@ -25,8 +25,8 @@ class HintFieldMutationAjaxHandler {
         if ($field === '' || $hintId <= 0 || get_post_type($hintId) !== 'indice') {
             wp_send_json_error('⚠️ donnees_invalides');
         }
-        if (!apply_filters('chassesautresor_can_modify_hint', false, $hintId)
-            || !apply_filters('chassesautresor_can_edit_hint_fields', false, $hintId)
+        if (!utilisateur_peut_modifier_post($hintId)
+            || !(new WordPressContentAccessResolver())->canEditFields($hintId)
         ) {
             wp_send_json_error('⚠️ acces_refuse');
         }

@@ -166,6 +166,7 @@ require_once __DIR__ . '/src/Content/HintDeletionLifecycleService.php';
 require_once __DIR__ . '/src/Content/HintDeletionLifecycleHookHandler.php';
 require_once __DIR__ . '/src/Content/HintRouteRegistrar.php';
 require_once __DIR__ . '/src/Content/HintFieldPolicyService.php';
+require_once __DIR__ . '/src/Content/HintAccessResolver.php';
 require_once __DIR__ . '/src/Content/HintFieldMutationService.php';
 require_once __DIR__ . '/src/Content/HintFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HintMutationService.php';

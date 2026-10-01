@@ -36,8 +36,8 @@ class OrganizerFieldMutationAjaxHandler {
         if ($organizerId <= 0 || get_post_type($organizerId) !== 'organisateur') {
             wp_send_json_error('⚠️ organisateur_introuvable');
         }
-        if (!apply_filters('chassesautresor_can_modify_organizer', false, $organizerId)
-            || !apply_filters('chassesautresor_can_edit_organizer_fields', false, $organizerId)
+        if (!utilisateur_peut_modifier_post($organizerId)
+            || !(new WordPressContentAccessResolver())->canEditFields($organizerId)
         ) {
             wp_send_json_error('⚠️ acces_refuse');
         }

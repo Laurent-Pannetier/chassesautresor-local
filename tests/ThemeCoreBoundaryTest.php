@@ -420,6 +420,25 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString("'chassesautresor_apply_hunt_closure'", $fieldHandler);
     }
 
+    public function testThemeDoesNotOwnOrganizerOrHintMutationPolicies(): void
+    {
+        $organizer = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-organisateur.php');
+        self::assertStringNotContainsString('chassesautresor_can_modify_organizer', $organizer);
+        self::assertStringNotContainsString('chassesautresor_can_edit_organizer_fields', $organizer);
+
+        $hint = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-indice.php');
+        self::assertStringNotContainsString('chassesautresor_can_manage_hint', $hint);
+        self::assertStringNotContainsString('chassesautresor_can_modify_hint', $hint);
+        self::assertStringNotContainsString('chassesautresor_can_edit_hint_fields', $hint);
+
+        foreach (['OrganizerFieldMutationAjaxHandler.php', 'HintFieldMutationAjaxHandler.php'] as $filename) {
+            $handler = (string) file_get_contents(
+                __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/' . $filename
+            );
+            self::assertStringNotContainsString("apply_filters('chassesautresor_can_", $handler);
+        }
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

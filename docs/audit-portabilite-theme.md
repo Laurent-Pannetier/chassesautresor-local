@@ -149,7 +149,13 @@ Les six filtres et callbacks métier correspondants ont été retirés de `editi
 rafraîchissement du statut, auparavant encore relié au thème, est également détenu par le gestionnaire de cycle de vie
 du core.
 
-Estimation prudente après ce lot : **environ 93 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le trente-huitième lot a transféré les politiques de mutation de l'organisateur et des indices. Le contrôleur
+d'organisateur utilise directement les politiques de contenu du plugin. Les contrôleurs d'indices utilisent un
+résolveur core qui applique les règles de création, modification et suppression à une chasse ou une énigme, ainsi que
+le résolveur commun d'accès aux champs. Les cinq filtres d'autorisation correspondants ont été retirés des fichiers
+d'édition du thème ; leurs filtres de rendu restent volontairement dans la présentation.
+
+Estimation prudente après ce lot : **environ 95 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
 l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.

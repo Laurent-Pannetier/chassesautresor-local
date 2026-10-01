@@ -123,22 +123,6 @@ function enqueue_script_organisateur_edit()
 add_action('wp_enqueue_scripts', 'enqueue_script_organisateur_edit');
 
 
-function autoriser_modification_organisateur(bool $allowed, int $organizerId): bool {
-    return utilisateur_peut_modifier_post($organizerId);
-}
-add_filter('chassesautresor_can_modify_organizer', 'autoriser_modification_organisateur', 10, 2);
-
-function autoriser_modification_champs_organisateur(bool $allowed, int $organizerId): bool {
-    return utilisateur_peut_editer_champs($organizerId);
-}
-add_filter(
-    'chassesautresor_can_edit_organizer_fields',
-    'autoriser_modification_champs_organisateur',
-    10,
-    2
-);
-
-
 /**
  * Retourne la liste complète des types de lien public supportés.
  *

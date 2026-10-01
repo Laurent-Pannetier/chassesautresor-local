@@ -155,16 +155,6 @@ function flush_rewrite_rules_creer_indice(): void
 
 
 
-function autoriser_gestion_indice(
-    bool $allowed,
-    string $action,
-    string $targetType,
-    int $targetId
-): bool {
-    return indice_action_autorisee($action, $targetType, $targetId);
-}
-add_filter('chassesautresor_can_manage_hint', 'autoriser_gestion_indice', 10, 4);
-
 function rendre_carte_indices(string $html, int $huntId): string
 {
     ob_start();
@@ -247,18 +237,6 @@ add_filter('chassesautresor_hint_target_has_solution', 'indiquer_solution_cible_
 
 
 
-
-function autoriser_modification_indice(bool $allowed, int $hintId): bool
-{
-    return utilisateur_peut_modifier_post($hintId);
-}
-add_filter('chassesautresor_can_modify_hint', 'autoriser_modification_indice', 10, 2);
-
-function autoriser_modification_champs_indice(bool $allowed, int $hintId): bool
-{
-    return utilisateur_peut_editer_champs($hintId);
-}
-add_filter('chassesautresor_can_edit_hint_fields', 'autoriser_modification_champs_indice', 10, 2);
 
 /**
  * Pré-remplit automatiquement la chasse liée d'un indice lors de sa création.

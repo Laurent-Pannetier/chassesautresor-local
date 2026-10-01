@@ -22,7 +22,7 @@ class HintRiddleOptionsAjaxHandler {
         if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
             wp_send_json_error('post_invalide');
         }
-        if (!apply_filters('chassesautresor_can_manage_hint', false, 'create', 'chasse', $huntId)) {
+        if (!(new HintAccessResolver())->canPerform('create', 'chasse', $huntId)) {
             wp_send_json_error('acces_refuse');
         }
 
