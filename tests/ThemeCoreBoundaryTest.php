@@ -462,6 +462,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chassesautresor_hint_', $options);
     }
 
+    public function testSolutionPoliciesAndQueriesAreNotInjectedByTheme(): void
+    {
+        $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-solution.php');
+        foreach ([
+            'chassesautresor_can_manage_solution',
+            'chassesautresor_hunt_riddle_ids',
+            'chassesautresor_hunt_riddles',
+            'chassesautresor_solution_exists',
+        ] as $businessHook) {
+            self::assertStringNotContainsString($businessHook, $edition);
+        }
+        self::assertStringContainsString('chassesautresor_render_solutions_table', $edition);
+
+        $management = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementAjaxHandler.php'
+        );
+        self::assertStringNotContainsString('chassesautresor_can_manage_solution', $management);
+        self::assertStringNotContainsString('chassesautresor_hunt_riddle', $management);
+        self::assertStringNotContainsString('chassesautresor_solution_exists', $management);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

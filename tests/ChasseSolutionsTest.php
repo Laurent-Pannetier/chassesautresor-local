@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability) { return $capability === 'manage_options'; }
+}
+
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
 require_once __DIR__
@@ -133,7 +137,7 @@ class ChasseSolutionsTest extends TestCase
             function wp_update_post($args) {}
         }
         if (!function_exists('get_posts')) {
-            function get_posts($args) { return []; }
+            function get_posts($args) { return ($args['post_type'] ?? '') === 'enigme' ? [5, 6] : []; }
         }
         if (!function_exists('update_field')) {
             function update_field($key, $value, $post_id)
@@ -252,7 +256,7 @@ class ChasseSolutionsTest extends TestCase
             function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
         }
         if (!function_exists('get_posts')) {
-            function get_posts($args) { return []; }
+            function get_posts($args) { return ($args['post_type'] ?? '') === 'enigme' ? [5, 6] : []; }
         }
         if (!function_exists('get_the_title')) {
             function get_the_title($id) { return 'Titre'; }
@@ -322,7 +326,7 @@ class ChasseSolutionsTest extends TestCase
             function wp_send_json_success($data = null) { global $json_success_data; $json_success_data = $data; return $data; }
         }
         if (!function_exists('get_posts')) {
-            function get_posts($args) { return []; }
+            function get_posts($args) { return ($args['post_type'] ?? '') === 'enigme' ? [5, 6] : []; }
         }
         if (!function_exists('recuperer_ids_enigmes_pour_chasse')) {
             function recuperer_ids_enigmes_pour_chasse($id) { return []; }
@@ -387,7 +391,7 @@ class ChasseSolutionsTest extends TestCase
             function get_the_title($id) { return 'Titre'; }
         }
         if (!function_exists('get_posts')) {
-            function get_posts($args) { return []; }
+            function get_posts($args) { return ($args['post_type'] ?? '') === 'enigme' ? [5, 6] : []; }
         }
         if (!function_exists('get_post_status')) {
             function get_post_status($id) { return 'pending'; }

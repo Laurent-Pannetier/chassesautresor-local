@@ -24,13 +24,7 @@ class SolutionModalAjaxHandler {
         $hasConsistentTarget = $hasValidTarget
             && $fieldPolicy->hasConsistentRiddleTarget($targetType, $targetId, $linkedRiddleId);
         $isAuthorized = $hasConsistentTarget
-            && apply_filters(
-                'chassesautresor_can_manage_solution',
-                false,
-                'create',
-                $targetType,
-                $targetId
-            );
+            && (new RelatedContentAccessResolver())->canPerform('create', $targetType, $targetId);
         $rawExplanation = (string) ($_POST['solution_explication'] ?? '');
         $requestError = (new SolutionModalPolicyService())->getCreationError(
             $isAuthenticated,
@@ -64,13 +58,7 @@ class SolutionModalAjaxHandler {
         $hasValidSolution = $solutionId > 0 && get_post_type($solutionId) === 'solution';
         [$targetId, $targetType, $hasValidTarget] = self::getTarget($hasValidSolution);
         $isAuthorized = $hasValidTarget
-            && apply_filters(
-                'chassesautresor_can_manage_solution',
-                false,
-                'edit',
-                $targetType,
-                $targetId
-            );
+            && (new RelatedContentAccessResolver())->canPerform('edit', $targetType, $targetId);
         $rawExplanation = (string) ($_POST['solution_explication'] ?? '');
         $requestError = (new SolutionModalPolicyService())->getEditionError(
             $isAuthenticated,

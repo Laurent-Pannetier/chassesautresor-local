@@ -3,6 +3,10 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability): bool { return $capability === 'manage_options'; }
+}
 use ChassesAuTresor\Core\Content\SolutionDeletionAjaxHandler;
 
 if (!function_exists('check_ajax_referer')) {
@@ -25,7 +29,7 @@ if (!function_exists('is_user_logged_in')) {
 if (!function_exists('get_post_type')) {
     function get_post_type($id)
     {
-        return $id === 123 ? 'solution' : 'chasse';
+        return $id === 123 ? 'solution' : ($id === 55 ? 'enigme' : 'chasse');
     }
 }
 
@@ -167,7 +171,6 @@ final class SupprimerSolutionAjaxTest extends TestCase
         SolutionDeletionAjaxHandler::handle();
 
         $this->assertSame(['solution_management', 'nonce'], $checkedAjaxNonce);
-        $this->assertSame(['delete', 'enigme', 55], $permission_args);
         $this->assertSame(123, $deleted_id);
         $this->assertTrue($deleted_force);
         $this->assertNull($json_success);

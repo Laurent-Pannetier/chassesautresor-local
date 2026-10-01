@@ -29,7 +29,7 @@ class HintTableAjaxHandler {
         ) {
             wp_send_json_error('post_invalide');
         }
-        if (!(new HintAccessResolver())->canPerform('edit', $targetType, $targetId)) {
+        if (!(new RelatedContentAccessResolver())->canPerform('edit', $targetType, $targetId)) {
             wp_send_json_error('acces_refuse');
         }
 

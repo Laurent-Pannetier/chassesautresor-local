@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
+
 /**
  * WordPress AJAX adapter for solution management reads.
  */
@@ -20,20 +22,14 @@ class SolutionManagementAjaxHandler {
         if (!self::isValidTarget($targetId, $targetType)) {
             wp_send_json_error('post_invalide');
         }
-        if (!apply_filters(
-            'chassesautresor_can_manage_solution',
-            false,
-            'edit',
-            $targetType,
-            $targetId
-        )) {
+        if (!(new RelatedContentAccessResolver())->canPerform('edit', $targetType, $targetId)) {
             wp_send_json_error('acces_refuse');
         }
 
         $managementService = new SolutionManagementService();
         $page = $managementService->normalizePage((int) ($_POST['page'] ?? 1), 0);
         $riddleIds = $targetType === 'chasse'
-            ? (array) apply_filters('chassesautresor_hunt_riddle_ids', [], $targetId)
+            ? array_map('intval', get_posts((new HuntRiddleQueryService())->getRiddleIdsQueryArgs($targetId)))
             : [];
         $queryArgs = (new SolutionQueryService())->getManagementQueryArgs(
             $targetId,
@@ -74,13 +70,13 @@ class SolutionManagementAjaxHandler {
         if ($riddleId > 0 && get_post_type($riddleId) !== 'enigme') {
             $riddleId = 0;
         }
-        if (!apply_filters('chassesautresor_can_manage_solution', false, 'create', 'chasse', $huntId)) {
+        if (!(new RelatedContentAccessResolver())->canPerform('create', 'chasse', $huntId)) {
             wp_send_json_error('acces_refuse');
         }
 
         $hasHuntSolution = self::solutionExists($huntId, 'chasse');
         $hasRiddleSolution = $riddleId > 0 && self::solutionExists($riddleId, 'enigme');
-        $riddles = (array) apply_filters('chassesautresor_hunt_riddles', [], $huntId);
+        $riddles = (new \WP_Query((new HuntRiddleQueryService())->getVisibleRiddlesQueryArgs($huntId)))->posts;
         $riddlesWithoutSolution = array_filter(
             $riddles,
             static fn ($riddle): bool => !self::solutionExists((int) $riddle->ID, 'enigme')
@@ -118,11 +114,7 @@ class SolutionManagementAjaxHandler {
     }
 
     private static function solutionExists(int $targetId, string $targetType): bool {
-        return (bool) apply_filters(
-            'chassesautresor_solution_exists',
-            false,
-            $targetId,
-            $targetType
-        );
+        $query = (new SolutionQueryService())->getExistingSolutionIdsQueryArgs($targetId, $targetType);
+        return $query !== [] && (new \WP_Query($query))->posts !== [];
     }
 }

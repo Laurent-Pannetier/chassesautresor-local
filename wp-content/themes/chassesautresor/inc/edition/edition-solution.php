@@ -101,9 +101,7 @@ function creer_solution_pour_objet(int $objet_id, string $objet_type, ?int $user
     return ChassesAuTresor\Core\Content\SolutionCreationRouteHandler::create(
         $objet_id,
         $objet_type,
-        $user_id,
-        static fn (string $type, int $id): bool => solution_action_autorisee('create', $type, $id),
-        static fn (int $riddleId): ?int => recuperer_id_chasse_associee($riddleId)
+        $user_id
     );
 }
 
@@ -132,42 +130,6 @@ function flush_rewrite_rules_creer_solution(): void
 /**
  * Connects the core solution controllers to the theme permission policy.
  */
-function autoriser_gestion_solution(bool $allowed, string $action, string $targetType, int $targetId): bool
-{
-    return solution_action_autorisee($action, $targetType, $targetId);
-}
-add_filter('chassesautresor_can_manage_solution', 'autoriser_gestion_solution', 10, 4);
-
-
-
-/**
- * Provides riddle IDs to the core solution management controllers.
- *
- * @return int[]
- */
-function fournir_ids_enigmes_solution(array $riddleIds, int $huntId): array
-{
-    return recuperer_ids_enigmes_pour_chasse($huntId);
-}
-add_filter('chassesautresor_hunt_riddle_ids', 'fournir_ids_enigmes_solution', 10, 2);
-
-/**
- * Provides hunt riddles to the core solution status controller.
- *
- * @return array<int, object>
- */
-function fournir_enigmes_solution(array $riddles, int $huntId): array
-{
-    return recuperer_enigmes_pour_chasse($huntId);
-}
-add_filter('chassesautresor_hunt_riddles', 'fournir_enigmes_solution', 10, 2);
-
-function indiquer_existence_solution(bool $exists, int $targetId, string $targetType): bool
-{
-    return solution_existe_pour_objet($targetId, $targetType);
-}
-add_filter('chassesautresor_solution_exists', 'indiquer_existence_solution', 10, 3);
-
 /**
  * Renders solution rows requested by the core controller.
  *

@@ -29,15 +29,11 @@ class SolutionDeletionAjaxHandler {
             get_field('solution_chasse_linked', $solutionId),
             get_field('solution_enigme_linked', $solutionId)
         );
-        if ($target === null
-            || !apply_filters(
-                'chassesautresor_can_manage_solution',
-                false,
-                'delete',
-                $target['type'],
-                $target['id']
-            )
-        ) {
+        if ($target === null || !(new RelatedContentAccessResolver())->canPerform(
+            'delete',
+            $target['type'],
+            $target['id']
+        )) {
             wp_send_json_error('acces_refuse');
         }
 

@@ -22,7 +22,7 @@ class HintCardAjaxHandler {
         if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
             wp_send_json_error('post_invalide');
         }
-        if (!(new HintAccessResolver())->canPerform('edit', 'chasse', $huntId)) {
+        if (!(new RelatedContentAccessResolver())->canPerform('edit', 'chasse', $huntId)) {
             wp_send_json_error('acces_refuse');
         }
 

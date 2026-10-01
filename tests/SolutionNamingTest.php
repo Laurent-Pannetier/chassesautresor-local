@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability) { return $capability === 'manage_options'; }
+}
+
 if (!function_exists('__')) {
     function __($text, $domain = null) { return $text; }
 }
@@ -73,4 +77,3 @@ class SolutionNamingTest extends TestCase
         $this->assertSame('Solution | Titre', $updated_posts[0]['post_title']);
     }
 }
-

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability) { return $capability === 'manage_options'; }
+}
+
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionFieldPolicyService.php';
 require_once __DIR__

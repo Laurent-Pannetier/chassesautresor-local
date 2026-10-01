@@ -160,7 +160,12 @@ Le plugin résout maintenant lui-même la chasse d'une énigme, les énigmes d'u
 l'existence d'une solution. Les seuls filtres conservés dans ce parcours sont les deux moteurs de rendu de carte et de
 tableau, qui restent légitimement dans la couche de présentation.
 
-Estimation prudente après ce lot : **environ 97 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le quarantième lot a autonomisé les contrôleurs de solutions. L'autorisation des actions, la relation chasse/énigmes et
+la détection des solutions existantes sont maintenant résolues directement par le plugin. Le résolveur précédemment
+spécifique aux indices est devenu un résolveur générique des contenus liés. Les quatre filtres métier ont été retirés
+de `edition-solution.php`, qui conserve uniquement le rendu du tableau et ses adaptateurs de templates.
+
+Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
 l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.

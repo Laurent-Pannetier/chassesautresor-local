@@ -6,8 +6,8 @@ namespace ChassesAuTresor\Core\Content;
 
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 
-/** Resolve hint management access without theme policy filters. */
-final class HintAccessResolver
+/** Resolve access to content attached to a hunt or riddle without theme policy filters. */
+final class RelatedContentAccessResolver
 {
     public function canPerform(string $action, string $targetType, int $targetId): bool
     {

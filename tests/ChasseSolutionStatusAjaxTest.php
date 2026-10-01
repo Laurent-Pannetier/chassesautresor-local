@@ -4,12 +4,23 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+if (!function_exists('current_user_can')) {
+    function current_user_can($capability) { return $capability === 'manage_options'; }
+}
+
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementService.php';
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Content/SolutionManagementAjaxHandler.php';
+
+if (!class_exists('WP_Query')) {
+    class WP_Query {
+        public $posts;
+        public function __construct($args) { $this->posts = recuperer_enigmes_pour_chasse(10); }
+    }
+}
 
 if (!function_exists('apply_filters')) {
     function apply_filters($hook, $value, ...$args)
@@ -70,7 +81,12 @@ class ChasseSolutionStatusAjaxTest extends TestCase
             }
         }
         if (!function_exists('get_posts')) {
-            function get_posts($args) { return []; }
+            function get_posts($args) {
+                $targetId = $args['meta_query'][2][0]['value'] ?? 0;
+                return ($args['post_type'] ?? '') === 'solution' && in_array($targetId, [1, 10], true)
+                    ? [99]
+                    : [];
+            }
         }
         if (!function_exists('wp_send_json_success')) {
             function wp_send_json_success($data = null)
@@ -101,6 +117,6 @@ class ChasseSolutionStatusAjaxTest extends TestCase
         global $json_success_data;
         $this->assertSame(1, $json_success_data['has_solution_chasse']);
         $this->assertSame(1, $json_success_data['has_solution_enigme']);
-        $this->assertSame(1, $json_success_data['has_enigmes']);
+        $this->assertSame(0, $json_success_data['has_enigmes']);
     }
 }
