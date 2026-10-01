@@ -28,6 +28,7 @@ use ChassesAuTresor\Core\Progress\RiddleEngagementRepository;
 use ChassesAuTresor\Core\Progress\RiddleEngagementService;
 use ChassesAuTresor\Core\Progress\RiddleStatisticsRepository;
 use ChassesAuTresor\Core\Progress\RiddleStatisticsService;
+use ChassesAuTresor\Core\Progress\RiddleSidebarStatisticsService;
 use ChassesAuTresor\Core\Progress\UserAttemptStatisticsRepository;
 use ChassesAuTresor\Core\Progress\UserAttemptStatisticsService;
 use ChassesAuTresor\Core\Relationships\OrganizerRepository;
@@ -84,6 +85,16 @@ final class CoreServiceFactory
     public static function riddleStatistics(object $database): RiddleStatisticsService
     {
         return new RiddleStatisticsService(new RiddleStatisticsRepository($database));
+    }
+
+    public static function riddleSidebarStatistics(object $database): RiddleSidebarStatisticsService
+    {
+        return new RiddleSidebarStatisticsService(
+            self::huntProgress($database),
+            self::huntEngagement($database),
+            self::huntStatistics($database),
+            self::riddleStatistics($database)
+        );
     }
 
     public static function userAttemptStatistics(object $database): UserAttemptStatisticsService

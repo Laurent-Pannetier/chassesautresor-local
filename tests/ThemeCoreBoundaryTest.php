@@ -672,6 +672,129 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chassesautresor_can_manage_hint', $deletion);
     }
 
+    public function testThemeDoesNotOwnRiddleAccessConditionFieldPolicy(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/access-functions.php');
+
+        self::assertStringNotContainsString('acf/load_field/name=enigme_acces_condition', $source);
+        self::assertStringNotContainsString('recuperer_enigmes_possibles_pre_requis', $source);
+    }
+
+    public function testThemeDoesNotOwnScheduledHuntStatusRefresh(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+
+        self::assertStringNotContainsString('cat_check_stale_hunt_status', $source);
+        self::assertStringNotContainsString('chassesautresor_hunt_status_stale_check_requested', $source);
+        foreach ([
+            'verifier_ou_recalculer_statut_chasse',
+            'mettre_a_jour_statuts_chasse',
+            'forcer_recalcul_statut_chasse',
+            'recuperer_statut_chasse',
+            'forcer_statut_apres_acf',
+            'schedule_cat_recalculate_chasse_statuses',
+            'cat_recalculate_chasse_statuses',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+
+        $moderation = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntModerationRequestHandler.php'
+        );
+        self::assertStringNotContainsString("'mettre_a_jour_statuts_chasse'", $moderation);
+        self::assertStringNotContainsString("'enigme_mettre_a_jour_etat_systeme'", $moderation);
+        self::assertStringNotContainsString('recuperer_enigmes_associees', $moderation);
+        self::assertStringNotContainsString('get_organisateur_from_chasse', $moderation);
+        self::assertStringNotContainsString('chasse_trash_with_children', $moderation);
+    }
+
+    public function testThemeDoesNotOwnRiddleSystemStateCompatibilityApi(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        foreach ([
+            'mettre_a_jour_statuts_enigmes_de_la_chasse',
+            'enigme_mettre_a_jour_etat_systeme',
+            'enigme_mettre_a_jour_etat_systeme_automatiquement',
+            'forcer_recalcul_statut_enigme',
+            'enigme_get_etat_systeme',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+    }
+
+    public function testThemeDoesNotOwnCompletionCompatibilityApi(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        foreach ([
+            'cat_get_completion_cache_manager',
+            'organisateur_est_complet',
+            'organisateur_mettre_a_jour_complet',
+            'chasse_has_validatable_enigme',
+            'chasse_est_complet',
+            'chasse_mettre_a_jour_complet',
+            'enigme_est_complet',
+            'enigme_mettre_a_jour_complet',
+            'mettre_a_jour_cache_complet_automatiquement',
+            'verifier_ou_mettre_a_jour_cache_complet',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+    }
+
+    public function testThemeDoesNotOwnRiddleProgressCompatibilityApi(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        foreach ([
+            'cat_get_hunt_progress_service',
+            'enigme_get_bonnes_reponses',
+            'enigme_get_statut_utilisateur',
+            'enigme_mettre_a_jour_statut_utilisateur',
+            'enigme_pre_requis_remplis',
+            'get_statut_utilisateur_enigme',
+            'est_enigme_resolue_par_utilisateur',
+            'enigme_verifier_verrouillage',
+            'traiter_statut_enigme',
+            'enigme_est_visible_pour',
+            'utilisateur_peut_engager_enigme',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+    }
+
+    public function testThemeDoesNotResolveProtectedImagePaths(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/visuels.php');
+
+        self::assertStringNotContainsString('function trouver_chemin_image', $source);
+        self::assertStringNotContainsString("'trouver_chemin_image'", $source);
+        self::assertStringNotContainsString('wp_cache_set(', $source);
+    }
+
+    public function testThemeDoesNotBuildRiddleSidebarStatisticsCaches(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+
+        self::assertStringNotContainsString("wp_cache_set(\$cache_key, \$data", $source);
+        self::assertStringNotContainsString("wp_cache_set(\$cache_key, \$rate", $source);
+        self::assertStringNotContainsString('chasse_calculer_taux_engagement(', $source);
+    }
+
+    public function testThemeDoesNotPersistHuntDisplayViewModels(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+
+        self::assertStringNotContainsString("wp_cache_set(\$cache_key", $source);
+        self::assertStringNotContainsString("set_transient(\$cache_key", $source);
+        self::assertStringContainsString('HuntDisplayViewCacheService', $source);
+    }
+
+    public function testThemeDoesNotWriteCaches(): void
+    {
+        $violations = $this->findPhpMatches('/\b(?:wp_cache_set|set_transient)\s*\(/');
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

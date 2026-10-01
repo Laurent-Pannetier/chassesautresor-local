@@ -37,6 +37,21 @@ final class RiddleRenderCacheHookHandler {
         return $block . '_' . $riddleId . '_' . $version;
     }
 
+    public static function get(string $block, int $riddleId): ?string {
+        $value = wp_cache_get(self::key($block, $riddleId), self::CACHE_GROUP);
+
+        return is_string($value) ? $value : null;
+    }
+
+    public static function put(string $block, int $riddleId, string $html): void {
+        wp_cache_set(
+            self::key($block, $riddleId),
+            $html,
+            self::CACHE_GROUP,
+            HOUR_IN_SECONDS
+        );
+    }
+
     public static function clear(int $riddleId): void {
         wp_cache_delete(self::key('enigme_sidebar', $riddleId), self::CACHE_GROUP);
         wp_cache_delete(self::key('enigme_solution', $riddleId), self::CACHE_GROUP);

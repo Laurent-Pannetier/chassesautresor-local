@@ -49,4 +49,14 @@ final class HuntStatusSchedulerTest extends TestCase {
         $this->assertFalse($queries[0]['update_post_meta_cache']);
         $this->assertFalse($queries[0]['update_post_term_cache']);
     }
+
+    public function testDefaultDispatchRefreshesStatusDirectlyInCore(): void {
+        $source = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntStatusScheduler.php'
+        );
+
+        $this->assertStringContainsString("\$dispatch = \$dispatch ?? [self::class, 'refresh']", $source);
+        $this->assertStringContainsString('(new HuntStatusUpdater())->refreshIfStale($huntId)', $source);
+        $this->assertStringNotContainsString('chassesautresor_hunt_status_stale_check_requested', $source);
+    }
 }

@@ -233,15 +233,102 @@ et le rafraîchissement de la route sont déjà détenus par le core. Enfin, les
 n'utilisent plus le filtre `chassesautresor_can_manage_hint` : ils appliquent directement `RelatedContentAccessResolver`.
 Le fichier du thème ne conserve que les moteurs de rendu et leurs view-models.
 
-L'estimation précédente de 98 % était trop optimiste et donnait une fausse impression de proximité avec la fin. Une
-estimation plus honnête, fondée sur les catégories encore observées plutôt que sur le nombre de lots, est désormais :
+Le cinquante-troisième lot a transféré au plugin le filtre ACF de la condition d'accès des énigmes. Le core
+résout désormais la chasse, lit son cache relationnel, qualifie les modes de validation des énigmes candidates et
+retire l'option « pré-requis » lorsqu'aucune candidate n'est éligible. Le thème ne possède plus ni le hook ni le helper
+de sélection correspondant.
 
-- **environ 90 % pour l'extraction du métier PHP inventorié** ;
-- **environ 70 % pour la remplaçabilité effective du thème**, car les parcours produit, leurs assets et de nombreux
-  view-models restent exclusivement fournis par `chassesautresor` et aucune recette sous thème neutre n'a été exécutée.
+Le cinquante-quatrième lot a supprimé la dépendance du cron de statuts envers le thème. Le planificateur appelle
+maintenant directement `HuntStatusUpdater` dans le plugin au lieu d'émettre un événement dont le seul abonné vivait
+dans `statut-functions.php`. La normalisation des valeurs ACF du lot précédent accepte aussi explicitement les ID,
+tableaux et objets WordPress renvoyés selon le format du champ.
 
-Ces valeurs sont des ordres de grandeur, pas des métriques de complétion. Le prochain audit doit les recalculer depuis
-un inventaire reproductible des dépendances restantes et ne doit pas reprendre automatiquement ces pourcentages.
+Le cinquante-cinquième lot a transféré au plugin la résolution locale des images protégées. La sélection de la taille,
+la préférence WebP, le repli vers l'original, la détection MIME et le cache objet appartiennent maintenant à
+`ProtectedImagePathService`. La fonction globale historique reste disponible depuis le core pour les vues existantes,
+mais `inc/enigme/visuels.php` ne contient plus cette lecture de fichiers ni ses six écritures de cache.
+
+Le cinquante-sixième lot a transféré au plugin les données statistiques de la barre latérale des énigmes. Le calcul de
+la progression du joueur, de l'engagement moyen et du taux de résolution, avec exclusions et caches, appartient à
+`RiddleSidebarStatisticsService`. Le thème ne reçoit plus que les valeurs nécessaires à ses deux moteurs de rendu.
+
+Le cinquante-septième lot a déplacé dans le plugin les cinq fonctions globales de compatibilité du statut des chasses et
+a supprimé deux anciens wrappers du planificateur. Le contrôleur de modération appelle maintenant directement les
+updaters du core pour les statuts de chasse et d'énigme, sans transmettre leurs noms de fonctions historiques.
+
+Le cinquante-huitième lot a supprimé les trois dépendances globales restantes du contrôleur de modération. Les énigmes
+et l'organisateur sont maintenant résolus par les services de relation du plugin, et la suppression réutilise le
+workflow autonome de `HuntDeletionAjaxHandler`. Le chemin de modération ne dépend donc plus du thème.
+
+Le cinquante-neuvième lot a déplacé dans le plugin la persistance du view-model d'affichage d'une chasse. Le thème
+continue provisoirement à assembler ce modèle, mais sa lecture et ses écritures dans le cache objet et le transient
+passent désormais par `HuntDisplayViewCacheService`. Une seule écriture de cache, strictement HTML, reste dans le thème.
+
+Le soixantième lot a déplacé cette dernière écriture dans `RiddleRenderCacheHookHandler`. Le thème construit toujours le
+fragment HTML de solution, mais le core possède maintenant sa lecture, sa durée de vie, son écriture et son invalidation.
+La garde de frontière interdit désormais toute écriture de cache ou de transient dans le thème.
+
+Le soixante-et-unième lot a déplacé dans le plugin les cinq fonctions de compatibilité du statut système des énigmes :
+rafraîchissement individuel ou par chasse, callback historique de sauvegarde, endpoint de recalcul et lecture de l'état.
+`statut-functions.php` conserve les décisions de participation encore utilisées par les vues, mais plus ce cycle de vie.
+
+Le soixante-deuxième lot, volontairement plus large, a transféré les dix fonctions publiques de complétude des
+organisateurs, chasses et énigmes. Le plugin résout lui-même les énigmes d'une chasse, les modes de validation, les
+bonnes réponses et le cycle du cache de complétude. Le thème ne conserve plus ces wrappers métier.
+
+Le soixante-troisième lot conserve cette taille accrue et transfère ensemble les sept fonctions publiques de progression
+des énigmes : construction du service, bonnes réponses, lecture et avancement du statut joueur, prérequis et résolution.
+Le plugin normalise directement les relations ACF ; `statut-functions.php` est ramené à six fonctions mixtes ou visuelles.
+
+Le soixante-quatrième lot complète ce bloc en transférant les quatre décisions restantes : verrouillage, état de
+participation, visibilité et autorisation d'engagement. Le plugin résout directement chasse, organisateur, engagements
+et prérequis. `statut-functions.php` ne conserve plus que le filtre de rendu du badge et le contexte visuel de création.
+
+### Inventaire reproductible au 1er octobre 2026
+
+Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
+Elles doivent être relancées ensemble : un nombre brut de hooks ou de fichiers ne constitue pas seul un pourcentage.
+
+```bash
+rg -g '*.php' -g '!**/tests/**' -o "add_(action|filter)\s*\(" wp-content/themes/chassesautresor | wc -l
+rg -g '*.php' -g '!**/tests/**' -o "\b(wp_(insert|update|delete)_post|update_(field|post_meta|user_meta|option)|add_(post_meta|user_meta|option)|delete_(post_meta|user_meta|option|transient)|set_transient|wp_cache_(set|add|delete))\s*\(|\$wpdb->(insert|update|delete|query)\s*\(" wp-content/themes/chassesautresor | wc -l
+rg -g '*.php' -g '!**/tests/**' -o "add_filter\s*\(\s*['\"]acf/" wp-content/themes/chassesautresor | wc -l
+rg -g '*.php' -g '!**/tests/**' -o "[A-Za-z]+Handler::configure\s*\(" wp-content/themes/chassesautresor | wc -l
+find wp-content/themes/chassesautresor -type f \( -name '*.js' -o -name '*.css' -o -name '*.scss' \) ! -path '*/tests/*' | wc -l
+find wp-content/themes/chassesautresor -type f -name '*.php' | rg '/(templates|template-parts)/|/(single|page)-[^/]*\.php$' | wc -l
+```
+
+Résultats obtenus après ce lot :
+
+- **69 enregistrements de hooks** demeurent dans le thème. Leur revue ligne par ligne ne trouve **plus aucun hook métier**. Les 69 hooks concernent le rendu,
+  l'intégration Astra/WooCommerce/ACF, les shortcodes ou le chargement d'assets ;
+- **aucune écriture** WordPress, SQL, de cache ou de transient n’est désormais détectée dans le thème et aucune
+  planification de tâche n’y demeure ;
+- **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
+  champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
+- le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
+  été inventoriées. Le plugin conserve **15 configurations de contrôleurs par le thème**, toutes destinées à des
+  moteurs de rendu ;
+- la revue ciblée relève **4 grands assembleurs de view-models mixtes** : `inc/chasse-functions.php`,
+  `inc/enigme/affichage.php`, `inc/sidebar.php` et `inc/user-functions.php`. Ils combinent
+  encore données WordPress, progression ou accès avec CTA et HTML ;
+- **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
+  dépôt ne contient toujours aucune preuve de recette complète avec un thème neutre.
+
+### Estimations recalculées
+
+Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
+propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
+globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
+100 % et 60 %, soit **environ 92 % pour l'extraction du métier PHP inventorié**.
+
+Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
+assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
+à 10 %. Seul le premier axe est partiellement satisfait : **environ 37 % de remplaçabilité effective du thème**.
+
+Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
+ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une
+surface résiduelle ; la revue qualitative documentée détermine les notes de chaque axe.
 
 ## Éléments bloquants observés
 
@@ -250,8 +337,6 @@ un inventaire reproductible des dépendances restantes et ne doit pas reprendre 
 Le thème conserve encore notamment :
 
 - des view-models volumineux qui assemblent directement règles d'accès, progression, CTA et données WordPress ;
-- le filtre ACF de condition d'accès aux énigmes dans `inc/access-functions.php`, encore à qualifier et migrer ;
-- le callback de contrôle de fraîcheur des statuts dans `inc/statut-functions.php` ;
 - plusieurs caches de données construits pendant le rendu dans `inc/chasse-functions.php` et `inc/enigme/*` ;
 - l'ensemble des parcours produit et de leurs assets, qui n'ont pas encore de rendu de secours fourni par le plugin.
 
@@ -259,9 +344,9 @@ L'audit ciblé des messages importants et des écrans WordPress natifs ne relèv
 globaux du thème. Les configurations `*Handler::configure()` inventoriées ne transmettent actuellement que des
 fonctions de rendu. Les adaptateurs d'accès encore utilisés par les vues restent en revanche à qualifier et migrer.
 
-Le prochain fil doit commencer par produire un inventaire chiffré et reproductible de ces catégories, puis recalculer
-les deux estimations ci-dessus. Il doit explicitement ignorer l'ancienne valeur de 98 % et ne relever aucun pourcentage
-sans preuve par recherche statique, tests de frontière et recette sous thème neutre.
+Les prochains lots doivent relancer cet inventaire et conserver la grille annoncée pour faire évoluer les deux
+estimations. Aucun gain de remplaçabilité ne doit être annoncé sans recherche statique, tests de frontière et recette
+sous thème neutre.
 
 Une partie de ces éléments produit de l'interface, mais leur absence change aussi les droits, les parcours ou le
 comportement du site.
