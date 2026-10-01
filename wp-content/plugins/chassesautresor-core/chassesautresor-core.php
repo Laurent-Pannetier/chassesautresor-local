@@ -35,6 +35,8 @@ require_once __DIR__ . '/src/Progress/RiddleSystemStateService.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateUpdater.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateSaveHookHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleParticipationPolicyService.php';
+require_once __DIR__ . '/src/Progress/RiddleSidebarRequestPolicy.php';
+require_once __DIR__ . '/src/Progress/RiddleSidebarAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/StatisticsPeriodService.php';
 require_once __DIR__ . '/src/Progress/StatisticsCacheService.php';
 require_once __DIR__ . '/src/Progress/StatisticsCacheInvalidationHookHandler.php';
@@ -281,6 +283,7 @@ ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatisticsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HintUnlockAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
