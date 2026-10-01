@@ -453,6 +453,11 @@ Le plugin fournit également l'aide accessible sans appeler le template part `he
 fonctions globales historiques deviennent de simples façades core. `inc/enigme/affichage.php` demeure un assembleur
 mixte pour ses blocs principaux ; les indicateurs restent donc inchangés.
 
+Le quatre-vingt-dix-huitième lot déplace les fragments de progression et de résolution de la barre latérale. Le plugin
+interroge directement `RiddleSidebarStatisticsService` puis réutilise `RiddleBarRenderer`; aucune lecture de statistiques
+ni composition de ces deux fragments ne demeure dans `inc/enigme/affichage.php`. Les autres blocs mixtes justifient le
+maintien des indicateurs.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

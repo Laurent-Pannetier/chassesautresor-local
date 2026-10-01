@@ -67,3 +67,47 @@ function enigme_render_single_bar_subsection(
     return (new ChassesAuTresor\Core\Progress\RiddleBarRenderer())
         ->singleSubsection($title, $rate, $section_class, $help_message, $help_label);
 }
+
+function enigme_sidebar_progression_html(?int $chasse_id, int $user_id): string {
+    if (!$chasse_id || !$user_id) {
+        return '';
+    }
+
+    global $wpdb;
+    $data = CoreServiceFactory::riddleSidebarStatistics($wpdb)->progression($chasse_id, $user_id);
+
+    return enigme_render_bar_subsection(
+        __('Progression', 'chassesautresor-com'),
+        $data['user'],
+        $data['avg'],
+        'enigme-progression',
+        __(
+            'Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total '
+            . 'd’énigmes de la chasse. Vous : Part des énigmes auxquelles vous avez accédé. '
+            . 'Moyenne : Moyenne sur l’ensemble des joueurs.',
+            'chassesautresor-com'
+        ),
+        __('Définition de la progression', 'chassesautresor-com')
+    );
+}
+
+function enigme_sidebar_resolution_html(int $enigme_id): string {
+    if ($enigme_id <= 0) {
+        return '';
+    }
+
+    global $wpdb;
+    $rate = CoreServiceFactory::riddleSidebarStatistics($wpdb)->resolution($enigme_id);
+
+    return enigme_render_single_bar_subsection(
+        __('Résolution', 'chassesautresor-com'),
+        $rate,
+        'enigme-resolution',
+        __(
+            'Part moyenne des énigmes auxquelles chaque joueur a participé, rapportée au nombre total '
+            . 'd’énigmes de la chasse.',
+            'chassesautresor-com'
+        ),
+        __('Définition du taux de résolution', 'chassesautresor-com')
+    );
+}

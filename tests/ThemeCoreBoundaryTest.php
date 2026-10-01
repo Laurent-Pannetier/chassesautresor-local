@@ -1360,6 +1360,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('get_template_part', $renderer);
     }
 
+    public function testRiddleSidebarRatesBelongToCore(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-display-functions.php'
+        );
+
+        foreach (['enigme_sidebar_progression_html', 'enigme_sidebar_resolution_html'] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $source);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+        self::assertStringContainsString('CoreServiceFactory::riddleSidebarStatistics($wpdb)', $core);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(
