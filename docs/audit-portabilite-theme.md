@@ -521,6 +521,12 @@ la construction du message des champs manquants sont maintenant disponibles tant
 fonctions globales historiques sont fournies par le core pour préserver les templates existants ; le thème ne possède
 plus cette règle préalable au parcours organisateur. Son grand assembleur de compte reste toutefois à découper.
 
+Le cent-neuvième lot rend autonome l'API des messages globaux : persistance, session, déduplication, traduction et
+rendu accessible sont fournis par le plugin, tandis que `inc/messages.php` devient un chargeur historique vide. Le CTA
+« Devenir organisateur » rejoint également le core avec toute son orchestration : complétude du profil, expiration de
+la demande, relation organisateur, chasse en attente, rôles et messages. Les libellés historiques non traduits sont
+internationalisés et les rôles disposent de valeurs de repli indépendantes des constantes du thème.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

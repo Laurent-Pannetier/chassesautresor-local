@@ -147,6 +147,7 @@ require_once __DIR__ . '/src/Relationships/OrganizerRequestLifecycleService.php'
 require_once __DIR__ . '/src/Relationships/OrganizerConfirmationRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerConfirmationEmailService.php';
 require_once __DIR__ . '/src/Relationships/organizer-request-functions.php';
+require_once __DIR__ . '/src/Relationships/organizer-cta-functions.php';
 require_once __DIR__ . '/src/Relationships/OrganizerContactRouteHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerCtaDecisionService.php';
 require_once __DIR__ . '/src/Relationships/RelationshipService.php';
@@ -333,6 +334,7 @@ require_once __DIR__ . '/src/Content/OrganizerNavigationService.php';
 require_once __DIR__ . '/src/Messages/UserMessageRepository.php';
 require_once __DIR__ . '/src/Messages/SiteMessageService.php';
 require_once __DIR__ . '/src/Messages/AccountMessageService.php';
+require_once __DIR__ . '/src/Messages/site-message-functions.php';
 require_once __DIR__ . '/src/Messages/account-message-functions.php';
 require_once __DIR__ . '/src/Messages/important-messages.php';
 require_once __DIR__ . '/src/Messages/AccountMessageDismissalAjaxHandler.php';

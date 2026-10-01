@@ -1123,6 +1123,33 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testSiteMessageApiBelongsToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/messages.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/site-message-functions.php'
+        );
+
+        foreach (['cat_get_site_message_service', 'add_site_message', 'remove_site_message', 'get_site_messages']
+            as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $theme);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+    }
+
+    public function testOrganizerCtaOrchestrationBelongsToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Relationships/organizer-cta-functions.php'
+        );
+
+        self::assertStringNotContainsString('function get_cta_devenir_organisateur(', $theme);
+        self::assertStringContainsString('function get_cta_devenir_organisateur(', $core);
+        self::assertStringContainsString('OrganizerCtaDecisionService', $core);
+        self::assertStringContainsString("defined('ROLE_ORGANISATEUR')", $core);
+    }
+
     public function testUserProfileCompletionBelongsToCore(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
