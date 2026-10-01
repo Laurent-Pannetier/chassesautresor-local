@@ -8,7 +8,6 @@ use Closure;
 
 final class HuntFilterAjaxHandler
 {
-    private static ?Closure $filterLoader = null;
     private static ?Closure $renderer = null;
 
     public static function register(callable $addAction): void
@@ -17,9 +16,8 @@ final class HuntFilterAjaxHandler
         $addAction('wp_ajax_nopriv_ca_filter_chasses', [self::class, 'handle']);
     }
 
-    public static function configure(callable $filterLoader, callable $renderer): void
+    public static function configure(callable $renderer): void
     {
-        self::$filterLoader = Closure::fromCallable($filterLoader);
         self::$renderer = Closure::fromCallable($renderer);
     }
 
@@ -27,7 +25,7 @@ final class HuntFilterAjaxHandler
     {
         check_ajax_referer('ca-filter-chasses', 'nonce');
 
-        if (self::$filterLoader === null || self::$renderer === null) {
+        if (self::$renderer === null) {
             wp_send_json_error([
                 'message' => __('Impossible de charger les chasses.', 'chassesautresor-com'),
             ]);
@@ -35,7 +33,7 @@ final class HuntFilterAjaxHandler
         }
 
         $request = is_array($_POST) ? wp_unslash($_POST) : [];
-        $results = (self::$filterLoader)(HuntFilterRequestService::normalize($request));
+        $results = (new HuntFilterApplicationService())->filter(HuntFilterRequestService::normalize($request));
 
         if (!is_array($results) || !isset($results['ids']) || !is_array($results['ids'])) {
             wp_send_json_error([
