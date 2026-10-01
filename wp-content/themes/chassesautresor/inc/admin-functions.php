@@ -1116,6 +1116,10 @@ function traiter_validation_chasse_admin() {
         );
     }
 
+    $administrator_message = isset($_POST['validation_admin_message'])
+        ? sanitize_textarea_field(wp_unslash($_POST['validation_admin_message']))
+        : '';
+
     if ($action === 'valider') {
         (new ChassesAuTresor\Core\Content\HuntModerationOrganizerService())->promote(
             (int) $organisateur_id,
@@ -1130,88 +1134,22 @@ function traiter_validation_chasse_admin() {
                 $user->remove_role(ROLE_ORGANISATEUR_CREATION);
             }
         );
-
-        $flash = sprintf(
-            __('Votre demande de validation pour la chasse « %s » a été acceptée.', 'chassesautresor-com'),
-            esc_html($titre_chasse)
-        );
-        foreach ($user_ids as $uid) {
-            myaccount_add_flash_message($uid, $flash, 'success');
-        }
-
-        envoyer_mail_chasse_validee($organisateur_id, $chasse_id);
-
-    } elseif ($action === 'correction') {
-        $message = isset($_POST['validation_admin_message'])
-            ? sanitize_textarea_field(wp_unslash($_POST['validation_admin_message']))
-            : '';
-
-        envoyer_mail_demande_correction($organisateur_id, $chasse_id, $message);
-
-        $flash = sprintf(
-            __('Votre demande de validation pour la chasse « %s » nécessite des corrections.', 'chassesautresor-com'),
-            '<a href="' . esc_url($url_chasse) . '">' . esc_html($titre_chasse) . '</a>'
-        );
-        if ($message !== '') {
-            $flash .= '<br>' . sprintf(
-                __('Message de l’administrateur : %s', 'chassesautresor-com'),
-                nl2br(esc_html($message))
-            );
-        }
-        $flash .= '<br>' . __('Une copie de ce message vous a été envoyée par email.', 'chassesautresor-com');
-        foreach ($user_ids as $uid) {
-            myaccount_add_persistent_message(
-                $uid,
-                'correction_chasse_' . $chasse_id,
-                $flash,
-                'warning',
-                true,
-                $chasse_id,
-                true
-            );
-            $info_msg = sprintf(
-                /* translators: %1$s and %2$s are anchor tags */
-                __('Votre chasse est éligible à une %1$sdemande de validation%2$s.', 'chassesautresor-com'),
-                '<a href="' . esc_url(get_permalink($chasse_id) . '#cta-validation-chasse') . '">',
-                '</a>'
-            );
-            myaccount_add_persistent_message(
-                $uid,
-                'correction_info_chasse_' . $chasse_id,
-                $info_msg,
-                'info',
-                false,
-                $chasse_id,
-                true
-            );
-        }
-
-    } elseif ($action === 'bannir') {
-        envoyer_mail_chasse_bannie($organisateur_id, $chasse_id);
-
-        $flash = sprintf(
-            __('Votre chasse « %s » a été bannie.', 'chassesautresor-com'),
-            esc_html($titre_chasse)
-        );
-        foreach ($user_ids as $uid) {
-            myaccount_add_flash_message($uid, $flash, 'error');
-        }
-
-    } elseif ($action === 'supprimer') {
-        if (!chasse_trash_with_children($chasse_id)) {
-            wp_die(__('Impossible de supprimer la chasse.', 'chassesautresor-com'));
-        }
-
-        envoyer_mail_chasse_supprimee($organisateur_id, $chasse_id);
-
-        $flash = sprintf(
-            __('Votre chasse « %s » a été supprimée.', 'chassesautresor-com'),
-            esc_html($titre_chasse)
-        );
-        foreach ($user_ids as $uid) {
-            myaccount_add_flash_message($uid, $flash, 'error');
-        }
+    } elseif ($action === 'supprimer' && !chasse_trash_with_children($chasse_id)) {
+        wp_die(__('Impossible de supprimer la chasse.', 'chassesautresor-com'));
     }
+
+    global $wpdb;
+    (new ChassesAuTresor\Core\Content\HuntModerationNotificationService(
+        ChassesAuTresor\Core\Support\CoreServiceFactory::accountMessages($wpdb)
+    ))->notify(
+        $action,
+        (int) $organisateur_id,
+        $chasse_id,
+        array_map('intval', $user_ids),
+        (string) $titre_chasse,
+        (string) $url_chasse,
+        $administrator_message
+    );
 
     // Après le traitement, rediriger systématiquement vers la liste des
     // organisateurs afin d'éviter une erreur 404 si la chasse n'existe plus.
@@ -1219,238 +1157,3 @@ function traiter_validation_chasse_admin() {
     exit;
 }
 ChassesAuTresor\Core\Content\HuntModerationRequestHandler::configure('traiter_validation_chasse_admin');
-
-/**
- * Envoie un email à l'organisateur lorsqu'une chasse nécessite des corrections.
- *
- * @param int    $organisateur_id ID du CPT organisateur.
- * @param int    $chasse_id       ID de la chasse concernée.
- * @param string $message         Message saisi par l'administrateur.
- *
- * @return void
- */
-function envoyer_mail_demande_correction(int $organisateur_id, int $chasse_id, string $message)
-{
-    if (!$organisateur_id || !$chasse_id) {
-        return;
-    }
-
-    $admin_email = get_option('admin_email');
-    $emails      = [];
-
-    $acf_email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($acf_email)) {
-        $acf_email = reset($acf_email);
-    }
-    if (is_string($acf_email) && is_email($acf_email)) {
-        $emails[] = sanitize_email($acf_email);
-    }
-
-    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
-    foreach ($users as $uid) {
-        $user_id = is_object($uid) ? $uid->ID : intval($uid);
-        if ($user_id) {
-            $user = get_user_by('ID', $user_id);
-            if ($user && is_email($user->user_email)) {
-                $emails[] = sanitize_email($user->user_email);
-            }
-        }
-    }
-
-    if (!$emails) {
-        $emails[] = $admin_email;
-    }
-
-    $titre_chasse = get_the_title($chasse_id);
-    $url_chasse   = get_permalink($chasse_id);
-
-    $subject_raw = '[Chasses au Trésor] Corrections requises pour votre chasse';
-
-    $body  = '<div style="font-family:Arial,sans-serif;font-size:14px;">';
-    $body .= '<p>Bonjour,</p>';
-    $body .= '<p>Votre chasse <a href="' . esc_url($url_chasse) . '">' . esc_html($titre_chasse) . '</a> nécessite des corrections pour être validée.</p>';
-    if ($message !== '') {
-        $body .= '<p><em>Message de l\'administrateur :</em><br>' . nl2br(esc_html($message)) . '</p>';
-    }
-    $body .= '<p>Une fois les modifications effectuées, soumettez à nouveau votre chasse depuis votre espace organisateur.</p>';
-    $body .= '<p style="margin-top:2em;">L’équipe chassesautresor.com</p>';
-    $body .= '</div>';
-
-    $headers = [];
-
-    $from_filter = function ($name) use ($organisateur_id) {
-        $titre = get_the_title($organisateur_id);
-        return $titre ?: $name;
-    };
-    add_filter('wp_mail_from_name', $from_filter, 10, 1);
-
-    cta_send_email($emails, $subject_raw, $body, $headers);
-    cta_send_email($admin_email, $subject_raw, $body, $headers);
-    remove_filter('wp_mail_from_name', $from_filter, 10);
-
-}
-
-/**
- * Envoie un email informant l'organisateur que sa chasse a été bannie.
- *
- * @param int $organisateur_id ID du CPT organisateur.
- * @param int $chasse_id       ID de la chasse concernée.
- *
- * @return void
- */
-function envoyer_mail_chasse_bannie(int $organisateur_id, int $chasse_id)
-{
-    if (!$organisateur_id || !$chasse_id) {
-        return;
-    }
-
-    $email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($email)) {
-        $email = reset($email);
-    }
-
-    if (!is_string($email) || !is_email($email)) {
-        $email = get_option('admin_email');
-    }
-
-    $admin_email = get_option('admin_email');
-    $titre_chasse = get_the_title($chasse_id);
-
-    $subject_raw = '[Chasses au Trésor] Chasse bannie';
-
-    $body  = '<p>' . esc_html__('Bonjour,', 'chassesautresor-com') . '</p>';
-    $body .= '<p>' . sprintf(esc_html__('Votre chasse "%s" a été bannie par l\'administrateur.', 'chassesautresor-com'), esc_html($titre_chasse)) . '</p>';
-
-    $headers = [
-        'Bcc: ' . $admin_email,
-    ];
-
-    $from_filter = function ($name) use ($organisateur_id) {
-        $titre = get_the_title($organisateur_id);
-        return $titre ?: $name;
-    };
-    add_filter('wp_mail_from_name', $from_filter, 10, 1);
-
-    cta_send_email($email, $subject_raw, $body, $headers);
-    remove_filter('wp_mail_from_name', $from_filter, 10);
-}
-
-/**
- * Envoie un email informant l'organisateur que sa chasse a été supprimée.
- *
- * @param int $organisateur_id ID du CPT organisateur.
- * @param int $chasse_id       ID de la chasse concernée.
- *
- * @return void
- */
-function envoyer_mail_chasse_supprimee(int $organisateur_id, int $chasse_id)
-{
-    if (!$organisateur_id || !$chasse_id) {
-        return;
-    }
-
-    $email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($email)) {
-        $email = reset($email);
-    }
-
-    if (!is_string($email) || !is_email($email)) {
-        $email = get_option('admin_email');
-    }
-
-    $admin_email = get_option('admin_email');
-    $titre_chasse = get_the_title($chasse_id);
-
-    $subject_raw = '[Chasses au Trésor] Chasse supprimée';
-
-    $body  = '<p>' . esc_html__('Bonjour,', 'chassesautresor-com') . '</p>';
-    $body .= '<p>' . sprintf(esc_html__('Votre chasse "%s" a été supprimée par l\'administrateur.', 'chassesautresor-com'), esc_html($titre_chasse)) . '</p>';
-
-    $headers = [
-        'Bcc: ' . $admin_email,
-    ];
-
-    $from_filter = function ($name) use ($organisateur_id) {
-        $titre = get_the_title($organisateur_id);
-        return $titre ?: $name;
-    };
-    add_filter('wp_mail_from_name', $from_filter, 10, 1);
-
-    cta_send_email($email, $subject_raw, $body, $headers);
-    remove_filter('wp_mail_from_name', $from_filter, 10);
-}
-
-/**
- * Envoie un email informant l'organisateur que sa chasse est validée.
- *
- * @param int $organisateur_id ID du CPT organisateur.
- * @param int $chasse_id       ID de la chasse concernée.
- *
- * @return void
- */
-function envoyer_mail_chasse_validee(int $organisateur_id, int $chasse_id)
-{
-    if (!$organisateur_id || !$chasse_id) {
-        return;
-    }
-
-    $emails = [];
-
-    $acf_email = get_field('email_organisateur', $organisateur_id);
-    if (is_array($acf_email)) {
-        $acf_email = reset($acf_email);
-    }
-    if (is_string($acf_email) && is_email($acf_email)) {
-        $emails[] = sanitize_email($acf_email);
-    }
-
-    $users = (array) get_field('utilisateurs_associes', $organisateur_id);
-    foreach ($users as $uid) {
-        $user_id = is_object($uid) ? $uid->ID : intval($uid);
-        if ($user_id) {
-            $user = get_user_by('ID', $user_id);
-            if ($user && is_email($user->user_email)) {
-                $emails[] = sanitize_email($user->user_email);
-            }
-        }
-    }
-
-    if (!$emails) {
-        $emails[] = get_option('admin_email');
-    }
-
-    $emails = array_unique($emails);
-
-    $admin_email = get_option('admin_email');
-    $titre_chasse = get_the_title($chasse_id);
-    $url_chasse   = get_permalink($chasse_id);
-    $url_qr_code  = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' . rawurlencode($url_chasse);
-
-    $subject_raw = '✅ Votre chasse est maintenant validée !';
-
-    $body  = '<p>Bonjour,</p>';
-    $body .= '<p>Votre chasse <strong>&laquo;' . esc_html($titre_chasse) . '&raquo;</strong> a été <strong>validée avec succès</strong> par notre équipe 🎉<br>';
-    $body .= 'Elle est désormais <strong>accessible aux joueurs</strong>.</p>';
-    $body .= '<hr>';
-    $body .= '<p>🔗 <strong>Lien vers votre chasse :</strong><br>';
-    $body .= '<a href="' . esc_url($url_chasse) . '" target="_blank">' . esc_html($url_chasse) . '</a></p>';
-    $body .= '<p>📲 <strong>QR code à partager :</strong><br>';
-    $body .= '<img src="' . esc_url($url_qr_code) . '" alt="QR code vers la chasse" style="max-width:200px; height:auto; display:block; margin-top:1em;">';
-    $body .= '<br><a href="' . esc_url($url_qr_code) . '" download>Télécharger le QR code</a></p>';
-    $body .= '<hr>';
-    $body .= '<p>Nous vous souhaitons une belle aventure, et restons à votre écoute si besoin.<br>';
-    $body .= 'À très bientôt,<br>L’équipe <strong>Chasses au Trésor</strong></p>';
-
-    $headers = [
-        'Bcc: ' . $admin_email,
-    ];
-
-    $from_filter = function ($name) use ($organisateur_id) {
-        $titre = get_the_title($organisateur_id);
-        return $titre ?: $name;
-    };
-    add_filter('wp_mail_from_name', $from_filter, 10, 1);
-
-    cta_send_email($emails, $subject_raw, $body, $headers);
-    remove_filter('wp_mail_from_name', $from_filter, 10);
-}

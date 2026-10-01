@@ -92,6 +92,15 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotOwnHuntModerationEmails(): void
+    {
+        $violations = $this->findPhpMatches(
+            '/envoyer_mail_(?:demande_correction|chasse_validee|chasse_bannie|chasse_supprimee)/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+    }
+
     public function testRemovedCompatibilityLoadersStayRemoved(): void
     {
         $loaders = [

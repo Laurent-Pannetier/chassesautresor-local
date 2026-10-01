@@ -880,55 +880,12 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
  * 🔹 confirmer_demande_organisateur() → Valide la demande et crée le CPT.
  */
 
-function envoyer_email_confirmation_organisateur(int $user_id, string $token): bool {
-    $user = get_userdata($user_id);
-    if (!$user || !is_email($user->user_email)) return false;
-
-    $confirmation_url = add_query_arg([
-        'user'  => $user_id,
-        'token' => $token,
-    ], site_url('/confirmation-organisateur/'));
-
-    $subject_raw = __(
-        '[Chasses au Trésor] Confirmez votre inscription organisateur',
-        'chassesautresor-com'
+function envoyer_email_confirmation_organisateur(int $user_id, string $token): bool
+{
+    return (new ChassesAuTresor\Core\Relationships\OrganizerConfirmationEmailService())->send(
+        $user_id,
+        $token
     );
-
-    $body  = '<p>' . sprintf(
-        esc_html__( 'Bonjour %s,', 'chassesautresor-com' ),
-        '<strong>' . esc_html( $user->display_name ) . '</strong>'
-    ) . '</p>';
-    $body .= '<p>' . esc_html__(
-        'Pour finaliser la création de votre profil organisateur, veuillez cliquer sur le bouton ci-dessous :',
-        'chassesautresor-com'
-    ) . '</p>';
-    $cta_styles  = 'background:#0073aa;color:#fff;padding:12px 24px;';
-    $cta_styles .= 'border-radius:6px;text-decoration:none;font-weight:bold;';
-    $cta_styles .= 'display:inline-block;';
-    $body      .= '<p style="text-align:center;margin:24px 0;"><a href="'
-        . esc_url( $confirmation_url )
-        . '" style="'
-        . esc_attr( $cta_styles )
-        . '">'
-        . esc_html__( 'Confirmer mon inscription', 'chassesautresor-com' )
-        . '</a></p>';
-    $body .= '<p>' . esc_html__( 'Ce lien est valable pendant 2 jours.', 'chassesautresor-com' ) . '</p>';
-    $body .= '<p style="margin-top:2em;">' . esc_html__( 'Merci et à très bientôt !', 'chassesautresor-com' ) . '<br>' . esc_html__(
-        'L’équipe chassesautresor.com',
-        'chassesautresor-com'
-    ) . '</p>';
-
-    $from_filter = static function ($name) {
-        return 'Chasses au Trésor';
-    };
-
-    $headers = [];
-
-    add_filter('wp_mail_from_name', $from_filter, 10, 1);
-    cta_send_email($user->user_email, $subject_raw, $body, $headers);
-    remove_filter('wp_mail_from_name', $from_filter, 10);
-
-    return true;
 }
 
 function lancer_demande_organisateur(int $user_id): bool

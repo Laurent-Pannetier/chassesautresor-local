@@ -12,14 +12,14 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (29 668 lignes). Vingt-huit fichiers référencent directement les
-classes du plugin, pour 214 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
+Le thème compte 146 fichiers PHP hors tests (29 328 lignes). Vingt-huit fichiers référencent directement les
+classes du plugin, pour 217 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 91 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 93 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -39,14 +39,16 @@ Le lot de migration associé à cet audit a sorti du thème :
 - l'enregistrement du point d'entrée `admin_post_*` de modération, désormais possédé par Core ;
 - la publication de l'organisateur validé et la sélection de l'utilisateur dont les rôles doivent être promus ;
 - le cycle de vie de la demande organisateur : jeton, expiration, renvoi, confirmation et nettoyage ;
-- les routes et le contrôleur de confirmation du profil organisateur.
+- les routes et le contrôleur de confirmation du profil organisateur ;
+- les messages de compte et courriels liés à la modération des chasses ;
+- le contenu et l'envoi du courriel de confirmation organisateur.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un gros lot les **notifications métier et l'interface applicative organisateur** : messages de compte,
-courriels de validation/correction/bannissement/suppression, courriel de confirmation organisateur et décision du CTA
-de candidature. Ce lot supprimera les dernières callbacks de compatibilité configurées par le thème et laissera les
-templates avec de simples view models. Cible après ce lot : **94 %**.
+Migrer en un gros lot les **derniers contrôleurs de compatibilité et view models** : exécuteur de modération,
+décision du CTA organisateur, traitement des templates d'engagement et de maintenance des tentatives. Ce lot
+supprimera les dernières callbacks applicatives configurées par le thème et laissera les templates avec de simples
+view models. Cible après ce lot : **96 %**.
 
 ## Critères utilisés
 
@@ -75,9 +77,8 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 
 ### P1 — workflows métier et contrôleurs encore dans le thème
 
-1. **Modération.** `inc/admin-functions.php` traite encore la validation des chasses via un hook `admin_post_*`.
-   Les widgets de rendu peuvent rester dans le thème, mais validation, autorisation, calcul et mutation doivent
-   migrer.
+1. **Modération.** `inc/admin-functions.php` fournit encore l'exécuteur configuré dans le handler Core. Le point
+   d'entrée, la politique, les mutations, la promotion et les notifications ont déjà migré.
 2. **Interface organisateur.** `inc/organisateur-functions.php` conserve le courriel de confirmation et la décision
    du CTA de candidature. Le thème ne devrait rendre que le view model et le formulaire.
 3. **Engagement et maintenance de progression.** `templates/page-traitement-engagement.php` instancie directement
