@@ -101,6 +101,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testBusinessProcessingTemplatesDelegateToCore(): void
+    {
+        $engagement = (string) file_get_contents(
+            self::THEME_PATH . '/templates/page-traitement-engagement.php'
+        );
+        $attempt = (string) file_get_contents(
+            self::THEME_PATH . '/templates/page-traitement-tentative.php'
+        );
+
+        self::assertStringContainsString('HuntEngagementRouteHandler::handle()', $engagement);
+        self::assertStringNotContainsString('HuntEngagementApplicationService', $engagement);
+        self::assertStringContainsString('RiddleAttemptMaintenanceService', $attempt);
+        self::assertStringNotContainsString('deleteForRiddle(', $attempt);
+        self::assertStringNotContainsString('deleteRiddleStatuses(', $attempt);
+    }
+
     public function testRemovedCompatibilityLoadersStayRemoved(): void
     {
         $loaders = [

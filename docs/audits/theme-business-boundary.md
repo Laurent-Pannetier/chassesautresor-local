@@ -12,14 +12,14 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (29 328 lignes). Vingt-huit fichiers référencent directement les
-classes du plugin, pour 217 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
+Le thème compte 146 fichiers PHP hors tests (29 256 lignes). Vingt-huit fichiers référencent directement les
+classes du plugin, pour 219 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 93 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 96 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -41,14 +41,17 @@ Le lot de migration associé à cet audit a sorti du thème :
 - le cycle de vie de la demande organisateur : jeton, expiration, renvoi, confirmation et nettoyage ;
 - les routes et le contrôleur de confirmation du profil organisateur ;
 - les messages de compte et courriels liés à la modération des chasses ;
-- le contenu et l'envoi du courriel de confirmation organisateur.
+- le contenu et l'envoi du courriel de confirmation organisateur ;
+- le contrôleur du template d'engagement d'une chasse ;
+- les mutations de maintenance des tentatives et statuts d'énigme ;
+- la décision métier du CTA de candidature organisateur.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un gros lot les **derniers contrôleurs de compatibilité et view models** : exécuteur de modération,
-décision du CTA organisateur, traitement des templates d'engagement et de maintenance des tentatives. Ce lot
-supprimera les dernières callbacks applicatives configurées par le thème et laissera les templates avec de simples
-view models. Cible après ce lot : **96 %**.
+Migrer en un gros lot les **dernières mutations de progression et réponse** : supprimer l'exécuteur de modération
+configuré par le thème, déplacer le traitement de validation historique, la soumission manuelle des réponses et le
+hook de fin de chasse. Ce lot fermera les derniers contrôleurs applicatifs prioritaires encore chargés par le thème.
+Cible après ce lot : **98 %**.
 
 ## Critères utilisés
 
@@ -79,11 +82,10 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 
 1. **Modération.** `inc/admin-functions.php` fournit encore l'exécuteur configuré dans le handler Core. Le point
    d'entrée, la politique, les mutations, la promotion et les notifications ont déjà migré.
-2. **Interface organisateur.** `inc/organisateur-functions.php` conserve le courriel de confirmation et la décision
-   du CTA de candidature. Le thème ne devrait rendre que le view model et le formulaire.
-3. **Engagement et maintenance de progression.** `templates/page-traitement-engagement.php` instancie directement
-   `HuntEngagementApplicationService`. `templates/page-traitement-tentative.php` efface les tentatives et statuts.
-   Ce sont des contrôleurs applicatifs placés dans des templates.
+2. **Interface organisateur.** `inc/organisateur-functions.php` collecte encore le contexte WordPress et transforme
+   la décision Core en view model. Cette façade peut rester temporairement pour la compatibilité des templates.
+3. **Maintenance de progression.** `templates/page-traitement-tentative.php` conserve le contrôle d'accès et le
+   rendu, mais délègue désormais les suppressions de tentatives et statuts à Core.
 4. **Permissions et routage de contenus.** `inc/access-functions.php` contient encore les politiques d'ajout,
    modification, suppression et visibilité, ainsi que des routes de fichiers/solutions. Plusieurs fonctions
    délèguent déjà au plugin, mais l'enregistrement des routes et toute décision métier doivent être déplacés.

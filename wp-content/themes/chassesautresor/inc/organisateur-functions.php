@@ -796,76 +796,62 @@ function get_cta_devenir_organisateur(?int $user_id = null): array
     remove_site_message('profil_incomplet_' . $user_id);
     myaccount_remove_persistent_message($user_id, 'profil_incomplet');
 
-    if (in_array('administrator', $roles, true)) {
-        return [
-            'label' => 'Salut Patron',
-            'url'   => null,
-            'disabled' => true,
-        ];
-    }
-
     $request_status = cat_get_organisateur_request_status($user_id);
 
     if ($request_status['expired']) {
         add_site_message(
             'info',
-            __('Votre précédente demande de création de profil a expiré. Vous pouvez en envoyer une nouvelle.', 'chassesautresor-com'),
+            __(
+                'Votre précédente demande de création de profil a expiré. Vous pouvez en envoyer une nouvelle.',
+                'chassesautresor-com'
+            ),
             false,
             'profil_expire_' . $user_id
         );
     }
 
-    // Demande d'inscription non confirmée
-    if (!empty($request_status['token'])) {
-        return [
-            'label' => "Renvoyer l'email de confirmation",
-            'url'   => home_url('/creer-mon-profil/?resend=1'),
-            'disabled' => false,
-        ];
-    }
-
-    $organisateur_id   = get_organisateur_from_user($user_id);
+    $organisateur_id = (int) get_organisateur_from_user($user_id);
     $has_pending_chasse = false;
-    if ($organisateur_id) {
+    if ($organisateur_id > 0) {
         $query = get_chasses_de_organisateur($organisateur_id);
-        if ($query && $query->have_posts()) {
-            foreach ($query->posts as $chasse_id) {
-                $statut_validation = get_field('chasse_cache_statut_validation', (int) $chasse_id);
-                if ($statut_validation === 'en_attente') {
-                    $has_pending_chasse = true;
-                    break;
-                }
+        foreach (($query && $query->have_posts()) ? $query->posts : [] as $chasse_id) {
+            if (get_field('chasse_cache_statut_validation', (int) $chasse_id) === 'en_attente') {
+                $has_pending_chasse = true;
+                break;
             }
         }
     }
 
-    if (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && $has_pending_chasse) {
-        return [
-            'label' => "Renvoyer l'email",
-            'url'   => home_url('/creer-mon-profil/?resend=1'),
-            'disabled' => false,
-        ];
-    }
+    $decision = (new ChassesAuTresor\Core\Relationships\OrganizerCtaDecisionService())->decide(
+        in_array('administrator', $roles, true),
+        !empty($request_status['token']),
+        in_array(ROLE_ORGANISATEUR_CREATION, $roles, true),
+        in_array(ROLE_ORGANISATEUR, $roles, true),
+        $organisateur_id,
+        $has_pending_chasse
+    );
 
-    if (
-        $organisateur_id &&
-        (in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) || in_array(ROLE_ORGANISATEUR, $roles, true)) &&
-        !$has_pending_chasse
-    ) {
-        return [
-            'label' => 'Votre profil',
-            'url'   => get_permalink($organisateur_id),
-            'disabled' => false,
-        ];
-    }
-
-    if (!in_array(ROLE_ORGANISATEUR_CREATION, $roles, true) && !in_array(ROLE_ORGANISATEUR, $roles, true) && !$organisateur_id) {
-        return [
-            'label' => 'Devenir organisateur',
-            'url'   => home_url('/creer-mon-profil/'),
-            'disabled' => false,
-        ];
-    }
+    $views = [
+        'administrator' => [__('Salut Patron', 'chassesautresor-com'), null, true],
+        'resend_confirmation' => [
+            __('Renvoyer l’email de confirmation', 'chassesautresor-com'),
+            home_url('/creer-mon-profil/?resend=1'),
+            false,
+        ],
+        'resend_pending_hunt' => [
+            __('Renvoyer l’email', 'chassesautresor-com'),
+            home_url('/creer-mon-profil/?resend=1'),
+            false,
+        ],
+        'profile' => [__('Votre profil', 'chassesautresor-com'), get_permalink($organisateur_id), false],
+        'apply' => [
+            __('Devenir organisateur', 'chassesautresor-com'),
+            home_url('/creer-mon-profil/'),
+            false,
+        ],
+        'create' => [$label, $url, $disabled],
+    ];
+    [$label, $url, $disabled] = $views[$decision];
 
     return compact('label', 'url', 'disabled');
 }
