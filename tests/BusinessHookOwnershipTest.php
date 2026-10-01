@@ -10,6 +10,7 @@ use ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler;
 use ChassesAuTresor\Core\Content\ContentScreenAccessHookHandler;
 use ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler;
 use ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler;
+use ChassesAuTresor\Core\Content\HuntDisplayCacheInvalidationHookHandler;
 use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
@@ -267,6 +268,28 @@ final class BusinessHookOwnershipTest extends TestCase
             ['template_redirect', [HuntViewMaintenanceHookHandler::class, 'handle']],
             $hooks[0]
         );
+    }
+
+    public function testHuntDisplayCacheInvalidationHooksAreRegisteredByCore(): void
+    {
+        $actions = [];
+        $filters = [];
+
+        HuntDisplayCacheInvalidationHookHandler::register(
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            },
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
+            }
+        );
+
+        self::assertSame('acf/save_post', $actions[0][0]);
+        self::assertSame('save_post', $actions[1][0]);
+        self::assertSame('chasse_engagement_created', $actions[2][0]);
+        self::assertSame('set_object_terms', $actions[3][0]);
+        self::assertSame('chassesautresor_hunt_display_cache_clear_requested', $actions[4][0]);
+        self::assertSame('acf/update_value/name=utilisateurs_associes', $filters[0][0]);
     }
 
     public function testConversionSettingsHooksAreRegisteredByCore(): void

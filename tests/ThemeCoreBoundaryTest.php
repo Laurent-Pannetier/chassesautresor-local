@@ -497,6 +497,25 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('acf/format_value/type=gallery', $edition);
     }
 
+    public function testThemeDoesNotOwnHuntDisplayCacheInvalidation(): void
+    {
+        $violations = $this->findPhpMatches(
+            '/function chasse_(?:clear|invalidate|acf_clear)_infos_affichage_cache/'
+        );
+
+        self::assertSame([], $violations, $this->formatViolations($violations));
+
+        $huntFunctions = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        self::assertStringNotContainsString('chasse_acf_handle_utilisateurs_associes', $huntFunctions);
+        self::assertStringNotContainsString('chasse_clear_infos_affichage_cache_for_organisateur', $huntFunctions);
+
+        $status = (string) file_get_contents(self::THEME_PATH . '/inc/statut-functions.php');
+        self::assertStringNotContainsString(
+            'chassesautresor_hunt_display_cache_clear_requested',
+            $status
+        );
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');

@@ -197,6 +197,7 @@ require_once __DIR__ . '/src/Content/HuntClosureService.php';
 require_once __DIR__ . '/src/Content/HuntValidationRequestRouteHandler.php';
 require_once __DIR__ . '/src/Content/HuntWelcomeModalViewHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntViewMaintenanceHookHandler.php';
+require_once __DIR__ . '/src/Content/HuntDisplayCacheInvalidationHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntCreationRequestService.php';
 require_once __DIR__ . '/src/Content/HuntPostFactory.php';
 require_once __DIR__ . '/src/Content/HuntCreationRouteHandler.php';
@@ -323,6 +324,7 @@ ChassesAuTresor\Core\Content\RiddleAccessRedirectHandler::register('add_action')
 ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntDisplayCacheInvalidationHookHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Content\HuntModerationRequestHandler::register('add_action');
 ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Relationships\OrganizerContactRouteHandler::register('add_action', 'add_filter');
