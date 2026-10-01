@@ -597,6 +597,26 @@ liste limitée de responsabilités déjà migrées et autorise encore les écrit
 5. Activer un thème WordPress neutre sur un environnement de recette et valider au minimum les parcours joueur,
    organisateur et administrateur, les courriels, les tâches planifiées et les écrans WooCommerce.
 
+## Estimation des lots restant à réaliser
+
+À périmètre fonctionnel constant et avec des lots de taille comparable aux derniers travaux, l'estimation prudente
+est la suivante :
+
+- **2 à 4 lots** pour terminer l'extraction métier PHP : séparer les décisions et données encore mêlées au rendu dans
+  `inc/enigme/affichage.php` et `inc/user-functions.php`, puis étendre la garde de frontière à tout le thème ;
+- **7 à 10 lots supplémentaires** pour fournir depuis le plugin des parcours de secours cohérents : chasses, énigmes,
+  indices, organisateurs, espace compte, écrans d'édition et intégrations WooCommerce. Ces lots doivent définir des
+  templates surchargeables ou une autre API de présentation stable, et non simplement déplacer le HTML du thème ;
+- **2 à 3 lots supplémentaires** pour rendre les assets indispensables indépendants du thème, supprimer les derniers
+  adaptateurs de présentation obligatoires et documenter le contrat d'intégration d'un thème tiers ;
+- **1 à 2 lots de recette et de stabilisation** sous thème neutre, couvrant les rôles joueur, organisateur et
+  administrateur, les parcours asynchrones, les courriels, les tâches planifiées et WooCommerce.
+
+La **migration métier stricte** est donc estimée à **2 à 4 lots restants**. La possibilité de remplacer le thème sans
+perte fonctionnelle demande plutôt **12 à 19 lots au total**, recette comprise. Cette fourchette est une prévision,
+pas un indicateur d'avancement : elle devra être révisée après l'inventaire des dépendances des 83 parcours PHP et
+des 93 assets, et ne permet pas à elle seule de modifier les taux de 97 % et 49 %.
+
 ## Conclusion opérationnelle
 
 Le plugin doit rester actif, mais ce n'est pas suffisant aujourd'hui. Tant que ces conditions ne sont pas remplies,
