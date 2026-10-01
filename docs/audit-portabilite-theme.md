@@ -527,6 +527,11 @@ rendu accessible sont fournis par le plugin, tandis que `inc/messages.php` devie
 la demande, relation organisateur, chasse en attente, rôles et messages. Les libellés historiques non traduits sont
 internationalisés et les rôles disposent de valeurs de repli indépendantes des constantes du thème.
 
+Le cent-dixième lot retire une dépendance d'amorçage plus fondamentale : les identifiants de rôles, les états de
+solution et le drapeau de diagnostic sont désormais définis par `Support/constants.php` avant le chargement des
+services Core. Le fichier `inc/constants.php` du thème devient une façade vide. Un thème tiers peut donc activer les
+politiques d'accès et les cycles de solution sans provoquer d'erreur liée à une constante absente.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

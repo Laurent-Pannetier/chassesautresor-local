@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 defined('ABSPATH') || exit;
 
 /**
  * Create the service responsible for persistent site messages.
  */
-function cat_get_site_message_service(): ChassesAuTresor\Core\Messages\SiteMessageService
-{
+function cat_get_site_message_service(): ChassesAuTresor\Core\Messages\SiteMessageService {
     global $wpdb;
     return ChassesAuTresor\Core\Support\CoreServiceFactory::siteMessages($wpdb);
 }
@@ -32,8 +33,7 @@ function add_site_message(
     ?string $locale = null,
     ?int $expires = null,
     bool $dismissible = false
-): void
-{
+): void {
     $message = [
         'type'        => $type,
         'content'     => $content,
@@ -85,8 +85,7 @@ function add_site_message(
  *
  * @return void
  */
-function remove_site_message(string $key): void
-{
+function remove_site_message(string $key): void {
     cat_get_site_message_service()->removeByKey($key);
 }
 
@@ -95,8 +94,7 @@ function remove_site_message(string $key): void
  *
  * @return string HTML content for the messages.
  */
-function get_site_messages(): string
-{
+function get_site_messages(): string {
     $messages = [];
 
     $uri = $_SERVER['REQUEST_URI'] ?? '';
@@ -177,8 +175,7 @@ function get_site_messages(): string
  *
  * @return void
  */
-function print_site_messages(): void
-{
+function print_site_messages(): void {
     $messages = get_site_messages();
 
     if (function_exists('myaccount_get_important_messages')) {

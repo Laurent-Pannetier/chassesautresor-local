@@ -1123,6 +1123,19 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('function cat_get_user_attempt_statistics_service', $source);
     }
 
+    public function testBusinessConstantsBelongToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/constants.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Support/constants.php'
+        );
+
+        foreach (['ROLE_ORGANISATEUR', 'ROLE_ORGANISATEUR_CREATION', 'SOLUTION_STATE_DESACTIVE'] as $constant) {
+            self::assertStringNotContainsString("define('{$constant}'", $theme);
+            self::assertStringContainsString("'{$constant}'", $core);
+        }
+    }
+
     public function testSiteMessageApiBelongsToCore(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/messages.php');
