@@ -631,6 +631,10 @@ final class ThemeCoreBoundaryTest extends TestCase
         $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-core.php');
 
         foreach ([
+            'function rediriger_si_affichage_solution',
+            'function creer_solution_pour_objet',
+            'function register_endpoint_creer_solution',
+            'function flush_rewrite_rules_creer_solution',
             'function solution_planifier_publication',
             'function solution_rendre_accessible',
             'function basculer_solutions_programme',

@@ -178,6 +178,8 @@ class SolutionCacheUpdateTest extends TestCase
 
         $this->registerStubs();
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'objet_id'             => 3,
@@ -208,6 +210,8 @@ class SolutionCacheUpdateTest extends TestCase
 
         $this->registerStubs();
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         $_POST = [
             'solution_id'          => 123,

@@ -70,6 +70,8 @@ class SolutionNamingTest extends TestCase
     public function test_creer_solution_pour_objet_sets_title(): void
     {
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/edition/edition-solution.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/solution-functions.php';
 
         creer_solution_pour_objet(5, 'chasse');
 

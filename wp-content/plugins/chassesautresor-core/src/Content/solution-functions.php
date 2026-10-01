@@ -3,10 +3,16 @@
 declare(strict_types=1);
 
 use ChassesAuTresor\Core\Content\SolutionCacheUpdater;
+use ChassesAuTresor\Core\Content\SolutionCreationRouteHandler;
 use ChassesAuTresor\Core\Content\SolutionPublicationPlanner;
 use ChassesAuTresor\Core\Content\SolutionPublicationService;
 use ChassesAuTresor\Core\Content\SolutionSaveHandler;
 use ChassesAuTresor\Core\Content\SolutionScheduler;
+
+function creer_solution_pour_objet(int $targetId, string $targetType, ?int $userId = null)
+{
+    return SolutionCreationRouteHandler::create($targetId, $targetType, $userId);
+}
 
 function solution_planifier_publication(int $solutionId): void
 {

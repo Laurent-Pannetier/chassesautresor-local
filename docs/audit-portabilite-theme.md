@@ -220,6 +220,12 @@ traitement cron, mise à jour du cache et sauvegarde ACF sont maintenant exposé
 conserve plus ces points d'entrée mutationnels. Le filtre de classes CSS d'`edition-core.php` ne force également plus de
 recalcul de complétude pendant le rendu ; les gestionnaires de sauvegarde et de vue du core possèdent déjà ce cycle.
 
+Le cinquante-et-unième lot a retiré les derniers adaptateurs de route de `edition-solution.php`. L'enregistrement et le
+rafraîchissement des règles de réécriture ainsi que la redirection des pages de solution étaient déjà enregistrés par le
+plugin ; leurs wrappers inutilisés ont été supprimés. La fonction historique de création reste disponible, mais vit
+maintenant avec les autres fonctions de compatibilité dans `solution-functions.php` côté core. Le fichier du thème ne
+conserve plus que le moteur de rendu du tableau de solutions.
+
 Estimation prudente après ce lot : **environ 98 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
