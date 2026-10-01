@@ -36,21 +36,6 @@ function cat_classify_hunt_riddles(array $riddleIds): array
  */
 
 /**
- * 🔢 Récupère le solde de points d’un utilisateur.
- *
- * @param int|null $user_id ID de l'utilisateur (par défaut : utilisateur courant).
- * @return int Nombre de points (0 si aucun point n'est trouvé).
- */
-function get_user_points($user_id = null): int {
-    $user_id = $user_id ?: get_current_user_id();
-    if (!$user_id) {
-        return 0;
-    }
-
-    return cat_get_points_service()->getBalance((int) $user_id);
-}
-
-/**
  * ➕➖ Met à jour le solde de points de l'utilisateur.
  *
  * - Empêche les points négatifs.

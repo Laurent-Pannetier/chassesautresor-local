@@ -17,6 +17,13 @@ function compter_tentatives_en_attente(int $enigme_id): int {
     return cat_get_riddle_attempt_service()->countPendingForRiddle($enigme_id);
 }
 
+if (!function_exists('compter_tentatives_du_jour')) {
+    /** Count attempts submitted by a user for a riddle during the current day. */
+    function compter_tentatives_du_jour(int $user_id, int $enigme_id): int {
+        return cat_get_riddle_attempt_service()->countTodayForUser($user_id, $enigme_id);
+    }
+}
+
 /** Normalize the historical ACF representation of a riddle validation mode. */
 function enigme_normaliser_mode_validation($mode): string {
     if (is_array($mode)) {

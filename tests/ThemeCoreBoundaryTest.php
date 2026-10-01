@@ -1402,6 +1402,23 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString("'indice_chasse_linked'", $service);
     }
 
+    public function testRiddleParticipationBalancesAndAttemptCountsBelongToCore(): void
+    {
+        $gamify = (string) file_get_contents(self::THEME_PATH . '/inc/gamify-functions.php');
+        $attempts = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');
+        $pointsCore = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/point-service-functions.php'
+        );
+        $attemptsCore = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-attempt-functions.php'
+        );
+
+        self::assertStringNotContainsString('function get_user_points(', $gamify);
+        self::assertStringContainsString('function get_user_points(', $pointsCore);
+        self::assertStringNotContainsString('function compter_tentatives_du_jour(', $attempts);
+        self::assertStringContainsString('function compter_tentatives_du_jour(', $attemptsCore);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(

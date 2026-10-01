@@ -468,6 +468,10 @@ Le service résout la chasse associée et sélectionne séparément les indices 
 de la chasse. Le thème conserve encore la composition visuelle, le déblocage et les informations de tentative ; les
 indicateurs restent donc inchangés.
 
+Le cent-et-unième lot transfère les deux lectures encore appelées par les informations de participation : solde de
+points de l'utilisateur et nombre de tentatives du jour. Leurs façades historiques délèguent maintenant aux services
+core de points et de tentatives. Le panneau reste toutefois assemblé dans le thème ; les indicateurs ne changent pas.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |

@@ -202,12 +202,3 @@ function recuperer_enigmes_tentatives_en_attente(int $organisateur_id): array
 
     return cat_get_riddle_attempt_service()->findPendingManualRiddleIds($riddle_modes);
 }
-
-/**
- * Compte le nombre de tentatives effectuées par un utilisateur pour une énigme
- * durant la journée courante (heure de Paris).
- */
-function compter_tentatives_du_jour(int $user_id, int $enigme_id): int
-{
-    return cat_get_riddle_attempt_service()->countTodayForUser($user_id, $enigme_id);
-}

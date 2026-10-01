@@ -1,6 +1,8 @@
 <?php
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-attempt-functions.php';
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/tentatives.php';
 
 class EnigmeFunctionsTest extends TestCase {

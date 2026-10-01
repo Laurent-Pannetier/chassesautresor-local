@@ -27,3 +27,12 @@ function cat_get_conversion_service(): ConversionService {
 
     return CoreServiceFactory::conversion($wpdb);
 }
+
+if (!function_exists('get_user_points')) {
+    /** Return the current or requested user's point balance. */
+    function get_user_points($user_id = null): int {
+        $userId = (int) ($user_id ?: get_current_user_id());
+
+        return $userId > 0 ? cat_get_points_service()->getBalance($userId) : 0;
+    }
+}
