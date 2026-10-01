@@ -139,6 +139,34 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chasse_clear_infos_affichage_cache(', $template);
     }
 
+    public function testPresentationTemplatesDoNotWritePersistentData(): void
+    {
+        $violations = [];
+        $mutation = '/\b(?:update|delete)_(?:post|user)_meta\s*\(|\bupdate_field\s*\('
+            . '|\bwp_(?:insert|update|delete)_post\s*\(|\bset_transient\s*\(|\$wpdb->(?:insert|update|delete|query)\s*\(/';
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(self::THEME_PATH, FilesystemIterator::SKIP_DOTS)
+        );
+        foreach ($iterator as $file) {
+            $path = str_replace('\\', '/', $file->getPathname());
+            $relative = str_replace(self::THEME_PATH . '/', '', $path);
+            $isTemplate = preg_match('#^(?:single-|page-).*\.php$#', $relative) === 1
+                || strpos($relative, 'templates/') === 0
+                || strpos($relative, 'template-parts/') === 0;
+            if (
+                $file->isFile()
+                && $file->getExtension() === 'php'
+                && $isTemplate
+                && preg_match($mutation, (string) file_get_contents($path)) === 1
+            ) {
+                $violations[] = $relative;
+            }
+        }
+
+        self::assertSame([], array_values(array_unique($violations)), $this->formatViolations($violations));
+    }
+
     public function testThemeDoesNotRegisterOrganizerConfirmationRoutes(): void
     {
         $violations = $this->findPhpMatches(

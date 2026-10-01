@@ -19,7 +19,7 @@ considérées comme de la logique métier résiduelle ; elles restent toutefois 
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 99,9 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 99,95 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -56,12 +56,17 @@ Le lot de migration associé à cet audit a sorti du thème :
 - la notification d'acceptation ou de refus au joueur ; l'ancien accusé de réception inutilisé a été retiré.
 - la persistance de l'affichage de la modale de bienvenue, sortie de `single-chasse.php` et portée par un hook Core.
 - les recalculs de statut, relations, complétude et cache d'affichage déclenchés avant le rendu d'une chasse.
+- une règle CI interdit désormais les écritures WordPress, ACF et SQL dans les templates de présentation.
+
+Le registre de `inc/search` est explicitement classé comme **présentationnel** : il décrit les colonnes et jointures
+nécessaires aux listes et filtres visuels propres au thème. Il ne constitue pas une API produit et ne doit donc pas
+être migré dans Core tant qu'aucun consommateur indépendant du thème n'apparaît.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Effectuer un dernier lot de **suppression des façades de compatibilité** : retirer les fonctions globales de
-tentative qui n'ont plus d'appelant métier, documenter le registre de recherche comme composant de présentation,
-et élargir la règle CI à toutes les écritures WordPress dans les templates. Cible après ce lot : **100 %**.
+Effectuer un dernier lot de **suppression des façades de tentative** : déplacer la revue manuelle encore appelée par
+les écrans historiques, puis retirer `traiter_tentative_manuelle`, `traiter_tentative` et les façades de lecture qui
+n'ont plus d'autre appelant. Cible après ce lot : **100 %**.
 
 ## Critères utilisés
 
