@@ -629,6 +629,20 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('chassesautresor_solution_exists', $management);
     }
 
+    public function testThemeDelegatesRiddleParticipationViewModelToCore(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddlePlayerPanelRenderer.php'
+        );
+
+        self::assertStringContainsString('RiddlePlayerPanelRenderer', $theme);
+        self::assertStringNotContainsString('RiddleParticipationService', $theme);
+        self::assertStringNotContainsString('RiddleParticipationInfoService', $theme);
+        self::assertStringNotContainsString("getRiddleResolutionDate", $theme);
+        self::assertStringContainsString('class RiddlePlayerPanelRenderer', $renderer);
+    }
+
     public function testThemeDoesNotOwnRiddleImageProtectionLifecycle(): void
     {
         $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-securite.php');
@@ -1396,7 +1410,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
 
         self::assertStringNotContainsString("'post_type'      => 'indice'", $source);
-        self::assertStringContainsString('new ChassesAuTresor\\Core\\Progress\\RiddleParticipationService', $source);
+        self::assertStringNotContainsString('new ChassesAuTresor\\Core\\Progress\\RiddleParticipationService', $source);
+        self::assertStringContainsString('RiddlePlayerPanelRenderer', $source);
         self::assertStringContainsString("'post_type' => 'indice'", $service);
         self::assertStringContainsString("'indice_enigme_linked'", $service);
         self::assertStringContainsString("'indice_chasse_linked'", $service);
@@ -1436,7 +1451,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
         $participationSource = $matches[0] ?? '';
 
-        self::assertStringContainsString('RiddleParticipationInfoService', $participationSource);
+        self::assertStringNotContainsString('RiddleParticipationInfoService', $participationSource);
+        self::assertStringContainsString('RiddlePlayerPanelRenderer', $participationSource);
         self::assertStringContainsString('function build(', $service);
         self::assertStringNotContainsString("get_field('enigme_mode_validation'", $participationSource);
         self::assertStringNotContainsString("get_field('enigme_tentative_cout_points'", $participationSource);

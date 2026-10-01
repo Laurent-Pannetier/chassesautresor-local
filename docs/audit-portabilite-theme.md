@@ -503,11 +503,17 @@ Le cent-et-unième lot transfère les deux lectures encore appelées par les inf
 points de l'utilisateur et nombre de tentatives du jour. Leurs façades historiques délèguent maintenant aux services
 core de points et de tentatives. Le panneau reste toutefois assemblé dans le thème ; les indicateurs ne changent pas.
 
+Le cent-sixième lot termine l'extraction du panneau de participation. `RiddlePlayerPanelRenderer` compose désormais
+le message de résolution, les deux groupes d'indices, leurs états programmés ou débloqués, le solde, les tentatives et
+le badge de coût. Le thème ne fournit plus que le fragment de formulaire propre à son style d'affichage ; il ne construit
+plus le view-model et n'interroge plus directement les services de participation. `inc/enigme/affichage.php` reste un
+assembleur visuel important pour la page complète, mais ne fait plus partie des grands view-models métier mixtes.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
-| Extraction du métier PHP inventorié | **97 %** | Deux grands view-models mixtes restent dans le thème |
+| Extraction du métier PHP inventorié | **98 %** | Un grand view-model mixte reste dans le thème |
 | Remplaçabilité effective du thème | **49 %** | Les quatorze rendus AJAX recensés sont autonomes |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
@@ -539,9 +545,9 @@ Résultats obtenus après ce lot :
   été inventoriées. Le plugin ne conserve **aucune configuration de contrôleur par le thème** ;
 - `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
   compatibilité sont fournis par le plugin ;
-- la revue ciblée relève **2 grands assembleurs de view-models mixtes** :
-  `inc/enigme/affichage.php` et `inc/user-functions.php`. Ils combinent
-  encore données WordPress, progression ou accès avec CTA et HTML ;
+- la revue ciblée relève **1 grand assembleur de view-model mixte** : `inc/user-functions.php`. Il combine encore
+  données WordPress et règles de sélection avec CTA et HTML. `inc/enigme/affichage.php` reste volumineux, mais
+  orchestre désormais des fragments de présentation et des view-models fournis par le core ;
 - **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
   dépôt ne contient toujours aucune preuve de recette complète avec un thème neutre.
 
@@ -550,7 +556,7 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 100 %, 100 %,
-100 % et 83 %, soit **environ 97 % pour l'extraction du métier PHP inventorié** après arrondi.
+100 % et 92 %, soit **environ 98 % pour l'extraction du métier PHP inventorié** après arrondi.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
@@ -559,7 +565,7 @@ sont maintenant autonomes, soit **environ 49 % de remplaçabilité effective du 
 n'est encore accordé aux parcours complets, aux assets indépendants ou à la recette sous thème neutre.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
-ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une
+ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une
 surface résiduelle ; la revue qualitative documentée détermine les notes de chaque axe.
 
 ## Éléments bloquants observés
@@ -619,8 +625,7 @@ liste limitée de responsabilités déjà migrées et autorise encore les écrit
 À périmètre fonctionnel constant et avec des lots de taille comparable aux derniers travaux, l'estimation prudente
 est la suivante :
 
-- **2 à 4 lots** pour terminer l'extraction métier PHP : séparer les décisions et données encore mêlées au rendu dans
-  `inc/enigme/affichage.php` et `inc/user-functions.php`, puis étendre la garde de frontière à tout le thème ;
+- **1 à 3 lots** pour terminer l'extraction métier PHP : séparer les décisions et données encore mêlées au rendu dans `inc/user-functions.php`, puis étendre la garde de frontière à tout le thème ;
 - **7 à 10 lots supplémentaires** pour fournir depuis le plugin des parcours de secours cohérents : chasses, énigmes,
   indices, organisateurs, espace compte, écrans d'édition et intégrations WooCommerce. Ces lots doivent définir des
   templates surchargeables ou une autre API de présentation stable, et non simplement déplacer le HTML du thème ;
@@ -629,10 +634,10 @@ est la suivante :
 - **1 à 2 lots de recette et de stabilisation** sous thème neutre, couvrant les rôles joueur, organisateur et
   administrateur, les parcours asynchrones, les courriels, les tâches planifiées et WooCommerce.
 
-La **migration métier stricte** est donc estimée à **2 à 4 lots restants**. La possibilité de remplacer le thème sans
-perte fonctionnelle demande plutôt **12 à 19 lots au total**, recette comprise. Cette fourchette est une prévision,
+La **migration métier stricte** est donc estimée à **1 à 3 lots restants**. La possibilité de remplacer le thème sans
+perte fonctionnelle demande plutôt **11 à 18 lots au total**, recette comprise. Cette fourchette est une prévision,
 pas un indicateur d'avancement : elle devra être révisée après l'inventaire des dépendances des 83 parcours PHP et
-des 93 assets, et ne permet pas à elle seule de modifier les taux de 97 % et 49 %.
+des 93 assets, et ne permet pas à elle seule de modifier les taux de 98 % et 49 %.
 
 ## Conclusion opérationnelle
 
