@@ -252,6 +252,10 @@ Le cinquante-sixième lot a transféré au plugin les données statistiques de l
 la progression du joueur, de l'engagement moyen et du taux de résolution, avec exclusions et caches, appartient à
 `RiddleSidebarStatisticsService`. Le thème ne reçoit plus que les valeurs nécessaires à ses deux moteurs de rendu.
 
+Le cinquante-septième lot a déplacé dans le plugin les cinq fonctions globales de compatibilité du statut des chasses et
+a supprimé deux anciens wrappers du planificateur. Le contrôleur de modération appelle maintenant directement les
+updaters du core pour les statuts de chasse et d'énigme, sans transmettre leurs noms de fonctions historiques.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).
@@ -275,9 +279,10 @@ Résultats obtenus après ce lot :
   thème ;
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
-- le plugin ne contient **aucun appel explicite à une fonction globale définie uniquement par le thème**. Il conserve
-  toutefois **15 configurations de contrôleurs par le thème**, toutes destinées à des moteurs de rendu. Ces callbacks
-  constituent une dépendance d'interface explicite et empêchent une expérience complète sous un autre thème ;
+- la vérification approfondie corrige le constat précédent : le contrôleur de modération conserve **3 appels directs**
+  à des fonctions globales définies par le thème (`recuperer_enigmes_associees`, `get_organisateur_from_chasse` et
+  `chasse_trash_with_children`). Les callbacks de statut ont été supprimés dans ce lot. Le plugin conserve aussi
+  **15 configurations de contrôleurs par le thème**, toutes destinées à des moteurs de rendu ;
 - la revue ciblée relève **5 grands assembleurs de view-models mixtes** : `inc/chasse-functions.php`,
   `inc/enigme/affichage.php`, `inc/sidebar.php`, `inc/user-functions.php` et `inc/statut-functions.php`. Ils combinent
   encore données WordPress, progression ou accès avec CTA et HTML ;
@@ -289,11 +294,11 @@ Résultats obtenus après ce lot :
 Une grille fixe, plutôt qu'un décompte des lots, est utilisée. Pour l'extraction PHP, les cinq axes ont le même poids :
 propriété des hooks métier, absence de mutations dans le rendu, politiques d'accès, autonomie vis-à-vis des fonctions
 globales du thème et séparation des view-models. Les preuves ci-dessus donnent respectivement 100 %, 88 %, 100 %,
-100 % et 35 %, soit **environ 85 % pour l'extraction du métier PHP inventorié**.
+70 % et 35 %, soit **environ 79 % pour l'extraction du métier PHP inventorié**.
 
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
-à 10 %. Seul le premier axe est partiellement satisfait : **environ 34 % de remplaçabilité effective du thème**.
+à 10 %. Seul le premier axe est partiellement satisfait : **environ 32 % de remplaçabilité effective du thème**.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni l'ancienne valeur de 98 %, ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

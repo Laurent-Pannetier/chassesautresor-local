@@ -686,6 +686,23 @@ final class ThemeCoreBoundaryTest extends TestCase
 
         self::assertStringNotContainsString('cat_check_stale_hunt_status', $source);
         self::assertStringNotContainsString('chassesautresor_hunt_status_stale_check_requested', $source);
+        foreach ([
+            'verifier_ou_recalculer_statut_chasse',
+            'mettre_a_jour_statuts_chasse',
+            'forcer_recalcul_statut_chasse',
+            'recuperer_statut_chasse',
+            'forcer_statut_apres_acf',
+            'schedule_cat_recalculate_chasse_statuses',
+            'cat_recalculate_chasse_statuses',
+        ] as $legacyFunction) {
+            self::assertStringNotContainsString('function ' . $legacyFunction, $source);
+        }
+
+        $moderation = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntModerationRequestHandler.php'
+        );
+        self::assertStringNotContainsString("'mettre_a_jour_statuts_chasse'", $moderation);
+        self::assertStringNotContainsString("'enigme_mettre_a_jour_etat_systeme'", $moderation);
     }
 
     public function testThemeDoesNotResolveProtectedImagePaths(): void

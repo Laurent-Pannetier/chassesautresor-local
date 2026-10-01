@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Content;
 
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
+use ChassesAuTresor\Core\Progress\HuntStatusUpdater;
+use ChassesAuTresor\Core\Progress\RiddleSystemStateUpdater;
 use WP_User;
 
 final class HuntModerationRequestHandler
@@ -58,8 +60,8 @@ final class HuntModerationRequestHandler
                 $plan,
                 'wp_update_post',
                 'update_field',
-                'mettre_a_jour_statuts_chasse',
-                'enigme_mettre_a_jour_etat_systeme'
+                static fn (int $id): string => (new HuntStatusUpdater())->refresh($id),
+                static fn (int $id): string => (new RiddleSystemStateUpdater())->refresh($id)
             );
         }
 

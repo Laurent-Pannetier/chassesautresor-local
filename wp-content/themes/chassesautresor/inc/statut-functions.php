@@ -388,70 +388,11 @@ function verifier_ou_mettre_a_jour_cache_complet(int $post_id): void
 // ==================================================
 // 🧠 GESTION DES STATUTS DES CHASSES
 // ==================================================
-/**
- * 🔹 verifier_ou_recalculer_statut_chasse() → Vérifie le statut ACF à l'affichage.
- * 🔹 mettre_a_jour_statuts_chasse() → Met à jour les statuts de validation et de visibilité d'une chasse.
- * 🔹 forcer_recalcul_statut_chasse() → Forcer un recalcul du statut via une requête AJAX.
- * 🔹 recuperer_statut_chasse() → Retourne dynamiquement le statut pour mise à jour du badge via JS.
- * 🔹 forcer_statut_selon_validation_chasse() → Contrôle la cohérence du statut WordPress.
- * 🔹 forcer_statut_apres_acf() → Corrige le post_status après sauvegarde ACF pour éviter les incohérences.
- */
-
-
-
-/**
- * Vérifie et met à jour le statut d'une chasse si le statut cache semble obsolète.
- *
- * À utiliser lors de l'affichage de la fiche chasse.
- *
- * @param int $chasse_id
- * @return void
- */
-function verifier_ou_recalculer_statut_chasse($chasse_id): void
-{
-    (new ChassesAuTresor\Core\Progress\HuntStatusUpdater())->refreshIfStale((int) $chasse_id);
-}
-
-function mettre_a_jour_statuts_chasse($chasse_id)
-{
-    return (new ChassesAuTresor\Core\Progress\HuntStatusUpdater())->refresh((int) $chasse_id);
-}
-
-function forcer_recalcul_statut_chasse(): void
-{
-    ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::recalculate();
-}
-
-function recuperer_statut_chasse(): void
-{
-    ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::getStatus();
-}
-
 function cat_render_hunt_status_badge(array $badge, string $status, ?string $validation): array
 {
     return chasse_preparer_badge_statut($status, $validation);
 }
 add_filter('chassesautresor_render_hunt_status_badge', 'cat_render_hunt_status_badge', 10, 3);
-
-/**
- * 🔁 Met à jour le champ de validation et force le statut du post en cohérence.
- *
- * Si $nouvelle_validation est fourni, il est appliqué à chasse_cache_statut_validation
- * avant de recalculer et mettre à jour le post_status correspondant.
- *
- * @param int    $post_id              ID du post chasse.
- * @param string|null $nouvelle_validation  Valeur à forcer (valide, banni, etc.). Optionnel.
- * @return void
- */
-function forcer_statut_apres_acf($post_id, $nouvelle_validation = null)
-{
-    (new ChassesAuTresor\Core\Progress\HuntStatusUpdater())->synchronizePublication(
-        (int) $post_id,
-        is_string($nouvelle_validation) ? $nouvelle_validation : null
-    );
-}
-
-
 
 /**
  * 🔹 is_canevas_creation → Vérifie si l’utilisateur est en train de créer son espace organisateur (aucun CPT associé, et sur la page dédiée).
@@ -473,17 +414,6 @@ function is_canevas_creation()
     }
 
     return !get_organisateur_from_user(get_current_user_id());
-}
-
-
-function schedule_cat_recalculate_chasse_statuses(): void
-{
-    ChassesAuTresor\Core\Progress\HuntStatusScheduler::schedule();
-}
-
-function cat_recalculate_chasse_statuses(): void
-{
-    ChassesAuTresor\Core\Progress\HuntStatusScheduler::process();
 }
 
 

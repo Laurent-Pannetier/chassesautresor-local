@@ -44,6 +44,7 @@ require_once __DIR__ . '/src/Progress/HuntValidationAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusScheduler.php';
 require_once __DIR__ . '/src/Progress/HuntStatusUpdater.php';
+require_once __DIR__ . '/src/Progress/hunt-status-functions.php';
 require_once __DIR__ . '/src/Progress/HuntStatusSaveHookHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleStatusAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAnswerService.php';
