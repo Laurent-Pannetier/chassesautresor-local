@@ -429,6 +429,16 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('cat_get_conversion_service', $configuration);
     }
 
+    public function testAdminHuntCacheInvalidationIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        preg_match('/AdminAjaxHandler::configure\([\s\S]*?^\);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('chasse_clear_infos_affichage_cache', $configuration);
+    }
+
     public function testHomepageHuntFilterIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/homepage-filters.php');

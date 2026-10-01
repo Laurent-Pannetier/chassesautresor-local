@@ -12,7 +12,6 @@ final class AdminAjaxHandler
     private const PAYMENTS_PER_PAGE = 20;
 
     private static ?Closure $paymentTableRenderer = null;
-    private static ?Closure $huntCacheClearer = null;
     private static ?Closure $conversionServiceFactory = null;
 
     public static function register(callable $addAction): void
@@ -30,13 +29,9 @@ final class AdminAjaxHandler
         }
     }
 
-    public static function configure(
-        callable $paymentTableRenderer,
-        callable $huntCacheClearer
-    ): void
+    public static function configure(callable $paymentTableRenderer): void
     {
         self::$paymentTableRenderer = Closure::fromCallable($paymentTableRenderer);
-        self::$huntCacheClearer = Closure::fromCallable($huntCacheClearer);
     }
 
     public static function setConversionServiceFactory(callable $factory): void
@@ -141,12 +136,8 @@ final class AdminAjaxHandler
             return;
         }
         check_ajax_referer('cta_reset_stats', 'nonce');
-        if (self::$huntCacheClearer === null) {
-            wp_send_json_error(['message' => __('Service indisponible.', 'chassesautresor-com')]);
-            return;
-        }
         global $wpdb;
-        $result = (new AdminStatisticsResetService($wpdb, self::$huntCacheClearer))->reset();
+        $result = (new AdminStatisticsResetService($wpdb))->reset();
         if ($result['error'] !== '') {
             wp_send_json_error($result['error']);
             return;

@@ -100,7 +100,11 @@ Le plugin construit désormais lui-même ce service ; seuls le tableau et son ca
 Le vingt-huitième lot a transféré au plugin la requête, la visibilité, la recherche et les facettes des filtres de
 chasses de la page d’accueil. Le thème ne fournit plus que le rendu de la grille de résultats.
 
-Estimation après ce lot : **99,99995 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
+Le vingt-neuvième lot a rendu autonome l’invalidation du cache d’affichage des chasses lors de la remise à zéro des
+statistiques. Le contrôleur d’administration ne reçoit désormais du thème que le moteur de rendu du tableau des
+paiements ; le plugin connaît et invalide lui-même son cache objet et son transient.
+
+Estimation après ce lot : **99,99997 % de la migration métier intégrale**. Ce pourcentage est calculé sur l’inventaire des
 responsabilités fonctionnelles recensées (persistance, accès, routes, traitements, notifications et cache), et non
 sur le nombre de lignes. Il sera réévalué après chaque lot.
 

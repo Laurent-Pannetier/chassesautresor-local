@@ -35,6 +35,16 @@ function delete_field(string $field, int $postId): void
     $GLOBALS['admin_reset_deleted_fields'][] = [$field, $postId];
 }
 
+function wp_cache_delete(string $key, string $group): void
+{
+    $GLOBALS['admin_reset_object_cache'][] = [$key, $group];
+}
+
+function delete_transient(string $key): void
+{
+    $GLOBALS['admin_reset_transients'][] = $key;
+}
+
 final class AdminStatisticsResetServiceTest extends TestCase
 {
     public function testItClearsProgressDataAndHuntCaches(): void
@@ -101,5 +111,19 @@ final class AdminStatisticsResetServiceTest extends TestCase
         }))->reset();
 
         self::assertSame(['deleted' => 0, 'error' => 'database error'], $result);
+    }
+
+    public function testItCanClearHuntDisplayCacheWithoutAThemeCallback(): void
+    {
+        $GLOBALS['admin_reset_object_cache'] = [];
+        $GLOBALS['admin_reset_transients'] = [];
+
+        AdminStatisticsResetService::clearHuntDisplayCache(42);
+
+        self::assertSame(
+            [['chasse_infos_affichage_v2_42', 'chasse_affichage']],
+            $GLOBALS['admin_reset_object_cache']
+        );
+        self::assertSame(['chasse_infos_affichage_v2_42'], $GLOBALS['admin_reset_transients']);
     }
 }

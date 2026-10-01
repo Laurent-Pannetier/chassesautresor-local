@@ -11,10 +11,12 @@ final class AdminStatisticsResetService
     private object $database;
     private Closure $huntCacheClearer;
 
-    public function __construct(object $database, callable $huntCacheClearer)
+    public function __construct(object $database, ?callable $huntCacheClearer = null)
     {
         $this->database = $database;
-        $this->huntCacheClearer = Closure::fromCallable($huntCacheClearer);
+        $this->huntCacheClearer = Closure::fromCallable(
+            $huntCacheClearer ?? [self::class, 'clearHuntDisplayCache']
+        );
     }
 
     /** @return array{deleted:int,error:string} */
@@ -91,5 +93,12 @@ final class AdminStatisticsResetService
         }
 
         return ['deleted' => $deleted, 'error' => ''];
+    }
+
+    public static function clearHuntDisplayCache(int $huntId): void
+    {
+        $key = 'chasse_infos_affichage_v2_' . $huntId;
+        wp_cache_delete($key, 'chasse_affichage');
+        delete_transient($key);
     }
 }

@@ -455,10 +455,7 @@ function cta_toggle_site_protection(): void
 }
 
 \ChassesAuTresor\Core\Admin\AdminAjaxHandler::configure(
-    static fn(array $requests): string => render_tableau_paiements_admin($requests),
-    static function (int $huntId): void {
-        chasse_clear_infos_affichage_cache($huntId);
-    }
+    static fn(array $requests): string => render_tableau_paiements_admin($requests)
 );
 
 
