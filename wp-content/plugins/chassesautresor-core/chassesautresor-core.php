@@ -43,6 +43,7 @@ require_once __DIR__ . '/src/Relationships/RelationshipService.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleQueryService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerHuntQueryService.php';
 require_once __DIR__ . '/src/Relationships/HuntRiddleCacheService.php';
+require_once __DIR__ . '/src/Relationships/HuntRiddleCacheSynchronizer.php';
 require_once __DIR__ . '/src/Media/RiddleImageRepository.php';
 require_once __DIR__ . '/src/Media/RiddleImageService.php';
 require_once __DIR__ . '/src/Media/RiddleUploadDirectoryService.php';
