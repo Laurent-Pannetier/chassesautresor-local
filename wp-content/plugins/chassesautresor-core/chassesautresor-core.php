@@ -99,6 +99,7 @@ require_once __DIR__ . '/src/Progress/UserAttemptStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/UserAttemptStatisticsService.php';
 require_once __DIR__ . '/src/Progress/UserProgressPaginationService.php';
 require_once __DIR__ . '/src/Progress/EngagedHuntsAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/EngagedHuntsApplicationService.php';
 require_once __DIR__ . '/src/Progress/UserAttemptsAjaxHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRepository.php';
 require_once __DIR__ . '/src/Relationships/OrganizerService.php';

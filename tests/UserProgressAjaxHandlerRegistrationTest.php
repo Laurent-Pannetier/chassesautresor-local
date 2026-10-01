@@ -27,8 +27,6 @@ final class UserProgressAjaxHandlerRegistrationTest extends TestCase {
 
     public function testAcceptsDeferredThemeCallbacks(): void {
         EngagedHuntsAjaxHandler::configure(
-            static fn (): array => [],
-            static fn (): array => [],
             static fn (): string => ''
         );
         UserAttemptsAjaxHandler::configure(

@@ -1240,12 +1240,6 @@ function ca_render_engaged_hunts_ajax_content(array $pagination): string
 
 if (class_exists(ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::class)) {
     ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::configure(
-        static function (int $user_id): array {
-            return ca_get_user_engaged_hunt_ids($user_id);
-        },
-        static function (array $hunt_ids, int $page, int $per_page): array {
-            return ca_prepare_engaged_hunts_pagination($hunt_ids, $page, $per_page);
-        },
         static function (array $pagination): string {
             return ca_render_engaged_hunts_ajax_content($pagination);
         }

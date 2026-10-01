@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** AJAX orchestration for the current user's engaged hunts. */
 class EngagedHuntsAjaxHandler {
-    /** @var callable|null */
-    private static $huntLoader;
-
-    /** @var callable|null */
-    private static $paginator;
-
     /** @var callable|null */
     private static $renderer;
 
@@ -19,9 +15,7 @@ class EngagedHuntsAjaxHandler {
         $addAction('wp_ajax_ca_get_engaged_hunts', [self::class, 'handle']);
     }
 
-    public static function configure(callable $huntLoader, callable $paginator, callable $renderer): void {
-        self::$huntLoader = $huntLoader;
-        self::$paginator = $paginator;
+    public static function configure(callable $renderer): void {
         self::$renderer = $renderer;
     }
 
@@ -44,17 +38,14 @@ class EngagedHuntsAjaxHandler {
         if (!wp_verify_nonce($nonce, 'ca-engaged-hunts')) {
             wp_send_json_error(['message' => __('Security check failed.', 'chassesautresor-com')], 400);
         }
-        if (!is_callable(self::$huntLoader) || !is_callable(self::$paginator) || !is_callable(self::$renderer)) {
+        if (!is_callable(self::$renderer)) {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
-        $huntIds = (array) call_user_func(self::$huntLoader, $userId);
-        $pagination = (array) call_user_func(
-            self::$paginator,
-            $huntIds,
-            $request['page'],
-            $request['per_page']
-        );
+        global $wpdb;
+        $application = new EngagedHuntsApplicationService(CoreServiceFactory::huntEngagement($wpdb));
+        $huntIds = $application->getVisibleHuntIds($userId);
+        $pagination = $application->paginate($huntIds, $request['page'], $request['per_page']);
         $html = (string) call_user_func(self::$renderer, $pagination);
         wp_send_json_success([
             'html' => $html,

@@ -364,6 +364,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('return cat_get_conversion_service()->getRequests(', $conversions);
     }
 
+    public function testEngagedHuntsBusinessCallbacksAreNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');
+        preg_match('/EngagedHuntsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('ca_get_user_engaged_hunt_ids', $configuration);
+        self::assertStringNotContainsString('ca_prepare_engaged_hunts_pagination', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(
