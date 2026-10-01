@@ -333,6 +333,12 @@ accès aux statistiques, détection du rôle organisateur et autorisations d'act
 qui chargeaient isolément le thème utilisent désormais explicitement l'API du plugin, et la frontière interdit les
 doubles déclarations.
 
+Le soixante-quinzième lot termine ce bloc en transférant les douze dernières fonctions d'`access-functions.php` :
+visibilité et gestion des énigmes, création de chasse, accès aux panneaux et champs, consultation des solutions,
+compatibilité du contrôleur de prérequis et visibilité des chasses. Le plugin réutilise les services d'accès existants
+et ne reprend aucun appel à `cat_debug()`. Le fichier historique du thème ne déclare désormais plus aucune fonction ;
+les tests isolés chargent directement les wrappers core et la frontière protège l'ensemble de cette API.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
@@ -368,6 +374,8 @@ Résultats obtenus après ce lot :
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
   été inventoriées. Le plugin conserve **14 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
+- `inc/access-functions.php` ne déclare plus aucune fonction : ses douze dernières politiques et son wrapper de
+  compatibilité sont fournis par le plugin ;
 - la revue ciblée relève **3 grands assembleurs de view-models mixtes** :
   `inc/enigme/affichage.php`, `inc/sidebar.php` et `inc/user-functions.php`. Ils combinent
   encore données WordPress, progression ou accès avec CTA et HTML ;

@@ -311,7 +311,7 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('HuntValidationAjaxHandler::configure', $core);
     }
 
-    public function testThemeDoesNotOwnGeneralAccessCompatibilityFunctions(): void
+    public function testThemeDoesNotOwnAccessCompatibilityFunctions(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/access-functions.php');
         $core = (string) file_get_contents(
@@ -323,10 +323,24 @@ final class ThemeCoreBoundaryTest extends TestCase
             'est_organisateur',
             'indice_action_autorisee',
             'solution_action_autorisee',
+            'utilisateur_peut_voir_enigme',
+            'utilisateur_peut_ajouter_enigme',
+            'utilisateur_peut_modifier_enigme',
+            'utilisateur_peut_supprimer_enigme',
+            'utilisateur_peut_ajouter_chasse',
+            'utilisateur_peut_voir_panneau',
+            'utilisateur_peut_editer_champs',
+            'champ_est_editable',
+            'utilisateur_peut_voir_solution_enigme',
+            'utilisateur_peut_voir_solution_chasse',
+            'verifier_et_enregistrer_condition_pre_requis',
+            'chasse_est_visible_pour_utilisateur',
         ] as $functionName) {
             self::assertStringNotContainsString("function {$functionName}(", $theme);
             self::assertStringContainsString("function {$functionName}(", $core);
         }
+
+        self::assertStringNotContainsString('cat_debug', $core);
     }
 
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void

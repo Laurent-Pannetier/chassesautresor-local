@@ -68,7 +68,6 @@ if (!function_exists('cat_debug')) {
 }
 
 require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/access-functions.php';
-require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/access-functions.php';
 
 class AccessFunctionsTest extends TestCase {
     public function test_utilisateur_ne_peut_pas_ajouter_enigme_chasse_publiee(): void {
