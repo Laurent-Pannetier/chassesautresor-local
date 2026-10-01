@@ -6,8 +6,6 @@ namespace ChassesAuTresor\Core\Progress;
 
 /** Secure AJAX orchestration for riddle statistics and participant lists. */
 class RiddleStatisticsAjaxHandler {
-    private static $panelAuthorizer;
-    private static $editorAuthorizer;
     private static $summaryBuilder;
     private static $participantLoader;
     private static $participantCounter;
@@ -19,15 +17,11 @@ class RiddleStatisticsAjaxHandler {
     }
 
     public static function configure(
-        callable $panelAuthorizer,
-        callable $editorAuthorizer,
         callable $summaryBuilder,
         callable $participantLoader,
         callable $participantCounter,
         callable $participantRenderer
     ): void {
-        self::$panelAuthorizer = $panelAuthorizer;
-        self::$editorAuthorizer = $editorAuthorizer;
         self::$summaryBuilder = $summaryBuilder;
         self::$participantLoader = $participantLoader;
         self::$participantCounter = $participantCounter;
@@ -40,7 +34,8 @@ class RiddleStatisticsAjaxHandler {
         if ($riddleId <= 0) {
             wp_send_json_error('missing_enigme', 400);
         }
-        if (!is_callable(self::$panelAuthorizer) || !call_user_func(self::$panelAuthorizer, $riddleId)) {
+        $access = new RiddleAttemptAccessService();
+        if (!$access->canViewRiddlePanel((int) get_current_user_id(), $riddleId)) {
             wp_send_json_error('forbidden', 403);
         }
         $period = (new StatisticsPeriodService())->normalize(sanitize_text_field($_POST['periode'] ?? 'total'));
@@ -65,7 +60,7 @@ class RiddleStatisticsAjaxHandler {
         if ($riddleId <= 0 || get_post_type($riddleId) !== 'enigme') {
             wp_send_json_error('post_invalide');
         }
-        if (!is_callable(self::$editorAuthorizer) || !call_user_func(self::$editorAuthorizer, $riddleId)) {
+        if (!(new RiddleAttemptAccessService())->canModifyRiddle((int) get_current_user_id(), $riddleId)) {
             wp_send_json_error('acces_refuse');
         }
         $request = (new StatisticsParticipantRequestService())->prepare(

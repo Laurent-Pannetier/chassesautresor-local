@@ -144,8 +144,6 @@ function cat_render_riddle_statistics_participants(
 
 if (class_exists(ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::class)) {
     ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::configure(
-        static fn (int $id): bool => utilisateur_peut_voir_panneau($id),
-        static fn (int $id): bool => utilisateur_peut_modifier_post($id),
         static function (int $id, string $period): array {
             $mode = get_field('enigme_mode_validation', $id) ?? 'automatique';
             $cost = (int) get_field('enigme_tentative_cout_points', $id);

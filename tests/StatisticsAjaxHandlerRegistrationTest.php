@@ -35,8 +35,6 @@ final class StatisticsAjaxHandlerRegistrationTest extends TestCase {
             static fn (): string => ''
         );
         RiddleStatisticsAjaxHandler::configure(
-            static fn (): bool => false,
-            static fn (): bool => false,
             static fn (): array => [],
             static fn (): array => [],
             static fn (): int => 0,

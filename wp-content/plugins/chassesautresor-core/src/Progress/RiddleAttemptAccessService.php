@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\ContentPanelAccessService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 
 /** Resolve access to riddle attempts without relying on theme callbacks. */
@@ -23,6 +24,23 @@ final class RiddleAttemptAccessService
             (int) ($attempt->user_id ?? 0),
             current_user_can('manage_options'),
             $this->isOrganizerForRiddle($userId, (int) ($attempt->enigme_id ?? 0))
+        );
+    }
+
+    public function canViewRiddlePanel(int $userId, int $riddleId): bool
+    {
+        $isAdministrator = $userId > 0 && current_user_can('manage_options');
+        $canModify = $this->canModifyRiddle($userId, $riddleId);
+
+        return (new ContentPanelAccessService())->canView(
+            $userId > 0,
+            $isAdministrator,
+            !$isAdministrator && $this->isOrganizerForRiddle($userId, $riddleId),
+            $canModify,
+            $riddleId > 0 ? (string) get_post_type($riddleId) : '',
+            $riddleId > 0 ? (string) get_post_status($riddleId) : '',
+            '',
+            $riddleId > 0 ? (string) get_field('enigme_cache_etat_systeme', $riddleId) : ''
         );
     }
 

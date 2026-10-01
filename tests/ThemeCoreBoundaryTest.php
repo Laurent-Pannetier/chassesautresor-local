@@ -330,6 +330,17 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('RiddleAttemptViewAjaxHandler::configure', $source);
     }
 
+    public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
+        preg_match('/RiddleStatisticsAjaxHandler::configure\([\s\S]*?^    \);/m', $source, $matches);
+        $configuration = $matches[0] ?? null;
+
+        self::assertIsString($configuration);
+        self::assertStringNotContainsString('utilisateur_peut_voir_panneau', $configuration);
+        self::assertStringNotContainsString('utilisateur_peut_modifier_post', $configuration);
+    }
+
     public function testThemeDoesNotOwnHuntModerationEmails(): void
     {
         $violations = $this->findPhpMatches(
