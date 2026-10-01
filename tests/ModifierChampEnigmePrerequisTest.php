@@ -24,6 +24,15 @@ namespace {
     if (!function_exists('get_current_user_id')) {
         function get_current_user_id() { return 1; }
     }
+    if (!function_exists('current_user_can')) {
+        function current_user_can($capability) { return $capability === 'manage_options'; }
+    }
+    if (!function_exists('wp_get_current_user')) {
+        function wp_get_current_user() { return (object) ['roles' => ['administrator']]; }
+    }
+    if (!function_exists('get_post_status')) {
+        function get_post_status($id) { return 'pending'; }
+    }
     if (!function_exists('get_field')) {
         function get_field($field, $post_id) {
             global $fields;

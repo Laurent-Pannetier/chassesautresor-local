@@ -27,8 +27,8 @@ class RiddleFieldMutationAjaxHandler {
         if ($field === '' || $riddleId <= 0 || get_post_type($riddleId) !== 'enigme') {
             wp_send_json_error('⚠️ donnees_invalides');
         }
-        if (!apply_filters('chassesautresor_can_modify_riddle', false, $riddleId)
-            || !apply_filters('chassesautresor_can_edit_riddle_fields', false, $riddleId)
+        if (!utilisateur_peut_modifier_post($riddleId)
+            || !(new WordPressContentAccessResolver())->canEditFields($riddleId)
         ) {
             wp_send_json_error('⚠️ acces_refuse');
         }

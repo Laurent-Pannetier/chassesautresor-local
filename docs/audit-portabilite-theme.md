@@ -137,7 +137,13 @@ l'association organisateur et les tentatives en attente sont maintenant résolus
 contrôleur n'appelle plus les douze adaptateurs métier correspondants du thème ; celui-ci conserve les vues et les
 helpers encore employés par ces vues.
 
-Estimation prudente après ce lot : **environ 87 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
+Le trente-sixième lot a retiré du thème les politiques et callbacks de cycle de vie des mutations d'énigme. Les
+contrôleurs vérifient maintenant directement la modification du contenu et l'accès aux champs via un résolveur du
+plugin. L'initialisation, le recalcul d'état système et le rafraîchissement de complétude sont enregistrés et exécutés
+par un gestionnaire de hooks du core. `edition-enigme.php` ne conserve plus que le chargement des scripts et l'adaptateur
+de création utilisé par la présentation.
+
+Estimation prudente après ce lot : **environ 90 % de l'autonomie métier vérifiée**. Il ne s'agit plus d'un calcul au
 centième fondé sur les lots déjà traités : cette valeur applique une décote aux dépendances runtime encore observées,
 aux politiques d'édition encore enregistrées par le thème, aux adaptateurs d'accès encore utilisés ailleurs et à
 l'absence de recette sous thème neutre. Le pourcentage ne remontera qu'après suppression vérifiée de ces catégories.

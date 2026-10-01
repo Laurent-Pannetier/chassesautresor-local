@@ -379,6 +379,26 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('RiddleAttemptViewAjaxHandler::configure', $source);
     }
 
+    public function testThemeDoesNotOwnRiddleMutationPoliciesOrLifecycle(): void
+    {
+        $edition = (string) file_get_contents(self::THEME_PATH . '/inc/edition/edition-enigme.php');
+        foreach ([
+            'chassesautresor_riddle_created',
+            'chassesautresor_can_modify_riddle',
+            'chassesautresor_can_edit_riddle_fields',
+            'chassesautresor_riddle_state_refresh_requested',
+            'chassesautresor_riddle_completeness_refresh_requested',
+        ] as $businessHook) {
+            self::assertStringNotContainsString($businessHook, $edition);
+        }
+
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleFieldMutationAjaxHandler.php'
+        );
+        self::assertStringNotContainsString("apply_filters('chassesautresor_can_modify_riddle'", $handler);
+        self::assertStringNotContainsString("apply_filters('chassesautresor_can_edit_riddle_fields'", $handler);
+    }
+
     public function testRiddleStatisticsAccessIsNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/stats.php');
