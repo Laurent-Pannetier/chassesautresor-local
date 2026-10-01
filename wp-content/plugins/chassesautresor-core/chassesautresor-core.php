@@ -22,6 +22,8 @@ require_once __DIR__ . '/src/Points/ConversionSettingsService.php';
 require_once __DIR__ . '/src/Points/ConversionSettingsRequestHandler.php';
 require_once __DIR__ . '/src/Points/ConversionRequestService.php';
 require_once __DIR__ . '/src/Points/ConversionRequestHandler.php';
+require_once __DIR__ . '/src/Points/ManualPointsAdjustmentService.php';
+require_once __DIR__ . '/src/Points/ManualPointsAdjustmentHandler.php';
 require_once __DIR__ . '/src/Points/PointsTable.php';
 require_once __DIR__ . '/src/Points/HistoryPaginationRequestService.php';
 require_once __DIR__ . '/src/Points/PointsHistoryAjaxHandler.php';
@@ -267,6 +269,7 @@ ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_a
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionRequestHandler::register('add_action');
+ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler::register('add_action');
 ChassesAuTresor\Core\Content\CompletionCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntFeatureCacheSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HuntStatusAjaxHandler::register('add_action');

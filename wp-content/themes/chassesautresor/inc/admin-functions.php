@@ -20,7 +20,6 @@ const ORGANISATEURS_PENDING_PER_PAGE     = 20;
 // ==================================================
 /**
  * 🔹 rechercher_utilisateur_ajax → Rechercher des utilisateurs en AJAX pour l’autocomplétion.
- * 🔹 traiter_gestion_points → Gérer l’ajout ou le retrait de points à un utilisateur.
  * 🔹 charger_script_autocomplete_utilisateurs → Enregistrer et charger le script de gestion des points dans l’admin (page "Mon Compte").
  * 🔹 gerer_organisateur → Gérer l’acceptation ou le refus d’un organisateur (demande modération).
  */
@@ -38,77 +37,6 @@ function rechercher_utilisateur_ajax(): void
 {
     \ChassesAuTresor\Core\Admin\AdminAjaxHandler::searchUsers();
 }
-
-/**
- * 📌 Gère l'ajout ou le retrait de points à un utilisateur.
- */
-function traiter_gestion_points() {
-    
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['modifier_points'])) {
-        return;
-    }
-    
-    // ✅ Vérification du nonce pour la sécurité
-    if (!isset($_POST['gestion_points_nonce']) || !wp_verify_nonce($_POST['gestion_points_nonce'], 'gestion_points_action')) {
-        wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
-    }
-
-    // ✅ Vérification que l'utilisateur est administrateur
-    if (!current_user_can('administrator')) {
-        wp_die( __( '❌ Accès refusé.', 'chassesautresor-com' ) );
-    }
-
-    // ✅ Vérification et assainissement des données
-    $utilisateur = sanitize_text_field($_POST['utilisateur']);
-    $type_modification = sanitize_text_field($_POST['type_modification']);
-    $nombre_points = intval($_POST['nombre_points']);
-
-    if (!$utilisateur || !$type_modification || $nombre_points <= 0) {
-        wp_die( __( '❌ Données invalides.', 'chassesautresor-com' ) );
-    }
-
-    // Récupérer l'ID de l'utilisateur
-    $user = get_user_by('ID', intval($utilisateur));
-    if (!$user) {
-        wp_die( __( '❌ Utilisateur introuvable.', 'chassesautresor-com' ) );
-    }
-
-    $user_id = $user->ID;
-    $solde_actuel = get_user_points($user_id) ?: 0;
-
-    // Modification des points selon l’action choisie
-    if ($type_modification === "ajouter") {
-        $delta  = $nombre_points;
-        $reason = sprintf('Ajout manuel de %d points', $nombre_points);
-    } elseif ($type_modification === "retirer") {
-        if ($nombre_points > $solde_actuel) {
-            wp_die( __( '❌ Impossible de retirer plus de points que l’utilisateur en possède.', 'chassesautresor-com' ) );
-        }
-        $delta  = -$nombre_points;
-        $reason = sprintf('Retrait manuel de %d points', $nombre_points);
-    } else {
-        wp_die( __( '❌ Action invalide.', 'chassesautresor-com' ) );
-    }
-
-    // Mettre à jour les points de l'utilisateur
-    update_user_points($user_id, $delta, $reason, 'admin');
-
-    cat_debug("✅ Points modifiés : $nombre_points $type_modification pour l'utilisateur $utilisateur");
-
-    // ✅ Redirection après soumission
-    $redirect_url = add_query_arg(
-        [
-            'section'         => 'outils',
-            'points_modifies' => '1',
-        ],
-        home_url('/mon-compte/')
-    );
-
-    wp_redirect($redirect_url);
-    exit;
-}
-add_action('init', 'traiter_gestion_points');
-
 
 /**
  * Enregistre et charge le script de gestion des points pour les administrateurs sur la page "Mon Compte".
