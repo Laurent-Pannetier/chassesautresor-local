@@ -299,6 +299,13 @@ des services organisateur/relation, résolution organisateur depuis utilisateur,
 l'association d'un utilisateur. Le plugin ne dépend d'aucun helper du thème pour ces fonctions et la garde anti-collision
 couvre automatiquement cette nouvelle API. Les estimations restent inchangées tant que les autres relations demeurent.
 
+Le soixante-huitième lot termine ce bloc en transférant les vingt-trois fonctions restantes de
+`inc/relations-functions.php` : requêtes chasse/énigmes, listes organisateur, indicateurs calculés et synchronisation
+du cache relationnel. Le fichier du thème ne déclare désormais plus aucune fonction et le plugin n'appelle pas le
+helper de journalisation `cat_debug()` du thème. Un test de frontière vérifie à la fois l'absence de déclarations dans
+le thème et la présence des principaux points d'entrée dans le core. Les estimations restent inchangées : cette
+migration améliore l'autonomie déjà notée à 100 %, sans réduire les quatre view-models ni fournir de parcours neutre.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).

@@ -213,6 +213,36 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertSame([], $violations, $this->formatViolations($violations));
     }
 
+    public function testThemeDoesNotDeclareRelationshipCompatibilityFunctions(): void
+    {
+        $themePath = self::THEME_PATH . '/inc/relations-functions.php';
+        $corePath = __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Relationships/relationship-functions.php';
+
+        preg_match_all(
+            '/\bfunction\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/',
+            (string) file_get_contents($themePath),
+            $themeMatches
+        );
+        self::assertSame([], $themeMatches[1]);
+
+        preg_match_all(
+            '/\bfunction\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(/',
+            (string) file_get_contents($corePath),
+            $coreMatches
+        );
+        $coreFunctions = $coreMatches[1];
+        foreach ([
+            'recuperer_chasse_associee',
+            'get_chasses_de_organisateur',
+            'recuperer_enigmes_pour_chasse',
+            'synchroniser_cache_enigmes_chasse',
+            'verifier_et_synchroniser_cache_enigmes_si_autorise',
+        ] as $functionName) {
+            self::assertContains($functionName, $coreFunctions);
+        }
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(
