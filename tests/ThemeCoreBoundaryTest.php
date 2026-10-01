@@ -298,10 +298,17 @@ final class ThemeCoreBoundaryTest extends TestCase
             'generer_cta_chasse',
             'render_form_validation_chasse',
             'render_form_annulation_validation_chasse',
+            'trouver_chasse_a_valider',
+            'traiter_annulation_validation_chasse',
+            'actualiser_cta_validation_chasse',
+            'cat_build_hunt_validation_cta',
         ] as $functionName) {
             self::assertStringNotContainsString("function {$functionName}(", $theme);
             self::assertStringContainsString("function {$functionName}(", $core);
         }
+
+        self::assertStringNotContainsString('HuntValidationAjaxHandler::configure', $theme);
+        self::assertStringContainsString('HuntValidationAjaxHandler::configure', $core);
     }
 
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
@@ -441,16 +448,12 @@ final class ThemeCoreBoundaryTest extends TestCase
     public function testHuntValidationPoliciesAreNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
-        preg_match(
-            '/HuntValidationAjaxHandler::configure\([\s\S]*?^    \);/m',
-            $source,
-            $matches
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-cta-functions.php'
         );
-        $configuration = $matches[0] ?? null;
 
-        self::assertIsString($configuration);
-        self::assertStringNotContainsString('utilisateur_est_organisateur_associe_a_chasse', $configuration);
-        self::assertStringNotContainsString('recuperer_id_chasse_associee', $configuration);
+        self::assertStringNotContainsString('HuntValidationAjaxHandler::configure', $source);
+        self::assertStringContainsString('HuntValidationAjaxHandler::configure', $core);
     }
 
     public function testRiddleAttemptPersistenceIsNotInjectedByTheme(): void

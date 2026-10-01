@@ -324,6 +324,10 @@ Il retire ainsi `inc/chasse-functions.php` de la liste des grands assembleurs mi
 trois. Le plugin fournit en contrepartie ce fragment d'interface minimal, nécessaire pour éviter toute dépendance
 silencieuse vers un callback de rendu du thème.
 
+Le soixante-treizième lot termine le flux de validation associé : recherche de la chasse validable, adaptateurs AJAX,
+reconstruction du CTA et configuration de `HuntValidationAjaxHandler`. Le contrôleur ne reçoit donc plus son callback
+depuis le thème, ce qui ramène les configurations de contrôleurs encore effectuées par le thème de 15 à 14.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
@@ -357,7 +361,7 @@ Résultats obtenus après ce lot :
 - **5 filtres ACF** demeurent après retrait du filtre métier de condition d'accès. Ils préparent ou formatent des
   champs de présentation ; aucune autre politique d'accès ACF enregistrée par le thème n'a été trouvée ;
 - le contrôleur de modération ne contient désormais **aucun appel direct** aux fonctions globales du thème qui avaient
-  été inventoriées. Le plugin conserve **15 configurations de contrôleurs par le thème**, toutes destinées à des
+  été inventoriées. Le plugin conserve **14 configurations de contrôleurs par le thème**, toutes destinées à des
   moteurs de rendu ;
 - la revue ciblée relève **3 grands assembleurs de view-models mixtes** :
   `inc/enigme/affichage.php`, `inc/sidebar.php` et `inc/user-functions.php`. Ils combinent
