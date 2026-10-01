@@ -1362,52 +1362,34 @@ add_action('woocommerce_account_dashboard', 'ca_render_dashboard_engaged_hunts',
  */
 function ca_ajax_get_engaged_hunts(): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
+    ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::handle();
+}
 
-    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
-    if (!wp_verify_nonce($nonce, 'ca-engaged-hunts')) {
-        wp_send_json_error(['message' => __('Security check failed.', 'chassesautresor-com')], 400);
-    }
-
-    $user_id = (int) get_current_user_id();
-    if ($user_id <= 0) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
-
-    $page_param = ca_get_engaged_hunts_page_param();
-    $per_page   = (int) apply_filters('ca_engaged_hunts_per_page', 6);
-    if ($per_page <= 0) {
-        $per_page = 6;
-    }
-
-    $requested_page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
-    if ($requested_page <= 0) {
-        $requested_page = 1;
-    }
-
-    $chasse_ids = ca_get_user_engaged_hunt_ids($user_id);
-    $pagination = ca_prepare_engaged_hunts_pagination($chasse_ids, $requested_page, $per_page);
-
-    $content_html = ca_get_engaged_hunts_content_html(
+function ca_render_engaged_hunts_ajax_content(array $pagination): string
+{
+    return ca_get_engaged_hunts_content_html(
         $pagination['ids'],
         $pagination['page'],
         $pagination['total_pages'],
         'cards-grid myaccount-chasses-engagees-grid',
         'carte',
-        $page_param
+        ca_get_engaged_hunts_page_param()
     );
-
-    wp_send_json_success([
-        'html'         => $content_html,
-        'page'         => $pagination['page'],
-        'total_pages'  => $pagination['total_pages'],
-        'total_items'  => $pagination['total_items'],
-        'nonce'        => wp_create_nonce('ca-engaged-hunts'),
-    ]);
 }
-add_action('wp_ajax_ca_get_engaged_hunts', 'ca_ajax_get_engaged_hunts');
+
+if (class_exists(ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::class)) {
+    ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::configure(
+        static function (int $user_id): array {
+            return ca_get_user_engaged_hunt_ids($user_id);
+        },
+        static function (array $hunt_ids, int $page, int $per_page): array {
+            return ca_prepare_engaged_hunts_pagination($hunt_ids, $page, $per_page);
+        },
+        static function (array $pagination): string {
+            return ca_render_engaged_hunts_ajax_content($pagination);
+        }
+    );
+}
 
 /**
  * Register the search context used for the tentatives table.
@@ -1661,46 +1643,44 @@ add_action('woocommerce_account_dashboard', 'ca_render_dashboard_tentatives', 20
  */
 function ca_ajax_fetch_tentatives(): void
 {
-    if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
+    ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::handle();
+}
 
-    $user_id = (int) get_current_user_id();
-    if ($user_id <= 0) {
-        wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
-    }
+function ca_render_tentatives_ajax_rows(array $view): string
+{
+    return ca_render_tentatives_rows(
+        $view['tentatives'],
+        $view['filtered_total'],
+        $view['no_results_message']
+    );
+}
 
-    ca_register_tentatives_search_context();
-
-    $page     = isset($_POST['page']) ? (int) $_POST['page'] : 1;
-    $per_page = isset($_POST['per_page']) ? (int) $_POST['per_page'] : 10;
-
-    $page     = max(1, $page);
-    $per_page = max(1, $per_page);
-
-    $view = ca_get_tentatives_view_model($user_id, $page, $per_page);
-
-    $rows  = ca_render_tentatives_rows($view['tentatives'], $view['filtered_total'], $view['no_results_message']);
-    $pager = cta_render_pager(
+function ca_render_tentatives_ajax_pager(array $view): string
+{
+    return cta_render_pager(
         $view['page'],
         $view['pages'],
         'tentatives-pager',
         ['data-param' => 'tentatives-page', 'data-section' => '', 'data-search-key' => 'tentatives']
     );
-
-    wp_send_json_success([
-        'rows'             => $rows,
-        'pager'            => $pager,
-        'page'             => $view['page'],
-        'pages'            => $view['pages'],
-        'per_page'         => $view['per_page'],
-        'search_term'      => $view['search_term'],
-        'filtered_total'   => $view['filtered_total'],
-        'no_results_text'  => $view['no_results_message'],
-    ]);
 }
-add_action('wp_ajax_ca_fetch_tentatives', 'ca_ajax_fetch_tentatives');
-add_action('wp_ajax_nopriv_ca_fetch_tentatives', 'ca_ajax_fetch_tentatives');
+
+if (class_exists(ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::class)) {
+    ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::configure(
+        static function (): void {
+            ca_register_tentatives_search_context();
+        },
+        static function (int $user_id, int $page, int $per_page): array {
+            return ca_get_tentatives_view_model($user_id, $page, $per_page);
+        },
+        static function (array $view): string {
+            return ca_render_tentatives_ajax_rows($view);
+        },
+        static function (array $view): string {
+            return ca_render_tentatives_ajax_pager($view);
+        }
+    );
+}
 // ==================================================
 /**
  * Load My Account sections via AJAX.
@@ -1780,52 +1760,8 @@ function ca_dismiss_message(): void
  *
  * @hook wp_ajax_upload_user_avatar
  */
-add_action('wp_ajax_upload_user_avatar', 'upload_user_avatar');
 function upload_user_avatar() {
-    // 🛑 Vérifie si l'utilisateur est connecté
-    if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => 'Vous devez être connecté.']);
-    }
-
-    $user_id = get_current_user_id();
-
-    // 📌 Vérifie si un fichier a été envoyé
-    if (!isset($_FILES['avatar'])) {
-        wp_send_json_error(['message' => 'Aucun fichier reçu.']);
-    }
-
-    $file = $_FILES['avatar'];
-    $max_size = 2 * 1024 * 1024; // 🔹 2 Mo
-    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-
-    // 🛑 Vérifie la taille du fichier
-    if ($file['size'] > $max_size) {
-        wp_send_json_error(['message' => 'Taille dépassée : 2 Mo max.']);
-    }
-
-    // 🛑 Vérifie le type MIME du fichier
-    if (!in_array($file['type'], $allowed_types)) {
-        wp_send_json_error(['message' => 'Format non autorisé. Formats autorisés : JPG, PNG, GIF, WEBP.']);
-    }
-
-    // 📌 Déplacer et enregistrer l’image
-    require_once ABSPATH . 'wp-admin/includes/file.php';
-    $upload = wp_handle_upload($file, ['test_form' => false]);
-
-    // ✅ Vérification de `$upload` avant d'aller plus loin
-    if (!$upload || isset($upload['error'])) {
-        wp_send_json_error(['message' => 'Erreur lors du téléversement : ' . ($upload['error'] ?? 'Inconnue')]);
-    }
-
-    // 📌 Mettre à jour l’avatar dans la base de données
-    update_user_meta($user_id, 'user_avatar', $upload['url']);
-
-    // 📌 Répondre en JSON avec l'URL de l'image
-    $avatar_url = get_user_meta($user_id, 'user_avatar', true);
-    wp_send_json_success([
-        'message' => 'Image mise à jour avec succès.',
-        'new_avatar_url' => esc_url($avatar_url)
-    ]);
+    ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::handle();
 }
 
 

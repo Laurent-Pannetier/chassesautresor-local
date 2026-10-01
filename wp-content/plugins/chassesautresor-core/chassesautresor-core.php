@@ -62,6 +62,9 @@ require_once __DIR__ . '/src/Progress/RiddleAttemptListAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptViewAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/UserAttemptStatisticsRepository.php';
 require_once __DIR__ . '/src/Progress/UserAttemptStatisticsService.php';
+require_once __DIR__ . '/src/Progress/UserProgressPaginationService.php';
+require_once __DIR__ . '/src/Progress/EngagedHuntsAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/UserAttemptsAjaxHandler.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRepository.php';
 require_once __DIR__ . '/src/Relationships/OrganizerService.php';
 require_once __DIR__ . '/src/Relationships/OrganizerRequestService.php';
@@ -76,6 +79,7 @@ require_once __DIR__ . '/src/Media/RiddleUploadDirectoryService.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionService.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionAjaxHandler.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionLifecycle.php';
+require_once __DIR__ . '/src/Media/UserAvatarUploadAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddleCompletionService.php';
 require_once __DIR__ . '/src/Content/CompletionCacheManager.php';
 require_once __DIR__ . '/src/Content/CompletionCacheSaveHookHandler.php';
@@ -192,6 +196,7 @@ require_once __DIR__ . '/src/Content/HuntAccessService.php';
 require_once __DIR__ . '/src/Content/RiddleDeletionService.php';
 require_once __DIR__ . '/src/Content/RiddleDeletionAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddlePrerequisiteService.php';
+require_once __DIR__ . '/src/Content/RiddlePrerequisiteAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionAttachmentService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFilePolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleSolutionFilePublicationService.php';
@@ -264,6 +269,10 @@ ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\EngagedHuntsAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\UserAttemptsAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Content\RiddlePrerequisiteAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Media\UserAvatarUploadAjaxHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
