@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler;
+use ChassesAuTresor\Core\Content\HuntModerationRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
@@ -86,5 +87,21 @@ final class BusinessHookOwnershipTest extends TestCase
         );
 
         self::assertSame([['init', [ManualPointsAdjustmentHandler::class, 'handle']]], $hooks);
+    }
+
+    public function testHuntModerationRequestHookIsRegisteredByCore(): void
+    {
+        $hooks = [];
+
+        HuntModerationRequestHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            ['admin_post_traiter_validation_chasse', [HuntModerationRequestHandler::class, 'handle']],
+            $hooks[0]
+        );
     }
 }

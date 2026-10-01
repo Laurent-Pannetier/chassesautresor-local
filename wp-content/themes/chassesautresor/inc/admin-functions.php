@@ -1220,7 +1220,7 @@ function traiter_validation_chasse_admin() {
     wp_safe_redirect(home_url('/mon-compte/organisateurs/'));
     exit;
 }
-add_action('admin_post_traiter_validation_chasse', 'traiter_validation_chasse_admin');
+ChassesAuTresor\Core\Content\HuntModerationRequestHandler::configure('traiter_validation_chasse_admin');
 
 /**
  * Envoie un email à l'organisateur lorsqu'une chasse nécessite des corrections.

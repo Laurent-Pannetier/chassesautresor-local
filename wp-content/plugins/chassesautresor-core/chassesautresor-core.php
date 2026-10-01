@@ -156,6 +156,7 @@ require_once __DIR__ . '/src/Content/HuntPublicationStatusService.php';
 require_once __DIR__ . '/src/Content/HuntValidationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationMutationService.php';
+require_once __DIR__ . '/src/Content/HuntModerationRequestHandler.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationService.php';
 require_once __DIR__ . '/src/Content/HuntDateMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';
@@ -268,6 +269,7 @@ ChassesAuTresor\Core\Content\RiddleFieldMutationAjaxHandler::register('add_actio
 ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntModerationRequestHandler::register('add_action');
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionRequestHandler::register('add_action');

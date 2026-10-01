@@ -77,6 +77,10 @@ final class ThemeCoreBoundaryTest extends TestCase
         $contents = (string) file_get_contents($path);
 
         self::assertStringContainsString('HuntModerationService', $contents);
+        self::assertStringNotContainsString(
+            "add_action('admin_post_traiter_validation_chasse'",
+            $contents
+        );
     }
 
     public function testRemovedCompatibilityLoadersStayRemoved(): void
