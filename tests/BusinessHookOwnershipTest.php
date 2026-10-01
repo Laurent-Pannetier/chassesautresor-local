@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Content\HuntOrganizerAssignmentHookHandler;
 use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
+use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
 use PHPUnit\Framework\TestCase;
 
@@ -58,5 +59,18 @@ final class BusinessHookOwnershipTest extends TestCase
             ],
             $hooks
         );
+    }
+
+    public function testConversionRequestHookIsRegisteredByCore(): void
+    {
+        $hooks = [];
+
+        ConversionRequestHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame([['init', [ConversionRequestHandler::class, 'handle']]], $hooks);
     }
 }

@@ -63,7 +63,9 @@ final class ThemeCoreBoundaryTest extends TestCase
 
     public function testThemeDoesNotOwnConversionSettingsEntryPoints(): void
     {
-        $violations = $this->findPhpMatches('/init_taux_conversion|traiter_mise_a_jour_taux_conversion/');
+        $violations = $this->findPhpMatches(
+            '/init_taux_conversion|traiter_mise_a_jour_taux_conversion|traiter_demande_paiement/'
+        );
 
         self::assertSame([], $violations, $this->formatViolations($violations));
     }

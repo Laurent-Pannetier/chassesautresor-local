@@ -216,7 +216,6 @@ function gerer_organisateur() {
  * 🔹 charger_script_taux_conversion → Charger le script `taux-conversion.js` uniquement pour les administrateurs sur "Mon Compte".
  * 🔹 afficher_tableau_paiements_admin → Afficher les demandes de paiement (en attente ou réglées) pour les administrateurs.
  * 🔹 regler_paiement_admin → Traiter le règlement d’une demande de paiement depuis l’admin.
- * 🔹 traiter_demande_paiement → Traiter la demande de conversion de points en euros pour un organisateur.
  * 🔹 $_SERVER['REQUEST_METHOD'] === 'POST' && isset(...) → Mettre à jour le statut des demandes de paiement (admin).
  */
 
@@ -412,89 +411,6 @@ function ajax_lister_historique_paiements_admin(): void
 {
     \ChassesAuTresor\Core\Admin\AdminAjaxHandler::listPayments();
 }
-
-/**
- * 💶 Traiter la demande de conversion de points en euros pour un organisateur.
- *
- * Cette fonction s'exécute lors de l'envoi d'un formulaire en POST contenant le champ `demander_paiement`.
- * Elle permet à un utilisateur connecté de :
- * - Vérifier un nonce de sécurité (`demande_paiement_nonce`).
- * - Vérifier qu’il a suffisamment de points pour effectuer la conversion.
- * - Calculer le montant en euros selon le taux de conversion courant.
- * - Déduire les points convertis de son solde.
- * - Envoyer une notification par email à l’administrateur.
- * - Rediriger l’utilisateur vers la page précédente avec un paramètre de confirmation.
- *
- * 💡 Le seuil minimal de conversion est de 500 points.
- * 💡 Le taux de conversion est récupéré via `get_taux_conversion_actuel()`.
- *
- * @return void
- *
- * @hook init
- */
-function traiter_demande_paiement() {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['demander_paiement'])) {
-        return; // 🚫 Ne rien faire si ce n'est pas une requête POST valide
-    }
-
-    // ✅ Vérification du nonce pour la sécurité
-    if (!isset($_POST['demande_paiement_nonce']) || !wp_verify_nonce($_POST['demande_paiement_nonce'], 'demande_paiement_action')) {
-        wp_die( __( '❌ Vérification du nonce échouée.', 'chassesautresor-com' ) );
-    }
-
-    // ✅ Vérification de l'utilisateur connecté
-    if (!is_user_logged_in()) {
-        wp_die( __( '❌ Vous devez être connecté pour effectuer cette action.', 'chassesautresor-com' ) );
-    }
-
-    $user_id = get_current_user_id();
-    $solde_actuel   = get_user_points($user_id) ?: 0;
-    $taux_conversion = get_taux_conversion_actuel();
-    $points_minimum  = get_points_conversion_min();
-
-    // ✅ Vérification du nombre de points demandés
-    $points_a_convertir = isset($_POST['points_a_convertir']) ? intval($_POST['points_a_convertir']) : 0;
-
-    if ($points_a_convertir < $points_minimum) {
-        wp_die(
-            sprintf(
-                /* translators: %d: points minimum */
-                __( '❌ Le minimum pour une conversion est de %d points.', 'chassesautresor-com' ),
-                $points_minimum
-            )
-        );
-    }
-
-    if ($points_a_convertir > $solde_actuel) {
-        wp_die( __( '❌ Vous n\'avez pas assez de points pour effectuer cette conversion.', 'chassesautresor-com' ) );
-    }
-
-    // ✅ Calcul du montant en euros
-    $montant_euros = round(($points_a_convertir / 1000) * $taux_conversion, 2);
-
-    $log_id = cat_get_conversion_service()->createRequest($user_id, $points_a_convertir, $taux_conversion);
-    cat_debug("✅ Demande enregistrée : log_id {$log_id}");
-
-    // 📧 Notification admin
-    $admin_email = get_option('admin_email');
-    $subject = __('Nouvelle demande de paiement', 'chassesautresor-com');
-    $message  = '<p>' . esc_html__('Une nouvelle demande de paiement a été soumise.', 'chassesautresor-com') . '</p>';
-    $message .= '<p>';
-    $message .= esc_html__('Organisateur ID :', 'chassesautresor-com') . ' ' . intval($user_id) . '<br />';
-    $message .= esc_html__('Montant :', 'chassesautresor-com') . ' ' . esc_html(number_format($montant_euros, 2, ',', ' ')) . ' €<br />';
-    $message .= esc_html__('Points utilisés :', 'chassesautresor-com') . ' ' . intval($points_a_convertir) . ' ' . esc_html__('points', 'chassesautresor-com') . '<br />';
-    $message .= esc_html__('Date :', 'chassesautresor-com') . ' ' . esc_html(current_time('mysql')) . '<br />';
-    $message .= esc_html__('Statut : En attente', 'chassesautresor-com');
-    $message .= '</p>';
-
-    cta_send_email($admin_email, $subject, $message);
-    cat_debug("📧 Notification envoyée à l'administrateur.");
-
-    // ✅ Redirection après soumission
-    wp_safe_redirect(add_query_arg('paiement_envoye', '1', home_url('/mon-compte/')));
-    exit;
-}
-add_action('init', 'traiter_demande_paiement');
 
 // ----------------------------------------------------------
 // 🎛️ Mise à jour du statut des demandes de paiement (Admin)

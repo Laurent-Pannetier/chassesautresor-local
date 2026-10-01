@@ -12,14 +12,14 @@ contrôleurs AJAX, mais le thème conserve encore des orchestrations et des muta
 laisserait le plugin actif, mais ferait notamment disparaître les workflows de validation d'une chasse, de demande
 organisateur, d'administration des paiements et une partie des traitements d'engagement et de progression.
 
-Le thème compte 146 fichiers PHP hors tests (29 933 lignes). Vingt-huit fichiers référencent directement les
+Le thème compte 146 fichiers PHP hors tests (29 849 lignes). Vingt-huit fichiers référencent directement les
 classes du plugin, pour 205 occurrences. Cette dépendance est acceptable dans une couche de présentation, mais elle
 signale ici une couche d'intégration encore volumineuse. Les façades qui ne font que déléguer au plugin ne sont pas
 considérées comme de la logique métier résiduelle ; elles restent toutefois une dette de couplage.
 
 ## Avancement au 1er octobre 2026
 
-**Estimation : 82 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
+**Estimation : 84 % de la migration métier est terminée.** Cette valeur est une estimation architecturale, pas un
 ratio de lignes : elle pondère la couverture des domaines Core, l'indépendance des points d'entrée WordPress, la
 propriété de la persistance, l'absence d'effets de bord dans les vues et la couverture de tests.
 
@@ -32,14 +32,15 @@ Le lot de migration associé à cet audit a sorti du thème :
   `AdminStatisticsResetService` et le handler AJAX de Core ;
 - l'initialisation et le traitement du formulaire du taux de conversion ; les deux fonctions globales restantes ne
   sont plus que des façades de lecture et d'écriture vers `ConversionSettingsService`.
+- la validation, le débit, l'enregistrement et la notification des demandes de conversion en euros.
 
 ### Prochain lot recommandé (taille maximale raisonnable)
 
-Migrer en un seul lot le **back-office transactionnel** encore présent dans `inc/admin-functions.php` : gestion des
-demandes de paiement, puis workflow complet de validation,
-correction et bannissement des chasses. Ce lot est la plus grande tranche cohérente qui puisse être revue et testée
-rapidement : il centralise les mutations administrateur dans Core sans mélanger la demande organisateur ou les
-politiques d'accès. Cible après ce lot : **88 %**.
+Migrer en un seul lot le **back-office de modération** encore présent dans `inc/admin-functions.php` : ajustement
+manuel des points, puis workflow complet de validation, correction, bannissement et suppression des chasses. Ce lot
+est la plus grande tranche cohérente qui puisse être revue et testée rapidement : il centralise les mutations
+administrateur dans Core sans mélanger la demande organisateur ou les politiques d'accès. Cible après ce lot :
+**89 %**.
 
 ## Critères utilisés
 
@@ -68,8 +69,8 @@ requête, permissions, transitions d'état, planification, calculs de points/sta
 
 ### P1 — workflows métier et contrôleurs encore dans le thème
 
-1. **Administration commerciale.** `inc/admin-functions.php` traite la gestion des points, le taux de conversion,
-   les demandes de paiement et la validation des chasses via des hooks `init` et `admin_post_*`. Les widgets de
+1. **Administration et modération.** `inc/admin-functions.php` traite encore l'ajustement manuel des points et la
+   validation des chasses via des hooks `init` et `admin_post_*`. Les widgets de
    rendu peuvent rester dans le thème, mais validation, autorisation, calcul et mutation doivent migrer.
 2. **Demande organisateur.** `inc/organisateur-functions.php` gère le token, sa date, les relances par courriel, la
    confirmation et la création de l'organisateur. Le endpoint et l'orchestration doivent appartenir au plugin ; le
