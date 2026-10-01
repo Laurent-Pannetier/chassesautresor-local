@@ -306,6 +306,21 @@ helper de journalisation `cat_debug()` du thème. Un test de frontière vérifie
 le thème et la présence des principaux points d'entrée dans le core. Les estimations restent inchangées : cette
 migration améliore l'autonomie déjà notée à 100 %, sans réduire les quatre view-models ni fournir de parcours neutre.
 
+Le soixante-neuvième lot transfère également les huit points d'entrée de données et de progression de chasse encore
+placés en tête de `inc/chasse-functions.php` : champs structurés, table et dépôt des gagnants, engagement et compteurs.
+Le thème ne conserve dans ce fichier que les assembleurs et fonctions de rendu. La frontière vérifie désormais
+explicitement la propriété core de cette API.
+
+### Indicateur de progression à jour
+
+| Objectif | Progression | Évolution de ce lot |
+|---|---:|---|
+| Extraction du métier PHP inventorié | **93 %** | Stable : autonomie renforcée, quatre view-models mixtes inchangés |
+| Remplaçabilité effective du thème | **37 %** | Stable : aucun parcours de secours ni recette sous thème neutre |
+
+Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
+Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
+
 ### Inventaire reproductible au 1er octobre 2026
 
 Les recherches ci-dessous portent sur les fichiers de production du thème (les fixtures sous `tests/` sont exclues).

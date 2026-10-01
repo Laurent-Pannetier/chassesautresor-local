@@ -243,6 +243,29 @@ final class ThemeCoreBoundaryTest extends TestCase
         }
     }
 
+    public function testThemeDoesNotDeclareHuntDataAndProgressCompatibilityFunctions(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/chasse-functions.php');
+        $statistics = (string) file_get_contents(self::THEME_PATH . '/inc/chasse/stats.php');
+        $core = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-functions.php'
+        );
+
+        foreach ([
+            'recuperer_infos_chasse',
+            'chasse_install_winners_table',
+            'enregistrer_gagnant_chasse',
+            'compter_chasses_gagnees',
+            'chasse_get_champs',
+            'utilisateur_est_engage_dans_chasse',
+        ] as $functionName) {
+            self::assertStringNotContainsString("function {$functionName}(", $theme);
+            self::assertStringContainsString("function {$functionName}(", $core);
+        }
+
+        self::assertStringNotContainsString('function cat_get_hunt_engagement_service(', $statistics);
+    }
+
     public function testLegacyStatisticsResetWorkflowStaysOutOfTheme(): void
     {
         $violations = $this->findPhpMatches(

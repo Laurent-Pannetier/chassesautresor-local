@@ -87,6 +87,7 @@ class ChasseEnigmesPayantesTest extends TestCase
 
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
+        require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-functions.php';
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
         global $fields, $wpdb;
