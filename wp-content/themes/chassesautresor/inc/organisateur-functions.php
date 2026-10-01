@@ -411,59 +411,11 @@ add_action('wp_enqueue_scripts', 'maybe_enqueue_conversion_history_script');
 /**
  * AJAX handler for loading paginated conversion history.
  */
-function cat_render_conversion_history_rows(array $requests, bool $is_admin): string
-{
-    ob_start();
-    foreach ($requests as $paiement) {
-        switch ($paiement['request_status']) {
-            case 'paid':
-                $statut_affiche = '✅ ' . __('Réglé', 'chassesautresor-com');
-                break;
-            case 'cancelled':
-                $statut_affiche = '❌ ' . __('Annulé', 'chassesautresor-com');
-                break;
-            case 'refused':
-                $statut_affiche = '🚫 ' . __('Refusé', 'chassesautresor-com');
-                break;
-            default:
-                $statut_affiche = '🟡 ' . __('En attente', 'chassesautresor-com');
-        }
-        $points_utilises = esc_html(abs((int) $paiement['points']));
-        $user_name = '';
-        if ($is_admin) {
-            $user = get_userdata((int) $paiement['user_id']);
-            $user_name = $user
-                ? $user->display_name
-                : sprintf(__('ID %d', 'chassesautresor-com'), (int) $paiement['user_id']);
-        }
-        ?>
-        <tr>
-            <td><?php echo esc_html(date_i18n('d/m/Y à H:i', strtotime($paiement['request_date']))); ?></td>
-            <?php if ($is_admin) : ?>
-            <td><?php echo esc_html($user_name); ?></td>
-            <?php endif; ?>
-            <td><?php echo esc_html($paiement['amount_eur']); ?> €</td>
-            <td><span class="etiquette etiquette-grande"><?php echo $points_utilises; ?></span></td>
-            <td><span class="etiquette"><?php echo esc_html($statut_affiche); ?></span></td>
-        </tr>
-        <?php
-    }
-
-    return (string) ob_get_clean();
-}
-
 function ajax_load_conversion_history(): void
 {
     ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::handle();
 }
 
-if (class_exists(ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::class)) {
-    ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::configure(
-        static function (array $requests, bool $is_admin): string {
-            return cat_render_conversion_history_rows($requests, $is_admin);
-        }
-    );
-}
 
 
 // ==================================================

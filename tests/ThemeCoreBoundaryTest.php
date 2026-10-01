@@ -1007,6 +1007,22 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class PointsHistoryRenderer', $renderer);
     }
 
+    public function testConversionHistoryRenderingIsNotInjectedByTheme(): void
+    {
+        $source = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur-functions.php');
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/ConversionHistoryAjaxHandler.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Points/ConversionHistoryRenderer.php'
+        );
+
+        self::assertStringNotContainsString('ConversionHistoryAjaxHandler::configure', $source);
+        self::assertStringNotContainsString('function cat_render_conversion_history_rows', $source);
+        self::assertStringContainsString("[new ConversionHistoryRenderer(), 'rows']", $handler);
+        self::assertStringContainsString('class ConversionHistoryRenderer', $renderer);
+    }
+
     public function testEngagedHuntsBusinessCallbacksAreNotInjectedByTheme(): void
     {
         $source = (string) file_get_contents(self::THEME_PATH . '/inc/user-functions.php');

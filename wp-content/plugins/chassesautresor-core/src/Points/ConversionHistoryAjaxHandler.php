@@ -29,10 +29,6 @@ class ConversionHistoryAjaxHandler {
             wp_send_json_error();
         }
         check_ajax_referer('conversion-history-nonce', 'nonce');
-        if (!is_callable(self::$renderer)) {
-            wp_send_json_error();
-        }
-
         $userId = current_user_can('administrator') ? null : (int) get_current_user_id();
         global $wpdb;
         $requests = CoreServiceFactory::conversion($wpdb)->getRequests(
@@ -41,8 +37,7 @@ class ConversionHistoryAjaxHandler {
             $request['per_page'],
             $request['offset']
         );
-        wp_send_json_success([
-            'rows' => (string) call_user_func(self::$renderer, $requests, $userId === null),
-        ]);
+        $renderer = self::$renderer ?? [new ConversionHistoryRenderer(), 'rows'];
+        wp_send_json_success(['rows' => (string) call_user_func($renderer, $requests, $userId === null)]);
     }
 }
