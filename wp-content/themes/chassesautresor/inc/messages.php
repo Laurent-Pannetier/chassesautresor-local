@@ -2,11 +2,6 @@
 
 defined('ABSPATH') || exit;
 
-if (!class_exists(ChassesAuTresor\Core\Messages\SiteMessageService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Messages/SiteMessageService.php';
-}
-
 /**
  * Create the service responsible for persistent site messages.
  */
@@ -26,11 +21,6 @@ function cat_get_site_message_service(): ChassesAuTresor\Core\Messages\SiteMessa
  */
 function cat_install_user_messages_table(): void
 {
-    if (!class_exists(ChassesAuTresor\Core\Messages\UserMessagesTable::class, false)) {
-        require_once dirname(__DIR__, 3)
-            . '/plugins/chassesautresor-core/src/Messages/UserMessagesTable.php';
-    }
-
     ChassesAuTresor\Core\Messages\UserMessagesTable::install();
 }
 add_action('after_switch_theme', 'cat_install_user_messages_table');

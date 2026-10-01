@@ -3,42 +3,6 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/badge-functions.php';
 
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntWinnerRepository::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntWinnerRepository.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntWinnersTable::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntWinnersTable.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntEngagementService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntEngagementRepository.php';
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntEngagementService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Content\SolutionQueryService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Content/SolutionQueryService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Content\SolutionDisplayService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Content/SolutionAvailabilityService.php';
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Content/SolutionDisplayService.php';
-}
-
 //
 // 1. 📦 FONCTIONS LIÉES À UNE CHASSE
 // 2. 📦 AFFICHAGE

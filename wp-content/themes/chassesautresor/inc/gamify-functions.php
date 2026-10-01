@@ -1,38 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if (!class_exists(ChassesAuTresor\Core\Points\PointsService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Points/PointsService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Points\PurchasePointsService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Points/PurchasePointsService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Points\ConversionService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Points/ConversionService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntProgressService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntProgressRepository.php';
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntProgressService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntRiddleClassifier::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntRiddleClassifier.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntCompletionService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/HuntCompletionService.php';
-}
-
 /**
  * Create the service responsible for points operations.
  */

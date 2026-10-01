@@ -11,10 +11,5 @@ declare(strict_types=1);
  */
 
 if (!class_exists('PointsRepository', false)) {
-    $corePluginFile = dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Points/PointsRepository.php';
-
-    require_once $corePluginFile;
-
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
 }

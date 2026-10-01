@@ -1,18 +1,6 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-if (!class_exists(ChassesAuTresor\Core\Messages\AccountMessageService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Messages/AccountMessageService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\UserAttemptStatisticsService::class, false)) {
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/UserAttemptStatisticsRepository.php';
-    require_once dirname(__DIR__, 3)
-        . '/plugins/chassesautresor-core/src/Progress/UserAttemptStatisticsService.php';
-}
-
 /**
  * Create the service responsible for account messages.
  */

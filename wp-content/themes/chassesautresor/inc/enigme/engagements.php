@@ -1,13 +1,6 @@
 <?php
 defined('ABSPATH') || exit;
 
-if (!class_exists(ChassesAuTresor\Core\Progress\RiddleEngagementService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/RiddleEngagementRepository.php';
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/RiddleEngagementService.php';
-}
-
 if (!function_exists('cat_get_riddle_engagement_service')) {
     function cat_get_riddle_engagement_service(): ChassesAuTresor\Core\Progress\RiddleEngagementService
     {

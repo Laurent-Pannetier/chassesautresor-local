@@ -10,10 +10,5 @@ declare(strict_types=1);
  */
 
 if (!class_exists('UserMessageRepository', false)) {
-    $corePluginFile = dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Messages/UserMessageRepository.php';
-
-    require_once $corePluginFile;
-
     class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');
 }

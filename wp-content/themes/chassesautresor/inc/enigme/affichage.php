@@ -4,13 +4,6 @@ require_once __DIR__ . '/../sidebar.php';
 require_once __DIR__ . '/utils.php';
 require_once __DIR__ . '/indices.php';
 
-if (!class_exists(ChassesAuTresor\Core\Progress\RiddleStatisticsService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsRepository.php';
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/RiddleStatisticsService.php';
-}
-
 if (!function_exists('cat_get_riddle_statistics_service')) {
     function cat_get_riddle_statistics_service(): ChassesAuTresor\Core\Progress\RiddleStatisticsService
     {

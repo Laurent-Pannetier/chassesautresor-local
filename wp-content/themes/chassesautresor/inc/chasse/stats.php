@@ -7,20 +7,6 @@ defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/../enigme/stats.php';
 
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntEngagementService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/HuntEngagementRepository.php';
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/HuntEngagementService.php';
-}
-
-if (!class_exists(ChassesAuTresor\Core\Progress\HuntStatisticsService::class, false)) {
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/HuntStatisticsRepository.php';
-    require_once dirname(__DIR__, 4)
-        . '/plugins/chassesautresor-core/src/Progress/HuntStatisticsService.php';
-}
-
 if (!function_exists('cat_get_hunt_engagement_service')) {
     function cat_get_hunt_engagement_service(): ChassesAuTresor\Core\Progress\HuntEngagementService
     {
