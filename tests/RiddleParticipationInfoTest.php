@@ -30,7 +30,7 @@ final class ParticipationAttemptServiceStub extends RiddleAttemptService {
     public function __construct() {
     }
 
-    public function countTodayForUser(int $userId, int $riddleId, ?DateTimeInterface $now = null): int {
+    public function countFailuresTodayForUser(int $userId, int $riddleId, ?DateTimeInterface $now = null): int {
         $this->calls++;
 
         return $userId === 9 && $riddleId === 12 ? 3 : 0;

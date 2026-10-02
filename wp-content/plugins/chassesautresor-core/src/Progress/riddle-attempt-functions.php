@@ -18,9 +18,9 @@ function compter_tentatives_en_attente(int $enigme_id): int {
 }
 
 if (!function_exists('compter_tentatives_du_jour')) {
-    /** Count attempts submitted by a user for a riddle during the current day. */
+    /** Count failed attempts submitted by a user for a riddle during the current day. */
     function compter_tentatives_du_jour(int $user_id, int $enigme_id): int {
-        return cat_get_riddle_attempt_service()->countTodayForUser($user_id, $enigme_id);
+        return cat_get_riddle_attempt_service()->countFailuresTodayForUser($user_id, $enigme_id);
     }
 }
 

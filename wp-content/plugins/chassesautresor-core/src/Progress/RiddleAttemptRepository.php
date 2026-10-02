@@ -161,4 +161,25 @@ class RiddleAttemptRepository
             )
         );
     }
+
+    public function countFailuresForUserAndRiddleBetween(
+        int $userId,
+        int $riddleId,
+        string $startAt,
+        string $endAt
+    ): int {
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table} "
+                    . "WHERE user_id = %d AND enigme_id = %d AND resultat IN ('faux','variante') "
+                    . 'AND date_tentative BETWEEN %s AND %s',
+                $userId,
+                $riddleId,
+                $startAt,
+                $endAt
+            )
+        );
+    }
 }

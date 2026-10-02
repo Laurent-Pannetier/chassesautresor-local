@@ -32,7 +32,7 @@ final class AnswerResultNotificationService
                 : esc_html__('Réessayer l’énigme', 'chassesautresor-com')) . '</a></p>';
 
         global $wpdb;
-        $used = CoreServiceFactory::riddleAttempts($wpdb)->countTodayForUser($userId, $riddleId);
+        $used = CoreServiceFactory::riddleAttempts($wpdb)->countFailuresTodayForUser($userId, $riddleId);
         $maximum = (int) get_field('enigme_tentative_max', $riddleId);
         $message .= '<p>' . sprintf(
             esc_html__('Tentatives quotidiennes : %1$d / %2$s', 'chassesautresor-com'),

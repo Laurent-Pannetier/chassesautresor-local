@@ -14,6 +14,7 @@ class RiddleAttemptWpdbStub
     public ?string $status = null;
     public int $updateResult = 1;
     public array $preparedArguments = [];
+    public string $preparedQuery = '';
     public array $updateArguments = [];
     public ?object $row = null;
     public $deleteResult = 0;
@@ -21,6 +22,7 @@ class RiddleAttemptWpdbStub
 
     public function prepare(string $query, ...$arguments): string
     {
+        $this->preparedQuery = $query;
         $this->preparedArguments = $arguments;
         return $query;
     }
@@ -128,5 +130,27 @@ class RiddleAttemptRepositoryTest extends TestCase
 
         $wpdb->insert_id = -1;
         $this->assertSame(0, $repository->getLastInsertId());
+    }
+
+    public function testDailyFailureCountFiltersOnRejectedResults(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $wpdb->status = '3';
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertSame(
+            3,
+            $repository->countFailuresForUserAndRiddleBetween(
+                7,
+                10,
+                '2026-10-02 00:00:00',
+                '2026-10-02 23:59:59'
+            )
+        );
+        $this->assertSame(
+            [7, 10, '2026-10-02 00:00:00', '2026-10-02 23:59:59'],
+            $wpdb->preparedArguments
+        );
+        $this->assertStringContainsString("resultat IN ('faux','variante')", $wpdb->preparedQuery);
     }
 }

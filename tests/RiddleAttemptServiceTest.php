@@ -112,10 +112,34 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
         $this->countArguments = [$userId, $riddleId, $startAt, $endAt];
         return 2;
     }
+
+    public function countFailuresForUserAndRiddleBetween(
+        int $userId,
+        int $riddleId,
+        string $startAt,
+        string $endAt
+    ): int {
+        $this->countArguments = [$userId, $riddleId, $startAt, $endAt, 'failures'];
+        return 1;
+    }
 }
 
 class RiddleAttemptServiceTest extends TestCase
 {
+    public function testDailyFailureCountUsesTheParisCalendarDay(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $service = new RiddleAttemptService($repository);
+        $now = new DateTimeImmutable('2026-10-02 14:30:00', new DateTimeZone('UTC'));
+
+        $this->assertSame(1, $service->countFailuresTodayForUser(7, 10, $now));
+        $this->assertSame(
+            [7, 10, '2026-10-02 00:00:00', '2026-10-02 23:59:59', 'failures'],
+            $repository->countArguments
+        );
+        $this->assertSame(0, $service->countFailuresTodayForUser(0, 10, $now));
+    }
+
     public function testAttemptCreationIsValidatedAndDelegated(): void
     {
         $repository = new RiddleAttemptRepositoryStub();

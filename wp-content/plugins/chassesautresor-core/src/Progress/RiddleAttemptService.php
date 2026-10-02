@@ -331,4 +331,22 @@ class RiddleAttemptService
             $current->setTime(23, 59, 59)->format('Y-m-d H:i:s')
         );
     }
+
+    public function countFailuresTodayForUser(int $userId, int $riddleId, ?DateTimeInterface $now = null): int {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return 0;
+        }
+
+        $timezone = new DateTimeZone('Europe/Paris');
+        $current = $now === null
+            ? new DateTimeImmutable('now', $timezone)
+            : DateTimeImmutable::createFromInterface($now)->setTimezone($timezone);
+
+        return $this->repository->countFailuresForUserAndRiddleBetween(
+            $userId,
+            $riddleId,
+            $current->setTime(0, 0)->format('Y-m-d H:i:s'),
+            $current->setTime(23, 59, 59)->format('Y-m-d H:i:s')
+        );
+    }
 }

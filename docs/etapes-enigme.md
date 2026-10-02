@@ -42,3 +42,18 @@ Ce premier lot n’ajoute volontairement pas encore :
 - la protection spécifique des images d’étape.
 
 Ces éléments dépendront du CPT et du schéma ACF introduits ici.
+
+## Deuxième lot : socle de progression
+
+La table `wp_enigme_etapes_progression` mémorise uniquement les étapes trouvées. Une étape sans ligne de progression
+est soit l’étape courante, soit une étape future ; le service de progression distingue ces deux cas à partir de l’ordre
+du parcours.
+
+Le parcours est strictement linéaire : les étapes trouvées et la première étape incomplète sont visibles, tandis que
+les suivantes restent absentes. La réponse finale de l’énigme n’est disponible qu’après la réussite de la dernière
+étape. Une énigme sans étape conserve immédiatement sa réponse finale disponible.
+
+La colonne nullable `etape_id` est ajoutée à `wp_enigme_tentatives`. Une valeur nulle désigne une tentative sur la
+réponse finale historique ; un ID désignera une tentative sur une étape. Le compteur quotidien propre au parcours
+compte uniquement les réponses non validées (`faux` ou `variante`), afin que plusieurs étapes réussies avant une
+erreur ne consomment qu’une seule tentative.

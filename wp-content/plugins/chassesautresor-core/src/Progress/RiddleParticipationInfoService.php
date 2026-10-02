@@ -31,7 +31,7 @@ final class RiddleParticipationInfoService {
             'show_attempts' => $showAttempts,
             'show_info' => $showInfo,
             'attempts_used' => $showAttempts
-                ? $this->attemptService()->countTodayForUser($userId, $riddleId)
+                ? $this->attemptService()->countFailuresTodayForUser($userId, $riddleId)
                 : 0,
             'attempts_max' => $showAttempts ? (int) get_field('enigme_tentative_max', $riddleId) : 0,
         ];

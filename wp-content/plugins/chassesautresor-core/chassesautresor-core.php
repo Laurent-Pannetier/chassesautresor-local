@@ -133,6 +133,10 @@ require_once __DIR__ . '/src/Progress/HintUnlockRenderer.php';
 require_once __DIR__ . '/src/Progress/HintUnlockAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptService.php';
+require_once __DIR__ . '/src/Progress/RiddleStepProgressTable.php';
+require_once __DIR__ . '/src/Progress/RiddleAttemptStepMigration.php';
+require_once __DIR__ . '/src/Progress/RiddleStepProgressRepository.php';
+require_once __DIR__ . '/src/Progress/RiddleStepProgressService.php';
 require_once __DIR__ . '/src/Progress/riddle-attempt-functions.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptMaintenanceService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptAccessPolicy.php';
@@ -514,6 +518,16 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Progress\RiddleStepProgressTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Progress\RiddleAttemptStepMigration::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'schedule']
 );
 
@@ -634,6 +648,16 @@ add_action(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Progress\HuntWinnersTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\RiddleStepProgressTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\RiddleAttemptStepMigration::class, 'maybeUpgrade']
 );
 
 add_action(

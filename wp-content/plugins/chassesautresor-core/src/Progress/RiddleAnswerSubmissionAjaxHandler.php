@@ -125,7 +125,7 @@ class RiddleAnswerSubmissionAjaxHandler {
             'resultat' => $evaluation['resultat'],
             'message' => $evaluation['message'],
             'uid' => $uid,
-            'compteur' => self::attempts()->countTodayForUser($userId, $riddleId),
+            'compteur' => self::attempts()->countFailuresTodayForUser($userId, $riddleId),
             'points' => self::points()->getBalance($userId),
         ]);
     }
@@ -146,7 +146,7 @@ class RiddleAnswerSubmissionAjaxHandler {
             ? (string) (CoreServiceFactory::huntProgress(self::database())->getRiddleStatus($userId, $riddleId) ?? '')
             : '';
         $attempts = $userId > 0 && $riddleId > 0
-            ? self::attempts()->countTodayForUser($userId, $riddleId)
+            ? self::attempts()->countFailuresTodayForUser($userId, $riddleId)
             : 0;
 
         return (new RiddleAnswerSubmissionPolicy())->validate(
