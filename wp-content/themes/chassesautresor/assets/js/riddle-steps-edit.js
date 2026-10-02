@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const contentEditor = form?.querySelector('.riddle-step-form__content-editor');
   const imagePreview = editor.querySelector('.riddle-step-form__image-preview');
   const imageRemove = editor.querySelector('.riddle-step-image-remove');
+  const structureLocked = editor.dataset.structureLocked === '1';
   let dragged = null;
   let savedScroll = 0;
 
@@ -145,10 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {
   imageRemove?.addEventListener('click', () => setImage());
 
   list?.addEventListener('dragstart', event => {
+    if (structureLocked) {
+      event.preventDefault();
+      return;
+    }
     dragged = event.target.closest('.riddle-step-card');
     dragged?.classList.add('is-dragging');
   });
   list?.addEventListener('dragend', async () => {
+    if (structureLocked) return;
     dragged?.classList.remove('is-dragging');
     dragged = null;
     const ids = [...list.querySelectorAll('.riddle-step-card')].map(card => card.dataset.stepId);
@@ -161,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   list?.addEventListener('dragover', event => {
+    if (structureLocked) return;
     event.preventDefault();
     const target = event.target.closest('.riddle-step-card');
     if (!dragged || !target || target === dragged) return;

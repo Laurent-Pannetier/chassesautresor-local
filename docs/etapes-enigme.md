@@ -42,6 +42,7 @@ consomment rien. Le futur délai entre deux essais aura une portée globale à l
 ## Verrouillage de l’architecture
 
 Tant que l’énigme n’est pas en cours, les étapes peuvent être ajoutées, supprimées et réordonnées. L’architecture est
-figée lorsque la chasse est en cours, payante ou terminée, ainsi que dès qu’une progression de joueur existe. Le serveur
-refuse alors l’ajout, la suppression et le réordonnancement, même si un appel AJAX est fabriqué manuellement. Le nom
-interne, le texte et l’image restent modifiables pour permettre les corrections éditoriales sans altérer le parcours.
+figée dès que la chasse quitte les statuts de création ou de correction, lorsqu’elle est en cours, payante ou terminée,
+ainsi que dès qu’une progression de joueur existe. Le serveur refuse alors l’ajout, la suppression et le
+réordonnancement, même si un appel AJAX est fabriqué manuellement. Le nom interne, le texte et l’image restent
+modifiables pour permettre les corrections éditoriales sans altérer le parcours.

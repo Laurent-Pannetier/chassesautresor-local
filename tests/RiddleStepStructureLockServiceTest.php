@@ -28,10 +28,39 @@ final class RiddleStepStructureLockServiceTest extends TestCase {
         ));
     }
 
+    /** @dataProvider lockedValidationStatusProvider */
+    public function testLocksAValidatedHuntBeforeItStarts(string $validationStatus): void {
+        $fields = [
+            'enigme_chasse_associee:12' => 45,
+            'chasse_cache_statut:45' => 'a_venir',
+            'chasse_cache_statut_validation:45' => $validationStatus,
+        ];
+
+        self::assertTrue((new RiddleStepStructureLockService())->isLocked(
+            12,
+            static fn (string $field, int $postId) => $fields[$field . ':' . $postId] ?? null,
+            static fn (): bool => false
+        ));
+    }
+
     public function testLeavesPreparationStatusesEditable(): void {
         $fields = [
             'enigme_chasse_associee:12' => 45,
             'chasse_cache_statut:45' => 'revision',
+        ];
+
+        self::assertFalse((new RiddleStepStructureLockService())->isLocked(
+            12,
+            static fn (string $field, int $postId) => $fields[$field . ':' . $postId] ?? null,
+            static fn (): bool => false
+        ));
+    }
+
+    public function testLeavesCorrectionStatusEditableWithoutProgress(): void {
+        $fields = [
+            'enigme_chasse_associee:12' => 45,
+            'chasse_cache_statut:45' => 'a_venir',
+            'chasse_cache_statut_validation:45' => 'correction',
         ];
 
         self::assertFalse((new RiddleStepStructureLockService())->isLocked(
@@ -47,6 +76,14 @@ final class RiddleStepStructureLockServiceTest extends TestCase {
             'active' => ['en_cours'],
             'paid active' => ['payante'],
             'finished' => ['termine'],
+        ];
+    }
+
+    /** @return array<string, array{string}> */
+    public function lockedValidationStatusProvider(): array {
+        return [
+            'pending validation' => ['en_attente'],
+            'validated' => ['valide'],
         ];
     }
 }
