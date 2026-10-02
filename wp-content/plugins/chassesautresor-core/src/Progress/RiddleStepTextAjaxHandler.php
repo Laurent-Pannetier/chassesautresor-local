@@ -37,11 +37,16 @@ final class RiddleStepTextAjaxHandler {
         }
 
         global $wpdb;
+        $lock = new RiddleStepSubmissionLock($wpdb);
+        if (!$lock->acquire($userId, $riddleId)) {
+            wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
+        }
         $progress = CoreServiceFactory::riddleStepProgress($wpdb);
         $attempts = CoreServiceFactory::riddleAttempts($wpdb);
         $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
         $state = $progress->getState($userId, $riddleId, $orderedIds);
         if ($state['current_step_id'] !== $stepId) {
+            $lock->release($userId, $riddleId);
             wp_send_json_error(['message' => __('Cette étape n’est pas disponible.', 'chassesautresor-com')]);
         }
 
@@ -55,6 +60,7 @@ final class RiddleStepTextAjaxHandler {
         $max = (int) get_field('enigme_tentative_max', $riddleId);
         $failureCount = $attempts->countFailuresTodayForUser($userId, $riddleId);
         if ($max > 0 && $failureCount >= $max) {
+            $lock->release($userId, $riddleId);
             wp_send_json_error(['message' => __('Limite quotidienne atteinte.', 'chassesautresor-com')]);
         }
 
@@ -79,7 +85,8 @@ final class RiddleStepTextAjaxHandler {
             $variants
         );
         $uid = wp_generate_uuid4();
-        $attempts->createForStep(
+        $wpdb->query('START TRANSACTION');
+        $created = $attempts->createForStep(
             $uid,
             $userId,
             $riddleId,
@@ -89,6 +96,11 @@ final class RiddleStepTextAjaxHandler {
             $_SERVER['REMOTE_ADDR'] ?? null,
             $_SERVER['HTTP_USER_AGENT'] ?? null
         );
+        if (!$created) {
+            $wpdb->query('ROLLBACK');
+            $lock->release($userId, $riddleId);
+            wp_send_json_error(['message' => __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')]);
+        }
 
         if ($evaluation['resultat'] === 'bon') {
             $state = $progress->completeCurrentStep(
@@ -99,7 +111,15 @@ final class RiddleStepTextAjaxHandler {
                 (string) current_time('mysql'),
                 $uid
             );
+            if ($state === null) {
+                $wpdb->query('ROLLBACK');
+                $lock->release($userId, $riddleId);
+                wp_send_json_error(['message' => __('Cette étape n’est plus disponible.', 'chassesautresor-com')]);
+            }
         }
+
+        $wpdb->query('COMMIT');
+        $lock->release($userId, $riddleId);
 
         wp_send_json_success([
             'resultat' => $evaluation['resultat'],

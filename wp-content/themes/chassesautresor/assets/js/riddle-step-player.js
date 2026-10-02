@@ -1,23 +1,44 @@
-document.addEventListener('DOMContentLoaded', async () => {
-  const target = window.sessionStorage.getItem('riddleStepScrollTarget');
-  if (!target) return;
-  const images = [...document.querySelectorAll('.riddle-steps-player img')];
-  await Promise.allSettled(images.map(image => {
-    if (image.complete) return image.decode?.() || Promise.resolve();
-    return new Promise(resolve => {
-      image.addEventListener('load', resolve, { once: true });
-      image.addEventListener('error', resolve, { once: true });
-    });
-  }));
-  await document.fonts?.ready;
+const waitForImage = image => {
+  if (image.complete) return image.decode?.().catch(() => {}) || Promise.resolve();
+
+  return new Promise(resolve => {
+    const timeout = window.setTimeout(resolve, 3000);
+    const finish = () => {
+      window.clearTimeout(timeout);
+      resolve();
+    };
+    image.addEventListener('load', finish, { once: true });
+    image.addEventListener('error', finish, { once: true });
+  });
+};
+
+const positionRiddleStepTarget = async target => {
   const element = target === 'final'
     ? document.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle') ||
       [...document.querySelectorAll('.riddle-player-step')].pop()
     : document.querySelector(`[data-player-step-id="${target}"]`);
-  window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
-    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    window.sessionStorage.removeItem('riddleStepScrollTarget');
-  }));
+  if (!element) return;
+
+  const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const position = behavior => element.scrollIntoView({ behavior, block: 'start' });
+  position(reducedMotion ? 'auto' : 'smooth');
+
+  const precedingImages = [...document.querySelectorAll('.riddle-steps-player img')]
+    .filter(image => image.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING);
+  await Promise.allSettled(precedingImages.map(waitForImage));
+  await Promise.race([
+    document.fonts?.ready || Promise.resolve(),
+    new Promise(resolve => window.setTimeout(resolve, 3000))
+  ]);
+  window.requestAnimationFrame(() => window.requestAnimationFrame(() => position('auto')));
+};
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const target = window.sessionStorage.getItem('riddleStepScrollTarget');
+  if (!target) return;
+  window.history.scrollRestoration = 'manual';
+  window.sessionStorage.removeItem('riddleStepScrollTarget');
+  await positionRiddleStepTarget(target);
 });
 
 document.addEventListener('submit', async event => {

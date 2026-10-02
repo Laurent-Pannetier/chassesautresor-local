@@ -23,7 +23,8 @@ class RiddleAnswerSubmissionPolicy {
         int $attemptsToday,
         int $cost,
         int $balance,
-        bool $automatic
+        bool $automatic,
+        bool $finalAnswerUnlocked = true
     ): ?string {
         if (!$loggedIn) {
             return 'non_connecte';
@@ -39,6 +40,10 @@ class RiddleAnswerSubmissionPolicy {
 
         if ($systemState !== 'accessible' || !in_array($userStatus, $allowedStatuses, true)) {
             return in_array($userStatus, ['resolue', 'terminee'], true) ? 'deja_resolue' : 'interdit';
+        }
+
+        if (!$finalAnswerUnlocked) {
+            return 'etapes_incompletes';
         }
 
         if ($dailyLimit > 0 && $attemptsToday >= $dailyLimit) {

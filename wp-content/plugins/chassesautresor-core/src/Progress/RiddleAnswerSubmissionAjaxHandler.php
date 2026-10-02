@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\RiddleStepQueryService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 use Throwable;
 
@@ -148,6 +149,14 @@ class RiddleAnswerSubmissionAjaxHandler {
         $attempts = $userId > 0 && $riddleId > 0
             ? self::attempts()->countFailuresTodayForUser($userId, $riddleId)
             : 0;
+        $finalAnswerUnlocked = true;
+        if ($userId > 0 && $riddleId > 0) {
+            $stepIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
+            if ($stepIds !== []) {
+                $finalAnswerUnlocked = CoreServiceFactory::riddleStepProgress(self::database())
+                    ->getState($userId, $riddleId, $stepIds)['final_answer_unlocked'];
+            }
+        }
 
         return (new RiddleAnswerSubmissionPolicy())->validate(
             $loggedIn,
@@ -161,7 +170,8 @@ class RiddleAnswerSubmissionAjaxHandler {
             $attempts,
             (int) get_field('enigme_tentative_cout_points', $riddleId),
             $userId > 0 ? self::points()->getBalance($userId) : 0,
-            $automatic
+            $automatic,
+            $finalAnswerUnlocked
         );
     }
 

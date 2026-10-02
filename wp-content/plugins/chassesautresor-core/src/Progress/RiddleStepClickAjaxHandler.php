@@ -37,9 +37,14 @@ final class RiddleStepClickAjaxHandler {
         }
 
         global $wpdb;
+        $lock = new RiddleStepSubmissionLock($wpdb);
+        if (!$lock->acquire($userId, $riddleId)) {
+            wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
+        }
         $progress = CoreServiceFactory::riddleStepProgress($wpdb);
         $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
         $uid = wp_generate_uuid4();
+        $wpdb->query('START TRANSACTION');
         $state = $progress->completeCurrentStep(
             $userId,
             $riddleId,
@@ -49,6 +54,8 @@ final class RiddleStepClickAjaxHandler {
             $uid
         );
         if ($state === null) {
+            $wpdb->query('ROLLBACK');
+            $lock->release($userId, $riddleId);
             wp_send_json_error(['message' => __('Cette étape n’est pas disponible.', 'chassesautresor-com')]);
         }
 
@@ -59,7 +66,7 @@ final class RiddleStepClickAjaxHandler {
             (string) current_time('mysql')
         );
 
-        CoreServiceFactory::riddleAttempts($wpdb)->createForStep(
+        $created = CoreServiceFactory::riddleAttempts($wpdb)->createForStep(
             $uid,
             $userId,
             $riddleId,
@@ -69,6 +76,13 @@ final class RiddleStepClickAjaxHandler {
             $_SERVER['REMOTE_ADDR'] ?? null,
             $_SERVER['HTTP_USER_AGENT'] ?? null
         );
+        if (!$created) {
+            $wpdb->query('ROLLBACK');
+            $lock->release($userId, $riddleId);
+            wp_send_json_error(['message' => __('Impossible d’enregistrer la progression.', 'chassesautresor-com')]);
+        }
+        $wpdb->query('COMMIT');
+        $lock->release($userId, $riddleId);
         wp_send_json_success([
             'final_answer_unlocked' => $state['final_answer_unlocked'],
             'current_step_id' => $state['current_step_id'],

@@ -28,6 +28,7 @@ final class RiddleAnswerSubmissionPolicyTest extends TestCase {
             'solved' => [$this->replace($valid, 6, 'resolue'), 'deja_resolue'],
             'daily limit' => [$this->replace($valid, 8, 3), 'tentatives_epuisees'],
             'points' => [$this->replace($valid, 10, 9), 'points_insuffisants'],
+            'incomplete steps' => [$this->replace($valid, 12, false), 'etapes_incompletes'],
         ];
     }
 
