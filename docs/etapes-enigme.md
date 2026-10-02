@@ -67,3 +67,13 @@ acceptée que si elle contient exactement tous les identifiants actuels, sans aj
 Lors de la suppression définitive d’une étape, ses progressions et ses tentatives sont supprimées. La suppression
 définitive d’une énigme supprime également toutes ses étapes et les progressions correspondantes. Ce socle sera utilisé
 par les futurs contrôleurs de l’éditeur frontal ; il n’ajoute pas encore de bouton visible sur la page de l’énigme.
+
+## Quatrième lot : gestion depuis l’éditeur d’énigme
+
+Le panneau de paramètres d’une énigme affiche maintenant ses étapes sous forme de liste ordonnée. Un utilisateur
+autorisé peut créer une étape, ouvrir sa configuration ACF, la supprimer définitivement ou la déplacer par
+glisser-déposer. Les opérations passent par des actions AJAX authentifiées, protégées par nonce et par la politique
+de modification de l’énigme.
+
+La configuration détaillée continue provisoirement à utiliser l’écran WordPress du CPT `enigme_etape`. Une prochaine
+itération pourra intégrer ce formulaire dans une modale frontale sans modifier les services métier de ce lot.
