@@ -15,6 +15,21 @@ document.addEventListener('submit', async event => {
     if (!result.success) throw new Error(result.data?.message || RiddleStepPlayer.error);
     if (result.data.resultat && result.data.resultat !== 'bon') {
       feedback.textContent = RiddleStepPlayer.wrong;
+      const counter = document.querySelector('.tentatives-counter .valeur');
+      const footer = document.querySelector('.participation-infos .tentatives');
+      if (counter) counter.textContent = result.data.compteur;
+      if (footer) {
+        const maximum = footer.dataset.max || footer.textContent.split('/')[1]?.trim() || '∞';
+        footer.dataset.max = maximum;
+        footer.textContent = `${RiddleStepPlayer.attemptsLabel} ${result.data.compteur}/${maximum}`;
+      }
+      const maximum = Number.parseInt(form.dataset.maxFailures || '0', 10);
+      if (maximum > 0 && result.data.compteur >= maximum) {
+        form.querySelector('input[name="reponse"]')?.setAttribute('disabled', 'disabled');
+        button.disabled = true;
+        feedback.textContent = RiddleStepPlayer.limitReached;
+        return;
+      }
       button.disabled = false;
       return;
     }

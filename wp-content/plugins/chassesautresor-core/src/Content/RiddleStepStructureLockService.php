@@ -23,13 +23,15 @@ final class RiddleStepStructureLockService {
             return false;
         }
 
-        $huntStatus = (string) $getField('chasse_cache_statut', $huntId);
-        if (in_array($huntStatus, self::LOCKED_HUNT_STATUSES, true)) {
+        $validationStatus = (string) $getField('chasse_cache_statut_validation', $huntId);
+        if (in_array($validationStatus, ['creation', 'correction'], true)) {
+            return false;
+        }
+        if ($validationStatus !== '') {
             return true;
         }
 
-        $validationStatus = (string) $getField('chasse_cache_statut_validation', $huntId);
-        return $validationStatus !== ''
-            && !in_array($validationStatus, ['creation', 'correction'], true);
+        $huntStatus = (string) $getField('chasse_cache_statut', $huntId);
+        return in_array($huntStatus, self::LOCKED_HUNT_STATUSES, true);
     }
 }

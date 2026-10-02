@@ -70,6 +70,20 @@ final class RiddleStepStructureLockServiceTest extends TestCase {
         ));
     }
 
+    public function testCorrectionOverridesThePreviousActiveHuntCache(): void {
+        $fields = [
+            'enigme_chasse_associee:12' => 45,
+            'chasse_cache_statut:45' => 'en_cours',
+            'chasse_cache_statut_validation:45' => 'correction',
+        ];
+
+        self::assertFalse((new RiddleStepStructureLockService())->isLocked(
+            12,
+            static fn (string $field, int $postId) => $fields[$field . ':' . $postId] ?? null,
+            static fn (): bool => false
+        ));
+    }
+
     /** @return array<string, array{string}> */
     public function lockedStatusProvider(): array {
         return [

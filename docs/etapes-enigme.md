@@ -41,6 +41,9 @@ affichées, tandis que leur widget est remplacé par un état en lecture seule.
 
 Une mauvaise réponse texte est enregistrée comme `faux` et consomme une tentative dans la limite globale de l’énigme.
 Une bonne réponse termine l’étape et révèle la suivante. Aucun point n’est débité par une étape intermédiaire.
+Le compteur et le formulaire sont actualisés immédiatement après une erreur ; lorsque la limite est atteinte, la saisie
+est désactivée sans attendre un rechargement. L’outil administratif de remise à zéro efface aussi la progression des
+étapes afin que les parcours puissent être rejoués pendant les tests.
 
 La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une interaction à une étape. Seul le
 résultat `faux` consomme actuellement le quota : une variante personnalisée et, à terme, un clic de confirmation ne

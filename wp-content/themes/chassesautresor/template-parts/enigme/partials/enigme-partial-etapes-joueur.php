@@ -25,14 +25,22 @@ if ($riddleId <= 0 || $visibleIds === []) {
       <?php if (trim($content) !== '') : ?>
         <div class="riddle-player-step__content"><?= wp_kses_post($content); ?></div>
       <?php endif; ?>
-      <?php if ($completed) : ?>
-        <p class="riddle-player-step__status">
-          <i class="fa-solid fa-check" aria-hidden="true"></i>
-          <?= esc_html__('Étape terminée', 'chassesautresor-com'); ?>
-        </p>
-      <?php elseif ($stepId === $currentId) : ?>
+      <?php if (!$completed && $stepId === $currentId) : ?>
         <?php $widget = (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'); ?>
-        <form class="<?= $widget === 'text' ? 'riddle-step-text-form' : 'riddle-step-click-form'; ?>">
+        <?php
+        $maxFailures = (int) get_field('enigme_tentative_max', $riddleId);
+        $usedFailures = 0;
+        if ($widget === 'text') {
+            global $wpdb;
+            $usedFailures = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb)
+                ->countFailuresTodayForUser((int) get_current_user_id(), $riddleId);
+        }
+        $limitReached = $widget === 'text' && $maxFailures > 0 && $usedFailures >= $maxFailures;
+        ?>
+        <form
+          class="<?= $widget === 'text' ? 'riddle-step-text-form' : 'riddle-step-click-form'; ?>"
+          data-max-failures="<?= esc_attr($maxFailures); ?>"
+        >
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
           <input type="hidden" name="etape_id" value="<?= esc_attr($stepId); ?>">
           <input
@@ -43,13 +51,17 @@ if ($riddleId <= 0 || $visibleIds === []) {
             )); ?>"
           >
           <?php if ($widget === 'text') : ?>
-            <label for="riddle-step-answer-<?= esc_attr($stepId); ?>">
-              <?= esc_html__('Votre réponse', 'chassesautresor-com'); ?>
-            </label>
-            <input id="riddle-step-answer-<?= esc_attr($stepId); ?>" type="text" name="reponse" required>
-            <button type="submit" class="bouton-cta bouton-cta--color">
-              <?= esc_html__('Valider', 'chassesautresor-com'); ?>
-            </button>
+            <?php if ($limitReached) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <label for="riddle-step-answer-<?= esc_attr($stepId); ?>">
+                <?= esc_html__('Votre réponse', 'chassesautresor-com'); ?>
+              </label>
+              <input id="riddle-step-answer-<?= esc_attr($stepId); ?>" type="text" name="reponse" required>
+              <button type="submit" class="bouton-cta bouton-cta--color">
+                <?= esc_html__('Valider', 'chassesautresor-com'); ?>
+              </button>
+            <?php endif; ?>
           <?php else : ?>
             <button type="submit" class="bouton-cta bouton-cta--color">
               <?= esc_html((string) (get_field('etape_reponse_bouton', $stepId)
