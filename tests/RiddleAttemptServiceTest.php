@@ -78,6 +78,12 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
         return $this->deletedAttempts;
     }
 
+    public function deleteForStep(int $stepId): int
+    {
+        $this->listArguments = ['step' => $stepId];
+        return $this->deletedAttempts;
+    }
+
     public function findUserRiddleStatus(int $userId, int $riddleId): ?string
     {
         $this->countArguments = [$userId, $riddleId];
@@ -366,6 +372,17 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame(3, $service->deleteForRiddle(10));
         $this->assertSame([10], $repository->listArguments);
         $this->assertSame(0, $service->deleteForRiddle(0));
+    }
+
+    public function testStepAttemptDeletionIsValidatedAndDelegated(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->deletedAttempts = 2;
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame(2, $service->deleteForStep(8));
+        $this->assertSame(['step' => 8], $repository->listArguments);
+        $this->assertSame(0, $service->deleteForStep(0));
     }
 
     public function testSolvedStateIsReadThroughRepository(): void

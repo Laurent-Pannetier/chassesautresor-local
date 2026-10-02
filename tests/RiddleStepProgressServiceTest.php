@@ -88,4 +88,28 @@ final class RiddleStepProgressServiceTest extends TestCase {
         self::assertSame([], $state['visible_step_ids']);
         self::assertTrue($state['final_answer_unlocked']);
     }
+
+    public function testCleanupIsDelegatedToTheRepository(): void {
+        $repository = new class extends RiddleStepProgressRepository {
+            public array $deleted = [];
+
+            public function __construct() {
+            }
+
+            public function deleteForRiddle(int $riddleId): int {
+                $this->deleted[] = ['riddle', $riddleId];
+                return 3;
+            }
+
+            public function deleteForStep(int $stepId): int {
+                $this->deleted[] = ['step', $stepId];
+                return 1;
+            }
+        };
+        $service = new RiddleStepProgressService($repository);
+
+        self::assertSame(3, $service->deleteForRiddle(9));
+        self::assertSame(1, $service->deleteForStep(11));
+        self::assertSame([['riddle', 9], ['step', 11]], $repository->deleted);
+    }
 }

@@ -65,6 +65,14 @@ final class RiddleStepProgressService {
         return $this->getState($userId, $riddleId, $orderedStepIds);
     }
 
+    public function deleteForRiddle(int $riddleId): int {
+        return $this->repository->deleteForRiddle($riddleId);
+    }
+
+    public function deleteForStep(int $stepId): int {
+        return $this->repository->deleteForStep($stepId);
+    }
+
     /** @param mixed[] $values @return int[] */
     private function normalizeIds(array $values): array {
         return array_values(array_unique(array_filter(array_map('intval', $values))));

@@ -120,6 +120,19 @@ class RiddleAttemptRepositoryTest extends TestCase
         $this->assertSame(0, $repository->deleteForRiddle(10));
     }
 
+    public function testStepAttemptDeletionUsesTheStepIdentifier(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $wpdb->deleteResult = 2;
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertSame(2, $repository->deleteForStep(8));
+        $this->assertSame(
+            ['wp_enigme_tentatives', ['etape_id' => 8], ['%d']],
+            $wpdb->deleteArguments
+        );
+    }
+
     public function testLastInsertIdIsNormalized(): void
     {
         $wpdb = new RiddleAttemptWpdbStub();

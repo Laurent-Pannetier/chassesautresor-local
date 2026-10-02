@@ -79,6 +79,16 @@ class RiddleAttemptRepository
         return is_int($deleted) ? $deleted : 0;
     }
 
+    public function deleteForStep(int $stepId): int {
+        $deleted = $this->wpdb->delete(
+            $this->wpdb->prefix . 'enigme_tentatives',
+            ['etape_id' => $stepId],
+            ['%d']
+        );
+
+        return is_int($deleted) ? $deleted : 0;
+    }
+
     public function findUserRiddleStatus(int $userId, int $riddleId): ?string
     {
         $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';

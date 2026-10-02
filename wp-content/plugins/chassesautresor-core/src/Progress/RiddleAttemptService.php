@@ -200,6 +200,10 @@ class RiddleAttemptService
         return $riddleId > 0 ? $this->repository->deleteForRiddle($riddleId) : 0;
     }
 
+    public function deleteForStep(int $stepId): int {
+        return $stepId > 0 ? $this->repository->deleteForStep($stepId) : 0;
+    }
+
     public function isRiddleSolvedForUser(int $userId, int $riddleId): bool
     {
         if ($userId <= 0 || $riddleId <= 0) {

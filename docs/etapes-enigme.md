@@ -57,3 +57,13 @@ La colonne nullable `etape_id` est ajoutée à `wp_enigme_tentatives`. Une valeu
 réponse finale historique ; un ID désignera une tentative sur une étape. Le compteur quotidien propre au parcours
 compte uniquement les réponses non validées (`faux` ou `variante`), afin que plusieurs étapes réussies avant une
 erreur ne consomment qu’une seule tentative.
+
+## Troisième lot : cycle de vie éditorial
+
+Les étapes sont désormais requêtées par leur relation `etape_enigme_associee`, puis triées par `menu_order` et par
+identifiant. La création produit un brouillon lié à l’énigme avec le widget texte par défaut. Une réorganisation n’est
+acceptée que si elle contient exactement tous les identifiants actuels, sans ajout, omission ni duplication.
+
+Lors de la suppression définitive d’une étape, ses progressions et ses tentatives sont supprimées. La suppression
+définitive d’une énigme supprime également toutes ses étapes et les progressions correspondantes. Ce socle sera utilisé
+par les futurs contrôleurs de l’éditeur frontal ; il n’ajoute pas encore de bouton visible sur la page de l’énigme.
