@@ -195,6 +195,8 @@ require_once __DIR__ . '/src/Content/RiddleActionPolicyService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationRequestService.php';
 require_once __DIR__ . '/src/Content/RiddleCreationRouteHandler.php';
+require_once __DIR__ . '/src/Content/RiddleStepPostTypeRegistrar.php';
+require_once __DIR__ . '/src/Content/RiddleStepFieldGroupRegistrar.php';
 require_once __DIR__ . '/src/Content/OrganizerCompletionService.php';
 require_once __DIR__ . '/src/Content/OrganizerCreationService.php';
 require_once __DIR__ . '/src/Content/OrganizerRelationshipSaveHookHandler.php';
@@ -381,6 +383,8 @@ ChassesAuTresor\Core\Content\HuntInitializationHookHandler::register('add_action
 ChassesAuTresor\Core\Content\HuntDeletionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleCreationRouteHandler::register('add_action');
+ChassesAuTresor\Core\Content\RiddleStepPostTypeRegistrar::register('add_action');
+ChassesAuTresor\Core\Content\RiddleStepFieldGroupRegistrar::register('add_action');
 ChassesAuTresor\Core\Content\HintCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntDateMutationAjaxHandler::register('add_action');
