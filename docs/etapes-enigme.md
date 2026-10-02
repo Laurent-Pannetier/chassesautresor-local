@@ -77,3 +77,7 @@ de modification de l’énigme.
 
 La configuration détaillée continue provisoirement à utiliser l’écran WordPress du CPT `enigme_etape`. Une prochaine
 itération pourra intégrer ce formulaire dans une modale frontale sans modifier les services métier de ce lot.
+
+Les comptes organisateurs sont autorisés à ouvrir l’écran natif `post.php` uniquement pour une `enigme_etape` liée à
+une énigme qu’ils peuvent effectivement modifier. Les autres écrans de l’administration restent interdits par la
+politique générale d’accès au back-office.

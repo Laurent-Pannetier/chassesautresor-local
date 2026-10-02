@@ -31,6 +31,10 @@ final class BackOfficeAccessHookHandler {
             return;
         }
 
+        if (self::canEditRiddleStep($requestUri)) {
+            return;
+        }
+
         wp_safe_redirect(home_url('/'));
         exit;
     }
@@ -39,5 +43,20 @@ final class BackOfficeAccessHookHandler {
         return (defined('DOING_AJAX') && DOING_AJAX)
             || (defined('REST_REQUEST') && REST_REQUEST)
             || wp_doing_cron();
+    }
+
+    private static function canEditRiddleStep(string $requestUri): bool {
+        $path = (string) parse_url($requestUri, PHP_URL_PATH);
+        $stepId = isset($_GET['post']) ? (int) $_GET['post'] : 0;
+        if (basename($path) !== 'post.php' || $stepId <= 0) {
+            return false;
+        }
+
+        return (new RiddleStepAdminAccessService())->canEdit(
+            $stepId,
+            'get_post_type',
+            static fn (int $id) => get_field('etape_enigme_associee', $id),
+            static fn (int $id): bool => utilisateur_peut_modifier_post($id)
+        );
     }
 }

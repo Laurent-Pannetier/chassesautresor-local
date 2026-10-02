@@ -207,6 +207,7 @@ require_once __DIR__ . '/src/Content/RiddleStepOrderingService.php';
 require_once __DIR__ . '/src/Content/RiddleStepOrderingApplicationService.php';
 require_once __DIR__ . '/src/Content/RiddleStepDeletionLifecycleHookHandler.php';
 require_once __DIR__ . '/src/Content/RiddleStepManagementAjaxHandler.php';
+require_once __DIR__ . '/src/Content/RiddleStepAdminAccessService.php';
 require_once __DIR__ . '/src/Content/OrganizerCompletionService.php';
 require_once __DIR__ . '/src/Content/OrganizerCreationService.php';
 require_once __DIR__ . '/src/Content/OrganizerRelationshipSaveHookHandler.php';
