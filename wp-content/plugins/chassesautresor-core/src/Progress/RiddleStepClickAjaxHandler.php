@@ -58,6 +58,7 @@ final class RiddleStepClickAjaxHandler {
             $riddleId,
             $stepId,
             'click',
+            'bon',
             $_SERVER['REMOTE_ADDR'] ?? null,
             $_SERVER['HTTP_USER_AGENT'] ?? null
         );

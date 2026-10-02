@@ -162,11 +162,11 @@ class RiddleAttemptServiceTest extends TestCase
         $repository = new RiddleAttemptRepositoryStub();
         $service = new RiddleAttemptService($repository);
 
-        $this->assertTrue($service->createForStep('uid-2', 7, 10, 12, 'click', null, null));
+        $this->assertTrue($service->createForStep('uid-2', 7, 10, 12, 'click', 'bon', null, null));
         $this->assertSame(12, $repository->attempt['etape_id']);
         $this->assertSame('bon', $repository->attempt['resultat']);
         $this->assertSame(0, $repository->attempt['points_utilises']);
-        $this->assertFalse($service->createForStep('', 7, 10, 12, 'click', null, null));
+        $this->assertFalse($service->createForStep('', 7, 10, 12, 'click', 'bon', null, null));
     }
 
     public function testLastCreatedIdIsDelegated(): void

@@ -94,6 +94,7 @@ final class RiddleStepFieldGroupRegistrar {
                 'required' => true,
                 'choices' => [
                     'click' => __('Simple clic', 'chassesautresor-com'),
+                    'text' => __('Réponse texte', 'chassesautresor-com'),
                 ],
                 'default_value' => 'click',
                 'return_format' => 'value',
@@ -106,6 +107,24 @@ final class RiddleStepFieldGroupRegistrar {
                 'required' => true,
                 'default_value' => __('Continuer', 'chassesautresor-com'),
                 'maxlength' => 80,
+            ],
+            [
+                'key' => 'field_etape_reponses_texte',
+                'label' => __('Réponses acceptées', 'chassesautresor-com'),
+                'name' => 'etape_reponses_texte',
+                'type' => 'textarea',
+                'instructions' => __('Une réponse par ligne.', 'chassesautresor-com'),
+                'required' => false,
+                'rows' => 4,
+            ],
+            [
+                'key' => 'field_etape_reponse_casse',
+                'label' => __('Respecter la casse', 'chassesautresor-com'),
+                'name' => 'etape_reponse_casse',
+                'type' => 'true_false',
+                'required' => false,
+                'default_value' => false,
+                'ui' => true,
             ],
         ];
     }

@@ -34,6 +34,8 @@ final class RiddleStepManagementAjaxHandler {
             'widget' => (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'),
             'button_label' => (string) (get_field('etape_reponse_bouton', $stepId)
                 ?: __('Continuer', 'chassesautresor-com')),
+            'accepted_answers' => (string) get_field('etape_reponses_texte', $stepId),
+            'case_sensitive' => (bool) get_field('etape_reponse_casse', $stepId),
         ]);
     }
 
@@ -52,6 +54,10 @@ final class RiddleStepManagementAjaxHandler {
         $buttonLabel = isset($_POST['button_label'])
             ? sanitize_text_field(wp_unslash((string) $_POST['button_label']))
             : '';
+        $acceptedAnswers = isset($_POST['accepted_answers'])
+            ? sanitize_textarea_field(wp_unslash((string) $_POST['accepted_answers']))
+            : '';
+        $caseSensitive = isset($_POST['case_sensitive']) ? 1 : 0;
         if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
             wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
         }
@@ -83,13 +89,20 @@ final class RiddleStepManagementAjaxHandler {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
-        if ($widget !== '' || $buttonLabel !== '') {
+        if ($widget !== '' || $buttonLabel !== '' || $acceptedAnswers !== '') {
             self::assertStructureEditable($riddleId);
-            if ($widget !== 'click' || $buttonLabel === '') {
+            $answers = array_filter(array_map('trim', preg_split('/\R/', $acceptedAnswers) ?: []));
+            if (
+                !in_array($widget, ['click', 'text'], true)
+                || ($widget === 'click' && $buttonLabel === '')
+                || ($widget === 'text' && $answers === [])
+            ) {
                 wp_send_json_error(['message' => __('Mode de réponse invalide.', 'chassesautresor-com')]);
             }
             update_field('etape_reponse_widget', $widget, $stepId);
             update_field('etape_reponse_bouton', $buttonLabel, $stepId);
+            update_field('etape_reponses_texte', implode("\n", $answers), $stepId);
+            update_field('etape_reponse_casse', $caseSensitive, $stepId);
         }
 
         wp_send_json_success([

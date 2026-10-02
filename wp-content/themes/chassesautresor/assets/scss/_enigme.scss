@@ -930,3 +930,16 @@ body.no-scroll {
   min-height: 1.5em;
   color: var(--color-editor-error);
 }
+
+.riddle-step-text-form {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.riddle-step-text-form input[type='text'] {
+  width: 100%;
+}
+
+.riddle-step-text-form .riddle-step-click-form__feedback {
+  margin: 0;
+}

@@ -31,18 +31,31 @@ if ($riddleId <= 0 || $visibleIds === []) {
           <?= esc_html__('Étape terminée', 'chassesautresor-com'); ?>
         </p>
       <?php elseif ($stepId === $currentId) : ?>
-        <form class="riddle-step-click-form">
+        <?php $widget = (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'); ?>
+        <form class="<?= $widget === 'text' ? 'riddle-step-text-form' : 'riddle-step-click-form'; ?>">
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
           <input type="hidden" name="etape_id" value="<?= esc_attr($stepId); ?>">
           <input
             type="hidden"
             name="nonce"
-            value="<?= esc_attr(wp_create_nonce('riddle_step_click')); ?>"
+            value="<?= esc_attr(wp_create_nonce(
+                $widget === 'text' ? 'riddle_step_answer' : 'riddle_step_click'
+            )); ?>"
           >
-          <button type="submit" class="bouton-cta bouton-cta--color">
-            <?= esc_html((string) (get_field('etape_reponse_bouton', $stepId)
-                ?: __('Continuer', 'chassesautresor-com'))); ?>
-          </button>
+          <?php if ($widget === 'text') : ?>
+            <label for="riddle-step-answer-<?= esc_attr($stepId); ?>">
+              <?= esc_html__('Votre réponse', 'chassesautresor-com'); ?>
+            </label>
+            <input id="riddle-step-answer-<?= esc_attr($stepId); ?>" type="text" name="reponse" required>
+            <button type="submit" class="bouton-cta bouton-cta--color">
+              <?= esc_html__('Valider', 'chassesautresor-com'); ?>
+            </button>
+          <?php else : ?>
+            <button type="submit" class="bouton-cta bouton-cta--color">
+              <?= esc_html((string) (get_field('etape_reponse_bouton', $stepId)
+                  ?: __('Continuer', 'chassesautresor-com'))); ?>
+            </button>
+          <?php endif; ?>
           <p class="riddle-step-click-form__feedback" role="status" aria-live="polite"></p>
         </form>
       <?php endif; ?>

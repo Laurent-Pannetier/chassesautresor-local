@@ -138,6 +138,7 @@ require_once __DIR__ . '/src/Progress/RiddleAttemptStepMigration.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepClickAjaxHandler.php';
+require_once __DIR__ . '/src/Progress/RiddleStepTextAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/riddle-attempt-functions.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptMaintenanceService.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptAccessPolicy.php';
@@ -401,6 +402,7 @@ ChassesAuTresor\Core\Content\RiddleStepFieldGroupRegistrar::register('add_action
 ChassesAuTresor\Core\Content\RiddleStepDeletionLifecycleHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleStepManagementAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStepClickAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\RiddleStepTextAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Content\HintCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\SolutionCreationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntDateMutationAjaxHandler::register('add_action');

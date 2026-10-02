@@ -16,8 +16,9 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Image | `etape_image` | Illustration facultative, stockée sous forme d’identifiant de média. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
-Une étape enregistrée exige un nom interne et au moins un texte ou une image. Le premier widget de réponse disponible
-est le simple clic, dont le libellé est personnalisable. Sa configuration est figée avec l’architecture du parcours.
+Une étape enregistrée exige un nom interne et au moins un texte ou une image. Deux widgets sont disponibles : le simple
+clic, dont le libellé est personnalisable, et la réponse texte avec plusieurs réponses acceptées et une comparaison
+optionnellement sensible à la casse. Leur configuration est figée avec l’architecture du parcours.
 
 ## Édition frontale
 
@@ -37,6 +38,9 @@ et la première étape incomplète sont visibles ; les étapes futures ne sont p
 Le clic sur l’étape courante est validé côté serveur, enregistré comme une interaction réussie liée à `etape_id`, puis
 débloque l’étape suivante. Il ne coûte aucun point et ne consomme aucune tentative. Les étapes terminées restent
 affichées, tandis que leur widget est remplacé par un état en lecture seule.
+
+Une mauvaise réponse texte est enregistrée comme `faux` et consomme une tentative dans la limite globale de l’énigme.
+Une bonne réponse termine l’étape et révèle la suivante. Aucun point n’est débité par une étape intermédiaire.
 
 La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une interaction à une étape. Seul le
 résultat `faux` consomme actuellement le quota : une variante personnalisée et, à terme, un clic de confirmation ne

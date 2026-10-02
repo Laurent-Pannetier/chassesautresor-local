@@ -52,10 +52,17 @@ class RiddleAttemptService
         int $riddleId,
         int $stepId,
         string $interaction,
+        string $result,
         ?string $ipAddress,
         ?string $userAgent
     ): bool {
-        if ($uid === '' || $userId <= 0 || $riddleId <= 0 || $stepId <= 0) {
+        if (
+            $uid === ''
+            || $userId <= 0
+            || $riddleId <= 0
+            || $stepId <= 0
+            || !in_array($result, ['bon', 'faux', 'variante'], true)
+        ) {
             return false;
         }
 
@@ -65,7 +72,7 @@ class RiddleAttemptService
             'enigme_id' => $riddleId,
             'etape_id' => $stepId,
             'reponse_saisie' => $interaction,
-            'resultat' => 'bon',
+            'resultat' => $result,
             'points_utilises' => 0,
             'ip' => $ipAddress,
             'user_agent' => $userAgent,
