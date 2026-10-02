@@ -121,7 +121,7 @@ if (!function_exists('render_sidebar')) {
 
         $chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
         $aside_classes     = ['menu-lateral'];
-        if ($context === 'enigme') {
+        if (in_array($context, ['chasse', 'enigme'], true)) {
             $aside_classes[] = 'is-hidden';
         }
         $is_player         = !(

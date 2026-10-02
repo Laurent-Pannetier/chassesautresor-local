@@ -15,7 +15,7 @@ describe('riddle desktop sidebar default state', () => {
       path.resolve(__dirname, '../../wp-content/themes/chassesautresor/inc/sidebar.php'),
       'utf8'
     );
-    expect(renderer).toContain("if ($context === 'enigme') {");
+    expect(renderer).toContain("if (in_array($context, ['chasse', 'enigme'], true)) {");
     expect(renderer).toContain("$aside_classes[] = 'is-hidden';");
   });
 
