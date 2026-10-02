@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
-final class ColorAnswerWidget implements AnswerWidgetDefinition {
+final class NumericAnswerWidget implements AnswerWidgetDefinition {
     public function type(): string {
-        return 'colors';
+        return 'numbers';
     }
 
     public function evaluate(string $answer, array $configuration): array {
@@ -16,15 +16,11 @@ final class ColorAnswerWidget implements AnswerWidgetDefinition {
                 return ['resultat' => 'bon', 'message' => ''];
             }
         }
+
         return ['resultat' => 'faux', 'message' => ''];
     }
 
     private function normalize(string $sequence): string {
-        $valid = [
-            'red', 'orange', 'yellow', 'green', 'blue', 'purple',
-            'indigo', 'pink', 'brown', 'grey', 'black', 'white',
-        ];
-        $tokens = preg_split('/[\s,;>]+/', strtolower(trim($sequence))) ?: [];
-        return implode(',', array_values(array_filter($tokens, static fn (string $token): bool => in_array($token, $valid, true))));
+        return preg_replace('/\D+/', '', trim($sequence)) ?? '';
     }
 }

@@ -75,7 +75,44 @@ final class AnswerWidgetEditorViewService {
                         __('Codes acceptés — un par ligne', 'chassesautresor-com'),
                         [
                             'rows' => 4,
-                            'help' => __('Couleurs : red, orange, yellow, green, blue, purple.', 'chassesautresor-com'),
+                            'help' => __(
+                                'Couleurs : red, orange, yellow, green, blue, purple, indigo, pink, brown, '
+                                    . 'grey, black, white.',
+                                'chassesautresor-com'
+                            ),
+                        ]
+                    ),
+                ],
+            ],
+            [
+                'type' => 'numbers',
+                'label' => __('Pavé numérique', 'chassesautresor-com'),
+                'fields' => [
+                    $this->field(
+                        'textarea',
+                        'number_sequences',
+                        __('Codes acceptés — un par ligne', 'chassesautresor-com'),
+                        [
+                            'rows' => 4,
+                            'help' => __('Les zéros initiaux sont conservés. Exemple : 0129.', 'chassesautresor-com'),
+                        ]
+                    ),
+                ],
+            ],
+            [
+                'type' => 'safe_dial',
+                'label' => __('Molette de coffre-fort', 'chassesautresor-com'),
+                'fields' => [
+                    $this->field(
+                        'textarea',
+                        'safe_dial_sequences',
+                        __('Codes acceptés — un par ligne', 'chassesautresor-com'),
+                        [
+                            'rows' => 4,
+                            'help' => __(
+                                'H signifie horaire et A antihoraire. Exemple : H11 A51.',
+                                'chassesautresor-com'
+                            ),
                         ]
                     ),
                 ],

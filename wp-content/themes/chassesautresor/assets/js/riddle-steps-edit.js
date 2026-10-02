@@ -74,6 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
           form.querySelector('[name="variants"]').value = step.variants || '';
           form.querySelector('[name="direction_sequences"]').value = step.direction_sequences || '';
           form.querySelector('[name="color_sequences"]').value = step.color_sequences || '';
+          form.querySelector('[name="number_sequences"]').value = step.number_sequences || '';
+          form.querySelector('[name="safe_dial_sequences"]').value = step.safe_dial_sequences || '';
           updateWidgetConfig();
         }
       } catch (error) {

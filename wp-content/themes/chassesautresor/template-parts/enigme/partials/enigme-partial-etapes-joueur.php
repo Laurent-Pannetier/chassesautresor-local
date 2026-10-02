@@ -33,7 +33,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
         $configuration = (new ChassesAuTresor\Core\Progress\AnswerWidgetConfigurationService())->forStep($stepId);
         $maxFailures = (int) get_field('enigme_tentative_max', $riddleId);
         $usedFailures = 0;
-        if (in_array($configuration['type'], ['text', 'directions', 'colors'], true)) {
+        if (in_array($configuration['type'], ['text', 'directions', 'colors', 'numbers', 'safe_dial'], true)) {
             global $wpdb;
             $usedFailures = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb)
                 ->countFailuresTodayForUser((int) get_current_user_id(), $riddleId);
@@ -60,17 +60,73 @@ if ($riddleId <= 0 || $visibleIds === []) {
             <?php if ($widgetView['limit_reached']) : ?>
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
             <?php else : ?>
-              <p class="riddle-colors__title"><?= esc_html__('Code couleur', 'chassesautresor-com'); ?></p>
+              <p class="riddle-colors__title"><?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?></p>
               <output class="riddle-colors__sequence" aria-live="polite"></output>
               <input type="hidden" name="reponse" value="">
               <div class="riddle-colors" role="group" aria-label="<?= esc_attr__('Clavier de couleurs', 'chassesautresor-com'); ?>">
-                <?php foreach (['red', 'orange', 'yellow', 'green', 'blue', 'purple'] as $color) : ?>
+                <?php
+                $colors = [
+                    'red' => __('Rouge', 'chassesautresor-com'),
+                    'orange' => __('Orange', 'chassesautresor-com'),
+                    'yellow' => __('Jaune', 'chassesautresor-com'),
+                    'green' => __('Vert', 'chassesautresor-com'),
+                    'blue' => __('Bleu', 'chassesautresor-com'),
+                    'purple' => __('Violet', 'chassesautresor-com'),
+                    'indigo' => __('Indigo', 'chassesautresor-com'),
+                    'pink' => __('Rose', 'chassesautresor-com'),
+                    'brown' => __('Marron', 'chassesautresor-com'),
+                    'grey' => __('Gris', 'chassesautresor-com'),
+                    'black' => __('Noir', 'chassesautresor-com'),
+                    'white' => __('Blanc', 'chassesautresor-com'),
+                ];
+                ?>
+                <?php foreach ($colors as $color => $label) : ?>
                   <button type="button" class="riddle-color riddle-color--<?= esc_attr($color); ?>"
-                    data-color="<?= esc_attr($color); ?>" aria-label="<?= esc_attr($color); ?>"></button>
+                    data-color="<?= esc_attr($color); ?>"><?= esc_html($label); ?></button>
                 <?php endforeach; ?>
               </div>
               <div class="riddle-colors__actions">
                 <button type="button" class="riddle-colors-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
+              </div>
+            <?php endif; ?>
+          <?php elseif ($widgetView['type'] === 'numbers') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <p class="riddle-numbers__title"><?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?></p>
+              <output class="riddle-numbers__sequence" aria-live="polite"></output>
+              <input type="hidden" name="reponse" value="">
+              <div class="riddle-numbers" role="group" aria-label="<?= esc_attr__('Pavé numérique', 'chassesautresor-com'); ?>">
+                <?php foreach ([1, 2, 3, 4, 5, 6, 7, 8, 9, 0] as $number) : ?>
+                  <button type="button" class="riddle-number<?= $number === 0 ? ' riddle-number--zero' : ''; ?>"
+                    data-number="<?= esc_attr($number); ?>"><?= esc_html($number); ?></button>
+                <?php endforeach; ?>
+              </div>
+              <div class="riddle-widget-actions">
+                <button type="button" class="riddle-widget-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
+              </div>
+            <?php endif; ?>
+          <?php elseif ($widgetView['type'] === 'safe_dial') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <p class="riddle-safe__title"><?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?></p>
+              <div class="riddle-safe" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="99"
+                aria-valuenow="0" aria-label="<?= esc_attr__('Molette de coffre-fort', 'chassesautresor-com'); ?>">
+                <span class="riddle-safe__marker" aria-hidden="true"></span>
+                <span class="riddle-safe__dial" aria-hidden="true">
+                  <?php foreach (range(0, 90, 10) as $number) : ?>
+                    <span class="riddle-safe__number" style="--safe-number: <?= esc_attr($number); ?>"><?= esc_html($number); ?></span>
+                  <?php endforeach; ?>
+                  <span class="riddle-safe__value">0</span>
+                </span>
+              </div>
+              <output class="riddle-safe__sequence" aria-live="polite"></output>
+              <input type="hidden" name="reponse" value="">
+              <div class="riddle-widget-actions">
+                <button type="button" class="riddle-widget-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
                 <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
               </div>
             <?php endif; ?>

@@ -88,6 +88,17 @@ document.addEventListener('submit', async event => {
         : RiddleStepPlayer.wrong;
       const answerInput = form.querySelector('input[name="reponse"]');
       if (answerInput) answerInput.value = '';
+      form.querySelector('.riddle-directions__sequence')?.replaceChildren();
+      form.querySelector('.riddle-colors__sequence')?.replaceChildren();
+      form.querySelector('.riddle-numbers__sequence')?.replaceChildren();
+      form.querySelector('.riddle-safe__sequence')?.replaceChildren();
+      const safeDial = form.querySelector('.riddle-safe');
+      if (safeDial) {
+        safeDial.dataset.value = '0';
+        safeDial.style.setProperty('--safe-angle', '0deg');
+        safeDial.setAttribute('aria-valuenow', '0');
+        safeDial.querySelector('.riddle-safe__value').textContent = '0';
+      }
       const counter = document.querySelector('.tentatives-counter .valeur');
       const footer = document.querySelector('.participation-infos .tentatives');
       if (counter) counter.textContent = result.data.compteur;
@@ -155,4 +166,114 @@ document.addEventListener('click', event => {
   const dot = document.createElement('span');
   dot.className = `riddle-color-dot riddle-color--${button.dataset.color}`;
   output.append(dot);
+});
+
+document.addEventListener('click', event => {
+  const form = event.target.closest('.riddle-step-numbers-form');
+  if (!form) return;
+  const input = form.querySelector('input[name="reponse"]');
+  const output = form.querySelector('.riddle-numbers__sequence');
+  if (event.target.closest('.riddle-widget-reset')) {
+    input.value = '';
+    output.textContent = '';
+    return;
+  }
+  const button = event.target.closest('.riddle-number');
+  if (!button) return;
+  input.value += button.dataset.number;
+  const digit = document.createElement('span');
+  digit.textContent = button.dataset.number;
+  output.append(digit);
+});
+
+const safeDialAngle = (dial, event) => {
+  const bounds = dial.getBoundingClientRect();
+  const x = event.clientX - (bounds.left + bounds.width / 2);
+  const y = event.clientY - (bounds.top + bounds.height / 2);
+  return (Math.atan2(y, x) * 180 / Math.PI + 90 + 360) % 360;
+};
+
+const setSafeDialValue = (dial, value) => {
+  const normalized = (value + 100) % 100;
+  dial.dataset.value = normalized;
+  dial.style.setProperty('--safe-angle', `${normalized * 3.6}deg`);
+  dial.setAttribute('aria-valuenow', normalized);
+  dial.querySelector('.riddle-safe__value').textContent = normalized;
+};
+
+const commitSafeDialMovement = (form, direction, value) => {
+  if (!direction) return;
+  const input = form.querySelector('input[name="reponse"]');
+  const output = form.querySelector('.riddle-safe__sequence');
+  const movement = `${direction}${value}`;
+  const sequence = input.value ? input.value.split(',') : [];
+  sequence.push(movement);
+  input.value = sequence.join(',');
+  output.textContent = sequence.map(item => `${item.startsWith('H') ? '↻' : '↺'} ${item.slice(1)}`).join('  ');
+};
+
+document.addEventListener('pointerdown', event => {
+  const dial = event.target.closest('.riddle-safe');
+  if (!dial) return;
+  event.preventDefault();
+  dial.setPointerCapture(event.pointerId);
+  dial.dataset.pointerId = event.pointerId;
+  dial.dataset.previousAngle = safeDialAngle(dial, event);
+  dial.dataset.rotation = '0';
+});
+
+document.addEventListener('pointermove', event => {
+  const dial = event.target.closest('.riddle-safe');
+  if (!dial || Number(dial.dataset.pointerId) !== event.pointerId) return;
+  const angle = safeDialAngle(dial, event);
+  const previous = Number(dial.dataset.previousAngle);
+  let delta = angle - previous;
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+  const rotation = Number(dial.dataset.rotation) + delta;
+  dial.dataset.previousAngle = angle;
+  dial.dataset.rotation = rotation;
+  const current = Number(dial.dataset.value || 0);
+  setSafeDialValue(dial, Math.round(current + delta / 3.6));
+});
+
+document.addEventListener('pointerup', event => {
+  const dial = event.target.closest('.riddle-safe');
+  if (!dial || Number(dial.dataset.pointerId) !== event.pointerId) return;
+  const rotation = Number(dial.dataset.rotation);
+  delete dial.dataset.pointerId;
+  if (Math.abs(rotation) < 1.8) return;
+  commitSafeDialMovement(
+    dial.closest('.riddle-step-safe_dial-form'),
+    rotation > 0 ? 'H' : 'A',
+    Number(dial.dataset.value || 0)
+  );
+});
+
+document.addEventListener('keydown', event => {
+  const dial = event.target.closest('.riddle-safe');
+  if (!dial || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+  event.preventDefault();
+  const direction = event.key === 'ArrowRight' ? 'H' : 'A';
+  setSafeDialValue(dial, Number(dial.dataset.value || 0) + (direction === 'H' ? 1 : -1));
+  dial.dataset.keyboardDirection = direction;
+});
+
+document.addEventListener('keyup', event => {
+  const dial = event.target.closest('.riddle-safe');
+  if (!dial || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+  commitSafeDialMovement(
+    dial.closest('.riddle-step-safe_dial-form'),
+    dial.dataset.keyboardDirection,
+    Number(dial.dataset.value || 0)
+  );
+  delete dial.dataset.keyboardDirection;
+});
+
+document.addEventListener('click', event => {
+  const form = event.target.closest('.riddle-step-safe_dial-form');
+  if (!form || !event.target.closest('.riddle-widget-reset')) return;
+  form.querySelector('input[name="reponse"]').value = '';
+  form.querySelector('.riddle-safe__sequence').textContent = '';
+  setSafeDialValue(form.querySelector('.riddle-safe'), 0);
 });

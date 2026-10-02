@@ -33,6 +33,18 @@ final class AnswerWidgetConfigurationService {
             );
             return $configuration;
         }
+        if ($type === 'numbers') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('etape_number_sequences', $stepId)
+            );
+            return $configuration;
+        }
+        if ($type === 'safe_dial') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('etape_safe_dial_sequences', $stepId)
+            );
+            return $configuration;
+        }
 
         $caseSensitive = (bool) $getField('etape_reponse_casse', $stepId);
         $configuration['accepted_answers'] = $this->lines(

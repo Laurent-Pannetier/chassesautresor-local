@@ -62,4 +62,22 @@ final class AnswerWidgetConfigurationServiceTest extends TestCase {
         self::assertSame('directions', $configuration['type']);
         self::assertSame(['N,NE,E', 'S,SO,O'], $configuration['accepted_sequences']);
     }
+
+    public function testAdaptsNumericAndSafeDialSequences(): void {
+        $service = new AnswerWidgetConfigurationService();
+        $fields = [
+            'etape_reponse_widget' => 'numbers',
+            'etape_number_sequences' => "0129\n987",
+        ];
+        $numbers = $service->forStep(19, static fn (string $field, int $postId) => $fields[$field] ?? null);
+
+        $fields = [
+            'etape_reponse_widget' => 'safe_dial',
+            'etape_safe_dial_sequences' => "H11 A51\nA4 H92",
+        ];
+        $safeDial = $service->forStep(20, static fn (string $field, int $postId) => $fields[$field] ?? null);
+
+        self::assertSame(['0129', '987'], $numbers['accepted_sequences']);
+        self::assertSame(['H11 A51', 'A4 H92'], $safeDial['accepted_sequences']);
+    }
 }

@@ -82,6 +82,8 @@ require_once __DIR__ . '/src/Progress/ClickAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/TextAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/DirectionAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/ColorAnswerWidget.php';
+require_once __DIR__ . '/src/Progress/NumericAnswerWidget.php';
+require_once __DIR__ . '/src/Progress/SafeDialAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetRegistry.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetConfigurationService.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetPlayerViewService.php';

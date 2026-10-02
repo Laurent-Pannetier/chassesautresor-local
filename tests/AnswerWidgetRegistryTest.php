@@ -38,7 +38,27 @@ final class AnswerWidgetRegistryTest extends TestCase {
     }
 
     public function testEvaluatesColorSequence(): void {
-        $configuration = ['type' => 'colors', 'accepted_sequences' => ['red,blue,green']];
-        self::assertSame('bon', (new AnswerWidgetRegistry())->evaluate('red,blue,green', $configuration)['resultat']);
+        $configuration = ['type' => 'colors', 'accepted_sequences' => ['red,pink,brown,grey,black,white']];
+        self::assertSame(
+            'bon',
+            (new AnswerWidgetRegistry())->evaluate('red,pink,brown,grey,black,white', $configuration)['resultat']
+        );
+    }
+
+    public function testEvaluatesNumericSequenceAndPreservesLeadingZeroes(): void {
+        $registry = new AnswerWidgetRegistry();
+        $configuration = ['type' => 'numbers', 'accepted_sequences' => ['0129']];
+
+        self::assertSame('bon', $registry->evaluate('0 1 2 9', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('129', $configuration)['resultat']);
+    }
+
+    public function testEvaluatesSafeDialDirectionAndValues(): void {
+        $registry = new AnswerWidgetRegistry();
+        $configuration = ['type' => 'safe_dial', 'accepted_sequences' => ['H11 A51']];
+
+        self::assertSame('bon', $registry->evaluate('h11,a51', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('A11 H51', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('H100 A51', $configuration)['resultat']);
     }
 }

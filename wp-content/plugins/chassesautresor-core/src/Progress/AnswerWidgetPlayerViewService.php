@@ -22,7 +22,7 @@ final class AnswerWidgetPlayerViewService {
             ];
         }
 
-        if (in_array($type, ['directions', 'colors'], true)) {
+        if (in_array($type, ['directions', 'colors', 'numbers', 'safe_dial'], true)) {
             return [
                 'type' => $type,
                 'form_class' => 'riddle-step-text-form riddle-step-' . $type . '-form',

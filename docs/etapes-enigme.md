@@ -17,15 +17,17 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
 Une étape enregistrée exige toujours un nom interne. Simple clic et Réponse texte exigent également au moins un texte
-ou une image ; les widgets autonomes comme le pavé directionnel n’en ont pas besoin. Trois widgets sont disponibles : le simple
-clic, dont le libellé est personnalisable, la réponse texte avec plusieurs réponses acceptées et une comparaison
-optionnellement sensible à la casse. Leur configuration est figée avec l’architecture du parcours.
+ou une image ; les widgets autonomes n’en ont pas besoin. Le simple clic possède un libellé personnalisable. La réponse
+texte accepte plusieurs solutions et une comparaison optionnellement sensible à la casse. La configuration des widgets
+est figée avec l’architecture du parcours.
 Le pavé à huit directions accepte un ou plusieurs codes, un par ligne, et normalise les abréviations françaises
 `O`, `NO`, `SO` vers `W`, `NW`, `SW`. Son apparence est personnalisable avec les variables CSS
 `--direction-key-bg`, `--direction-key-color`, `--direction-key-shadow`, `--direction-key-size` et
 `--direction-arrow-stroke`.
-Le clavier de couleurs utilise une palette fixe rouge, orange, jaune, vert, bleu et violet. Il accepte plusieurs
-séquences et affiche la saisie sous forme de pastilles, sans nécessiter de texte ni d’image.
+Le clavier de couleurs reprend les douze couleurs du modèle Lockee : rouge, orange, jaune, vert, bleu, violet, indigo,
+rose, marron, gris, noir et blanc. Il accepte plusieurs séquences et affiche la saisie sous forme de pastilles.
+Le pavé numérique conserve les zéros initiaux. La molette de coffre-fort couvre les valeurs 0 à 99 et enregistre chaque
+mouvement au relâchement : `H` représente le sens horaire et `A` le sens antihoraire, par exemple `H11 A51`.
 
 ## Édition frontale
 

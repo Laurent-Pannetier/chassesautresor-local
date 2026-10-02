@@ -33,4 +33,11 @@ final class AnswerWidgetPlayerViewServiceTest extends TestCase {
         self::assertSame('soumettre_reponse_etape', $view['action']);
         self::assertFalse($view['limit_reached']);
     }
+
+    public function testBuildsNumericAndSafeDialViews(): void {
+        $service = new AnswerWidgetPlayerViewService();
+
+        self::assertSame('numbers', $service->build(['type' => 'numbers'])['type']);
+        self::assertSame('safe_dial', $service->build(['type' => 'safe_dial'])['type']);
+    }
 }

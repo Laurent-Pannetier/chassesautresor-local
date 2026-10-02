@@ -12,7 +12,14 @@ final class AnswerWidgetRegistry {
 
     /** @param AnswerWidgetDefinition[]|null $definitions */
     public function __construct(?array $definitions = null) {
-        $defaults = [new ClickAnswerWidget(), new TextAnswerWidget(), new DirectionAnswerWidget(), new ColorAnswerWidget()];
+        $defaults = [
+            new ClickAnswerWidget(),
+            new TextAnswerWidget(),
+            new DirectionAnswerWidget(),
+            new ColorAnswerWidget(),
+            new NumericAnswerWidget(),
+            new SafeDialAnswerWidget(),
+        ];
         foreach ($definitions ?? $defaults as $definition) {
             $this->definitions[$definition->type()] = $definition;
         }

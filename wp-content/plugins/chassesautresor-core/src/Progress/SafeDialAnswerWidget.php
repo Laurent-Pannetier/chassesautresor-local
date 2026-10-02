@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
-final class ColorAnswerWidget implements AnswerWidgetDefinition {
+final class SafeDialAnswerWidget implements AnswerWidgetDefinition {
     public function type(): string {
-        return 'colors';
+        return 'safe_dial';
     }
 
     public function evaluate(string $answer, array $configuration): array {
@@ -16,15 +16,20 @@ final class ColorAnswerWidget implements AnswerWidgetDefinition {
                 return ['resultat' => 'bon', 'message' => ''];
             }
         }
+
         return ['resultat' => 'faux', 'message' => ''];
     }
 
     private function normalize(string $sequence): string {
-        $valid = [
-            'red', 'orange', 'yellow', 'green', 'blue', 'purple',
-            'indigo', 'pink', 'brown', 'grey', 'black', 'white',
-        ];
-        $tokens = preg_split('/[\s,;>]+/', strtolower(trim($sequence))) ?: [];
-        return implode(',', array_values(array_filter($tokens, static fn (string $token): bool => in_array($token, $valid, true))));
+        preg_match_all('/(?:^|[\s,;>]+)(H|A)\s*(\d{1,2})(?=$|[\s,;>]+)/i', trim($sequence), $matches);
+        $movements = [];
+        foreach ($matches[1] ?? [] as $index => $direction) {
+            $value = (int) ($matches[2][$index] ?? -1);
+            if ($value >= 0 && $value <= 99) {
+                $movements[] = strtoupper((string) $direction) . $value;
+            }
+        }
+
+        return implode(',', $movements);
     }
 }
