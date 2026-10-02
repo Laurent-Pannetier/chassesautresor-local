@@ -137,6 +137,8 @@ describe('riddle step player positioning', () => {
     eval(source);
     document.querySelector('.riddle-direction').click();
     expect(document.querySelector('[name="reponse"]').value.split(',').every(value => value === 'NW')).toBe(true);
+    expect(document.querySelector('.riddle-directions__sequence').textContent).not.toContain('NW');
+    expect(document.querySelector('.riddle-directions__sequence').textContent).toContain('↖');
     document.querySelector('.riddle-directions-reset').click();
     expect(document.querySelector('[name="reponse"]').value).toBe('');
   });

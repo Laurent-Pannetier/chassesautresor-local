@@ -133,5 +133,6 @@ document.addEventListener('click', event => {
   const sequence = input.value ? input.value.split(',') : [];
   sequence.push(button.dataset.direction);
   input.value = sequence.join(',');
-  output.textContent = sequence.join(' · ');
+  const symbols = { NW: '↖', N: '↑', NE: '↗', W: '←', E: '→', SW: '↙', S: '↓', SE: '↘' };
+  output.textContent = sequence.map(direction => symbols[direction]).join(' ');
 });

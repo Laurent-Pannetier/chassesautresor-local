@@ -21,7 +21,7 @@ clic, dont le libellé est personnalisable, la réponse texte avec plusieurs ré
 optionnellement sensible à la casse. Leur configuration est figée avec l’architecture du parcours.
 Le pavé à huit directions accepte un ou plusieurs codes, un par ligne, et normalise les abréviations françaises
 `O`, `NO`, `SO` vers `W`, `NW`, `SW`. Son apparence est personnalisable avec les variables CSS
-`--direction-key-bg`, `--direction-key-color` et `--direction-key-shadow`.
+`--direction-key-bg`, `--direction-key-color`, `--direction-key-shadow` et `--direction-key-size`.
 
 ## Édition frontale
 
