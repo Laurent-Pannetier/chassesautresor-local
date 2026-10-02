@@ -95,9 +95,19 @@ final class RiddleStepFieldGroupRegistrar {
                 'choices' => [
                     'click' => __('Simple clic', 'chassesautresor-com'),
                     'text' => __('Réponse texte', 'chassesautresor-com'),
+                    'directions' => __('Pavé à huit directions', 'chassesautresor-com'),
                 ],
                 'default_value' => 'click',
                 'return_format' => 'value',
+            ],
+            [
+                'key' => 'field_etape_directions_sequences',
+                'label' => __('Codes directionnels acceptés', 'chassesautresor-com'),
+                'name' => 'etape_directions_sequences',
+                'type' => 'textarea',
+                'instructions' => __('Un code par ligne, directions séparées par des virgules.', 'chassesautresor-com'),
+                'required' => false,
+                'rows' => 4,
             ],
             [
                 'key' => 'field_etape_reponse_bouton',

@@ -28,4 +28,12 @@ final class AnswerWidgetRegistryTest extends TestCase {
         $this->expectException(\InvalidArgumentException::class);
         (new AnswerWidgetRegistry())->evaluate('', ['type' => 'unknown']);
     }
+
+    public function testEvaluatesFrenchAndEnglishDirectionAliases(): void {
+        $registry = new AnswerWidgetRegistry();
+        $configuration = ['type' => 'directions', 'accepted_sequences' => ['N, NE, E, SO, O']];
+
+        self::assertSame('bon', $registry->evaluate('N,NE,E,SW,W', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('N,NE,E,W,SW', $configuration)['resultat']);
+    }
 }

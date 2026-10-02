@@ -12,7 +12,7 @@ final class AnswerWidgetRegistry {
 
     /** @param AnswerWidgetDefinition[]|null $definitions */
     public function __construct(?array $definitions = null) {
-        foreach ($definitions ?? [new ClickAnswerWidget(), new TextAnswerWidget()] as $definition) {
+        foreach ($definitions ?? [new ClickAnswerWidget(), new TextAnswerWidget(), new DirectionAnswerWidget()] as $definition) {
             $this->definitions[$definition->type()] = $definition;
         }
     }

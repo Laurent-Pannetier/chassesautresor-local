@@ -50,6 +50,21 @@ final class AnswerWidgetEditorViewService {
                     ),
                 ],
             ],
+            [
+                'type' => 'directions',
+                'label' => __('Pavé à huit directions', 'chassesautresor-com'),
+                'fields' => [
+                    $this->field(
+                        'textarea',
+                        'direction_sequences',
+                        __('Codes acceptés — un par ligne', 'chassesautresor-com'),
+                        [
+                            'rows' => 4,
+                            'help' => __('Exemple : N, NE, E, SE, S, SO, O, NO', 'chassesautresor-com'),
+                        ]
+                    ),
+                ],
+            ],
         ];
     }
 

@@ -117,3 +117,21 @@ document.addEventListener('submit', async event => {
     button.disabled = false;
   }
 });
+
+document.addEventListener('click', event => {
+  const form = event.target.closest('.riddle-step-directions-form');
+  if (!form) return;
+  const input = form.querySelector('input[name="reponse"]');
+  const output = form.querySelector('.riddle-directions__sequence');
+  if (event.target.closest('.riddle-directions-reset')) {
+    input.value = '';
+    output.textContent = '';
+    return;
+  }
+  const button = event.target.closest('.riddle-direction');
+  if (!button) return;
+  const sequence = input.value ? input.value.split(',') : [];
+  sequence.push(button.dataset.direction);
+  input.value = sequence.join(',');
+  output.textContent = sequence.join(' · ');
+});

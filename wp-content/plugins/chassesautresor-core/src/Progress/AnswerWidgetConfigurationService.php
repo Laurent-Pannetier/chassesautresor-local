@@ -21,6 +21,12 @@ final class AnswerWidgetConfigurationService {
             $configuration['button_label'] = (string) $getField('etape_reponse_bouton', $stepId);
             return $configuration;
         }
+        if ($type === 'directions') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('etape_directions_sequences', $stepId)
+            );
+            return $configuration;
+        }
 
         $caseSensitive = (bool) $getField('etape_reponse_casse', $stepId);
         $configuration['accepted_answers'] = $this->lines(

@@ -16,9 +16,12 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Image | `etape_image` | Illustration facultative, stockée sous forme d’identifiant de média. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
-Une étape enregistrée exige un nom interne et au moins un texte ou une image. Deux widgets sont disponibles : le simple
-clic, dont le libellé est personnalisable, et la réponse texte avec plusieurs réponses acceptées et une comparaison
+Une étape enregistrée exige un nom interne et au moins un texte ou une image. Trois widgets sont disponibles : le simple
+clic, dont le libellé est personnalisable, la réponse texte avec plusieurs réponses acceptées et une comparaison
 optionnellement sensible à la casse. Leur configuration est figée avec l’architecture du parcours.
+Le pavé à huit directions accepte un ou plusieurs codes, un par ligne, et normalise les abréviations françaises
+`O`, `NO`, `SO` vers `W`, `NW`, `SW`. Son apparence est personnalisable avec les variables CSS
+`--direction-key-bg`, `--direction-key-color` et `--direction-key-shadow`.
 
 ## Édition frontale
 

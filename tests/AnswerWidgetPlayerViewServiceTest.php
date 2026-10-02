@@ -25,4 +25,12 @@ final class AnswerWidgetPlayerViewServiceTest extends TestCase {
         self::assertSame('reponse', $view['input_name']);
         self::assertTrue($view['limit_reached']);
     }
+
+    public function testBuildsDirectionPadView(): void {
+        $view = (new AnswerWidgetPlayerViewService())->build(['type' => 'directions'], 3, 1);
+
+        self::assertSame('directions', $view['type']);
+        self::assertSame('soumettre_reponse_etape', $view['action']);
+        self::assertFalse($view['limit_reached']);
+    }
 }

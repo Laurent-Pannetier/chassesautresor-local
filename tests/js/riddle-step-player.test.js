@@ -126,4 +126,18 @@ describe('riddle step player positioning', () => {
     expect(updated).toHaveBeenCalledTimes(1);
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
   });
+
+  test('builds and resets a direction sequence', () => {
+    document.body.innerHTML = `
+      <form class="riddle-step-directions-form">
+        <input type="hidden" name="reponse"><output class="riddle-directions__sequence"></output>
+        <button type="button" class="riddle-direction" data-direction="NW">↖</button>
+        <button type="button" class="riddle-directions-reset">↻</button>
+      </form>`;
+    eval(source);
+    document.querySelector('.riddle-direction').click();
+    expect(document.querySelector('[name="reponse"]').value.split(',').every(value => value === 'NW')).toBe(true);
+    document.querySelector('.riddle-directions-reset').click();
+    expect(document.querySelector('[name="reponse"]').value).toBe('');
+  });
 });

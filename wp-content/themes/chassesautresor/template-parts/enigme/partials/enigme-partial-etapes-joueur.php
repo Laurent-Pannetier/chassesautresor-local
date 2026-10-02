@@ -33,7 +33,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
         $configuration = (new ChassesAuTresor\Core\Progress\AnswerWidgetConfigurationService())->forStep($stepId);
         $maxFailures = (int) get_field('enigme_tentative_max', $riddleId);
         $usedFailures = 0;
-        if ($configuration['type'] === 'text') {
+        if (in_array($configuration['type'], ['text', 'directions'], true)) {
             global $wpdb;
             $usedFailures = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb)
                 ->countFailuresTodayForUser((int) get_current_user_id(), $riddleId);
@@ -56,7 +56,27 @@ if ($riddleId <= 0 || $visibleIds === []) {
             name="nonce"
             value="<?= esc_attr(wp_create_nonce($widgetView['nonce_action'])); ?>"
           >
-          <?php if ($widgetView['type'] === 'text') : ?>
+          <?php if ($widgetView['type'] === 'directions') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <p class="riddle-directions__title"><?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?></p>
+              <output class="riddle-directions__sequence" aria-live="polite"></output>
+              <input type="hidden" name="reponse" value="">
+              <div class="riddle-directions" role="group" aria-label="<?= esc_attr__('Pavé directionnel', 'chassesautresor-com'); ?>">
+                <?php foreach (['NW' => '↖', 'N' => '↑', 'NE' => '↗', 'W' => '←', '' => '', 'E' => '→', 'SW' => '↙', 'S' => '↓', 'SE' => '↘'] as $direction => $arrow) : ?>
+                  <?php if ($direction === '') : ?><span aria-hidden="true"></span><?php else : ?>
+                    <button type="button" class="riddle-direction" data-direction="<?= esc_attr($direction); ?>"
+                      aria-label="<?= esc_attr($direction); ?>"><?= esc_html($arrow); ?></button>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </div>
+              <div class="riddle-directions__actions">
+                <button type="button" class="riddle-directions-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
+              </div>
+            <?php endif; ?>
+          <?php elseif ($widgetView['type'] === 'text') : ?>
             <?php if ($widgetView['limit_reached']) : ?>
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
             <?php else : ?>

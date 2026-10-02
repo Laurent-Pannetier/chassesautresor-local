@@ -22,6 +22,18 @@ final class AnswerWidgetPlayerViewService {
             ];
         }
 
+        if ($type === 'directions') {
+            return [
+                'type' => 'directions',
+                'form_class' => 'riddle-step-text-form riddle-step-directions-form',
+                'nonce_action' => 'riddle_step_answer',
+                'action' => 'soumettre_reponse_etape',
+                'input_name' => 'reponse',
+                'button_label' => __('Valider', 'chassesautresor-com'),
+                'limit_reached' => $maximumFailures > 0 && $usedFailures >= $maximumFailures,
+            ];
+        }
+
         return [
             'type' => 'text',
             'form_class' => 'riddle-step-text-form',

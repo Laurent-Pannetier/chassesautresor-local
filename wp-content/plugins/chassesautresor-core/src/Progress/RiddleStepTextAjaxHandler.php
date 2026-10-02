@@ -31,7 +31,11 @@ final class RiddleStepTextAjaxHandler {
             || utilisateur_peut_modifier_post($riddleId)
             || get_post_type($stepId) !== RiddleStepPostTypeRegistrar::POST_TYPE
             || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
-            || (new AnswerWidgetConfigurationService())->forStep($stepId)['type'] !== 'text'
+            || !in_array(
+                (new AnswerWidgetConfigurationService())->forStep($stepId)['type'],
+                ['text', 'directions'],
+                true
+            )
         ) {
             wp_send_json_error(['message' => __('Réponse invalide.', 'chassesautresor-com')]);
         }

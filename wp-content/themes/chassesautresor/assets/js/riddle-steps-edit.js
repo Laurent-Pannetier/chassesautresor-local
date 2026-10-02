@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
           form.querySelector('[name="accepted_answers"]').value = step.accepted_answers || '';
           form.querySelector('[name="case_sensitive"]').checked = Boolean(step.case_sensitive);
           form.querySelector('[name="variants"]').value = step.variants || '';
+          form.querySelector('[name="direction_sequences"]').value = step.direction_sequences || '';
           updateWidgetConfig();
         }
       } catch (error) {

@@ -996,6 +996,57 @@ body.no-scroll {
   width: 100%;
 }
 
+.riddle-directions {
+  --direction-key-bg: #1976d2;
+  --direction-key-color: #fff;
+  --direction-key-shadow: #0d47a1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(3.5rem, 5.5rem));
+  gap: var(--space-sm);
+  justify-content: center;
+}
+
+.riddle-direction {
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 0.8rem;
+  background: var(--direction-key-bg);
+  color: var(--direction-key-color);
+  box-shadow: 0 0.3rem 0 var(--direction-key-shadow);
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.riddle-direction:active {
+  transform: translateY(0.2rem);
+  box-shadow: 0 0.1rem 0 var(--direction-key-shadow);
+}
+
+.riddle-directions__title,
+.riddle-directions__sequence {
+  display: block;
+  text-align: center;
+}
+
+.riddle-directions__sequence {
+  min-height: 1.5em;
+  font-weight: 700;
+}
+
+.riddle-directions__actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.riddle-directions-reset {
+  border: 0;
+  background: transparent;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
 .riddle-step-text-form .riddle-step-click-form__feedback {
   margin: 0;
 }

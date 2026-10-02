@@ -48,4 +48,18 @@ final class AnswerWidgetConfigurationServiceTest extends TestCase {
         self::assertTrue($configuration['case_sensitive']);
         self::assertSame('almost', $configuration['variants'][1]['texte']);
     }
+
+    public function testAdaptsDirectionSequences(): void {
+        $fields = [
+            'etape_reponse_widget' => 'directions',
+            'etape_directions_sequences' => "N,NE,E\nS,SO,O",
+        ];
+        $configuration = (new AnswerWidgetConfigurationService())->forStep(
+            18,
+            static fn (string $field, int $postId) => $fields[$field] ?? null
+        );
+
+        self::assertSame('directions', $configuration['type']);
+        self::assertSame(['N,NE,E', 'S,SO,O'], $configuration['accepted_sequences']);
+    }
 }
