@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const formFeedback = editor.querySelector('.riddle-step-form__feedback');
   const heading = editor.querySelector('.riddle-step-form__heading');
   const imageInput = form?.querySelector('[name="image_id"]');
+  const contentInput = form?.querySelector('[name="contenu"]');
+  const contentEditor = form?.querySelector('.riddle-step-form__content-editor');
   const imagePreview = editor.querySelector('.riddle-step-form__image-preview');
   const imageRemove = editor.querySelector('.riddle-step-image-remove');
   let dragged = null;
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const openForm = async stepId => {
     savedScroll = window.scrollY;
     form.reset();
+    contentEditor.innerHTML = '';
     formFeedback.textContent = '';
     setImage();
     form.querySelector('[name="etape_id"]').value = stepId || '';
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const step = await request('charger_etape_enigme', { etape_id: stepId });
         form.querySelector('[name="titre"]').value = step.title;
-        form.querySelector('[name="contenu"]').value = step.content;
+        contentEditor.innerHTML = step.content;
         setImage(step.image_id || '', step.image_url || '');
       } catch (error) {
         feedback.textContent = error.message;
@@ -118,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   form?.addEventListener('submit', async event => {
     event.preventDefault();
+    contentInput.value = contentEditor.innerHTML;
     const values = Object.fromEntries(new FormData(form).entries());
     formFeedback.textContent = '';
     try {

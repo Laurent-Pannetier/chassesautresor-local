@@ -80,8 +80,17 @@ $stepIds = $riddleId > 0
         <p class="txt-small"><?= esc_html__('Ce nom n’est jamais affiché aux joueurs.', 'chassesautresor-com'); ?></p>
       </div>
       <div class="riddle-step-form__field">
-        <label for="riddle-step-content"><?= esc_html__('Texte de l’étape', 'chassesautresor-com'); ?></label>
-        <textarea id="riddle-step-content" name="contenu" rows="8"></textarea>
+        <label id="riddle-step-content-label" for="riddle-step-content">
+          <?= esc_html__('Texte de l’étape', 'chassesautresor-com'); ?>
+        </label>
+        <div
+          class="riddle-step-form__content-editor"
+          contenteditable="true"
+          role="textbox"
+          aria-labelledby="riddle-step-content-label"
+          aria-multiline="true"
+        ></div>
+        <textarea id="riddle-step-content" name="contenu" hidden></textarea>
       </div>
       <div class="riddle-step-form__field">
         <label><?= esc_html__('Image de l’étape', 'chassesautresor-com'); ?></label>

@@ -151,8 +151,23 @@
 }
 
 .riddle-step-form__field input[type='text'],
-.riddle-step-form__field textarea {
+.riddle-step-form__field textarea,
+.riddle-step-form__content-editor {
   width: 100%;
+}
+
+.riddle-step-form__content-editor {
+  min-height: 10rem;
+  padding: var(--space-sm);
+  overflow-y: auto;
+  border: 1px solid var(--color-editor-border);
+  border-radius: 6px;
+  background: var(--color-white);
+}
+
+.riddle-step-form__content-editor:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .riddle-step-form__image-preview img {
