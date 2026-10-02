@@ -98,6 +98,7 @@ document.addEventListener('submit', async event => {
         safeDial.style.setProperty('--safe-angle', '0deg');
         safeDial.setAttribute('aria-valuenow', '0');
         safeDial.querySelector('.riddle-safe__value').textContent = '0';
+        safeDial.querySelector('.riddle-safe__direction').textContent = '✱';
       }
       const counter = document.querySelector('.tentatives-counter .valeur');
       const footer = document.querySelector('.participation-infos .tentatives');
@@ -201,6 +202,12 @@ const setSafeDialValue = (dial, value) => {
   dial.querySelector('.riddle-safe__value').textContent = normalized;
 };
 
+const setSafeDialDirection = (dial, direction = '') => {
+  dial.dataset.direction = direction;
+  const indicator = dial.querySelector('.riddle-safe__direction');
+  if (indicator) indicator.textContent = direction === 'H' ? '↻' : direction === 'A' ? '↺' : '✱';
+};
+
 const commitSafeDialMovement = (form, direction, value) => {
   if (!direction) return;
   const input = form.querySelector('input[name="reponse"]');
@@ -234,6 +241,7 @@ document.addEventListener('pointermove', event => {
   const rotation = Number(dial.dataset.rotation) + delta;
   dial.dataset.previousAngle = angle;
   dial.dataset.rotation = rotation;
+  setSafeDialDirection(dial, rotation >= 0 ? 'H' : 'A');
   setSafeDialValue(dial, Math.round(Number(dial.dataset.startValue) + rotation / 3.6));
 });
 
@@ -255,6 +263,7 @@ document.addEventListener('keydown', event => {
   if (!dial || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
   event.preventDefault();
   const direction = event.key === 'ArrowRight' ? 'H' : 'A';
+  setSafeDialDirection(dial, direction);
   setSafeDialValue(dial, Number(dial.dataset.value || 0) + (direction === 'H' ? 1 : -1));
   dial.dataset.keyboardDirection = direction;
 });
@@ -276,4 +285,5 @@ document.addEventListener('click', event => {
   form.querySelector('input[name="reponse"]').value = '';
   form.querySelector('.riddle-safe__sequence').textContent = '';
   setSafeDialValue(form.querySelector('.riddle-safe'), 0);
+  setSafeDialDirection(form.querySelector('.riddle-safe'));
 });

@@ -26,6 +26,7 @@ describe('self-contained riddle widgets', () => {
       <form class="riddle-step-safe_dial-form">
         <input name="reponse"><output class="riddle-safe__sequence"></output>
         <div class="riddle-safe" tabindex="0" data-value="0" aria-valuenow="0">
+          <span class="riddle-safe__direction">✱</span>
           <span class="riddle-safe__value">0</span>
         </div>
       </form>`;

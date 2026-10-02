@@ -7621,6 +7621,7 @@ body.no-scroll {
   height: var(--safe-size);
   margin: 0 auto;
   border: clamp(0.75rem, 3vw, 1.1rem) solid var(--safe-ring, #888);
+  outline: 1px solid #222;
   border-radius: 50%;
   background: #fff;
   touch-action: none;
@@ -7641,8 +7642,8 @@ body.no-scroll {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: repeating-conic-gradient(#222 0 1deg, transparent 1deg 3.6deg);
-  box-shadow: inset 0 0 0 0.55rem #fff;
+  background: repeating-conic-gradient(#222 0 0.75deg, transparent 0.75deg 3.6deg), #fff;
+  box-shadow: inset 0 0 0 0.45rem #fff;
   transform: rotate(var(--safe-angle));
   pointer-events: none;
 }
@@ -7660,18 +7661,27 @@ body.no-scroll {
 
 .riddle-safe__dial {
   position: absolute;
-  inset: 25%;
+  inset: 27%;
+  border: clamp(0.45rem, 1.8vw, 0.7rem) dotted #fff;
   border-radius: 50%;
-  background: radial-gradient(circle at 40% 35%, #ddd, #777 70%);
+  background: radial-gradient(circle at 40% 35%, #ddd 0 32%, #aaa 60%, #666 100%);
+  box-shadow: 0 0 0 1px #777;
 }
 
-.riddle-safe__value {
+.riddle-safe__reading {
   position: absolute;
   top: 50%;
   left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: clamp(1.5rem, 8vw, 2.5rem);
   font-weight: 700;
   transform: translate(-50%, -50%);
+}
+
+.riddle-safe__direction {
+  font-size: 0.8em;
 }
 
 .riddle-safe__number {
@@ -7681,7 +7691,8 @@ body.no-scroll {
   left: 50%;
   padding: 0.1rem;
   background: #fff;
-  transform: translate(-50%, -50%) rotate(calc(var(--safe-index) * 36deg + var(--safe-angle))) translateY(calc(-0.36 * var(--safe-size))) rotate(calc(var(--safe-index) * -36deg - var(--safe-angle)));
+  transform: translate(-50%, -50%) rotate(calc(var(--safe-index) * 36deg + var(--safe-angle))) translateY(calc(-0.36 * var(--safe-size)));
+  font-size: clamp(1rem, 5vw, 1.65rem);
   font-weight: 700;
   line-height: 1;
   pointer-events: none;
