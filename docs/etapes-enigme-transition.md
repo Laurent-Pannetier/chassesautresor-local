@@ -94,7 +94,8 @@ champs ACF historiques des énigmes et des étapes en une configuration versionn
 registre, sans modifier le stockage existant. Le rendu joueur des étapes consomme maintenant un modèle de vue commun
 qui fournit l’action AJAX,
 le nonce, le champ de saisie, le libellé et l’état de limite ; le JavaScript ne choisit plus l’action à partir d’une
-classe CSS. L’adaptateur d’édition reste le dernier chantier transversal avant l’ajout d’un nouveau widget.
+classe CSS. Le sélecteur et les champs de l’éditeur d’étape sont également produits à partir de descriptions communes
+de widgets. Le moteur dispose donc de ses adaptateurs serveur, joueur et édition avant l’ajout d’un nouveau widget.
 
 ### Priorité 3 — nouveaux widgets
 
