@@ -133,7 +133,10 @@ if ($riddleId > 0) {
           </button>
         </div>
         <p class="txt-small">
-          <?= esc_html__('Une étape doit contenir au moins un texte ou une image.', 'chassesautresor-com'); ?>
+          <?= esc_html__(
+              'Un texte ou une image est obligatoire pour Simple clic et Réponse texte.',
+              'chassesautresor-com'
+          ); ?>
         </p>
       </div>
       <?php if (!$structureLocked) : ?>

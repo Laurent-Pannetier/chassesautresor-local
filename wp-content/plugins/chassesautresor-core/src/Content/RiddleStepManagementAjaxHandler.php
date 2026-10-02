@@ -89,7 +89,16 @@ final class RiddleStepManagementAjaxHandler {
             wp_send_json_error(['message' => __('Étape introuvable.', 'chassesautresor-com')]);
         }
 
-        $result = (new RiddleStepContentService())->save($stepId, $title, $content, $imageId);
+        $storedWidget = (string) (get_field('etape_reponse_widget', $stepId) ?: 'click');
+        $widgetType = $widget !== '' ? $widget : $storedWidget;
+        $requiresContent = in_array($widgetType, ['click', 'text'], true);
+        $result = (new RiddleStepContentService())->save(
+            $stepId,
+            $title,
+            $content,
+            $imageId,
+            $requiresContent
+        );
         if (is_wp_error($result)) {
             if ($created) {
                 wp_delete_post($stepId, true);

@@ -12,6 +12,7 @@ final class RiddleStepContentService {
         string $title,
         string $content,
         int $imageId,
+        bool $requiresContent = true,
         ?callable $updatePost = null,
         ?callable $updateField = null
     ) {
@@ -20,7 +21,7 @@ final class RiddleStepContentService {
         if ($title === '') {
             return new \WP_Error('missing_title', __('Le nom de l’étape est obligatoire.', 'chassesautresor-com'));
         }
-        if (!$hasContent && $imageId <= 0) {
+        if ($requiresContent && !$hasContent && $imageId <= 0) {
             return new \WP_Error(
                 'missing_content',
                 __('Ajoutez un texte ou une image à l’étape.', 'chassesautresor-com')

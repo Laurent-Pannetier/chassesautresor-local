@@ -26,6 +26,7 @@ final class RiddleStepContentServiceTest extends TestCase {
             ' Porte ',
             '<p>Observez.</p>',
             12,
+            true,
             static function (array $values) use (&$post): int {
                 $post = $values;
                 return 8;
@@ -40,5 +41,20 @@ final class RiddleStepContentServiceTest extends TestCase {
         self::assertSame('publish', $post['post_status']);
         self::assertSame('<p>Observez.</p>', $fields['etape_contenu']);
         self::assertSame(12, $fields['etape_image']);
+    }
+
+    public function testAllowsEmptyContentForSelfContainedWidget(): void {
+        $result = (new RiddleStepContentService())->save(
+            8,
+            'Code directionnel',
+            '',
+            0,
+            false,
+            static fn (array $values): int => 8,
+            static function (string $name, $value): void {
+            }
+        );
+
+        self::assertTrue($result);
     }
 }
