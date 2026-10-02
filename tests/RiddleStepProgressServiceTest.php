@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 final class InMemoryRiddleStepProgressRepository extends RiddleStepProgressRepository {
     public array $completedIds = [];
     public bool $allowWrite = true;
+    public bool $hasProgress = false;
 
     public function __construct() {
     }
@@ -30,6 +31,10 @@ final class InMemoryRiddleStepProgressRepository extends RiddleStepProgressRepos
 
         $this->completedIds[] = $stepId;
         return true;
+    }
+
+    public function hasProgressForRiddle(int $riddleId): bool {
+        return $this->hasProgress;
     }
 }
 
@@ -87,6 +92,13 @@ final class RiddleStepProgressServiceTest extends TestCase {
 
         self::assertSame([], $state['visible_step_ids']);
         self::assertTrue($state['final_answer_unlocked']);
+    }
+
+    public function testProgressPresenceIsDelegatedToTheRepository(): void {
+        $repository = new InMemoryRiddleStepProgressRepository();
+        $repository->hasProgress = true;
+
+        self::assertTrue((new RiddleStepProgressService($repository))->hasProgressForRiddle(9));
     }
 
     public function testCleanupIsDelegatedToTheRepository(): void {

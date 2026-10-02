@@ -60,6 +60,20 @@ class RiddleStepProgressRepository {
         return $result !== false;
     }
 
+    public function hasProgressForRiddle(int $riddleId): bool {
+        if ($riddleId <= 0) {
+            return false;
+        }
+
+        $table = $this->wpdb->prefix . 'enigme_etapes_progression';
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table} WHERE enigme_id = %d",
+                $riddleId
+            )
+        ) > 0;
+    }
+
     public function deleteForRiddle(int $riddleId): int {
         if ($riddleId <= 0) {
             return 0;

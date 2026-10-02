@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Support\CoreServiceFactory;
+
 /** AJAX transport for editing, deleting and ordering intermediate steps. */
 final class RiddleStepManagementAjaxHandler {
     public static function register(callable $addAction): void {
@@ -49,6 +51,7 @@ final class RiddleStepManagementAjaxHandler {
 
         $created = false;
         if ($stepId === 0) {
+            self::assertStructureEditable($riddleId);
             $position = count((new RiddleStepQueryService())->findOrderedIds($riddleId));
             $stepId = (new RiddleStepCreationService())->create(
                 $riddleId,
@@ -84,6 +87,7 @@ final class RiddleStepManagementAjaxHandler {
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
         $stepId = isset($_POST['etape_id']) ? (int) $_POST['etape_id'] : 0;
         self::assertCanModify($riddleId);
+        self::assertStructureEditable($riddleId);
 
         if (!self::belongsToRiddle($stepId, $riddleId) || wp_delete_post($stepId, true) === false) {
             wp_send_json_error('suppression_impossible');
@@ -97,6 +101,7 @@ final class RiddleStepManagementAjaxHandler {
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
         $stepIds = isset($_POST['etape_ids']) ? (array) wp_unslash($_POST['etape_ids']) : [];
         self::assertCanModify($riddleId);
+        self::assertStructureEditable($riddleId);
 
         if (!(new RiddleStepOrderingApplicationService())->reorder($riddleId, $stepIds)) {
             wp_send_json_error('ordre_invalide');
@@ -120,5 +125,24 @@ final class RiddleStepManagementAjaxHandler {
         return $stepId > 0
             && get_post_type($stepId) === RiddleStepPostTypeRegistrar::POST_TYPE
             && (int) get_field('etape_enigme_associee', $stepId) === $riddleId;
+    }
+
+    private static function assertStructureEditable(int $riddleId): void {
+        global $wpdb;
+
+        $locked = (new RiddleStepStructureLockService())->isLocked(
+            $riddleId,
+            static fn (string $field, int $postId) => get_field($field, $postId),
+            static fn (int $id): bool => CoreServiceFactory::riddleStepProgress($wpdb)
+                ->hasProgressForRiddle($id)
+        );
+        if ($locked) {
+            wp_send_json_error([
+                'message' => __(
+                    'La structure des étapes est figée pour cette énigme.',
+                    'chassesautresor-com'
+                ),
+            ]);
+        }
     }
 }

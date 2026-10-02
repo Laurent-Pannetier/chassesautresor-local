@@ -7,8 +7,22 @@ $editable = !empty($args['editable']);
 $stepIds = $riddleId > 0
     ? (new ChassesAuTresor\Core\Content\RiddleStepQueryService())->findOrderedIds($riddleId)
     : [];
+$structureLocked = false;
+if ($riddleId > 0) {
+    global $wpdb;
+    $structureLocked = (new ChassesAuTresor\Core\Content\RiddleStepStructureLockService())->isLocked(
+        $riddleId,
+        static fn (string $field, int $postId) => get_field($field, $postId),
+        static fn (int $id): bool => ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStepProgress($wpdb)
+            ->hasProgressForRiddle($id)
+    );
+}
 ?>
-<section class="riddle-steps-editor" data-riddle-id="<?= esc_attr($riddleId); ?>">
+<section
+  class="riddle-steps-editor"
+  data-riddle-id="<?= esc_attr($riddleId); ?>"
+  data-structure-locked="<?= $structureLocked ? '1' : '0'; ?>"
+>
   <div class="riddle-steps-editor__overview">
   <div class="riddle-steps-editor__header">
     <div>
@@ -20,13 +34,23 @@ $stepIds = $riddleId > 0
         ); ?>
       </p>
     </div>
-    <?php if ($editable) : ?>
+    <?php if ($editable && !$structureLocked) : ?>
       <button type="button" class="bouton-secondaire riddle-step-add">
         <i class="fa-solid fa-plus" aria-hidden="true"></i>
         <?= esc_html__('Ajouter une étape', 'chassesautresor-com'); ?>
       </button>
     <?php endif; ?>
   </div>
+
+  <?php if ($structureLocked) : ?>
+    <p class="riddle-steps-editor__lock-notice">
+      <i class="fa-solid fa-lock" aria-hidden="true"></i>
+      <?= esc_html__(
+          'Le parcours a commencé : les étapes sont figées, mais leur contenu reste modifiable.',
+          'chassesautresor-com'
+      ); ?>
+    </p>
+  <?php endif; ?>
 
   <ol
     class="riddle-steps-editor__list"
@@ -39,11 +63,13 @@ $stepIds = $riddleId > 0
       <li
         class="riddle-step-card"
         data-step-id="<?= esc_attr($stepId); ?>"
-        draggable="<?= $editable ? 'true' : 'false'; ?>"
+        draggable="<?= $editable && !$structureLocked ? 'true' : 'false'; ?>"
       >
-        <span class="riddle-step-card__handle" aria-hidden="true">
-          <i class="fa-solid fa-grip-vertical"></i>
-        </span>
+        <?php if ($editable && !$structureLocked) : ?>
+          <span class="riddle-step-card__handle" aria-hidden="true">
+            <i class="fa-solid fa-grip-vertical"></i>
+          </span>
+        <?php endif; ?>
         <span class="riddle-step-card__rank"><?= esc_html((string) ($index + 1)); ?></span>
         <span class="riddle-step-card__content">
           <strong><?= esc_html($label); ?></strong>
@@ -53,9 +79,11 @@ $stepIds = $riddleId > 0
             <button type="button" class="bouton-tertiaire riddle-step-edit">
               <?= esc_html__('Modifier', 'chassesautresor-com'); ?>
             </button>
-            <button type="button" class="bouton-texte secondaire riddle-step-delete">
-              <?= esc_html__('Supprimer', 'chassesautresor-com'); ?>
-            </button>
+            <?php if (!$structureLocked) : ?>
+              <button type="button" class="bouton-texte secondaire riddle-step-delete">
+                <?= esc_html__('Supprimer', 'chassesautresor-com'); ?>
+              </button>
+            <?php endif; ?>
           </span>
         <?php endif; ?>
       </li>

@@ -13,6 +13,7 @@ final class RiddleStepProgressWpdbStub {
     public array $deleteArguments = [];
     public $insertResult = 1;
     public $deleteResult = 1;
+    public $status = '0';
 
     public function prepare(string $query, ...$arguments): string {
         $this->preparedArguments = $arguments;
@@ -21,6 +22,10 @@ final class RiddleStepProgressWpdbStub {
 
     public function get_col(string $query): array {
         return $this->completedIds;
+    }
+
+    public function get_var(string $query) {
+        return $this->status;
     }
 
     public function insert(string $table, array $data, array $formats) {
@@ -56,6 +61,16 @@ final class RiddleStepProgressRepositoryTest extends TestCase {
 
         $wpdb->insertResult = false;
         self::assertFalse($repository->markCompleted(4, 12, 8, '2026-10-02 12:00:00', null));
+    }
+
+    public function testDetectsAnyProgressForARiddle(): void {
+        $wpdb = new RiddleStepProgressWpdbStub();
+        $repository = new RiddleStepProgressRepository($wpdb);
+
+        self::assertFalse($repository->hasProgressForRiddle(12));
+        $wpdb->status = '1';
+        self::assertTrue($repository->hasProgressForRiddle(12));
+        self::assertSame([12], $wpdb->preparedArguments);
     }
 
     public function testDeletesProgressByRiddleOrStep(): void {

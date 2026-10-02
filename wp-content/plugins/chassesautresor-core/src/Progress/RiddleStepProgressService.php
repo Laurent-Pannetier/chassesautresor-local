@@ -69,6 +69,10 @@ final class RiddleStepProgressService {
         return $this->repository->deleteForRiddle($riddleId);
     }
 
+    public function hasProgressForRiddle(int $riddleId): bool {
+        return $this->repository->hasProgressForRiddle($riddleId);
+    }
+
     public function deleteForStep(int $stepId): int {
         return $this->repository->deleteForStep($stepId);
     }

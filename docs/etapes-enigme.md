@@ -39,8 +39,9 @@ La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une
 résultat `faux` consomme actuellement le quota : une variante personnalisée et, à terme, un clic de confirmation ne
 consomment rien. Le futur délai entre deux essais aura une portée globale à l’énigme.
 
-## Règles prévues avant mise en ligne
+## Verrouillage de l’architecture
 
-Tant que l’énigme n’est pas en cours, les étapes peuvent être ajoutées, supprimées et réordonnées. Dès le démarrage de
-la chasse ou l’existence d’une progression, l’architecture et les réponses devront être figées. Seuls le nom interne,
-le texte et l’image resteront corrigibles. Une étape en brouillon bloquera la validation de l’énigme.
+Tant que l’énigme n’est pas en cours, les étapes peuvent être ajoutées, supprimées et réordonnées. L’architecture est
+figée lorsque la chasse est en cours, payante ou terminée, ainsi que dès qu’une progression de joueur existe. Le serveur
+refuse alors l’ajout, la suppression et le réordonnancement, même si un appel AJAX est fabriqué manuellement. Le nom
+interne, le texte et l’image restent modifiables pour permettre les corrections éditoriales sans altérer le parcours.
