@@ -61,3 +61,9 @@ figée dès que la chasse quitte les statuts de création ou de correction, lors
 ainsi que dès qu’une progression de joueur existe. Le serveur refuse alors l’ajout, la suppression et le
 réordonnancement, même si un appel AJAX est fabriqué manuellement. Le nom interne, le texte et l’image restent
 modifiables pour permettre les corrections éditoriales sans altérer le parcours.
+
+
+## Reprise du développement
+
+Le bilan détaillé, la dette technique, les priorités et un message prêt à copier pour ouvrir le prochain fil sont
+regroupés dans [`docs/etapes-enigme-transition.md`](etapes-enigme-transition.md).
