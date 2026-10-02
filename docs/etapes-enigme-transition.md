@@ -91,8 +91,10 @@ existantes.
 Le registre PHP commun prend désormais en charge **Simple clic** et **Réponse texte**. Un adaptateur transforme les
 champs ACF historiques des énigmes et des étapes en une configuration versionnée commune, identifiée par une cible
 `enigme` ou `enigme_etape`. L’évaluation de la réponse finale automatique et celle des étapes passent par ce même
-registre, sans modifier le stockage existant. Les adaptateurs d’édition et de rendu restent à extraire avant d’ajouter
-un nouveau widget.
+registre, sans modifier le stockage existant. Le rendu joueur des étapes consomme maintenant un modèle de vue commun
+qui fournit l’action AJAX,
+le nonce, le champ de saisie, le libellé et l’état de limite ; le JavaScript ne choisit plus l’action à partir d’une
+classe CSS. L’adaptateur d’édition reste le dernier chantier transversal avant l’ajout d’un nouveau widget.
 
 ### Priorité 3 — nouveaux widgets
 

@@ -29,19 +29,24 @@ if ($riddleId <= 0 || $visibleIds === []) {
         <div class="riddle-player-step__content"><?= wp_kses_post($content); ?></div>
       <?php endif; ?>
       <?php if (!$completed && $stepId === $currentId) : ?>
-        <?php $widget = (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'); ?>
         <?php
+        $configuration = (new ChassesAuTresor\Core\Progress\AnswerWidgetConfigurationService())->forStep($stepId);
         $maxFailures = (int) get_field('enigme_tentative_max', $riddleId);
         $usedFailures = 0;
-        if ($widget === 'text') {
+        if ($configuration['type'] === 'text') {
             global $wpdb;
             $usedFailures = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb)
                 ->countFailuresTodayForUser((int) get_current_user_id(), $riddleId);
         }
-        $limitReached = $widget === 'text' && $maxFailures > 0 && $usedFailures >= $maxFailures;
+        $widgetView = (new ChassesAuTresor\Core\Progress\AnswerWidgetPlayerViewService())->build(
+            $configuration,
+            $maxFailures,
+            $usedFailures
+        );
         ?>
         <form
-          class="<?= $widget === 'text' ? 'riddle-step-text-form' : 'riddle-step-click-form'; ?>"
+          class="<?= esc_attr($widgetView['form_class']); ?>"
+          data-widget-action="<?= esc_attr($widgetView['action']); ?>"
           data-max-failures="<?= esc_attr($maxFailures); ?>"
         >
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
@@ -49,26 +54,28 @@ if ($riddleId <= 0 || $visibleIds === []) {
           <input
             type="hidden"
             name="nonce"
-            value="<?= esc_attr(wp_create_nonce(
-                $widget === 'text' ? 'riddle_step_answer' : 'riddle_step_click'
-            )); ?>"
+            value="<?= esc_attr(wp_create_nonce($widgetView['nonce_action'])); ?>"
           >
-          <?php if ($widget === 'text') : ?>
-            <?php if ($limitReached) : ?>
+          <?php if ($widgetView['type'] === 'text') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
             <?php else : ?>
               <label for="riddle-step-answer-<?= esc_attr($stepId); ?>">
-                <?= esc_html__('Votre réponse', 'chassesautresor-com'); ?>
+                <?= esc_html($widgetView['input_label']); ?>
               </label>
-              <input id="riddle-step-answer-<?= esc_attr($stepId); ?>" type="text" name="reponse" required>
+              <input
+                id="riddle-step-answer-<?= esc_attr($stepId); ?>"
+                type="text"
+                name="<?= esc_attr($widgetView['input_name']); ?>"
+                required
+              >
               <button type="submit" class="bouton-cta bouton-cta--color">
-                <?= esc_html__('Valider', 'chassesautresor-com'); ?>
+                <?= esc_html($widgetView['button_label']); ?>
               </button>
             <?php endif; ?>
           <?php else : ?>
             <button type="submit" class="bouton-cta bouton-cta--color">
-              <?= esc_html((string) (get_field('etape_reponse_bouton', $stepId)
-                  ?: __('Continuer', 'chassesautresor-com'))); ?>
+              <?= esc_html($widgetView['button_label']); ?>
             </button>
           <?php endif; ?>
           <p class="riddle-step-click-form__feedback" role="status" aria-live="polite"></p>

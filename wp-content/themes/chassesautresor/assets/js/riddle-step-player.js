@@ -76,9 +76,7 @@ document.addEventListener('submit', async event => {
   const button = form.querySelector('button[type="submit"]');
   const feedback = form.querySelector('.riddle-step-click-form__feedback');
   const data = new FormData(form);
-  data.append('action', form.classList.contains('riddle-step-text-form')
-    ? 'soumettre_reponse_etape'
-    : 'confirmer_etape_enigme');
+  data.append('action', form.dataset.widgetAction);
   button.disabled = true;
   try {
     const response = await fetch(RiddleStepPlayer.ajaxUrl, { method: 'POST', body: data });

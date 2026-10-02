@@ -82,6 +82,7 @@ require_once __DIR__ . '/src/Progress/ClickAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/TextAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetRegistry.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetConfigurationService.php';
+require_once __DIR__ . '/src/Progress/AnswerWidgetPlayerViewService.php';
 require_once __DIR__ . '/src/Progress/RiddleAnswerSubmissionPolicy.php';
 require_once __DIR__ . '/src/Progress/RiddleAnswerSubmissionAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleSystemStateService.php';
