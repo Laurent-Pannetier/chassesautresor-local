@@ -48,6 +48,26 @@ class RiddleAnswerEvaluationService
 
     private function normalize(string $answer, bool $caseSensitive): string
     {
-        return $caseSensitive ? $answer : mb_strtolower($answer);
+        $answer = str_replace(
+            ["\u{2018}", "\u{2019}", "\u{2010}", "\u{2011}", "\u{2012}", "\u{2013}", "\u{2014}"],
+            ["'", "'", '-', '-', '-', '-', '-'],
+            trim($answer)
+        );
+        $answer = preg_replace('/\s+/u', ' ', $answer) ?? $answer;
+        if ($caseSensitive) {
+            return $answer;
+        }
+
+        $answer = function_exists('remove_accents') ? remove_accents($answer) : $answer;
+        $answer = strtr($answer, [
+            'à' => 'a', 'â' => 'a', 'ä' => 'a', 'À' => 'A', 'Â' => 'A', 'Ä' => 'A',
+            'ç' => 'c', 'Ç' => 'C',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+            'î' => 'i', 'ï' => 'i', 'Î' => 'I', 'Ï' => 'I',
+            'ô' => 'o', 'ö' => 'o', 'Ô' => 'O', 'Ö' => 'O',
+            'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+        ]);
+        return mb_strtolower($answer);
     }
 }

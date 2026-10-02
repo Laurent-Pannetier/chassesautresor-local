@@ -52,6 +52,13 @@ final class RiddleStepClickAjaxHandler {
             wp_send_json_error(['message' => __('Cette étape n’est pas disponible.', 'chassesautresor-com')]);
         }
 
+        CoreServiceFactory::huntProgress($wpdb)->advanceRiddleStatus(
+            $userId,
+            $riddleId,
+            'en_cours',
+            (string) current_time('mysql')
+        );
+
         CoreServiceFactory::riddleAttempts($wpdb)->createForStep(
             $uid,
             $userId,

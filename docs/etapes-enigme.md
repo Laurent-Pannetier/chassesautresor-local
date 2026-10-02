@@ -41,6 +41,9 @@ affichées, tandis que leur widget est remplacé par un état en lecture seule.
 
 Une mauvaise réponse texte est enregistrée comme `faux` et consomme une tentative dans la limite globale de l’énigme.
 Une bonne réponse termine l’étape et révèle la suivante. Aucun point n’est débité par une étape intermédiaire.
+Lorsque la casse est ignorée, les accents français le sont également. Les apostrophes typographiques et droites, ainsi
+que les différentes variantes typographiques du tiret, sont considérées comme équivalentes. Les tirets ne sont pas
+supprimés : `arc-en-ciel` reste donc distinct de `arc en ciel` afin de ne pas accepter des réponses trop éloignées.
 Le compteur et le formulaire sont actualisés immédiatement après une erreur ; lorsque la limite est atteinte, la saisie
 est désactivée sans attendre un rechargement. L’outil administratif de remise à zéro efface aussi la progression des
 étapes afin que les parcours puissent être rejoués pendant les tests.

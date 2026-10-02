@@ -24,6 +24,23 @@ final class RiddleAnswerEvaluationServiceTest extends TestCase
         self::assertSame(['resultat' => 'faux', 'message' => '', 'index' => 0], $result);
     }
 
+    public function testCaseInsensitiveComparisonAlsoIgnoresFrenchAccents(): void
+    {
+        $service = new RiddleAnswerEvaluationService();
+
+        self::assertSame('bon', $service->evaluate('Eleve-ou', ['Élève-ou'], false, [])['resultat']);
+        self::assertSame('bon', $service->evaluate('eleve-ou', ['Élève-ou'], false, [])['resultat']);
+        self::assertSame('faux', $service->evaluate('eleve-ou', ['élèvE-ou'], true, [])['resultat']);
+    }
+
+    public function testTypographicDashesAndApostrophesAreEquivalent(): void
+    {
+        $service = new RiddleAnswerEvaluationService();
+
+        self::assertSame('bon', $service->evaluate('arc-en-ciel', ['arc–en–ciel'], false, [])['resultat']);
+        self::assertSame('bon', $service->evaluate("l'énigme", ['l’énigme'], false, [])['resultat']);
+    }
+
     public function testVariantReturnsItsHistoricalIndexAndMessage(): void
     {
         $result = (new RiddleAnswerEvaluationService())->evaluate(

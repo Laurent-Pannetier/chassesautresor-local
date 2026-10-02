@@ -45,6 +45,13 @@ final class RiddleStepTextAjaxHandler {
             wp_send_json_error(['message' => __('Cette étape n’est pas disponible.', 'chassesautresor-com')]);
         }
 
+        CoreServiceFactory::huntProgress($wpdb)->advanceRiddleStatus(
+            $userId,
+            $riddleId,
+            'en_cours',
+            (string) current_time('mysql')
+        );
+
         $max = (int) get_field('enigme_tentative_max', $riddleId);
         $failureCount = $attempts->countFailuresTodayForUser($userId, $riddleId);
         if ($max > 0 && $failureCount >= $max) {
@@ -86,6 +93,7 @@ final class RiddleStepTextAjaxHandler {
             'resultat' => $evaluation['resultat'],
             'compteur' => $attempts->countFailuresTodayForUser($userId, $riddleId),
             'final_answer_unlocked' => $state['final_answer_unlocked'] ?? false,
+            'current_step_id' => $state['current_step_id'] ?? null,
         ]);
     }
 }

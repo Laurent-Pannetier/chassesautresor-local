@@ -7297,6 +7297,13 @@ body.no-scroll {
   border: 1px solid var(--color-editor-border);
   border-radius: 8px;
   background: var(--color-white);
+  color: var(--color-text-fond-clair);
+}
+
+.riddle-player-step label,
+.riddle-player-step__content,
+.riddle-player-step__content p {
+  color: var(--color-text-fond-clair);
 }
 
 .riddle-player-step__image {

@@ -1,3 +1,14 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const target = window.sessionStorage.getItem('riddleStepScrollTarget');
+  if (!target) return;
+  window.sessionStorage.removeItem('riddleStepScrollTarget');
+  const element = target === 'final'
+    ? document.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle') ||
+      [...document.querySelectorAll('.riddle-player-step')].pop()
+    : document.querySelector(`[data-player-step-id="${target}"]`);
+  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
 document.addEventListener('submit', async event => {
   const form = event.target.closest('.riddle-step-click-form, .riddle-step-text-form');
   if (!form || typeof RiddleStepPlayer === 'undefined') return;
@@ -15,6 +26,8 @@ document.addEventListener('submit', async event => {
     if (!result.success) throw new Error(result.data?.message || RiddleStepPlayer.error);
     if (result.data.resultat && result.data.resultat !== 'bon') {
       feedback.textContent = RiddleStepPlayer.wrong;
+      const answerInput = form.querySelector('input[name="reponse"]');
+      if (answerInput) answerInput.value = '';
       const counter = document.querySelector('.tentatives-counter .valeur');
       const footer = document.querySelector('.participation-infos .tentatives');
       if (counter) counter.textContent = result.data.compteur;
@@ -25,7 +38,7 @@ document.addEventListener('submit', async event => {
       }
       const maximum = Number.parseInt(form.dataset.maxFailures || '0', 10);
       if (maximum > 0 && result.data.compteur >= maximum) {
-        form.querySelector('input[name="reponse"]')?.setAttribute('disabled', 'disabled');
+        answerInput?.setAttribute('disabled', 'disabled');
         button.disabled = true;
         feedback.textContent = RiddleStepPlayer.limitReached;
         return;
@@ -33,6 +46,10 @@ document.addEventListener('submit', async event => {
       button.disabled = false;
       return;
     }
+    window.sessionStorage.setItem(
+      'riddleStepScrollTarget',
+      result.data.current_step_id ? String(result.data.current_step_id) : 'final'
+    );
     window.location.reload();
   } catch (error) {
     feedback.textContent = error.message;

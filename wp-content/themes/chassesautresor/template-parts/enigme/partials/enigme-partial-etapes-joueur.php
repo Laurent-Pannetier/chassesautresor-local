@@ -18,7 +18,10 @@ if ($riddleId <= 0 || $visibleIds === []) {
     $imageId = (int) get_field('etape_image', $stepId);
     $content = (string) get_field('etape_contenu', $stepId);
     ?>
-    <article class="riddle-player-step<?= $completed ? ' is-completed' : ' is-current'; ?>">
+    <article
+      class="riddle-player-step<?= $completed ? ' is-completed' : ' is-current'; ?>"
+      data-player-step-id="<?= esc_attr($stepId); ?>"
+    >
       <?php if ($imageId > 0) : ?>
         <?= wp_get_attachment_image($imageId, 'large', false, ['class' => 'riddle-player-step__image']); ?>
       <?php endif; ?>
