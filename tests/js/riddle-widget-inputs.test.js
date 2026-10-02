@@ -56,4 +56,25 @@ describe('self-contained riddle widgets', () => {
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↻ 1');
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↺ 0');
   });
+
+  test('accumulates small pointer movements before recording on release', () => {
+    const dial = document.querySelector('.riddle-safe');
+    dial.setPointerCapture = jest.fn();
+    dial.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200 });
+    const pointer = (type, clientX, clientY) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.assign(event, { pointerId: 1, clientX, clientY });
+      dial.dispatchEvent(event);
+    };
+
+    pointer('pointerdown', 100, 0);
+    pointer('pointermove', 103, 0);
+    pointer('pointermove', 106, 0);
+    pointer('pointermove', 109, 0);
+    pointer('pointermove', 112, 1);
+    pointer('pointerup', 112, 1);
+
+    expect(Number(dial.dataset.value)).toBeGreaterThan(0);
+    expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toMatch(/^H\d+$/);
+  });
 });

@@ -113,13 +113,15 @@ if ($riddleId <= 0 || $visibleIds === []) {
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
             <?php else : ?>
               <p class="riddle-safe__title"><?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?></p>
-              <div class="riddle-safe" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="99"
+              <div class="riddle-safe" role="slider" tabindex="0" data-value="0" aria-valuemin="0" aria-valuemax="99"
                 aria-valuenow="0" aria-label="<?= esc_attr__('Molette de coffre-fort', 'chassesautresor-com'); ?>">
                 <span class="riddle-safe__marker" aria-hidden="true"></span>
+                <?php foreach (range(0, 90, 10) as $index => $number) : ?>
+                  <span class="riddle-safe__number" style="--safe-index: <?= esc_attr($index); ?>" aria-hidden="true">
+                    <?= esc_html($number); ?>
+                  </span>
+                <?php endforeach; ?>
                 <span class="riddle-safe__dial" aria-hidden="true">
-                  <?php foreach (range(0, 90, 10) as $number) : ?>
-                    <span class="riddle-safe__number" style="--safe-number: <?= esc_attr($number); ?>"><?= esc_html($number); ?></span>
-                  <?php endforeach; ?>
                   <span class="riddle-safe__value">0</span>
                 </span>
               </div>

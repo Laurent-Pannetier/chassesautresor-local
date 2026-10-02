@@ -7622,11 +7622,9 @@ body.no-scroll {
   margin: 0 auto;
   border: clamp(0.75rem, 3vw, 1.1rem) solid var(--safe-ring, #888);
   border-radius: 50%;
-  background: repeating-conic-gradient(#222 0 1deg, transparent 1deg 3.6deg), #fff;
-  box-shadow: inset 0 0 0 0.45rem #fff;
+  background: #fff;
   touch-action: none;
   cursor: grab;
-  transform: rotate(var(--safe-angle));
 }
 
 .riddle-safe:active {
@@ -7638,6 +7636,17 @@ body.no-scroll {
   outline-offset: 4px;
 }
 
+.riddle-safe::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: repeating-conic-gradient(#222 0 1deg, transparent 1deg 3.6deg);
+  box-shadow: inset 0 0 0 0.55rem #fff;
+  transform: rotate(var(--safe-angle));
+  pointer-events: none;
+}
+
 .riddle-safe__marker {
   position: absolute;
   z-index: 2;
@@ -7646,7 +7655,7 @@ body.no-scroll {
   border-right: 0.65rem solid transparent;
   border-left: 0.65rem solid transparent;
   border-top: 1.3rem solid #222;
-  transform: translateX(-50%) rotate(calc(-1 * var(--safe-angle)));
+  transform: translateX(-50%);
 }
 
 .riddle-safe__dial {
@@ -7662,16 +7671,20 @@ body.no-scroll {
   left: 50%;
   font-size: clamp(1.5rem, 8vw, 2.5rem);
   font-weight: 700;
-  transform: translate(-50%, -50%) rotate(calc(-1 * var(--safe-angle)));
+  transform: translate(-50%, -50%);
 }
 
 .riddle-safe__number {
   position: absolute;
-  top: -77%;
+  z-index: 1;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%) rotate(calc(var(--safe-number) * 3.6deg)) translateY(calc(-0.19 * var(--safe-size))) rotate(calc(-1 * var(--safe-number) * 3.6deg)) rotate(calc(-1 * var(--safe-angle)));
-  transform-origin: 50% calc(50% + 0.19 * var(--safe-size));
+  padding: 0.1rem;
+  background: #fff;
+  transform: translate(-50%, -50%) rotate(calc(var(--safe-index) * 36deg + var(--safe-angle))) translateY(calc(-0.36 * var(--safe-size))) rotate(calc(var(--safe-index) * -36deg - var(--safe-angle)));
   font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .riddle-safe__sequence {

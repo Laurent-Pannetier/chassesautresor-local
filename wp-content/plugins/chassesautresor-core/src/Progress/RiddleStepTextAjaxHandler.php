@@ -10,6 +10,8 @@ use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** Evaluate a text response for the current intermediate step. */
 final class RiddleStepTextAjaxHandler {
+    private const SUPPORTED_WIDGETS = ['text', 'directions', 'colors', 'numbers', 'safe_dial'];
+
     public static function register(callable $addAction): void {
         $addAction('wp_ajax_soumettre_reponse_etape', [self::class, 'submit']);
     }
@@ -31,10 +33,8 @@ final class RiddleStepTextAjaxHandler {
             || utilisateur_peut_modifier_post($riddleId)
             || get_post_type($stepId) !== RiddleStepPostTypeRegistrar::POST_TYPE
             || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
-            || !in_array(
-                (new AnswerWidgetConfigurationService())->forStep($stepId)['type'],
-                ['text', 'directions', 'colors'],
-                true
+            || !self::supportsWidgetType(
+                (string) (new AnswerWidgetConfigurationService())->forStep($stepId)['type']
             )
         ) {
             wp_send_json_error(['message' => __('Réponse invalide.', 'chassesautresor-com')]);
@@ -117,6 +117,10 @@ final class RiddleStepTextAjaxHandler {
                 ? self::renderResponse($riddleId, $userId)
                 : '',
         ]);
+    }
+
+    public static function supportsWidgetType(string $type): bool {
+        return in_array($type, self::SUPPORTED_WIDGETS, true);
     }
 
     private static function renderResponse(int $riddleId, int $userId): string {

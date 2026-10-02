@@ -220,6 +220,7 @@ document.addEventListener('pointerdown', event => {
   dial.dataset.pointerId = event.pointerId;
   dial.dataset.previousAngle = safeDialAngle(dial, event);
   dial.dataset.rotation = '0';
+  dial.dataset.startValue = dial.dataset.value || '0';
 });
 
 document.addEventListener('pointermove', event => {
@@ -233,8 +234,7 @@ document.addEventListener('pointermove', event => {
   const rotation = Number(dial.dataset.rotation) + delta;
   dial.dataset.previousAngle = angle;
   dial.dataset.rotation = rotation;
-  const current = Number(dial.dataset.value || 0);
-  setSafeDialValue(dial, Math.round(current + delta / 3.6));
+  setSafeDialValue(dial, Math.round(Number(dial.dataset.startValue) + rotation / 3.6));
 });
 
 document.addEventListener('pointerup', event => {

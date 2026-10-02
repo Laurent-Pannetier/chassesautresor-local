@@ -19,4 +19,13 @@ final class RiddleStepTextAjaxHandlerTest extends TestCase {
             $hooks
         );
     }
+
+    public function testAcceptsEveryWidgetSubmittedThroughTheAnswerHandler(): void {
+        foreach (['text', 'directions', 'colors', 'numbers', 'safe_dial'] as $type) {
+            self::assertTrue(RiddleStepTextAjaxHandler::supportsWidgetType($type));
+        }
+
+        self::assertFalse(RiddleStepTextAjaxHandler::supportsWidgetType('click'));
+        self::assertFalse(RiddleStepTextAjaxHandler::supportsWidgetType('unknown'));
+    }
 }
