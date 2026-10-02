@@ -37,25 +37,8 @@ final class RiddleStepFieldGroupRegistrarTest extends TestCase {
         self::assertSame('id', $fields['etape_enigme_associee']['return_format']);
         self::assertSame('id', $fields['etape_image']['return_format']);
         self::assertSame(
-            ['texte', 'directions_8'],
-            array_keys($fields['etape_widget_type']['choices'])
-        );
-    }
-
-    public function testConfiguresWidgetSpecificAnswerFields(): void {
-        $fields = $this->indexFieldsByName(RiddleStepFieldGroupRegistrar::fieldGroup()['fields']);
-        $textAnswers = $fields['etape_reponses_texte'];
-        $directions = $fields['etape_directions_sequence'];
-
-        self::assertSame(1, $textAnswers['min']);
-        self::assertSame(5, $textAnswers['max']);
-        self::assertSame('texte', $textAnswers['conditional_logic'][0][0]['value']);
-        self::assertSame(1, $directions['min']);
-        self::assertSame(20, $directions['max']);
-        self::assertSame('directions_8', $directions['conditional_logic'][0][0]['value']);
-        self::assertSame(
-            ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
-            array_keys($directions['sub_fields'][0]['choices'])
+            ['etape_enigme_associee', 'etape_contenu', 'etape_image'],
+            array_keys($fields)
         );
     }
 

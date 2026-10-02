@@ -42,10 +42,6 @@ final class RiddleStepCreationService {
 
         $stepId = (int) $stepId;
         $updateField('etape_enigme_associee', $riddleId, $stepId);
-        $updateField('etape_libelle', $title, $stepId);
-        $updateField('etape_afficher_titre', false, $stepId);
-        $updateField('etape_widget_type', 'texte', $stepId);
-        $updateField('etape_reponse_respecter_casse', false, $stepId);
 
         return $stepId;
     }

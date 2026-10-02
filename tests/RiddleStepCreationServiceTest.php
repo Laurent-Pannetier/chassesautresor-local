@@ -46,7 +46,6 @@ final class RiddleStepCreationServiceTest extends TestCase {
         self::assertSame('Le cadenas', $inserted['post_title']);
         self::assertSame(3, $inserted['menu_order']);
         self::assertSame([42, 80], $updated['etape_enigme_associee']);
-        self::assertSame(['texte', 80], $updated['etape_widget_type']);
     }
 
     public function testRejectsAnInvalidRiddleBeforeInsertion(): void {

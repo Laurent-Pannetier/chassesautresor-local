@@ -1,83 +1,46 @@
 # Étapes intermédiaires d’une énigme
 
-## Premier lot
+Le type de contenu privé `enigme_etape` porte les étapes ordonnées d’une énigme. Il n’a pas de page publique propre,
+n’est pas exposé dans l’API REST et n’offre aucun accès supplémentaire au back-office aux organisateurs.
 
-Le type de contenu privé `enigme_etape` porte la définition éditoriale d’une étape intermédiaire. Il n’est ni
-interrogeable publiquement, ni exposé dans la recherche, les menus ou l’API REST. Son interface WordPress reste
-active à des fins d’inspection, sans entrée autonome dans le menu d’administration.
+## Modèle éditorial actuel
 
-Les étapes n’ont pas de page publique propre : elles seront rendues dans la page de leur énigme après contrôle de
-la progression du joueur. Leur ordre utilisera la propriété WordPress `menu_order` fournie par le support
-`page-attributes`.
+Le groupe ACF local `group_enigme_etape_configuration` est enregistré par le plugin sur `acf/init`. Il reste la source
+de vérité du stockage, même si l’organisateur utilise exclusivement le formulaire frontal.
 
-## Champs ACF enregistrés par le plugin
-
-Le groupe local `group_enigme_etape_configuration` est enregistré sur `acf/init`. Il constitue la source de vérité
-du schéma et ne doit pas être recréé dans l’interface ACF.
-
-| Champ | Type | Rôle |
+| Donnée | Stockage | Rôle |
 |---|---|---|
-| `etape_enigme_associee` | Objet de publication | Relation obligatoire vers une `enigme`, retournée sous forme d’ID. |
-| `etape_libelle` | Texte | Nom interne de l’étape, limité à 120 caractères. |
-| `etape_afficher_titre` | Vrai/faux | Indique si le nom sera visible par le joueur. |
-| `etape_contenu` | WYSIWYG | Texte présenté une fois l’étape débloquée. |
-| `etape_image` | Image | Illustration facultative, retournée sous forme d’ID. |
-| `etape_widget_type` | Sélection | Widget `texte` ou `directions_8`. |
-| `etape_reponses_texte` | Répéteur | Une à cinq réponses acceptées pour le widget texte. |
-| `etape_reponse_respecter_casse` | Vrai/faux | Active la comparaison sensible à la casse. |
-| `etape_directions_sequence` | Répéteur | Une à vingt directions parmi les huit valeurs canoniques. |
-| `etape_widget_afficher_saisie` | Vrai/faux | Affiche la séquence directionnelle en cours. |
-| `etape_widget_autoriser_effacement` | Vrai/faux | Affiche le bouton permettant de recommencer la séquence. |
+| Nom interne | `post_title` | Repère obligatoire réservé à l’organisateur, jamais affiché au joueur. |
+| Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
+| Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
+| Image | `etape_image` | Illustration facultative, stockée sous forme d’identifiant de média. |
+| Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
-Les valeurs canoniques du pavé directionnel sont `N`, `NE`, `E`, `SE`, `S`, `SW`, `W` et `NW`.
+Une étape enregistrée exige un nom interne et au moins un texte ou une image. Sa réponse n’appartient volontairement
+pas à ce lot : elle sera configurée par le futur moteur commun de widgets de réponse pour les énigmes et leurs étapes,
+y compris le widget de simple clic.
 
-## Limites de ce lot
+## Édition frontale
 
-Ce premier lot n’ajoute volontairement pas encore :
+Depuis le panneau **Paramètres** de l’énigme, **Ajouter une étape** et **Modifier** remplacent temporairement la liste
+par un formulaire dédié. **Annuler** restaure la liste sans créer de brouillon. **Enregistrer** crée ou met à jour
+l’étape par AJAX, puis restaure la liste sans ouvrir ni recharger une page d’administration WordPress.
 
-- la table de progression des joueurs ;
-- la création et la réorganisation depuis l’éditeur frontal d’une énigme ;
-- le rendu public des étapes ;
-- la soumission et l’évaluation des réponses ;
-- la protection spécifique des images d’étape.
+Le sélecteur d’image réutilise la médiathèque déjà autorisée aux organisateurs. Les opérations AJAX vérifient le nonce,
+le droit de modifier l’énigme, l’appartenance de l’étape et la validité du média.
 
-Ces éléments dépendront du CPT et du schéma ACF introduits ici.
+## Progression et tentatives
 
-## Deuxième lot : socle de progression
+La table `wp_enigme_etapes_progression` mémorise les étapes réussies. Le parcours est linéaire : les étapes terminées
+et la première étape incomplète sont visibles ; les étapes futures ne sont pas envoyées au navigateur. Après la dernière
+étape, la réponse finale devient disponible.
 
-La table `wp_enigme_etapes_progression` mémorise uniquement les étapes trouvées. Une étape sans ligne de progression
-est soit l’étape courante, soit une étape future ; le service de progression distingue ces deux cas à partir de l’ordre
-du parcours.
+La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une interaction à une étape. Seul le
+résultat `faux` consomme actuellement le quota : une variante personnalisée et, à terme, un clic de confirmation ne
+consomment rien. Le futur délai entre deux essais aura une portée globale à l’énigme.
 
-Le parcours est strictement linéaire : les étapes trouvées et la première étape incomplète sont visibles, tandis que
-les suivantes restent absentes. La réponse finale de l’énigme n’est disponible qu’après la réussite de la dernière
-étape. Une énigme sans étape conserve immédiatement sa réponse finale disponible.
+## Règles prévues avant mise en ligne
 
-La colonne nullable `etape_id` est ajoutée à `wp_enigme_tentatives`. Une valeur nulle désigne une tentative sur la
-réponse finale historique ; un ID désignera une tentative sur une étape. Le compteur quotidien propre au parcours
-compte uniquement les réponses non validées (`faux` ou `variante`), afin que plusieurs étapes réussies avant une
-erreur ne consomment qu’une seule tentative.
-
-## Troisième lot : cycle de vie éditorial
-
-Les étapes sont désormais requêtées par leur relation `etape_enigme_associee`, puis triées par `menu_order` et par
-identifiant. La création produit un brouillon lié à l’énigme avec le widget texte par défaut. Une réorganisation n’est
-acceptée que si elle contient exactement tous les identifiants actuels, sans ajout, omission ni duplication.
-
-Lors de la suppression définitive d’une étape, ses progressions et ses tentatives sont supprimées. La suppression
-définitive d’une énigme supprime également toutes ses étapes et les progressions correspondantes. Ce socle sera utilisé
-par les futurs contrôleurs de l’éditeur frontal ; il n’ajoute pas encore de bouton visible sur la page de l’énigme.
-
-## Quatrième lot : gestion depuis l’éditeur d’énigme
-
-Le panneau de paramètres d’une énigme affiche maintenant ses étapes sous forme de liste ordonnée. Un utilisateur
-autorisé peut créer une étape, ouvrir sa configuration ACF, la supprimer définitivement ou la déplacer par
-glisser-déposer. Les opérations passent par des actions AJAX authentifiées, protégées par nonce et par la politique
-de modification de l’énigme.
-
-La configuration détaillée continue provisoirement à utiliser l’écran WordPress du CPT `enigme_etape`. Une prochaine
-itération pourra intégrer ce formulaire dans une modale frontale sans modifier les services métier de ce lot.
-
-Les comptes organisateurs sont autorisés à ouvrir l’écran natif `post.php` uniquement pour une `enigme_etape` liée à
-une énigme qu’ils peuvent effectivement modifier. Les autres écrans de l’administration restent interdits par la
-politique générale d’accès au back-office.
+Tant que l’énigme n’est pas en cours, les étapes peuvent être ajoutées, supprimées et réordonnées. Dès le démarrage de
+la chasse ou l’existence d’une progression, l’architecture et les réponses devront être figées. Seuls le nom interne,
+le texte et l’image resteront corrigibles. Une étape en brouillon bloquera la validation de l’énigme.

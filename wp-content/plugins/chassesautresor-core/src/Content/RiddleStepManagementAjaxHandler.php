@@ -4,34 +4,79 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
-/** AJAX transport for creating, deleting and ordering intermediate steps. */
+/** AJAX transport for editing, deleting and ordering intermediate steps. */
 final class RiddleStepManagementAjaxHandler {
     public static function register(callable $addAction): void {
-        $addAction('wp_ajax_creer_etape_enigme', [self::class, 'create']);
+        $addAction('wp_ajax_charger_etape_enigme', [self::class, 'load']);
+        $addAction('wp_ajax_enregistrer_etape_enigme', [self::class, 'save']);
         $addAction('wp_ajax_supprimer_etape_enigme', [self::class, 'delete']);
         $addAction('wp_ajax_reordonner_etapes_enigme', [self::class, 'reorder']);
     }
 
-    public static function create(): void {
+    public static function load(): void {
         check_ajax_referer('riddle_step_management', 'nonce');
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        $stepId = isset($_POST['etape_id']) ? (int) $_POST['etape_id'] : 0;
+        self::assertCanModify($riddleId);
+        if (!self::belongsToRiddle($stepId, $riddleId)) {
+            wp_send_json_error(['message' => __('Étape introuvable.', 'chassesautresor-com')]);
+        }
+
+        $imageId = (int) get_field('etape_image', $stepId);
+        wp_send_json_success([
+            'step_id' => $stepId,
+            'title' => get_the_title($stepId),
+            'content' => (string) get_field('etape_contenu', $stepId),
+            'image_id' => $imageId,
+            'image_url' => $imageId > 0 ? (string) wp_get_attachment_image_url($imageId, 'medium') : '',
+        ]);
+    }
+
+    public static function save(): void {
+        check_ajax_referer('riddle_step_management', 'nonce');
+        $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        $stepId = isset($_POST['etape_id']) ? (int) $_POST['etape_id'] : 0;
         self::assertCanModify($riddleId);
 
         $title = isset($_POST['titre'])
             ? sanitize_text_field(wp_unslash((string) $_POST['titre']))
             : '';
-        $position = count((new RiddleStepQueryService())->findOrderedIds($riddleId));
-        $stepId = (new RiddleStepCreationService())->create(
-            $riddleId,
-            (int) get_current_user_id(),
-            $title,
-            $position
-        );
-        if (is_wp_error($stepId)) {
-            wp_send_json_error('creation_impossible');
+        $content = isset($_POST['contenu']) ? wp_kses_post(wp_unslash((string) $_POST['contenu'])) : '';
+        $imageId = isset($_POST['image_id']) ? (int) $_POST['image_id'] : 0;
+        if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
+            wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
         }
 
-        wp_send_json_success(['step_id' => (int) $stepId]);
+        $created = false;
+        if ($stepId === 0) {
+            $position = count((new RiddleStepQueryService())->findOrderedIds($riddleId));
+            $stepId = (new RiddleStepCreationService())->create(
+                $riddleId,
+                (int) get_current_user_id(),
+                $title,
+                $position
+            );
+            if (is_wp_error($stepId)) {
+                wp_send_json_error(['message' => $stepId->get_error_message()]);
+            }
+            $stepId = (int) $stepId;
+            $created = true;
+        } elseif (!self::belongsToRiddle($stepId, $riddleId)) {
+            wp_send_json_error(['message' => __('Étape introuvable.', 'chassesautresor-com')]);
+        }
+
+        $result = (new RiddleStepContentService())->save($stepId, $title, $content, $imageId);
+        if (is_wp_error($result)) {
+            if ($created) {
+                wp_delete_post($stepId, true);
+            }
+            wp_send_json_error(['message' => $result->get_error_message()]);
+        }
+
+        wp_send_json_success([
+            'step_id' => $stepId,
+            'title' => get_the_title($stepId),
+        ]);
     }
 
     public static function delete(): void {

@@ -16,7 +16,8 @@ final class RiddleStepManagementAjaxHandlerTest extends TestCase {
 
         self::assertSame(
             [
-                ['wp_ajax_creer_etape_enigme', [RiddleStepManagementAjaxHandler::class, 'create']],
+                ['wp_ajax_charger_etape_enigme', [RiddleStepManagementAjaxHandler::class, 'load']],
+                ['wp_ajax_enregistrer_etape_enigme', [RiddleStepManagementAjaxHandler::class, 'save']],
                 ['wp_ajax_supprimer_etape_enigme', [RiddleStepManagementAjaxHandler::class, 'delete']],
                 ['wp_ajax_reordonner_etapes_enigme', [RiddleStepManagementAjaxHandler::class, 'reorder']],
             ],

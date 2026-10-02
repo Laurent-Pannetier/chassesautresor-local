@@ -164,6 +164,6 @@ class RiddleAttemptRepositoryTest extends TestCase
             [7, 10, '2026-10-02 00:00:00', '2026-10-02 23:59:59'],
             $wpdb->preparedArguments
         );
-        $this->assertStringContainsString("resultat IN ('faux','variante')", $wpdb->preparedQuery);
+        $this->assertStringContainsString("resultat = 'faux'", $wpdb->preparedQuery);
     }
 }

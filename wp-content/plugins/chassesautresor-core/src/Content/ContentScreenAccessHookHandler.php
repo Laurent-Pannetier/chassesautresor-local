@@ -36,17 +36,7 @@ final class ContentScreenAccessHookHandler {
             return;
         }
 
-        $isAllowed = utilisateur_peut_modifier_post($postId);
-        if (!$isAllowed) {
-            $isAllowed = (new RiddleStepAdminAccessService())->canEdit(
-                $postId,
-                'get_post_type',
-                static fn (int $id) => get_field('etape_enigme_associee', $id),
-                static fn (int $id): bool => utilisateur_peut_modifier_post($id)
-            );
-        }
-
-        self::redirectWhenDenied($isAllowed);
+        self::redirectWhenDenied(utilisateur_peut_modifier_post($postId));
     }
 
     private static function redirectWhenDenied(bool $isAllowed): void {

@@ -183,7 +183,7 @@ class RiddleAttemptRepository
         return (int) $this->wpdb->get_var(
             $this->wpdb->prepare(
                 "SELECT COUNT(*) FROM {$table} "
-                    . "WHERE user_id = %d AND enigme_id = %d AND resultat IN ('faux','variante') "
+                    . "WHERE user_id = %d AND enigme_id = %d AND resultat = 'faux' "
                     . 'AND date_tentative BETWEEN %s AND %s',
                 $userId,
                 $riddleId,
