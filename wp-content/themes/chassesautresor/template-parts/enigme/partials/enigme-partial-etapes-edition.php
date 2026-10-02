@@ -136,6 +136,32 @@ if ($riddleId > 0) {
           <?= esc_html__('Une étape doit contenir au moins un texte ou une image.', 'chassesautresor-com'); ?>
         </p>
       </div>
+      <?php if (!$structureLocked) : ?>
+        <fieldset class="riddle-step-form__field">
+          <legend><?= esc_html__('Réponse de l’étape', 'chassesautresor-com'); ?></legend>
+          <label for="riddle-step-widget"><?= esc_html__('Mode de réponse', 'chassesautresor-com'); ?></label>
+          <select id="riddle-step-widget" name="widget">
+            <option value="click"><?= esc_html__('Simple clic', 'chassesautresor-com'); ?></option>
+          </select>
+          <label for="riddle-step-button-label">
+            <?= esc_html__('Libellé du bouton', 'chassesautresor-com'); ?>
+          </label>
+          <input
+            id="riddle-step-button-label"
+            name="button_label"
+            type="text"
+            maxlength="80"
+            value="<?= esc_attr__('Continuer', 'chassesautresor-com'); ?>"
+            required
+          >
+          <p class="txt-small">
+            <?= esc_html__(
+                'Le clic valide l’étape sans consommer de tentative.',
+                'chassesautresor-com'
+            ); ?>
+          </p>
+        </fieldset>
+      <?php endif; ?>
       <p class="riddle-step-form__feedback" role="alert" aria-live="assertive"></p>
       <div class="riddle-step-form__actions">
         <button type="button" class="bouton-secondaire riddle-step-cancel">

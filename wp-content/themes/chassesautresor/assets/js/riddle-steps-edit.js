@@ -57,6 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelector('[name="titre"]').value = step.title;
         contentEditor.innerHTML = step.content;
         setImage(step.image_id || '', step.image_url || '');
+        if (!structureLocked) {
+          form.querySelector('[name="widget"]').value = step.widget || 'click';
+          form.querySelector('[name="button_label"]').value = step.button_label;
+        }
       } catch (error) {
         feedback.textContent = error.message;
         return;

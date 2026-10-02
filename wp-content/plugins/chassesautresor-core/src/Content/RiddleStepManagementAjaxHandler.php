@@ -31,6 +31,9 @@ final class RiddleStepManagementAjaxHandler {
             'content' => (string) get_field('etape_contenu', $stepId),
             'image_id' => $imageId,
             'image_url' => $imageId > 0 ? (string) wp_get_attachment_image_url($imageId, 'medium') : '',
+            'widget' => (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'),
+            'button_label' => (string) (get_field('etape_reponse_bouton', $stepId)
+                ?: __('Continuer', 'chassesautresor-com')),
         ]);
     }
 
@@ -45,6 +48,10 @@ final class RiddleStepManagementAjaxHandler {
             : '';
         $content = isset($_POST['contenu']) ? wp_kses_post(wp_unslash((string) $_POST['contenu'])) : '';
         $imageId = isset($_POST['image_id']) ? (int) $_POST['image_id'] : 0;
+        $widget = isset($_POST['widget']) ? sanitize_key(wp_unslash((string) $_POST['widget'])) : '';
+        $buttonLabel = isset($_POST['button_label'])
+            ? sanitize_text_field(wp_unslash((string) $_POST['button_label']))
+            : '';
         if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
             wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
         }
@@ -74,6 +81,15 @@ final class RiddleStepManagementAjaxHandler {
                 wp_delete_post($stepId, true);
             }
             wp_send_json_error(['message' => $result->get_error_message()]);
+        }
+
+        if ($widget !== '' || $buttonLabel !== '') {
+            self::assertStructureEditable($riddleId);
+            if ($widget !== 'click' || $buttonLabel === '') {
+                wp_send_json_error(['message' => __('Mode de réponse invalide.', 'chassesautresor-com')]);
+            }
+            update_field('etape_reponse_widget', $widget, $stepId);
+            update_field('etape_reponse_bouton', $buttonLabel, $stepId);
         }
 
         wp_send_json_success([

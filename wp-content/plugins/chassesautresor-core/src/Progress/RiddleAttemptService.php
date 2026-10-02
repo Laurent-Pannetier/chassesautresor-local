@@ -46,6 +46,32 @@ class RiddleAttemptService
         ]);
     }
 
+    public function createForStep(
+        string $uid,
+        int $userId,
+        int $riddleId,
+        int $stepId,
+        string $interaction,
+        ?string $ipAddress,
+        ?string $userAgent
+    ): bool {
+        if ($uid === '' || $userId <= 0 || $riddleId <= 0 || $stepId <= 0) {
+            return false;
+        }
+
+        return $this->repository->insert([
+            'tentative_uid' => $uid,
+            'user_id' => $userId,
+            'enigme_id' => $riddleId,
+            'etape_id' => $stepId,
+            'reponse_saisie' => $interaction,
+            'resultat' => 'bon',
+            'points_utilises' => 0,
+            'ip' => $ipAddress,
+            'user_agent' => $userAgent,
+        ]);
+    }
+
     public function getLastCreatedId(): int
     {
         return $this->repository->getLastInsertId();

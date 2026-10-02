@@ -86,6 +86,27 @@ final class RiddleStepFieldGroupRegistrar {
                 'library' => 'all',
                 'mime_types' => 'jpg,jpeg,png,webp,gif',
             ],
+            [
+                'key' => 'field_etape_reponse_widget',
+                'label' => __('Mode de réponse', 'chassesautresor-com'),
+                'name' => 'etape_reponse_widget',
+                'type' => 'select',
+                'required' => true,
+                'choices' => [
+                    'click' => __('Simple clic', 'chassesautresor-com'),
+                ],
+                'default_value' => 'click',
+                'return_format' => 'value',
+            ],
+            [
+                'key' => 'field_etape_reponse_bouton',
+                'label' => __('Libellé du bouton', 'chassesautresor-com'),
+                'name' => 'etape_reponse_bouton',
+                'type' => 'text',
+                'required' => true,
+                'default_value' => __('Continuer', 'chassesautresor-com'),
+                'maxlength' => 80,
+            ],
         ];
     }
 }
