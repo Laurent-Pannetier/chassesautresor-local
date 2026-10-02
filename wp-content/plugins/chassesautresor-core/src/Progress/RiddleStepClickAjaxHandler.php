@@ -31,7 +31,7 @@ final class RiddleStepClickAjaxHandler {
         if (
             get_post_type($stepId) !== RiddleStepPostTypeRegistrar::POST_TYPE
             || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
-            || (string) (get_field('etape_reponse_widget', $stepId) ?: 'click') !== 'click'
+            || (new AnswerWidgetConfigurationService())->forStep($stepId)['type'] !== 'click'
         ) {
             wp_send_json_error(['message' => __('Étape invalide.', 'chassesautresor-com')]);
         }

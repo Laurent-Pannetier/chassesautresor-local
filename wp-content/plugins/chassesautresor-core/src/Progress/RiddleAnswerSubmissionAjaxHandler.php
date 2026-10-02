@@ -92,20 +92,8 @@ class RiddleAnswerSubmissionAjaxHandler {
             wp_send_json_error($error);
         }
 
-        $variants = [];
-        for ($index = 1; $index <= 4; $index++) {
-            $variants[$index] = [
-                'texte' => (string) get_field("texte_{$index}", $riddleId),
-                'message' => (string) get_field("message_{$index}", $riddleId),
-                'casse' => (int) get_field("respecter_casse_{$index}", $riddleId) === 1,
-            ];
-        }
-        $evaluation = (new RiddleAnswerEvaluationService())->evaluate(
-            $answer,
-            (new RiddleAnswerService())->get($riddleId),
-            (int) get_field('enigme_reponse_casse', $riddleId) === 1,
-            $variants
-        );
+        $configuration = (new AnswerWidgetConfigurationService())->forRiddle($riddleId);
+        $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
 
         $lockKey = self::acquireLock($riddleId, $userId);
         try {

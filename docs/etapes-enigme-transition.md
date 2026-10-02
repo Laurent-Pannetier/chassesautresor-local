@@ -86,6 +86,14 @@ finale historique de l’énigme. La prochaine évolution structurante doit extr
 Il faudra ensuite migrer progressivement la réponse texte finale de l’énigme vers ce moteur sans casser les données
 existantes.
 
+#### Première fondation livrée
+
+Le registre PHP commun prend désormais en charge **Simple clic** et **Réponse texte**. Un adaptateur transforme les
+champs ACF historiques des énigmes et des étapes en une configuration versionnée commune, identifiée par une cible
+`enigme` ou `enigme_etape`. L’évaluation de la réponse finale automatique et celle des étapes passent par ce même
+registre, sans modifier le stockage existant. Les adaptateurs d’édition et de rendu restent à extraire avant d’ajouter
+un nouveau widget.
+
 ### Priorité 3 — nouveaux widgets
 
 - Pavé à huit directions.

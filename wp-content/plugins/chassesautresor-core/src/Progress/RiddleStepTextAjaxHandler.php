@@ -31,7 +31,7 @@ final class RiddleStepTextAjaxHandler {
             || utilisateur_peut_modifier_post($riddleId)
             || get_post_type($stepId) !== RiddleStepPostTypeRegistrar::POST_TYPE
             || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
-            || (string) get_field('etape_reponse_widget', $stepId) !== 'text'
+            || (new AnswerWidgetConfigurationService())->forStep($stepId)['type'] !== 'text'
         ) {
             wp_send_json_error(['message' => __('Réponse invalide.', 'chassesautresor-com')]);
         }
@@ -64,26 +64,8 @@ final class RiddleStepTextAjaxHandler {
             wp_send_json_error(['message' => __('Limite quotidienne atteinte.', 'chassesautresor-com')]);
         }
 
-        $rawAnswers = (string) get_field('etape_reponses_texte', $stepId);
-        $acceptedAnswers = array_values(array_filter(array_map('trim', preg_split('/\R/', $rawAnswers) ?: [])));
-        $variants = [];
-        $rawVariants = (string) get_field('etape_reponses_variantes', $stepId);
-        foreach (preg_split('/\R/', $rawVariants) ?: [] as $index => $line) {
-            [$text, $message] = array_pad(array_map('trim', explode('|', $line, 2)), 2, '');
-            if ($text !== '' && $message !== '') {
-                $variants[$index + 1] = [
-                    'texte' => $text,
-                    'message' => $message,
-                    'casse' => (bool) get_field('etape_reponse_casse', $stepId),
-                ];
-            }
-        }
-        $evaluation = (new RiddleAnswerEvaluationService())->evaluate(
-            $answer,
-            $acceptedAnswers,
-            (bool) get_field('etape_reponse_casse', $stepId),
-            $variants
-        );
+        $configuration = (new AnswerWidgetConfigurationService())->forStep($stepId);
+        $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
         $uid = wp_generate_uuid4();
         $wpdb->query('START TRANSACTION');
         $created = $attempts->createForStep(
