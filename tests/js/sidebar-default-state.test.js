@@ -10,6 +10,13 @@ describe('riddle desktop sidebar default state', () => {
 
     expect(source).toContain('hideAside();\n    window.sidebarAside');
     expect(source).toContain('window.enigmeAside = window.sidebarAside;');
+
+    const renderer = fs.readFileSync(
+      path.resolve(__dirname, '../../wp-content/themes/chassesautresor/inc/sidebar.php'),
+      'utf8'
+    );
+    expect(renderer).toContain("if ($context === 'enigme') {");
+    expect(renderer).toContain("$aside_classes[] = 'is-hidden';");
   });
 
   test('opens after an automatic riddle is solved', () => {
