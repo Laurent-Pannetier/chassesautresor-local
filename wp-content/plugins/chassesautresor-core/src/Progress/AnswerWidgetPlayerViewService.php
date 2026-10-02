@@ -22,10 +22,10 @@ final class AnswerWidgetPlayerViewService {
             ];
         }
 
-        if ($type === 'directions') {
+        if (in_array($type, ['directions', 'colors'], true)) {
             return [
-                'type' => 'directions',
-                'form_class' => 'riddle-step-text-form riddle-step-directions-form',
+                'type' => $type,
+                'form_class' => 'riddle-step-text-form riddle-step-' . $type . '-form',
                 'nonce_action' => 'riddle_step_answer',
                 'action' => 'soumettre_reponse_etape',
                 'input_name' => 'reponse',

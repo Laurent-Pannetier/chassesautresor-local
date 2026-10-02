@@ -9,7 +9,7 @@ final class AnswerWidgetEditorViewServiceTest extends TestCase {
     public function testDescribesClickAndTextEditorControls(): void {
         $widgets = (new AnswerWidgetEditorViewService())->widgets();
 
-        self::assertSame(['click', 'text', 'directions'], array_column($widgets, 'type'));
+        self::assertSame(['click', 'text', 'directions', 'colors'], array_column($widgets, 'type'));
         self::assertSame('button_label', $widgets[0]['fields'][0]['name']);
         self::assertSame('Continuer', $widgets[0]['fields'][0]['default']);
         self::assertSame(
@@ -18,5 +18,6 @@ final class AnswerWidgetEditorViewServiceTest extends TestCase {
         );
         self::assertSame('checkbox', $widgets[1]['fields'][1]['control']);
         self::assertSame('direction_sequences', $widgets[2]['fields'][0]['name']);
+        self::assertSame('color_sequences', $widgets[3]['fields'][0]['name']);
     }
 }

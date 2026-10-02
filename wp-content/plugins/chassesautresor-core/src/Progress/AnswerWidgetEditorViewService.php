@@ -65,6 +65,21 @@ final class AnswerWidgetEditorViewService {
                     ),
                 ],
             ],
+            [
+                'type' => 'colors',
+                'label' => __('Clavier de couleurs', 'chassesautresor-com'),
+                'fields' => [
+                    $this->field(
+                        'textarea',
+                        'color_sequences',
+                        __('Codes acceptés — un par ligne', 'chassesautresor-com'),
+                        [
+                            'rows' => 4,
+                            'help' => __('Couleurs : red, orange, yellow, green, blue, purple.', 'chassesautresor-com'),
+                        ]
+                    ),
+                ],
+            ],
         ];
     }
 

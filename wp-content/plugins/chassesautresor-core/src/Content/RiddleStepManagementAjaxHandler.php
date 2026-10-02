@@ -38,6 +38,7 @@ final class RiddleStepManagementAjaxHandler {
             'case_sensitive' => (bool) get_field('etape_reponse_casse', $stepId),
             'variants' => (string) get_field('etape_reponses_variantes', $stepId),
             'direction_sequences' => (string) get_field('etape_directions_sequences', $stepId),
+            'color_sequences' => (string) get_field('etape_color_sequences', $stepId),
         ]);
     }
 
@@ -65,6 +66,9 @@ final class RiddleStepManagementAjaxHandler {
             : '';
         $directionSequences = isset($_POST['direction_sequences'])
             ? sanitize_textarea_field(wp_unslash((string) $_POST['direction_sequences']))
+            : '';
+        $colorSequences = isset($_POST['color_sequences'])
+            ? sanitize_textarea_field(wp_unslash((string) $_POST['color_sequences']))
             : '';
         if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
             wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
@@ -106,14 +110,15 @@ final class RiddleStepManagementAjaxHandler {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
-        if ($widget !== '' || $buttonLabel !== '' || $acceptedAnswers !== '' || $directionSequences !== '') {
+        if ($widget !== '' || $buttonLabel !== '' || $acceptedAnswers !== '' || $directionSequences !== '' || $colorSequences !== '') {
             self::assertStructureEditable($riddleId);
             $answers = array_filter(array_map('trim', preg_split('/\R/', $acceptedAnswers) ?: []));
             if (
-                !in_array($widget, ['click', 'text', 'directions'], true)
+                !in_array($widget, ['click', 'text', 'directions', 'colors'], true)
                 || ($widget === 'click' && $buttonLabel === '')
                 || ($widget === 'text' && $answers === [])
                 || ($widget === 'directions' && trim($directionSequences) === '')
+                || ($widget === 'colors' && trim($colorSequences) === '')
             ) {
                 wp_send_json_error(['message' => __('Mode de réponse invalide.', 'chassesautresor-com')]);
             }
@@ -123,6 +128,7 @@ final class RiddleStepManagementAjaxHandler {
             update_field('etape_reponse_casse', $caseSensitive, $stepId);
             update_field('etape_reponses_variantes', $variants, $stepId);
             update_field('etape_directions_sequences', $directionSequences, $stepId);
+            update_field('etape_color_sequences', $colorSequences, $stepId);
         }
 
         wp_send_json_success([

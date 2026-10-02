@@ -136,3 +136,23 @@ document.addEventListener('click', event => {
   const symbols = { NW: '↖', N: '↑', NE: '↗', W: '←', E: '→', SW: '↙', S: '↓', SE: '↘' };
   output.textContent = sequence.map(direction => symbols[direction]).join(' ');
 });
+
+document.addEventListener('click', event => {
+  const form = event.target.closest('.riddle-step-colors-form');
+  if (!form) return;
+  const input = form.querySelector('input[name="reponse"]');
+  const output = form.querySelector('.riddle-colors__sequence');
+  if (event.target.closest('.riddle-colors-reset')) {
+    input.value = '';
+    output.replaceChildren();
+    return;
+  }
+  const button = event.target.closest('.riddle-color');
+  if (!button) return;
+  const sequence = input.value ? input.value.split(',') : [];
+  sequence.push(button.dataset.color);
+  input.value = sequence.join(',');
+  const dot = document.createElement('span');
+  dot.className = `riddle-color-dot riddle-color--${button.dataset.color}`;
+  output.append(dot);
+});

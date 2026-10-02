@@ -24,6 +24,8 @@ Le pavé à huit directions accepte un ou plusieurs codes, un par ligne, et norm
 `O`, `NO`, `SO` vers `W`, `NW`, `SW`. Son apparence est personnalisable avec les variables CSS
 `--direction-key-bg`, `--direction-key-color`, `--direction-key-shadow`, `--direction-key-size` et
 `--direction-arrow-stroke`.
+Le clavier de couleurs utilise une palette fixe rouge, orange, jaune, vert, bleu et violet. Il accepte plusieurs
+séquences et affiche la saisie sous forme de pastilles, sans nécessiter de texte ni d’image.
 
 ## Édition frontale
 

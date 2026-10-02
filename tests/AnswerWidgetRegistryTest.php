@@ -36,4 +36,9 @@ final class AnswerWidgetRegistryTest extends TestCase {
         self::assertSame('bon', $registry->evaluate('N,NE,E,SW,W', $configuration)['resultat']);
         self::assertSame('faux', $registry->evaluate('N,NE,E,W,SW', $configuration)['resultat']);
     }
+
+    public function testEvaluatesColorSequence(): void {
+        $configuration = ['type' => 'colors', 'accepted_sequences' => ['red,blue,green']];
+        self::assertSame('bon', (new AnswerWidgetRegistry())->evaluate('red,blue,green', $configuration)['resultat']);
+    }
 }

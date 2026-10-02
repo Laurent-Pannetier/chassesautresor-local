@@ -33,7 +33,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
         $configuration = (new ChassesAuTresor\Core\Progress\AnswerWidgetConfigurationService())->forStep($stepId);
         $maxFailures = (int) get_field('enigme_tentative_max', $riddleId);
         $usedFailures = 0;
-        if (in_array($configuration['type'], ['text', 'directions'], true)) {
+        if (in_array($configuration['type'], ['text', 'directions', 'colors'], true)) {
             global $wpdb;
             $usedFailures = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleAttempts($wpdb)
                 ->countFailuresTodayForUser((int) get_current_user_id(), $riddleId);
@@ -56,7 +56,25 @@ if ($riddleId <= 0 || $visibleIds === []) {
             name="nonce"
             value="<?= esc_attr(wp_create_nonce($widgetView['nonce_action'])); ?>"
           >
-          <?php if ($widgetView['type'] === 'directions') : ?>
+          <?php if ($widgetView['type'] === 'colors') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <p class="riddle-colors__title"><?= esc_html__('Code couleur', 'chassesautresor-com'); ?></p>
+              <output class="riddle-colors__sequence" aria-live="polite"></output>
+              <input type="hidden" name="reponse" value="">
+              <div class="riddle-colors" role="group" aria-label="<?= esc_attr__('Clavier de couleurs', 'chassesautresor-com'); ?>">
+                <?php foreach (['red', 'orange', 'yellow', 'green', 'blue', 'purple'] as $color) : ?>
+                  <button type="button" class="riddle-color riddle-color--<?= esc_attr($color); ?>"
+                    data-color="<?= esc_attr($color); ?>" aria-label="<?= esc_attr($color); ?>"></button>
+                <?php endforeach; ?>
+              </div>
+              <div class="riddle-colors__actions">
+                <button type="button" class="riddle-colors-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
+              </div>
+            <?php endif; ?>
+          <?php elseif ($widgetView['type'] === 'directions') : ?>
             <?php if ($widgetView['limit_reached']) : ?>
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
             <?php else : ?>

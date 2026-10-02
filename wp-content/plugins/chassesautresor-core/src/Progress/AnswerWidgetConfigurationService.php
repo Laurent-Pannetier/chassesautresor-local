@@ -27,6 +27,12 @@ final class AnswerWidgetConfigurationService {
             );
             return $configuration;
         }
+        if ($type === 'colors') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('etape_color_sequences', $stepId)
+            );
+            return $configuration;
+        }
 
         $caseSensitive = (bool) $getField('etape_reponse_casse', $stepId);
         $configuration['accepted_answers'] = $this->lines(

@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
           form.querySelector('[name="case_sensitive"]').checked = Boolean(step.case_sensitive);
           form.querySelector('[name="variants"]').value = step.variants || '';
           form.querySelector('[name="direction_sequences"]').value = step.direction_sequences || '';
+          form.querySelector('[name="color_sequences"]').value = step.color_sequences || '';
           updateWidgetConfig();
         }
       } catch (error) {

@@ -33,7 +33,7 @@ final class RiddleStepTextAjaxHandler {
             || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
             || !in_array(
                 (new AnswerWidgetConfigurationService())->forStep($stepId)['type'],
-                ['text', 'directions'],
+                ['text', 'directions', 'colors'],
                 true
             )
         ) {
