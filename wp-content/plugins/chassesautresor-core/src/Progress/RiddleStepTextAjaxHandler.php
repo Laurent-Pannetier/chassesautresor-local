@@ -127,6 +127,20 @@ final class RiddleStepTextAjaxHandler {
             'final_answer_unlocked' => $state['final_answer_unlocked'] ?? false,
             'current_step_id' => $state['current_step_id'] ?? null,
             'message' => $evaluation['message'],
+            'response_html' => $evaluation['resultat'] === 'bon'
+                ? self::renderResponse($riddleId, $userId)
+                : '',
         ]);
+    }
+
+    private static function renderResponse(int $riddleId, int $userId): string {
+        ob_start();
+        get_template_part(
+            'template-parts/enigme/partials/enigme-partial-bloc-reponse',
+            null,
+            ['post_id' => $riddleId, 'user_id' => $userId]
+        );
+
+        return trim((string) ob_get_clean());
     }
 }

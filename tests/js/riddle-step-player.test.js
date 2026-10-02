@@ -45,4 +45,85 @@ describe('riddle step player positioning', () => {
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(2);
     expect(window.sessionStorage.getItem('riddleStepScrollTarget')).toBeNull();
   });
+
+  test('adds the unlocked step without reloading the page', async () => {
+    window.sessionStorage.clear();
+    document.body.innerHTML = `
+      <section class="riddle-steps-player">
+        <article class="riddle-player-step is-current" data-player-step-id="1">
+          <form class="riddle-step-click-form">
+            <input name="enigme_id" value="42">
+            <button type="submit">Continue</button>
+            <p class="riddle-step-click-form__feedback"></p>
+          </form>
+        </article>
+      </section>
+    `;
+    global.RiddleStepPlayer = { ajaxUrl: '/ajax', error: 'Error' };
+    global.fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({
+        success: true,
+        data: {
+          current_step_id: 2,
+          response_html: `
+            <section class="riddle-steps-player">
+              <article class="riddle-player-step is-completed" data-player-step-id="1"></article>
+              <article class="riddle-player-step is-current" data-player-step-id="2">Next</article>
+            </section>
+          `
+        }
+      })
+    });
+
+    eval(source);
+    document.querySelector('form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+
+    expect(document.querySelector('[data-player-step-id="1"] form')).toBeNull();
+    expect(document.querySelector('[data-player-step-id="1"]').classList).toContain('is-completed');
+    expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+  });
+
+  test('adds and initializes the final answer after the last step', async () => {
+    window.sessionStorage.clear();
+    document.body.innerHTML = `
+      <div class="zone-reponse">
+        <section class="riddle-steps-player">
+          <article class="riddle-player-step is-current" data-player-step-id="1">
+            <form class="riddle-step-click-form">
+              <button type="submit">Continue</button>
+              <p class="riddle-step-click-form__feedback"></p>
+            </form>
+          </article>
+        </section>
+      </div>
+    `;
+    const updated = jest.fn();
+    document.addEventListener('riddle-step-content-updated', updated, { once: true });
+    global.RiddleStepPlayer = { ajaxUrl: '/ajax', error: 'Error' };
+    global.fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({
+        success: true,
+        data: {
+          current_step_id: null,
+          final_answer_unlocked: true,
+          response_html: `
+            <section class="riddle-steps-player">
+              <article class="riddle-player-step is-completed" data-player-step-id="1"></article>
+            </section>
+            <form class="formulaire-reponse-auto"><button type="submit">Answer</button></form>
+          `
+        }
+      })
+    });
+
+    eval(source);
+    document.querySelector('form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+
+    expect(document.querySelector('.formulaire-reponse-auto')).not.toBeNull();
+    expect(updated).toHaveBeenCalledTimes(1);
+    expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+  });
 });

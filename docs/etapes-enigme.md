@@ -50,6 +50,10 @@ Le compteur et le formulaire sont actualisés immédiatement après une erreur ;
 est désactivée sans attendre un rechargement. L’outil administratif de remise à zéro efface aussi la progression des
 étapes afin que les parcours puissent être rejoués pendant les tests.
 
+Après une réussite, l’étape suivante ou le formulaire de réponse finale est injecté dans le panneau par AJAX, sans
+recharger la page. Les visuels protégés déjà affichés ne sont donc pas redemandés et ne déplacent plus la cible pendant
+le changement d’étape.
+
 La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une interaction à une étape. Seul le
 résultat `faux` consomme actuellement le quota : une variante personnalisée et, à terme, un clic de confirmation ne
 consomment rien. Le futur délai entre deux essais aura une portée globale à l’énigme.

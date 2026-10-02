@@ -33,6 +33,34 @@ const positionRiddleStepTarget = async target => {
   window.requestAnimationFrame(() => window.requestAnimationFrame(() => position('auto')));
 };
 
+const unlockRiddleStepContent = (form, data) => {
+  if (!data.response_html) return null;
+  const parsed = new DOMParser().parseFromString(data.response_html, 'text/html');
+  const currentArticle = form.closest('.riddle-player-step');
+  const player = currentArticle?.closest('.riddle-steps-player');
+  if (!currentArticle || !player) return null;
+
+  form.remove();
+  currentArticle.classList.remove('is-current');
+  currentArticle.classList.add('is-completed');
+
+  if (data.current_step_id) {
+    const selector = `[data-player-step-id="${data.current_step_id}"]`;
+    const nextArticle = parsed.querySelector(selector);
+    if (!nextArticle || player.querySelector(selector)) return null;
+    player.append(nextArticle);
+    return nextArticle;
+  }
+
+  const finalForm = parsed.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle');
+  if (!finalForm) return currentArticle;
+  player.insertAdjacentElement('afterend', finalForm);
+  const manualFeedback = parsed.querySelector('.formulaire-reponse-manuelle + .reponse-feedback');
+  if (manualFeedback) finalForm.insertAdjacentElement('afterend', manualFeedback);
+  document.dispatchEvent(new CustomEvent('riddle-step-content-updated'));
+  return finalForm;
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   const target = window.sessionStorage.getItem('riddleStepScrollTarget');
   if (!target) return;
@@ -80,11 +108,12 @@ document.addEventListener('submit', async event => {
       button.disabled = false;
       return;
     }
-    window.sessionStorage.setItem(
-      'riddleStepScrollTarget',
-      result.data.current_step_id ? String(result.data.current_step_id) : 'final'
-    );
-    window.location.reload();
+    const target = unlockRiddleStepContent(form, result.data);
+    if (!target) throw new Error(RiddleStepPlayer.error);
+    target.scrollIntoView({
+      behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+      block: 'start'
+    });
   } catch (error) {
     feedback.textContent = error.message;
     button.disabled = false;
