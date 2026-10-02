@@ -60,11 +60,23 @@ final class RiddleStepTextAjaxHandler {
 
         $rawAnswers = (string) get_field('etape_reponses_texte', $stepId);
         $acceptedAnswers = array_values(array_filter(array_map('trim', preg_split('/\R/', $rawAnswers) ?: [])));
+        $variants = [];
+        $rawVariants = (string) get_field('etape_reponses_variantes', $stepId);
+        foreach (preg_split('/\R/', $rawVariants) ?: [] as $index => $line) {
+            [$text, $message] = array_pad(array_map('trim', explode('|', $line, 2)), 2, '');
+            if ($text !== '' && $message !== '') {
+                $variants[$index + 1] = [
+                    'texte' => $text,
+                    'message' => $message,
+                    'casse' => (bool) get_field('etape_reponse_casse', $stepId),
+                ];
+            }
+        }
         $evaluation = (new RiddleAnswerEvaluationService())->evaluate(
             $answer,
             $acceptedAnswers,
             (bool) get_field('etape_reponse_casse', $stepId),
-            []
+            $variants
         );
         $uid = wp_generate_uuid4();
         $attempts->createForStep(
@@ -94,6 +106,7 @@ final class RiddleStepTextAjaxHandler {
             'compteur' => $attempts->countFailuresTodayForUser($userId, $riddleId),
             'final_answer_unlocked' => $state['final_answer_unlocked'] ?? false,
             'current_step_id' => $state['current_step_id'] ?? null,
+            'message' => $evaluation['message'],
         ]);
     }
 }

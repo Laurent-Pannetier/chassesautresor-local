@@ -1,12 +1,23 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const target = window.sessionStorage.getItem('riddleStepScrollTarget');
   if (!target) return;
-  window.sessionStorage.removeItem('riddleStepScrollTarget');
+  const images = [...document.querySelectorAll('.riddle-steps-player img')];
+  await Promise.allSettled(images.map(image => {
+    if (image.complete) return image.decode?.() || Promise.resolve();
+    return new Promise(resolve => {
+      image.addEventListener('load', resolve, { once: true });
+      image.addEventListener('error', resolve, { once: true });
+    });
+  }));
+  await document.fonts?.ready;
   const element = target === 'final'
     ? document.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle') ||
       [...document.querySelectorAll('.riddle-player-step')].pop()
     : document.querySelector(`[data-player-step-id="${target}"]`);
-  element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+    element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.sessionStorage.removeItem('riddleStepScrollTarget');
+  }));
 });
 
 document.addEventListener('submit', async event => {
@@ -25,7 +36,9 @@ document.addEventListener('submit', async event => {
     const result = await response.json();
     if (!result.success) throw new Error(result.data?.message || RiddleStepPlayer.error);
     if (result.data.resultat && result.data.resultat !== 'bon') {
-      feedback.textContent = RiddleStepPlayer.wrong;
+      feedback.textContent = result.data.resultat === 'variante' && result.data.message
+        ? result.data.message
+        : RiddleStepPlayer.wrong;
       const answerInput = form.querySelector('input[name="reponse"]');
       if (answerInput) answerInput.value = '';
       const counter = document.querySelector('.tentatives-counter .valeur');

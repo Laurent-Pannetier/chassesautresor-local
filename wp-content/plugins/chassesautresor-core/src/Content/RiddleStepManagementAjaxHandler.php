@@ -36,6 +36,7 @@ final class RiddleStepManagementAjaxHandler {
                 ?: __('Continuer', 'chassesautresor-com')),
             'accepted_answers' => (string) get_field('etape_reponses_texte', $stepId),
             'case_sensitive' => (bool) get_field('etape_reponse_casse', $stepId),
+            'variants' => (string) get_field('etape_reponses_variantes', $stepId),
         ]);
     }
 
@@ -58,6 +59,9 @@ final class RiddleStepManagementAjaxHandler {
             ? sanitize_textarea_field(wp_unslash((string) $_POST['accepted_answers']))
             : '';
         $caseSensitive = isset($_POST['case_sensitive']) ? 1 : 0;
+        $variants = isset($_POST['variants'])
+            ? sanitize_textarea_field(wp_unslash((string) $_POST['variants']))
+            : '';
         if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
             wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
         }
@@ -103,6 +107,7 @@ final class RiddleStepManagementAjaxHandler {
             update_field('etape_reponse_bouton', $buttonLabel, $stepId);
             update_field('etape_reponses_texte', implode("\n", $answers), $stepId);
             update_field('etape_reponse_casse', $caseSensitive, $stepId);
+            update_field('etape_reponses_variantes', $variants, $stepId);
         }
 
         wp_send_json_success([

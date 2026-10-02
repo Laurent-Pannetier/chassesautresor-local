@@ -126,6 +126,15 @@ final class RiddleStepFieldGroupRegistrar {
                 'default_value' => false,
                 'ui' => true,
             ],
+            [
+                'key' => 'field_etape_reponses_variantes',
+                'label' => __('Variantes personnalisées', 'chassesautresor-com'),
+                'name' => 'etape_reponses_variantes',
+                'type' => 'textarea',
+                'instructions' => __('Une variante par ligne : réponse | message.', 'chassesautresor-com'),
+                'required' => false,
+                'rows' => 4,
+            ],
         ];
     }
 }

@@ -45,6 +45,7 @@ final class RiddleStepFieldGroupRegistrarTest extends TestCase {
                 'etape_reponse_bouton',
                 'etape_reponses_texte',
                 'etape_reponse_casse',
+                'etape_reponses_variantes',
             ],
             array_keys($fields)
         );

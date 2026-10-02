@@ -160,6 +160,13 @@ if ($riddleId > 0) {
               <input type="checkbox" name="case_sensitive" value="1">
               <?= esc_html__('Respecter les majuscules et minuscules', 'chassesautresor-com'); ?>
             </label>
+            <label for="riddle-step-variants">
+              <?= esc_html__('Variantes personnalisées — réponse | message', 'chassesautresor-com'); ?>
+            </label>
+            <textarea id="riddle-step-variants" name="variants" rows="4"></textarea>
+            <p class="txt-small">
+              <?= esc_html__('Une variante affiche un message d’aide sans consommer de tentative.', 'chassesautresor-com'); ?>
+            </p>
           </div>
         </fieldset>
       <?php endif; ?>
