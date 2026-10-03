@@ -128,6 +128,9 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
       }
 
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
+      if ($statut_utilisateur !== '') {
+        $classes_carte .= ' carte-enigme--statut-' . sanitize_html_class($statut_utilisateur);
+      }
       if (
         $est_joueur_engage
         && $statut_utilisateur === 'non_commencee'
@@ -152,7 +155,12 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
                   <div class="carte-enigme-image <?= esc_attr($mapping_visuel['filtre'] ?? ''); ?>" title="<?= esc_attr($mapping_visuel['sens'] ?? ''); ?>">
                     <?php if ($badge_label !== '') : ?>
                       <span class="carte-enigme-statut <?= esc_attr($badge_class); ?>">
-                        <?= esc_html($badge_label); ?>
+                        <?php if ($afficher_validation) : ?>
+                          <i class="fa-solid fa-check" aria-hidden="true"></i>
+                          <span class="screen-reader-text"><?= esc_html($badge_label); ?></span>
+                        <?php else : ?>
+                          <?= esc_html($badge_label); ?>
+                        <?php endif; ?>
                       </span>
                     <?php endif; ?>
                     <?php if ($mapping_visuel['image_reelle']) : ?>
