@@ -568,12 +568,35 @@ crédit de points vivent avec `point-service-functions.php`. Les collecteurs d'o
 de production depuis l'autonomisation de la section compte, sont supprimés plutôt que déplacés. Les fichiers du thème
 ne conservent que leurs scripts, outils de diagnostic et rendus encore utilisés.
 
+Le cent-dix-huitième lot ouvre la migration de la présentation avec un résolveur de templates Core. Un thème peut
+surcharger les vues sous `chassesautresor-core/`, tandis que le plugin fournit les replis des pages individuelles de
+chasse, énigme et organisateur à partir d'un view-model documenté. Le filtre respecte tout template dédié déjà choisi
+par WordPress, ce qui préserve le thème historique. Une feuille de style mobile-first et un script de soumission de
+réponse appartiennent au plugin et ne sont chargés qu'avec un thème tiers, afin d'éviter leur double chargement. Les
+tests couvrent résolution, surcharge, repli, enregistrement des assets et absence de chemin plugin vers le thème. La
+recette neutre minimale de ces trois pages est décrite dans `docs/recette-theme-neutre.md` ; elle ne vaut pas encore
+recette complète des comptes, de l'édition et de WooCommerce.
+
+Le cent-dix-neuvième lot complète ce premier parcours public au lieu d'ajouter un nouveau fallback superficiel. Les
+archives des trois types publics disposent maintenant d'une liste paginée alimentée par un view-model Core. La page
+d'énigme choisit le formulaire adapté aux validations automatique, manuelle ou sans réponse, applique le contexte de
+coût et réutilise le panneau Core pour les indices d'énigme et de chasse. Son script autonome couvre les deux endpoints
+de réponse ainsi que la consultation et le déblocage payant des indices. La recette ciblée vérifie désormais ces
+variantes ; elle demeure distincte de la recette globale encore requise pour les comptes et WooCommerce.
+
+Le cent-vingtième lot rend accessibles les renderers de compte déjà autonomisés depuis le tableau de bord standard de
+WooCommerce. Avec un thème tiers, l'administrateur dispose de liens avec repli HTTP vers les sections Organisateurs,
+Statistiques et Outils, et l'organisateur retrouve son profil, ses chasses et ses commandes récentes. Le chargement
+asynchrone de l'administration possède maintenant un asset Core et un nonce partagé avec le contrôleur ; le script du
+thème historique adopte le même contrat sans changer son rendu. Ce lot couvre le point d'entrée des trois rôles, mais
+ne valide pas encore tous les templates WooCommerce ni les formulaires frontaux d'édition.
+
 ### Indicateur de progression à jour
 
 | Objectif | Progression | Évolution de ce lot |
 |---|---:|---|
 | Extraction du métier PHP inventorié | **100 %** | Aucun grand view-model métier mixte ne reste dans le thème |
-| Remplaçabilité effective du thème | **55 %** | Les rendus AJAX et deux sections de compte ont un fallback Core |
+| Remplaçabilité effective du thème | **61 %** | Les pages publiques et les tableaux de bord des trois rôles ont un fallback Core ciblé |
 
 Ces indicateurs sont recalculés avec la grille détaillée plus bas, et non à partir du nombre de fonctions déplacées.
 Ils seront modifiés uniquement lorsqu'un axe pondéré de cette grille progresse effectivement.
@@ -606,8 +629,11 @@ Résultats obtenus après ce lot :
   compatibilité sont fournis par le plugin ;
 - la revue ciblée ne relève plus de grand assembleur de view-model métier mixte. `inc/user-functions.php` et
   `inc/enigme/affichage.php` conservent des compositions HTML propres au thème, alimentées par les services Core ;
-- **83 templates/parcours PHP** et **93 assets JavaScript/CSS/SCSS** restent fournis exclusivement par le thème. Le
-  dépôt ne contient toujours aucune preuve de recette complète avec un thème neutre.
+- **80 des 83 templates/parcours PHP inventoriés** restent fournis exclusivement par le thème : les trois pages
+  individuelles `chasse`, `enigme` et `organisateur` disposent maintenant d'un fallback Core. Les **93 assets du
+  thème** restent présents, mais les deux assets fonctionnels nécessaires à ces fallbacks sont désormais fournis
+  indépendamment par le plugin. Le dépôt contient une recette ciblée reproductible, mais toujours aucune preuve de
+  recette complète des comptes, de l'édition et de WooCommerce avec un thème neutre.
 
 ### Estimations recalculées
 
@@ -619,9 +645,12 @@ globales du thème et séparation des view-models. Les preuves ci-dessus donnent
 Pour la remplaçabilité, la grille pondère l'extraction PHP à 40 %, la présence de parcours de secours à 25 %, les
 assets indépendants à 15 %, l'absence de callbacks de rendu fournis par le thème à 10 % et une recette neutre réussie
 à 10 %. L'extraction apporte 40 points, les quatorze rendus asynchrones sont autonomes et les deux sections joueur
-du tableau de bord disposent maintenant d'un fallback Core. Cette première couverture de parcours apporte 5 points,
-soit **environ 55 % de remplaçabilité effective du thème**. Aucun point n'est encore accordé aux assets indépendants
-ou à la recette complète sous thème neutre.
+du tableau de bord disposent maintenant d'un fallback Core. Les trois pages publiques ajoutent une couverture réelle,
+deux assets fonctionnels indépendants et une recette neutre ciblée. Ils ajoutent trois points prudents à la grille,
+pour atteindre 58 %. Le point d'entrée neutre des tableaux de bord organisateur et administrateur, avec navigation
+HTTP et AJAX testée, ajoute trois points prudents à cette couverture, soit **environ 61 % de remplaçabilité effective
+du thème**. Aucun
+point de recette WooCommerce complète n'est encore accordé.
 
 Ces deux valeurs sont des estimations prudentes et reproductibles à partir de la grille déclarée. Elles ne reprennent
 ni automatiquement les ordres de grandeur de 90 % et 70 %. Les compteurs mesurent une

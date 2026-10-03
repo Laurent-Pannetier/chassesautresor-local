@@ -1,0 +1,93 @@
+.cat-core-view {
+    box-sizing: border-box;
+    margin-inline: auto;
+    max-width: 72rem;
+    padding: 1rem;
+}
+
+.cat-core-view img {
+    height: auto;
+    max-width: 100%;
+}
+
+.cat-core-header,
+.cat-core-content,
+.cat-core-view section {
+    margin-block-end: 1.5rem;
+}
+
+.cat-core-cards {
+    display: grid;
+    gap: 0.75rem;
+    list-style: none;
+    padding: 0;
+}
+
+.cat-core-cards li,
+.cat-core-answer {
+    border: 1px solid currentcolor;
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+
+.cat-core-answer-form textarea {
+    box-sizing: border-box;
+    display: block;
+    margin-block-end: 0.75rem;
+    min-height: 8rem;
+    width: 100%;
+}
+
+.cat-core-button,
+.cat-core-answer-form button,
+.cat-core-unlock-hint {
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.65rem 1rem;
+}
+
+.participation,
+.indice-display {
+    border: 1px solid currentcolor;
+    border-radius: 0.25rem;
+    margin-block: 1rem;
+    padding: 1rem;
+}
+
+.indice-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block: 0.5rem;
+}
+
+.indice-display:empty {
+    display: none;
+}
+
+.cat-core-account-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-block-end: 1.5rem;
+}
+
+.cat-core-account-organizer,
+.cat-core-account-admin,
+#cat-core-account-section {
+    margin-block-end: 2rem;
+}
+
+.cat-core-account-organizer .stats-table {
+    width: 100%;
+}
+
+@media (min-width: 48rem) {
+    .cat-core-view {
+        padding: 2rem;
+    }
+
+    .cat-core-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

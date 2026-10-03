@@ -6,12 +6,18 @@ namespace ChassesAuTresor\Core\Users;
 
 use ChassesAuTresor\Core\Progress\EngagedHuntsRenderer;
 use ChassesAuTresor\Core\Progress\UserAttemptsRenderer;
+use ChassesAuTresor\Core\Presentation\PortableAccountDashboardRenderer;
 
 /** Own account dashboard hooks and provide portable fallbacks for third-party themes. */
 final class AccountDashboardHookHandler {
     public static function register(callable $addAction): void {
+        $addAction('woocommerce_account_dashboard', [self::class, 'renderPortableDashboard'], 5);
         $addAction('woocommerce_account_dashboard', [self::class, 'renderEngagedHunts'], 10);
         $addAction('woocommerce_account_dashboard', [self::class, 'renderAttempts'], 20);
+    }
+
+    public static function renderPortableDashboard(): void {
+        (new PortableAccountDashboardRenderer())->render();
     }
 
     public static function renderEngagedHunts(): void {

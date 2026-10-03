@@ -25,7 +25,7 @@ describe('myaccount ajax navigation', () => {
 
   beforeEach(() => {
     document.body.innerHTML = html;
-    global.ctaMyAccount = { ajaxUrl: '/admin-ajax.php' };
+    global.ctaMyAccount = { ajaxUrl: '/admin-ajax.php', nonce: 'account-nonce' };
     global.fetch = jest.fn((url) => Promise.resolve({
       ok: true,
       json: () => Promise.resolve({ success: true, data: { html: '<section class="msg-important"></section>', messages: '' } })
@@ -51,7 +51,10 @@ describe('myaccount ajax navigation', () => {
     link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
     await Promise.resolve();
     await Promise.resolve();
-    expect(fetch).toHaveBeenCalledWith(`/admin-ajax.php?action=cta_load_admin_section&section=${section}`, expect.any(Object));
+    expect(fetch).toHaveBeenCalledWith(
+      `/admin-ajax.php?action=cta_load_admin_section&section=${section}&nonce=account-nonce`,
+      expect.any(Object)
+    );
     expect(window.history.pushState).toHaveBeenCalled();
     const expectedTitle = link.dataset.title || link.textContent;
     expect(document.querySelector('.myaccount-title').textContent).toBe(expectedTitle);
@@ -70,7 +73,10 @@ describe('myaccount ajax navigation', () => {
     initModule();
     await Promise.resolve();
     await Promise.resolve();
-    expect(fetch).toHaveBeenCalledWith('/admin-ajax.php?section=organisateurs&action=cta_load_admin_section', expect.any(Object));
+    expect(fetch).toHaveBeenCalledWith(
+      '/admin-ajax.php?section=organisateurs&action=cta_load_admin_section&nonce=account-nonce',
+      expect.any(Object)
+    );
     expect(window.history.replaceState).toHaveBeenCalledWith(null, '', '/mon-compte/');
     expect(document.querySelector('a[data-section="organisateurs"]').classList.contains('active')).toBe(true);
     expect(document.querySelector('.myaccount-title').textContent).toBe('Organisateurs');

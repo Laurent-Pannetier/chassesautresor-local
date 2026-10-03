@@ -18,6 +18,9 @@ class AccountSectionAjaxHandler {
     }
 
     public static function handle(): void {
+        if (check_ajax_referer('cat_account_section', 'nonce', false) === false) {
+            wp_send_json_error(['message' => __('Invalid security token', 'chassesautresor-com')], 403);
+        }
         $section = sanitize_key($_GET['section'] ?? '');
         $decision = (new AccountSectionAccessService())->resolve(
             is_user_logged_in(),

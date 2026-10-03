@@ -424,6 +424,7 @@ add_action('wp_enqueue_scripts', function () {
         );
         wp_localize_script('myaccount', 'ctaMyAccount', [
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('cat_account_section'),
         ]);
         wp_enqueue_script(
             'tentatives-toggle',
