@@ -63,7 +63,6 @@ $mode_validation = get_field('enigme_mode_validation', $post_id);
 if (!in_array($mode_validation, ['automatique', 'manuelle'])) return;
 
 $cout = (int) get_field('enigme_tentative_cout_points', $post_id);
-$max = 0;
 $solde_avant = get_user_points($user_id);
 $solde_apres = $solde_avant - $cout;
 $seuil_cout_eleve = (int) get_option('enigme_cout_eleve', 300);
@@ -119,7 +118,6 @@ if ($mode_validation === 'manuelle') {
     return;
 }
 
-$tentatives_du_jour = 0;
 global $wpdb;
 $retry_state = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleRetry($wpdb)->getState(
     (int) $user_id,
@@ -129,31 +127,13 @@ $retry_state = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleRetry($wpd
   $disabled = '';
   $label_btn = esc_html__('Valider', 'chassesautresor-com');
   $points_manquants = 0;
-  $message_tentatives = '';
-
-  if ($max && $tentatives_du_jour >= $max) {
-    $disabled = 'disabled';
-    $message_tentatives = __('tentatives quotidiennes épuisées', 'chassesautresor-com');
-
-  $tz = new DateTimeZone('Europe/Paris');
-  $now = new DateTime('now', $tz);
-  $midnight = (clone $now)->modify('tomorrow')->setTime(0, 0);
-  $diff = $midnight->getTimestamp() - $now->getTimestamp();
-  $hours = floor($diff / 3600);
-  $minutes = floor(($diff % 3600) / 60);
-    $label_btn = sprintf(
-        esc_html__('%dh et %dmn avant réactivation', 'chassesautresor-com'),
-        $hours,
-        $minutes
-    );
-  }
 
 if ($cout > $solde_avant) {
     $disabled = 'disabled';
     $points_manquants = $cout - $solde_avant;
 }
 
-if ($points_manquants <= 0 && !$message_tentatives && $cout > 0) {
+if ($points_manquants <= 0 && $cout > 0) {
     $label_btn = sprintf(
         esc_html__('Valider — %d pts', 'chassesautresor-com'),
         $cout
@@ -194,9 +174,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     <h3><?= $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
 
     <div class="reponse-feedback" style="display:none"></div>
-  <?php if ($message_tentatives) : ?>
-    <p class="message-limite" data-tentatives="epuisees"><?= esc_html($message_tentatives); ?></p>
-  <?php elseif ($points_manquants > 0) : ?>
+  <?php if ($points_manquants > 0) : ?>
     <p class="message-limite" data-points="manquants">
       <?= esc_html(
           sprintf(

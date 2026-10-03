@@ -178,8 +178,9 @@ remplace l'état local seulement avec les instants renvoyés par le serveur.
 - **Lot 4 en cours** : un contrôleur JavaScript partagé désactive les contrôles, recalcule le temps depuis les instants
   serveur et réactive le formulaire à l'expiration, y compris après la reprise d'un onglet. Les formulaires d'étape,
   de réponse finale automatique et manuelle reçoivent aussi cet état dès leur rendu initial.
-- **Lot 5 en cours** : le panneau organisateur édite désormais `enigme_tentative_delai_secondes` et les nouvelles
-  énigmes désactivent le délai par défaut ; les métadonnées historiques du quota restent intactes.
+- **Lot 5 terminé** : le panneau organisateur édite `enigme_tentative_delai_secondes`, les nouvelles énigmes désactivent
+  le délai par défaut et les compteurs quotidiens ont disparu des contrats et vues joueur. Les métadonnées historiques
+  et les méthodes de consultation restent intactes pour préserver l'historique sans piloter l'autorisation.
 
 Cet ordre évite un déploiement intermédiaire où une étape et la réponse finale appliqueraient deux politiques
 différentes. Chaque lot doit conserver les suites complètes vertes et peut être relu indépendamment avant le suivant.

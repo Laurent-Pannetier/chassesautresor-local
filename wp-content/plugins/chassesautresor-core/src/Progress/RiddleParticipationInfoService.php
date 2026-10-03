@@ -21,8 +21,8 @@ final class RiddleParticipationInfoService {
     public function build(int $riddleId, int $userId, bool $solved): array {
         $mode = $this->validationMode(get_field('enigme_mode_validation', $riddleId));
         $cost = $mode === 'aucune' ? 0 : (int) get_field('enigme_tentative_cout_points', $riddleId);
-        $showAttempts = $mode === 'automatique' && !$solved;
-        $showInfo = $mode !== 'aucune' && !$solved && ($cost > 0 || $showAttempts);
+        $showAttempts = false;
+        $showInfo = $mode !== 'aucune' && !$solved && $cost > 0;
 
         return [
             'validation_mode' => $mode,
@@ -30,10 +30,8 @@ final class RiddleParticipationInfoService {
             'balance' => $cost > 0 ? $this->pointsService()->getBalance($userId) : 0,
             'show_attempts' => $showAttempts,
             'show_info' => $showInfo,
-            'attempts_used' => $showAttempts
-                ? $this->attemptService()->countFailuresTodayForUser($userId, $riddleId)
-                : 0,
-            'attempts_max' => $showAttempts ? (int) get_field('enigme_tentative_max', $riddleId) : 0,
+            'attempts_used' => 0,
+            'attempts_max' => 0,
         ];
     }
 

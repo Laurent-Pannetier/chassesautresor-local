@@ -133,7 +133,6 @@ class RiddleAnswerSubmissionAjaxHandler {
             'resultat' => $evaluation['resultat'],
             'message' => $evaluation['message'],
             'uid' => $uid,
-            'compteur' => self::attempts()->countFailuresTodayForUser($userId, $riddleId),
             'points' => self::points()->getBalance($userId),
             'retry' => $retryPolicy->getState($userId, $riddleId),
         ]);

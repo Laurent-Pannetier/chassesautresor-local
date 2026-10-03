@@ -64,7 +64,6 @@ if ($riddleId <= 0 || $visibleIds === []) {
         <form
           class="<?= esc_attr($widgetView['form_class']); ?>"
           data-widget-action="<?= esc_attr($widgetView['action']); ?>"
-          data-max-failures="<?= esc_attr($maxFailures); ?>"
           data-retry-state="<?= esc_attr(wp_json_encode($retryState)); ?>"
           aria-busy="false"
         >

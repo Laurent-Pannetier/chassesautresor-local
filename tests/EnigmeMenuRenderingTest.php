@@ -563,7 +563,7 @@ class EnigmeMenuRenderingTest extends TestCase
         $this->assertTrue($result['rediriger']);
     }
 
-    public function test_participation_section_shown_for_regular_user(): void
+    public function test_participation_section_hidden_without_cost_or_daily_counter(): void
     {
         $GLOBALS['is_admin']      = false;
         $GLOBALS['is_associated'] = false;
@@ -577,7 +577,7 @@ class EnigmeMenuRenderingTest extends TestCase
         ob_start();
         afficher_enigme_stylisee(101);
         $output = ob_get_clean();
-        $this->assertStringContainsString('<section class="participation">', $output);
+        $this->assertStringNotContainsString('<section class="participation">', $output);
     }
 
     public function test_participation_section_hidden_for_associated_organizer(): void

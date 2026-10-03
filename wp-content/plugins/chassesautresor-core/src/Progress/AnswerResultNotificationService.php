@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
-use ChassesAuTresor\Core\Support\CoreServiceFactory;
-
 /**
  * Notify a player after an organizer accepts or refuses a manual answer.
  */
@@ -30,15 +28,6 @@ final class AnswerResultNotificationService
             . ($accepted
                 ? esc_html__('Retour à l’énigme', 'chassesautresor-com')
                 : esc_html__('Réessayer l’énigme', 'chassesautresor-com')) . '</a></p>';
-
-        global $wpdb;
-        $used = CoreServiceFactory::riddleAttempts($wpdb)->countFailuresTodayForUser($userId, $riddleId);
-        $maximum = (int) get_field('enigme_tentative_max', $riddleId);
-        $message .= '<p>' . sprintf(
-            esc_html__('Tentatives quotidiennes : %1$d / %2$s', 'chassesautresor-com'),
-            $used,
-            $maximum > 0 ? (string) $maximum : '∞'
-        ) . '</p>';
 
         $replyTo = $this->getOrganizerEmail($riddleId);
         if (!is_email($replyTo)) {

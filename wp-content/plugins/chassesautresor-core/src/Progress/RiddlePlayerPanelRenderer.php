@@ -133,14 +133,7 @@ final class RiddlePlayerPanelRenderer {
             ) . '</span>'
             : '<span></span>';
 
-        if ($information['show_attempts']) {
-            $maximum = (int) $information['attempts_max'];
-            $html .= '<span class="tentatives">' . sprintf(
-                esc_html__('Tentatives quotidiennes : %1$d/%2$s', 'chassesautresor-com'),
-                (int) $information['attempts_used'],
-                $maximum > 0 ? (string) $maximum : '∞'
-            ) . '</span>';
-        } elseif ((int) $information['cost'] > 0) {
+        if ((int) $information['cost'] > 0) {
             $html .= '<span></span>';
         }
 

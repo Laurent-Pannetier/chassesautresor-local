@@ -189,7 +189,7 @@ class EnigmeParticipationInfosTest extends TestCase
         render_enigme_participation(10, 'defaut', 1);
         $html = ob_get_clean();
         $this->assertStringContainsString('Solde', $html);
-        $this->assertStringContainsString('Tentatives quotidiennes', $html);
+        $this->assertStringNotContainsString('Tentatives quotidiennes', $html);
     }
 
     public function test_infos_hidden_after_resolution(): void

@@ -116,7 +116,6 @@ final class RiddleStepTextAjaxHandler {
 
         wp_send_json_success([
             'resultat' => $evaluation['resultat'],
-            'compteur' => $attempts->countFailuresTodayForUser($userId, $riddleId),
             'final_answer_unlocked' => $state['final_answer_unlocked'] ?? false,
             'current_step_id' => $state['current_step_id'] ?? null,
             'message' => $evaluation['message'],

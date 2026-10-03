@@ -60,13 +60,13 @@ final class RiddleParticipationInfoTest extends TestCase {
             'validation_mode' => 'automatique',
             'cost' => 5,
             'balance' => 80,
-            'show_attempts' => true,
+            'show_attempts' => false,
             'show_info' => true,
-            'attempts_used' => 3,
-            'attempts_max' => 10,
+            'attempts_used' => 0,
+            'attempts_max' => 0,
         ], $service->build(12, 9, false));
         self::assertSame(1, $points->calls);
-        self::assertSame(1, $attempts->calls);
+        self::assertSame(0, $attempts->calls);
 
         $GLOBALS['participation_fields']['enigme_mode_validation'] = ['value' => 'aucune'];
         self::assertSame([
@@ -79,6 +79,6 @@ final class RiddleParticipationInfoTest extends TestCase {
             'attempts_max' => 0,
         ], $service->build(12, 9, false));
         self::assertSame(1, $points->calls);
-        self::assertSame(1, $attempts->calls);
+        self::assertSame(0, $attempts->calls);
     }
 }
