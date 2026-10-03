@@ -6,6 +6,7 @@
 defined('ABSPATH') || exit;
 
 $huntId = function_exists('cat_get_primary_hunt_id') ? cat_get_primary_hunt_id() : 0;
+$isDemoMode = function_exists('cat_is_demo_mode') && cat_is_demo_mode();
 
 get_header();
 
@@ -53,6 +54,15 @@ if (($cta['type'] ?? '') === 'engage') {
         esc_url($huntUrl . '#chasse-enigmes-wrapper'),
         esc_html__('Reprendre ma progression', 'chassesautresor-com')
     );
+} elseif ($isDemoMode && empty($cta['cta_html'])) {
+    $cta = [
+        'cta_html' => sprintf(
+            '<a href="#home-enigmes" class="bouton-cta bouton-cta--color">%s</a>',
+            esc_html__('Découvrir l’aperçu', 'chassesautresor-com')
+        ),
+        'cta_message' => '',
+        'type' => 'demo',
+    ];
 }
 
 $statusLabels = [
@@ -85,6 +95,18 @@ $editorialContent = $frontPage instanceof WP_Post
 ?>
 
 <main id="home-page" class="single-hunt-home">
+    <?php if ($isDemoMode) : ?>
+        <div class="single-hunt-home__demo-notice" role="status">
+            <div class="conteneur">
+                <?php
+                esc_html_e(
+                    'Mode démo : cette chasse est présentée sur l’accueil avant sa publication officielle.',
+                    'chassesautresor-com'
+                );
+                ?>
+            </div>
+        </div>
+    <?php endif; ?>
     <section class="single-hunt-home__facts" aria-labelledby="single-hunt-facts-title">
         <div class="conteneur">
             <p class="single-hunt-home__eyebrow"><?php esc_html_e('L’aventure en bref', 'chassesautresor-com'); ?></p>

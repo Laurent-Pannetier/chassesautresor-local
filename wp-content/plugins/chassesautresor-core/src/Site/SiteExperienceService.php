@@ -8,6 +8,7 @@ final class SiteExperienceService
 {
     public const MODE_PLATFORM = 'platform';
     public const MODE_SINGLE_HUNT = 'single_hunt';
+    public const MODE_DEMO = 'demo';
     public const OPTION_NAME = 'chassesautresor_site_experience';
 
     /**
@@ -15,7 +16,19 @@ final class SiteExperienceService
      */
     public function isSingleHuntMode(array $settings): bool
     {
-        return ($settings['mode'] ?? self::MODE_SINGLE_HUNT) === self::MODE_SINGLE_HUNT;
+        return in_array(
+            $settings['mode'] ?? self::MODE_SINGLE_HUNT,
+            [self::MODE_SINGLE_HUNT, self::MODE_DEMO],
+            true
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     */
+    public function isDemoMode(array $settings): bool
+    {
+        return ($settings['mode'] ?? '') === self::MODE_DEMO;
     }
 
     /**
@@ -42,9 +55,12 @@ final class SiteExperienceService
      */
     public function sanitize(array $settings, callable $isHunt): array
     {
-        $mode = ($settings['mode'] ?? '') === self::MODE_PLATFORM
-            ? self::MODE_PLATFORM
-            : self::MODE_SINGLE_HUNT;
+        $requestedMode = (string) ($settings['mode'] ?? '');
+        $mode = in_array(
+            $requestedMode,
+            [self::MODE_PLATFORM, self::MODE_SINGLE_HUNT, self::MODE_DEMO],
+            true
+        ) ? $requestedMode : self::MODE_SINGLE_HUNT;
         $primaryHuntId = max(0, (int) ($settings['primary_hunt_id'] ?? 0));
 
         if ($primaryHuntId > 0 && !$isHunt($primaryHuntId)) {

@@ -15,6 +15,7 @@ Statut : réalisé.
 
 - Ajouter un mode configurable `chasse unique` / `plateforme`.
 - Permettre de choisir la chasse principale sans identifiant codé en dur.
+- Proposer un mode `démo ou prévisualisation` capable d'afficher sur l'accueil une chasse encore en édition.
 - Utiliser temporairement la dernière chasse publiée et validée si aucun choix explicite n'a été enregistré.
 - Fermer les candidatures organisateur en mode chasse unique.
 - Rediriger les anciennes pages de candidature et de confirmation vers la chasse principale.
@@ -23,6 +24,9 @@ Statut : réalisé.
 - Faire utiliser la chasse principale au hero existant.
 
 Après déploiement, sélectionner la chasse dans **Réglages > Expérience du site**.
+
+Le mode démo rend uniquement la présentation d'accueil accessible et l'identifie clairement comme un aperçu. Il ne
+publie pas le contenu WordPress et ne contourne pas les permissions des énigmes ou des fichiers protégés.
 
 ## Lot 2 — Nouvel accueil éditorial mono-chasse
 

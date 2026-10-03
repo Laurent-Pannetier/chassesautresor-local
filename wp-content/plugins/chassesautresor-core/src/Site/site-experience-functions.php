@@ -30,6 +30,13 @@ if (!function_exists('cat_are_organizer_applications_open')) {
     }
 }
 
+if (!function_exists('cat_is_demo_mode')) {
+    function cat_is_demo_mode(): bool
+    {
+        return (new SiteExperienceService())->isDemoMode(cat_get_site_experience_settings());
+    }
+}
+
 if (!function_exists('cat_get_primary_hunt_id')) {
     function cat_get_primary_hunt_id(): int
     {
@@ -39,17 +46,25 @@ if (!function_exists('cat_get_primary_hunt_id')) {
             return $huntId;
         }
 
-        $huntIds = get_posts([
+        $postStatuses = cat_is_demo_mode()
+            ? ['publish', 'pending', 'draft', 'private']
+            : ['publish'];
+        $query = [
             'post_type' => 'chasse',
-            'post_status' => 'publish',
+            'post_status' => $postStatuses,
             'posts_per_page' => 1,
             'orderby' => 'date',
             'order' => 'DESC',
-            'meta_key' => 'chasse_cache_statut_validation',
-            'meta_value' => 'valide',
             'fields' => 'ids',
             'no_found_rows' => true,
-        ]);
+        ];
+
+        if (!cat_is_demo_mode()) {
+            $query['meta_key'] = 'chasse_cache_statut_validation';
+            $query['meta_value'] = 'valide';
+        }
+
+        $huntIds = get_posts($query);
 
         return isset($huntIds[0]) ? (int) $huntIds[0] : 0;
     }

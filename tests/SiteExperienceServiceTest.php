@@ -33,6 +33,19 @@ final class SiteExperienceServiceTest extends TestCase
         ]));
     }
 
+    public function testDemoModeUsesSingleHuntPresentationAndKeepsApplicationsClosed(): void
+    {
+        $service = new SiteExperienceService();
+        $settings = [
+            'mode' => SiteExperienceService::MODE_DEMO,
+            'organizer_applications_open' => 1,
+        ];
+
+        self::assertTrue($service->isDemoMode($settings));
+        self::assertTrue($service->isSingleHuntMode($settings));
+        self::assertFalse($service->areOrganizerApplicationsOpen($settings));
+    }
+
     public function testSanitizeRejectsAnInvalidPrimaryHuntAndClosesSingleHuntApplications(): void
     {
         $service = new SiteExperienceService();
@@ -68,6 +81,25 @@ final class SiteExperienceServiceTest extends TestCase
             'mode' => SiteExperienceService::MODE_PLATFORM,
             'primary_hunt_id' => 42,
             'organizer_applications_open' => 1,
+        ], $settings);
+    }
+
+    public function testSanitizeKeepsDemoModeWithAValidDraftHunt(): void
+    {
+        $service = new SiteExperienceService();
+        $settings = $service->sanitize(
+            [
+                'mode' => SiteExperienceService::MODE_DEMO,
+                'primary_hunt_id' => 84,
+                'organizer_applications_open' => 1,
+            ],
+            static fn(int $postId): bool => $postId === 84
+        );
+
+        self::assertSame([
+            'mode' => SiteExperienceService::MODE_DEMO,
+            'primary_hunt_id' => 84,
+            'organizer_applications_open' => 0,
         ], $settings);
     }
 }

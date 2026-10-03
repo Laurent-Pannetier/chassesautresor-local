@@ -47,7 +47,9 @@ final class SingleHuntPublicAccessHandler
     private static function redirectToPublicEntry(): void
     {
         $huntId = cat_get_primary_hunt_id();
-        $url = $huntId > 0 ? get_permalink($huntId) : home_url('/');
+        $url = $huntId > 0 && get_post_status($huntId) === 'publish'
+            ? get_permalink($huntId)
+            : home_url('/');
 
         wp_safe_redirect($url, 302, 'ChassesAuTresor');
         exit;

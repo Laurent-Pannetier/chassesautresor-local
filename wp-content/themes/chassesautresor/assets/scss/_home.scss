@@ -389,6 +389,16 @@ body.accueil-fullscreen {
     text-transform: uppercase;
 }
 
+.single-hunt-home__demo-notice {
+    padding-block: var(--space-sm);
+    border-block: 1px solid rgba(255, 215, 0, 0.3);
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--color-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-align: center;
+}
+
 .single-hunt-home__facts {
     position: relative;
     z-index: 2;

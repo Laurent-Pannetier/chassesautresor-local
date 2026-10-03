@@ -18,9 +18,10 @@ $description = isset($args['description']) ? sanitize_text_field($args['descript
 $cta_html    = $args['cta_html'] ?? '';
 $cta_message = $args['cta_message'] ?? '';
 $single_hunt = !empty($args['single_hunt']);
+$demo_mode   = !empty($args['demo_mode']);
 ?>
 <section
-  class="bandeau-hero bandeau-hero--latest-chasse"
+  class="bandeau-hero bandeau-hero--latest-chasse<?php echo $single_hunt ? ' is-home-hero-visible' : ''; ?>"
   data-home-hero="latest"
   aria-hidden="<?php echo $single_hunt ? 'false' : 'true'; ?>"
 >
@@ -32,9 +33,11 @@ $single_hunt = !empty($args['single_hunt']);
       <p class="hero-eyebrow">
         <?php
         echo esc_html(
-            $single_hunt
+            $demo_mode
+                ? __('Aperçu de la chasse', 'chassesautresor-com')
+                : ($single_hunt
                 ? __('La chasse au trésor', 'chassesautresor-com')
-                : __('À la une', 'chassesautresor-com')
+                : __('À la une', 'chassesautresor-com'))
         );
         ?>
       </p>

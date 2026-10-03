@@ -84,6 +84,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
         : false;
     $should_hide_hero     = $is_account_area || $is_organisation_page;
     $is_single_hunt_site  = function_exists( 'cat_is_single_hunt_mode' ) && cat_is_single_hunt_mode();
+    $is_demo_site         = function_exists( 'cat_is_demo_mode' ) && cat_is_demo_mode();
 
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
@@ -203,6 +204,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
                     'cta_html'    => $cta_data['cta_html'] ?? '',
                     'cta_message' => $cta_data['cta_message'] ?? '',
                     'single_hunt' => $is_single_hunt_site,
+                    'demo_mode'   => $is_demo_site,
                 ]
             );
             $latest_hero_markup = ob_get_clean();
@@ -218,10 +220,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             }
 
             if ( $latest_hero_markup ) {
-                $latest_class = $is_single_hunt_site
-                    ? 'homepage-hero homepage-hero--latest is-home-hero-visible'
-                    : 'homepage-hero homepage-hero--latest';
-                echo '<div class="' . esc_attr( $latest_class ) . '" data-home-hero-latest>';
+                echo '<div class="homepage-hero homepage-hero--latest" data-home-hero-latest>';
                 echo $latest_hero_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 echo '</div>';
             }

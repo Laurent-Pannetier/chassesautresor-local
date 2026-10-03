@@ -24,6 +24,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         );
 
         self::assertStringContainsString('cat_get_primary_hunt_id()', $template);
+        self::assertStringContainsString('cat_is_demo_mode()', $template);
         self::assertStringContainsString('single-hunt-home__facts', $template);
         self::assertStringContainsString('single-hunt-home__story', $template);
         self::assertStringContainsString('single-hunt-home__riddles', $template);
@@ -37,5 +38,15 @@ final class SingleHuntHomepageTemplateTest extends TestCase
 
         self::assertStringContainsString('home-hunts__toolbar', $template);
         self::assertStringContainsString('ca_home_filter_chasse_ids', $template);
+    }
+
+    public function testSingleHuntHeroIsImmediatelyVisibleWithoutThePlatformAnimation(): void
+    {
+        $template = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/headers/front-page-latest-hero.php'
+        );
+
+        self::assertStringContainsString("' is-home-hero-visible'", $template);
+        self::assertStringContainsString('$single_hunt ? \'false\' : \'true\'', $template);
     }
 }

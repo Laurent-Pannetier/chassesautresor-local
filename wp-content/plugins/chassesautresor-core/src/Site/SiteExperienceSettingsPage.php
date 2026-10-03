@@ -65,6 +65,7 @@ final class SiteExperienceSettingsPage
         $service = new SiteExperienceService();
         $optionName = SiteExperienceService::OPTION_NAME;
         $singleHuntMode = $service->isSingleHuntMode($settings);
+        $mode = (string) ($settings['mode'] ?? SiteExperienceService::MODE_SINGLE_HUNT);
         $primaryHuntId = $service->getPrimaryHuntId($settings);
         $hunts = get_posts([
             'post_type' => 'chasse',
@@ -93,7 +94,7 @@ final class SiteExperienceSettingsPage
                                     type="radio"
                                     name="<?php echo esc_attr($optionName); ?>[mode]"
                                     value="single_hunt"
-                                    <?php checked($singleHuntMode); ?>
+                                    <?php checked($mode, SiteExperienceService::MODE_SINGLE_HUNT); ?>
                                 >
                                 <?php esc_html_e('Chasse unique', 'chassesautresor-com'); ?>
                             </label><br>
@@ -101,8 +102,23 @@ final class SiteExperienceSettingsPage
                                 <input
                                     type="radio"
                                     name="<?php echo esc_attr($optionName); ?>[mode]"
+                                    value="demo"
+                                    <?php checked($mode, SiteExperienceService::MODE_DEMO); ?>
+                                >
+                                <?php esc_html_e('Démo ou prévisualisation', 'chassesautresor-com'); ?>
+                            </label>
+                            <p class="description">
+                                <?php esc_html_e(
+                                    'Affiche la chasse principale sur l’accueil même si elle est encore en édition.',
+                                    'chassesautresor-com'
+                                ); ?>
+                            </p>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="<?php echo esc_attr($optionName); ?>[mode]"
                                     value="platform"
-                                    <?php checked(!$singleHuntMode); ?>
+                                    <?php checked($mode, SiteExperienceService::MODE_PLATFORM); ?>
                                 >
                                 <?php esc_html_e('Plateforme', 'chassesautresor-com'); ?>
                             </label>
