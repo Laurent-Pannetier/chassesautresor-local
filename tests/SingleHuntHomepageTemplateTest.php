@@ -79,6 +79,18 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('Reprenez là où vous vous êtes arrêté.', $template);
     }
 
+    public function testSingleHuntHomepageUsesCompactRiddleCardsAndLimitsPrimaryCtas(): void
+    {
+        $template = $this->getSingleHuntTemplate();
+
+        self::assertStringContainsString(
+            'single-hunt-home__riddles page-chasse-wrapper--compact',
+            $template
+        );
+        self::assertSame(1, substr_count($template, "echo \$cta['cta_html']"));
+        self::assertStringNotContainsString('single_hunt_riddles_access', $template);
+    }
+
     public function testDemoModeProvidesAnAuthenticatedStatisticsResetShortcut(): void
     {
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
