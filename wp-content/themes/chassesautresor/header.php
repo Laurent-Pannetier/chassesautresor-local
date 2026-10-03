@@ -122,25 +122,11 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 
         $latest_hero_markup = '';
 
-        $latest_chasse_query = new WP_Query(
-            [
-                'post_type'      => 'chasse',
-                'post_status'    => 'publish',
-                'posts_per_page' => 1,
-                'orderby'        => 'date',
-                'order'          => 'DESC',
-                'meta_query'     => [
-                    [
-                        'key'   => 'chasse_cache_statut_validation',
-                        'value' => 'valide',
-                    ],
-                ],
-                'fields'         => 'ids',
-            ]
-        );
+        $latest_chasse_id = function_exists( 'cat_get_primary_hunt_id' )
+            ? cat_get_primary_hunt_id()
+            : 0;
 
-        if ( $latest_chasse_query->have_posts() && function_exists( 'generer_cta_chasse' ) ) {
-            $latest_chasse_id = (int) $latest_chasse_query->posts[0];
+        if ( $latest_chasse_id > 0 && function_exists( 'generer_cta_chasse' ) ) {
             $raw_description  = get_field( 'chasse_principale_description', $latest_chasse_id );
 
             if ( ! $raw_description ) {
@@ -213,8 +199,6 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             );
             $latest_hero_markup = ob_get_clean();
         }
-
-        wp_reset_postdata();
 
         if ( $fallback_markup || $latest_hero_markup ) {
             echo '<div class="homepage-hero-wrapper" data-home-hero-wrapper>';

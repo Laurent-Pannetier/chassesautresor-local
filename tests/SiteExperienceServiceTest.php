@@ -1,0 +1,73 @@
+<?php
+
+declare(strict_types=1);
+
+use ChassesAuTresor\Core\Site\SiteExperienceService;
+use PHPUnit\Framework\TestCase;
+
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Site/SiteExperienceService.php';
+
+final class SiteExperienceServiceTest extends TestCase
+{
+    public function testSingleHuntModeAndClosedApplicationsAreSafeDefaults(): void
+    {
+        $service = new SiteExperienceService();
+
+        self::assertTrue($service->isSingleHuntMode([]));
+        self::assertFalse($service->areOrganizerApplicationsOpen([]));
+        self::assertSame(0, $service->getPrimaryHuntId([]));
+    }
+
+    public function testApplicationsCanOnlyOpenInPlatformMode(): void
+    {
+        $service = new SiteExperienceService();
+
+        self::assertFalse($service->areOrganizerApplicationsOpen([
+            'mode' => SiteExperienceService::MODE_SINGLE_HUNT,
+            'organizer_applications_open' => 1,
+        ]));
+        self::assertTrue($service->areOrganizerApplicationsOpen([
+            'mode' => SiteExperienceService::MODE_PLATFORM,
+            'organizer_applications_open' => 1,
+        ]));
+    }
+
+    public function testSanitizeRejectsAnInvalidPrimaryHuntAndClosesSingleHuntApplications(): void
+    {
+        $service = new SiteExperienceService();
+        $settings = $service->sanitize(
+            [
+                'mode' => SiteExperienceService::MODE_SINGLE_HUNT,
+                'primary_hunt_id' => 42,
+                'organizer_applications_open' => 1,
+            ],
+            static fn(int $postId): bool => $postId === 7
+        );
+
+        self::assertSame([
+            'mode' => SiteExperienceService::MODE_SINGLE_HUNT,
+            'primary_hunt_id' => 0,
+            'organizer_applications_open' => 0,
+        ], $settings);
+    }
+
+    public function testSanitizeKeepsAValidPlatformConfiguration(): void
+    {
+        $service = new SiteExperienceService();
+        $settings = $service->sanitize(
+            [
+                'mode' => SiteExperienceService::MODE_PLATFORM,
+                'primary_hunt_id' => 42,
+                'organizer_applications_open' => 1,
+            ],
+            static fn(int $postId): bool => $postId === 42
+        );
+
+        self::assertSame([
+            'mode' => SiteExperienceService::MODE_PLATFORM,
+            'primary_hunt_id' => 42,
+            'organizer_applications_open' => 1,
+        ], $settings);
+    }
+}
