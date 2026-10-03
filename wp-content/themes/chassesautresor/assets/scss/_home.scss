@@ -608,6 +608,11 @@ body.accueil-fullscreen {
     min-height: 50vh;
 }
 
+.single-hunt-manage-link > .menu-link {
+    color: var(--color-primary) !important;
+    font-weight: 700;
+}
+
 @media (--bp-mobile) {
     .single-hunt-home section {
         padding-block: var(--space-4xl);

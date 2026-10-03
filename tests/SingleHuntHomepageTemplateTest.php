@@ -49,4 +49,18 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString("' is-home-hero-visible'", $template);
         self::assertStringContainsString('$single_hunt ? \'false\' : \'true\'', $template);
     }
+
+    public function testSingleHuntNavigationRemovesOrganizerEntrancesAndAddsPlayerLinks(): void
+    {
+        $navigation = (string) file_get_contents(
+            self::THEME_PATH . '/inc/single-hunt-navigation.php'
+        );
+
+        self::assertStringContainsString('/devenir-organisateur', $navigation);
+        self::assertStringContainsString("['organisateur', 'chasse']", $navigation);
+        self::assertStringContainsString('single-hunt-story-link', $navigation);
+        self::assertStringContainsString('single-hunt-riddles-link', $navigation);
+        self::assertStringContainsString('single-hunt-manage-link', $navigation);
+        self::assertStringContainsString('cta_get_primary_hunt_cta', $navigation);
+    }
 }

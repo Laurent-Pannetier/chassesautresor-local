@@ -44,26 +44,13 @@ $endDate = (string) ($fields['date_fin'] ?? '');
 $unlimited = !empty($fields['illimitee']);
 $rewardTitle = trim((string) ($fields['titre_recompense'] ?? ''));
 $huntUrl = get_permalink($huntId);
-$cta = function_exists('generer_cta_chasse')
-    ? generer_cta_chasse($huntId, $userId)
+$detailsUrl = $isDemoMode ? home_url('/#single-hunt-story-title') : $huntUrl;
+$riddlesUrl = $isDemoMode || get_post_status($huntId) !== 'publish'
+    ? home_url('/#home-enigmes')
+    : $huntUrl . '#chasse-enigmes-wrapper';
+$cta = function_exists('cta_get_primary_hunt_cta')
+    ? cta_get_primary_hunt_cta($huntId, $userId)
     : ['cta_html' => '', 'cta_message' => '', 'type' => ''];
-
-if (($cta['type'] ?? '') === 'engage') {
-    $cta['cta_html'] = sprintf(
-        '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
-        esc_url($huntUrl . '#chasse-enigmes-wrapper'),
-        esc_html__('Reprendre ma progression', 'chassesautresor-com')
-    );
-} elseif ($isDemoMode && empty($cta['cta_html'])) {
-    $cta = [
-        'cta_html' => sprintf(
-            '<a href="#home-enigmes" class="bouton-cta bouton-cta--color">%s</a>',
-            esc_html__('Découvrir l’aperçu', 'chassesautresor-com')
-        ),
-        'cta_message' => '',
-        'type' => 'demo',
-    ];
-}
 
 $statusLabels = [
     'a_venir' => __('À venir', 'chassesautresor-com'),
@@ -166,8 +153,14 @@ $editorialContent = $frontPage instanceof WP_Post
                     <?php
                     echo $cta['cta_html'] ?? ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     ?>
-                    <a class="single-hunt-home__details-link" href="<?php echo esc_url($huntUrl); ?>">
-                        <?php esc_html_e('Voir tous les détails', 'chassesautresor-com'); ?>
+                    <a class="single-hunt-home__details-link" href="<?php echo esc_url($detailsUrl); ?>">
+                        <?php
+                        echo esc_html(
+                            $isDemoMode
+                                ? __('Voir la présentation', 'chassesautresor-com')
+                                : __('Voir tous les détails', 'chassesautresor-com')
+                        );
+                        ?>
                     </a>
                 </div>
                 <?php if (!empty($cta['cta_message'])) : ?>
@@ -246,7 +239,7 @@ $editorialContent = $frontPage instanceof WP_Post
                         <?php esc_html_e('Les énigmes vous attendent', 'chassesautresor-com'); ?>
                     </h2>
                 </div>
-                <a href="<?php echo esc_url($huntUrl . '#chasse-enigmes-wrapper'); ?>">
+                <a href="<?php echo esc_url($riddlesUrl); ?>">
                     <?php esc_html_e('Accéder aux énigmes', 'chassesautresor-com'); ?>
                 </a>
             </div>

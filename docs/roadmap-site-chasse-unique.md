@@ -44,10 +44,17 @@ historique reste disponible en mode `plateforme`, ce qui garantit la réversibil
 
 ## Lot 3 — Navigation et CTA contextuels
 
+Statut : réalisé ; la composition finale du menu reste à vérifier avec les menus WordPress de production.
+
 - Réduire le menu public à la chasse, aux énigmes, au règlement, à la FAQ et au compte.
 - Supprimer les liens publics vers les organisateurs et les parcours de candidature.
 - Adapter le CTA principal à l'état du joueur : découvrir, participer, commencer, reprendre ou revoir.
 - Donner à l'organisateur connecté un accès explicite à la gestion, sans l'exposer au public.
+
+En mode chasse unique ou démo, les entrées de chasse et d'organisateur devenues obsolètes sont retirées des menus
+WordPress. Les liens canoniques **La chasse** et **Les énigmes** sont ajoutés aux menus principal et mobile. Un lien
+**Gérer la chasse** est réservé à l'organisateur associé et aux administrateurs. Les CTA du hero et du corps de
+l'accueil partagent désormais la même décision de présentation.
 
 ## Lot 4 — Consolidation du parcours joueur
 
