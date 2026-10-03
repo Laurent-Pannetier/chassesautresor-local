@@ -52,7 +52,7 @@ final class RiddleStepClickAjaxHandler {
         }
 
         global $wpdb;
-        $lock = new RiddleStepSubmissionLock($wpdb);
+        $lock = new RiddleSubmissionLock($wpdb);
         if (!$lock->acquire($userId, $riddleId)) {
             wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
         }

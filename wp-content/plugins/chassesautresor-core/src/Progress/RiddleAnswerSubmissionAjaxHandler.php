@@ -33,7 +33,7 @@ class RiddleAnswerSubmissionAjaxHandler {
             wp_send_json_error($error);
         }
 
-        $lockKey = self::acquireLock($riddleId, $userId);
+        $lock = self::acquireLock($riddleId, $userId);
         try {
             global $wpdb;
             $points = CoreServiceFactory::points($wpdb);
@@ -66,11 +66,11 @@ class RiddleAnswerSubmissionAjaxHandler {
             (new ManualAnswerNotificationService())->notify($userId, $riddleId, $answer, $uid);
             $timestamp = current_time('timestamp');
         } catch (Throwable $exception) {
-            self::releaseLock($lockKey);
+            self::releaseLock($lock, $riddleId, $userId);
             cat_debug('Erreur tentative : ' . $exception->getMessage());
             wp_send_json_error('erreur_interne');
         }
-        self::releaseLock($lockKey);
+        self::releaseLock($lock, $riddleId, $userId);
 
         wp_send_json_success([
             'uid' => $uid,
@@ -95,7 +95,7 @@ class RiddleAnswerSubmissionAjaxHandler {
         $configuration = (new AnswerWidgetConfigurationService())->forRiddle($riddleId);
         $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
 
-        $lockKey = self::acquireLock($riddleId, $userId);
+        $lock = self::acquireLock($riddleId, $userId);
         try {
             $uid = self::processAttempt(
                 $userId,
@@ -104,11 +104,11 @@ class RiddleAnswerSubmissionAjaxHandler {
                 $evaluation['resultat']
             );
         } catch (Throwable $exception) {
-            self::releaseLock($lockKey);
+            self::releaseLock($lock, $riddleId, $userId);
             cat_debug('Erreur tentative : ' . $exception->getMessage());
             wp_send_json_error('erreur_interne');
         }
-        self::releaseLock($lockKey);
+        self::releaseLock($lock, $riddleId, $userId);
 
         wp_send_json_success([
             'resultat' => $evaluation['resultat'],
@@ -246,18 +246,18 @@ class RiddleAnswerSubmissionAjaxHandler {
         return $wpdb;
     }
 
-    private static function acquireLock(int $riddleId, int $userId): string
+    private static function acquireLock(int $riddleId, int $userId): RiddleSubmissionLock
     {
-        $lockKey = "enigme_lock_{$riddleId}_{$userId}";
-        if (!wp_cache_add($lockKey, 1, 'enigme', 15)) {
+        $lock = new RiddleSubmissionLock(self::database());
+        if (!$lock->acquire($userId, $riddleId)) {
             wp_send_json_error('doublon');
         }
 
-        return $lockKey;
+        return $lock;
     }
 
-    private static function releaseLock(string $lockKey): void
+    private static function releaseLock(RiddleSubmissionLock $lock, int $riddleId, int $userId): void
     {
-        wp_cache_delete($lockKey, 'enigme');
+        $lock->release($userId, $riddleId);
     }
 }

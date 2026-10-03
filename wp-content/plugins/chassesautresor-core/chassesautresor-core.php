@@ -153,6 +153,7 @@ require_once __DIR__ . '/src/Progress/RiddleRetryTable.php';
 require_once __DIR__ . '/src/Progress/RiddleRetryPolicyService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressService.php';
+require_once __DIR__ . '/src/Progress/RiddleSubmissionLock.php';
 require_once __DIR__ . '/src/Progress/RiddleStepSubmissionLock.php';
 require_once __DIR__ . '/src/Progress/RiddleStepSubmissionRequestPolicy.php';
 require_once __DIR__ . '/src/Progress/RiddleStepSubmissionService.php';
