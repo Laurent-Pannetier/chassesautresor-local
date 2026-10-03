@@ -158,7 +158,8 @@ class HuntStatisticsRepository
     ): int {
         $table = $this->wpdb->prefix . 'enigme_tentatives';
         $placeholders = implode(',', array_fill(0, count($riddleIds), '%d'));
-        $where = "enigme_id IN ({$placeholders})";
+        // A hunt attempt total only represents final riddle submissions.
+        $where = "enigme_id IN ({$placeholders}) AND etape_id IS NULL";
         $params = $riddleIds;
 
         if ($startAt !== null && $endAt !== null) {

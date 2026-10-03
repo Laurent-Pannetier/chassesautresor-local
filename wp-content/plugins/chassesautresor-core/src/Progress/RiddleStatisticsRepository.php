@@ -21,7 +21,8 @@ class RiddleStatisticsRepository
         ?string $endAt = null
     ): int {
         $table = $this->wpdb->prefix . 'enigme_tentatives';
-        $where = 'enigme_id = %d';
+        // Intermediate-step interactions share this table but are not riddle attempts.
+        $where = 'enigme_id = %d AND etape_id IS NULL';
         $params = [$riddleId];
         if ($result !== null) {
             $where .= ' AND resultat = %s';
@@ -86,8 +87,8 @@ class RiddleStatisticsRepository
         $params[] = $riddleId;
         $sql = "SELECT r.user_id, u.user_login AS username, r.resolution_date, COUNT(*) AS tentatives "
             . "FROM (SELECT user_id, MIN(date_tentative) AS resolution_date FROM {$table} "
-            . "WHERE enigme_id = %d AND resultat = 'bon'{$exclude} GROUP BY user_id) r "
-            . "JOIN {$table} t ON t.enigme_id = %d AND t.user_id = r.user_id "
+            . "WHERE enigme_id = %d AND etape_id IS NULL AND resultat = 'bon'{$exclude} GROUP BY user_id) r "
+            . "JOIN {$table} t ON t.enigme_id = %d AND t.etape_id IS NULL AND t.user_id = r.user_id "
             . "AND t.date_tentative <= r.resolution_date JOIN {$this->wpdb->users} u ON u.ID = r.user_id "
             . 'GROUP BY r.user_id, u.user_login, r.resolution_date ORDER BY r.resolution_date ASC';
         return (array) $this->wpdb->get_results($this->wpdb->prepare($sql, $params), ARRAY_A);
@@ -119,9 +120,10 @@ class RiddleStatisticsRepository
             . "COALESCE(t.nb_tentatives, 0) AS nb_tentatives, r.date_resolution, "
             . "IF(s.statut IN ('resolue','terminee'), 1, 0) AS trouve FROM {$engagements} e "
             . "JOIN {$this->wpdb->users} u ON e.user_id = u.ID LEFT JOIN (SELECT user_id, COUNT(*) AS nb_tentatives "
-            . "FROM {$attempts} WHERE enigme_id = %d GROUP BY user_id) t ON t.user_id = e.user_id "
+            . "FROM {$attempts} WHERE enigme_id = %d AND etape_id IS NULL GROUP BY user_id) t ON t.user_id = e.user_id "
             . "LEFT JOIN (SELECT user_id, MIN(date_tentative) AS date_resolution FROM {$attempts} "
-            . "WHERE enigme_id = %d AND resultat = 'bon' GROUP BY user_id) r ON r.user_id = e.user_id "
+            . "WHERE enigme_id = %d AND etape_id IS NULL AND resultat = 'bon' GROUP BY user_id) r "
+            . "ON r.user_id = e.user_id "
             . "LEFT JOIN {$statuses} s ON s.user_id = e.user_id AND s.enigme_id = e.enigme_id "
             . "WHERE e.enigme_id = %d{$exclude} ORDER BY {$orderBy} {$order} LIMIT %d OFFSET %d";
         return (array) $this->wpdb->get_results($this->wpdb->prepare($sql, $params), ARRAY_A);

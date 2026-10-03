@@ -25,7 +25,7 @@ class UserAttemptStatisticsRepository
                 "SELECT COUNT(*) AS total,"
                 . " SUM(CASE WHEN resultat = 'attente' AND traitee = 0 THEN 1 ELSE 0 END) AS pending,"
                 . " SUM(CASE WHEN resultat = 'bon' THEN 1 ELSE 0 END) AS success"
-                . " FROM {$table} WHERE user_id = %d",
+                . " FROM {$table} WHERE user_id = %d AND etape_id IS NULL",
                 $userId
             ),
             ARRAY_A
@@ -71,7 +71,7 @@ class UserAttemptStatisticsRepository
             . " WHERE pm.meta_key IN ('chasse_associee', 'enigme_chasse_associee')"
             . ' GROUP BY pm.post_id) AS chasse_meta ON chasse_meta.post_id = t.enigme_id'
             . " LEFT JOIN {$this->wpdb->posts} chasses ON chasses.ID = chasse_meta.chasse_id";
-        $where = ' WHERE t.user_id = %d';
+        $where = ' WHERE t.user_id = %d AND t.etape_id IS NULL';
         $params = [$userId];
 
         if ($search !== '') {
