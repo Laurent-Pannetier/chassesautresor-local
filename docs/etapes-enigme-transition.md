@@ -75,6 +75,10 @@ La sauvegarde éditoriale valide désormais le contenu et la configuration compl
 séquences mal formées sont refusées strictement, ce qui évite les créations fantômes et les modifications partielles
 lorsqu’une configuration est invalide ou que la structure est figée.
 
+Une première passe d’accessibilité des widgets autonomes fournit des libellés explicites aux directions, annonce les
+séquences saisies et la valeur de la molette, rend les indicateurs de focus visibles et annule proprement un geste tactile
+interrompu. Une validation manuelle avec VoiceOver et NVDA reste recommandée sur les navigateurs cibles.
+
 ### Priorité 2 — moteur partagé
 
 Le code fonctionne pour les étapes, mais le moteur de widgets n’est pas encore réellement mutualisé avec la réponse

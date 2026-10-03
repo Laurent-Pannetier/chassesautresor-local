@@ -8,6 +8,13 @@ const source = fs.readFileSync(
 
 describe('self-contained riddle widgets', () => {
   beforeAll(() => {
+    global.RiddleStepPlayer = {
+      sequenceLabel: 'Séquence saisie',
+      emptySequenceLabel: 'vide',
+      safeValueLabel: 'Valeur de la molette',
+      clockwiseLabel: 'sens horaire',
+      counterclockwiseLabel: 'sens antihoraire'
+    };
     eval(source);
   });
 
@@ -15,7 +22,7 @@ describe('self-contained riddle widgets', () => {
     document.body.innerHTML = `
       <form class="riddle-step-colors-form">
         <input name="reponse"><output class="riddle-colors__sequence"></output>
-        <button type="button" class="riddle-color" data-color="pink">Rose</button>
+        <button type="button" class="riddle-color" data-color="pink" data-label="Rose">Rose</button>
       </form>
       <form class="riddle-step-numbers-form">
         <input name="reponse"><output class="riddle-numbers__sequence"></output>
@@ -38,11 +45,17 @@ describe('self-contained riddle widgets', () => {
 
     expect(document.querySelector('.riddle-step-colors-form [name="reponse"]').value).toBe('pink');
     expect(document.querySelector('.riddle-color-dot')).not.toBeNull();
+    expect(document.querySelector('.riddle-colors__sequence').getAttribute('aria-label'))
+      .toBe('Séquence saisie: Rose');
     expect(document.querySelector('.riddle-step-numbers-form [name="reponse"]').value).toBe('07');
     expect(document.querySelectorAll('.riddle-numbers__sequence span')).toHaveLength(2);
+    expect(document.querySelector('.riddle-numbers__sequence').getAttribute('aria-label'))
+      .toBe('Séquence saisie: 0, 7');
 
     document.querySelector('.riddle-widget-reset').click();
     expect(document.querySelector('.riddle-step-numbers-form [name="reponse"]').value).toBe('');
+    expect(document.querySelector('.riddle-numbers__sequence').getAttribute('aria-label'))
+      .toBe('Séquence saisie: vide');
   });
 
   test('records keyboard dial movement on release with H and A notation', () => {
@@ -55,6 +68,9 @@ describe('self-contained riddle widgets', () => {
     expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toBe('H1,A0');
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↻ 1');
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↺ 0');
+    expect(dial.getAttribute('aria-valuetext')).toBe('Valeur de la molette: 0');
+    expect(document.querySelector('.riddle-safe__sequence').getAttribute('aria-label'))
+      .toContain('sens horaire 1');
   });
 
   test('accumulates small pointer movements before recording on release', () => {
@@ -76,5 +92,24 @@ describe('self-contained riddle widgets', () => {
 
     expect(Number(dial.dataset.value)).toBeGreaterThan(0);
     expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toMatch(/^H\d+$/);
+  });
+
+  test('cancels an interrupted pointer movement without recording it', () => {
+    const dial = document.querySelector('.riddle-safe');
+    dial.setPointerCapture = jest.fn();
+    dial.getBoundingClientRect = () => ({ left: 0, top: 0, width: 200, height: 200 });
+    const pointer = (type, clientX, clientY) => {
+      const event = new Event(type, { bubbles: true, cancelable: true });
+      Object.assign(event, { pointerId: 2, clientX, clientY });
+      dial.dispatchEvent(event);
+    };
+
+    pointer('pointerdown', 100, 0);
+    pointer('pointermove', 150, 50);
+    pointer('pointercancel', 150, 50);
+
+    expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toBe('');
+    expect(dial.dataset.pointerId).toBeUndefined();
+    expect(dial.dataset.value).toBe('0');
   });
 });
