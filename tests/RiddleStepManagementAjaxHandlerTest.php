@@ -24,4 +24,15 @@ final class RiddleStepManagementAjaxHandlerTest extends TestCase {
             $hooks
         );
     }
+
+    public function testEverySuccessfulMutationRequestsRiddleCompletenessRefresh(): void {
+        $source = file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleStepManagementAjaxHandler.php'
+        );
+
+        self::assertSame(
+            3,
+            substr_count($source, "do_action('chassesautresor_riddle_completeness_refresh_requested', \$riddleId)")
+        );
+    }
 }

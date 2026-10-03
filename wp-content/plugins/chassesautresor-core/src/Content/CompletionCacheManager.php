@@ -67,6 +67,8 @@ class CompletionCacheManager {
         $images = get_field('enigme_visuel_image', $riddleId);
         $imageId = is_array($images) && !empty($images[0]['ID']) ? (int) $images[0]['ID'] : 0;
         $prerequisites = get_field('enigme_acces_pre_requis', $riddleId);
+        $stepIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
+        $hasCompleteSteps = (new RiddleStepCompletenessService())->areStepsComplete($stepIds);
 
         return (new RiddleCompletionService())->isComplete(
             $hasValidTitle ? (bool) $hasValidTitle($riddleId) : $this->hasValidTitle($riddleId),
@@ -75,7 +77,8 @@ class CompletionCacheManager {
             (string) get_field('enigme_mode_validation', $riddleId),
             $hasAnswers ? (bool) $hasAnswers($riddleId) : $this->hasAnswers($riddleId),
             (string) (get_field('enigme_acces_condition', $riddleId) ?? 'immediat'),
-            is_array($prerequisites) && $prerequisites !== []
+            is_array($prerequisites) && $prerequisites !== [],
+            $hasCompleteSteps
         );
     }
 

@@ -136,8 +136,8 @@ Remplacer à terme la limite quotidienne par une politique de délai :
   le déblocage de la réponse finale et la séparation entre joueurs.
 - Le rendu joueur est intégré au bloc de réponse historique ; l’extraction du moteur partagé devra clarifier cette
   responsabilité.
-- La validité globale d’une énigme avant publication doit encore intégrer explicitement la complétude de toutes ses
-  étapes et de leurs widgets.
+- La validité globale d’une énigme intègre désormais la complétude de toutes ses étapes et de leurs widgets. Les caches
+  de complétude sont recalculés après création, modification, suppression ou réordonnancement du parcours.
 
 ## Tests de non-régression essentiels
 

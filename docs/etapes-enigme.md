@@ -40,6 +40,8 @@ le droit de modifier l’énigme, l’appartenance de l’étape et la validité
 Le serveur valide le contenu et toute la configuration du widget avant de créer ou modifier l’étape. Les codes
 directionnels, de couleurs, numériques et de coffre-fort contenant un symbole inconnu sont refusés au lieu d’être
 corrigés silencieusement. Une erreur de configuration ne peut donc pas laisser une étape publiée partiellement.
+La complétude globale de l’énigme inclut toutes les étapes existantes : une étape sans nom, sans contenu obligatoire ou
+avec un widget incomplet empêche la validation de la chasse. Un parcours sans étape intermédiaire reste valide.
 
 ## Progression et tentatives
 

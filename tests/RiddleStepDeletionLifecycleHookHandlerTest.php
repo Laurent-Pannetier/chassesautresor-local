@@ -15,7 +15,15 @@ final class RiddleStepDeletionLifecycleHookHandlerTest extends TestCase {
         );
 
         self::assertSame(
-            [['before_delete_post', [RiddleStepDeletionLifecycleHookHandler::class, 'handle'], 20, 1]],
+            [
+                ['before_delete_post', [RiddleStepDeletionLifecycleHookHandler::class, 'handle'], 20, 1],
+                [
+                    'deleted_post',
+                    [RiddleStepDeletionLifecycleHookHandler::class, 'refreshParentCompleteness'],
+                    20,
+                    1,
+                ],
+            ],
             $hooks
         );
     }

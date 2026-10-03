@@ -57,7 +57,8 @@ class RiddleCompletionService
         string $validationMode,
         bool $hasAnswers,
         string $accessCondition,
-        bool $hasPrerequisites
+        bool $hasPrerequisites,
+        bool $hasCompleteSteps = true
     ): bool {
         $hasValidImage = $imageId > 0 && $imageId !== $placeholderImageId;
         $hasValidAnswerConfiguration = $validationMode !== 'automatique' || $hasAnswers;
@@ -66,6 +67,7 @@ class RiddleCompletionService
         return $hasValidTitle
             && $hasValidImage
             && $hasValidAnswerConfiguration
-            && $hasValidAccessConfiguration;
+            && $hasValidAccessConfiguration
+            && $hasCompleteSteps;
     }
 }

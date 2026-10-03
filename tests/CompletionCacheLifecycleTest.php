@@ -24,4 +24,13 @@ final class CompletionCacheLifecycleTest extends TestCase {
             1,
         ]], $hooks);
     }
+
+    public function testStepSavesRefreshTheirParentRiddle(): void {
+        $source = file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/CompletionCacheSaveHookHandler.php'
+        );
+
+        self::assertStringContainsString('RiddleStepPostTypeRegistrar::POST_TYPE', $source);
+        self::assertStringContainsString("get_field('etape_enigme_associee', \$postId)", $source);
+    }
 }

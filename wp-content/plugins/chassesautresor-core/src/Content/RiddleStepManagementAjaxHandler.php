@@ -170,6 +170,7 @@ final class RiddleStepManagementAjaxHandler {
             update_field('etape_number_sequences', $widgetConfiguration['number_sequences'], $stepId);
             update_field('etape_safe_dial_sequences', $widgetConfiguration['safe_dial_sequences'], $stepId);
         }
+        do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
 
         wp_send_json_success([
             'step_id' => $stepId,
@@ -187,6 +188,7 @@ final class RiddleStepManagementAjaxHandler {
         if (!self::belongsToRiddle($stepId, $riddleId) || wp_delete_post($stepId, true) === false) {
             wp_send_json_error('suppression_impossible');
         }
+        do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
 
         wp_send_json_success(['step_id' => $stepId]);
     }
@@ -201,6 +203,7 @@ final class RiddleStepManagementAjaxHandler {
         if (!(new RiddleStepOrderingApplicationService())->reorder($riddleId, $stepIds)) {
             wp_send_json_error('ordre_invalide');
         }
+        do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
 
         wp_send_json_success();
     }

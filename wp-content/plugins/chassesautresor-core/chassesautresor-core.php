@@ -222,6 +222,7 @@ require_once __DIR__ . '/src/Content/RiddleStepFieldGroupRegistrar.php';
 require_once __DIR__ . '/src/Content/RiddleStepQueryService.php';
 require_once __DIR__ . '/src/Content/RiddleStepCreationService.php';
 require_once __DIR__ . '/src/Content/RiddleStepContentService.php';
+require_once __DIR__ . '/src/Content/RiddleStepCompletenessService.php';
 require_once __DIR__ . '/src/Content/RiddleStepStructureLockService.php';
 require_once __DIR__ . '/src/Content/RiddleStepOrderingService.php';
 require_once __DIR__ . '/src/Content/RiddleStepOrderingApplicationService.php';

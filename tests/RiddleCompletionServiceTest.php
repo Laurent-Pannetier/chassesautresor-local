@@ -80,4 +80,12 @@ class RiddleCompletionServiceTest extends TestCase
         $this->assertFalse($service->isComplete(true, 10, 99, 'manuelle', false, 'pre_requis', false));
         $this->assertTrue($service->isComplete(true, 10, 99, 'manuelle', false, 'pre_requis', true));
     }
+
+    public function testEveryConfiguredIntermediateStepMustBeComplete(): void
+    {
+        $service = new RiddleCompletionService();
+
+        $this->assertFalse($service->isComplete(true, 10, 99, 'manuelle', false, 'immediat', false, false));
+        $this->assertTrue($service->isComplete(true, 10, 99, 'manuelle', false, 'immediat', false, true));
+    }
 }
