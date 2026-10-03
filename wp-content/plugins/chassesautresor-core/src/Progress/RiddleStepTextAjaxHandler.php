@@ -66,10 +66,13 @@ final class RiddleStepTextAjaxHandler {
         if (!$lock->acquire($userId, $riddleId)) {
             wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
         }
-        $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
-        $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
-        $uid = wp_generate_uuid4();
+        $submission = null;
+        $evaluation = null;
+        $unexpectedFailure = false;
         try {
+            $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
+            $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
+            $uid = wp_generate_uuid4();
             $submission = (new RiddleStepSubmissionService(
                 $wpdb,
                 $attempts,
@@ -86,25 +89,29 @@ final class RiddleStepTextAjaxHandler {
                 $_SERVER['REMOTE_ADDR'] ?? null,
                 $_SERVER['HTTP_USER_AGENT'] ?? null
             );
+            if ($submission['status'] === 'success') {
+                CoreServiceFactory::huntProgress($wpdb)->advanceRiddleStatus(
+                    $userId,
+                    $riddleId,
+                    'en_cours',
+                    (string) current_time('mysql')
+                );
+            }
         } catch (Throwable $exception) {
+            $unexpectedFailure = true;
+        } finally {
             $lock->release($userId, $riddleId);
+        }
+        if ($unexpectedFailure || !is_array($submission) || !is_array($evaluation)) {
             wp_send_json_error(['message' => __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')]);
         }
         if ($submission['status'] !== 'success') {
-            $lock->release($userId, $riddleId);
             $message = $submission['status'] === 'attempt_failed'
                 ? __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')
                 : __('Cette étape n’est plus disponible.', 'chassesautresor-com');
             wp_send_json_error(['message' => $message]);
         }
         $state = $submission['state'];
-        CoreServiceFactory::huntProgress($wpdb)->advanceRiddleStatus(
-            $userId,
-            $riddleId,
-            'en_cours',
-            (string) current_time('mysql')
-        );
-        $lock->release($userId, $riddleId);
 
         wp_send_json_success([
             'resultat' => $evaluation['resultat'],

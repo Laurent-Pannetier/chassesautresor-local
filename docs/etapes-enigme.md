@@ -87,3 +87,5 @@ modifiables pour permettre les corrections éditoriales sans altérer le parcour
 
 Le bilan détaillé, la dette technique, les priorités et un message prêt à copier pour ouvrir le prochain fil sont
 regroupés dans [`docs/etapes-enigme-transition.md`](etapes-enigme-transition.md).
+La checklist de validation finale est disponible dans
+[`docs/etapes-enigme-recette.md`](etapes-enigme-recette.md).

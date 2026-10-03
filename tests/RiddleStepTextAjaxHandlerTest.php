@@ -38,5 +38,7 @@ final class RiddleStepTextAjaxHandlerTest extends TestCase {
         self::assertStringNotContainsString("query('START TRANSACTION')", $source);
         self::assertStringContainsString('new RiddleStepSubmissionRequestPolicy()', $source);
         self::assertStringContainsString("check_ajax_referer('riddle_step_answer', 'nonce')", $source);
+        self::assertStringContainsString('} finally {', $source);
+        self::assertSame(1, substr_count($source, '$lock->release($userId, $riddleId)'));
     }
 }

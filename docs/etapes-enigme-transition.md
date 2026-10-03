@@ -120,6 +120,9 @@ de widgets. Le moteur dispose donc de ses adaptateurs serveur, joueur et éditio
 - Molette ou combinaison de coffre-fort.
 - Autres widgets Lockee, ajoutés comme adaptateurs indépendants plutôt que comme conditions dispersées.
 
+Les nouveaux widgets sont désormais considérés comme des lots fonctionnels indépendants. Ils ne bloquent pas la recette
+et la clôture du parcours intermédiaire avec les six widgets actuellement livrés.
+
 ### Priorité 4 — politique de nouvel essai
 
 Remplacer à terme la limite quotidienne par une politique de délai :
@@ -129,6 +132,14 @@ Remplacer à terme la limite quotidienne par une politique de délai :
 - réponse serveur avec `retry_at` ;
 - compteur visuel commun aux étapes et à la réponse finale ;
 - clics et variantes toujours gratuits.
+
+Cette évolution est également sortie du périmètre de clôture actuel : elle fera l’objet d’un chantier dédié commun aux
+étapes et à la réponse finale.
+
+### Recette de clôture
+
+La checklist d’acceptation, les scénarios de concurrence, les contrôles d’accessibilité et la décision attendue sur les
+anciens médias publics sont regroupés dans [`docs/etapes-enigme-recette.md`](etapes-enigme-recette.md).
 
 ## Dette technique connue
 
