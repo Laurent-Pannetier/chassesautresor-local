@@ -69,11 +69,12 @@ réussite. Le nom d’une étape reste un repère interne et n’est jamais affi
   orchestration transactionnelle commune et une seconde soumission d’une étape terminée est refusée.
 - Vérifier la protection des médias des étapes futures : ne pas se limiter à leur absence du HTML si leur URL reste
   devinable ou publiquement accessible.
-- Ajouter des tests d’intégration des actions AJAX, au-delà des tests unitaires de services et d’enregistrement de hooks.
+- Les contrats HTTP des deux actions AJAX sont couverts dans des processus PHP isolés : rejet des nonces invalides,
+  action de nonce attendue et enveloppes JSON d’erreur pour une requête texte invalide ou un clic anonyme.
 
 La politique commune des soumissions AJAX couvre désormais la matrice d’accès joueur, le rattachement de l’étape, le
-type de widget, la présence d’une réponse et le quota d’erreurs. Un test WordPress de bout en bout des contrôleurs HTTP
-reste souhaitable pour couvrir les nonces et le format JSON réel.
+type de widget, la présence d’une réponse et le quota d’erreurs. Les tests de contrat exercent les contrôleurs eux-mêmes
+et complètent les tests transactionnels du service de soumission.
 
 La sauvegarde éditoriale valide désormais le contenu et la configuration complète du widget avant toute écriture. Les
 séquences mal formées sont refusées strictement, ce qui évite les créations fantômes et les modifications partielles
@@ -142,6 +143,17 @@ Cette évolution est également sortie du périmètre de clôture actuel : elle 
 
 La checklist d’acceptation, les scénarios de concurrence, les contrôles d’accessibilité et la décision attendue sur les
 anciens médias publics sont regroupés dans [`docs/etapes-enigme-recette.md`](etapes-enigme-recette.md).
+
+### Statut de clôture technique
+
+Les validations serveur, transactions, verrous, contrôles d’accès, contrats AJAX, protections d’images et interactions
+des six widgets livrés disposent désormais de leur couverture automatisée. Aucun lot de développement supplémentaire
+n’est requis pour le périmètre actuel avant la recette. La clôture dépend maintenant uniquement de l’exécution des tests
+manuels de la recette et de l’enregistrement de la décision concernant les anciennes URL physiques des médias.
+
+Les nouveaux widgets, la politique `retry_at`, la mutualisation complète de la réponse finale et une éventuelle migration
+des médias vers un stockage non public restent des chantiers autonomes. Ils ne doivent pas rouvrir ce périmètre sauf si la
+recette met en évidence une régression.
 
 ## Dette technique connue
 
