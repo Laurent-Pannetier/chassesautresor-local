@@ -37,4 +37,19 @@ describe('riddle retry countdown', () => {
   test('formats remaining time consistently', () => {
     expect(window.RiddleRetryCountdown.formatRemaining(65)).toBe('1:05');
   });
+
+  test('initializes a server-rendered retry state', () => {
+    const form = document.querySelector('form');
+    const now = Date.now();
+    form.dataset.retryState = JSON.stringify({
+      retry_at: new Date(now + 1000).toISOString(),
+      server_now: new Date(now).toISOString(),
+      message: 'Initial wait'
+    });
+
+    window.RiddleRetryCountdown.initialize(document);
+
+    expect(form.querySelector('input').disabled).toBe(true);
+    expect(form.querySelector('[data-retry-countdown]').textContent).toContain('Initial wait');
+  });
 });

@@ -56,6 +56,11 @@ defined('ABSPATH') || exit;
 
         $data  = calculer_contexte_points($user_id, $enigme_id);
         $nonce = wp_create_nonce('reponse_manuelle_nonce');
+        global $wpdb;
+        $retry_state = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleRetry($wpdb)->getState(
+            (int) $user_id,
+            (int) $enigme_id
+        );
         ob_start();
     ?>
     <form
@@ -65,6 +70,7 @@ defined('ABSPATH') || exit;
         data-solde-avant="<?php echo esc_attr($data['solde_avant']); ?>"
         data-solde-apres="<?php echo esc_attr($data['solde_apres']); ?>"
         data-seuil="<?php echo esc_attr($data['seuil']); ?>"
+        data-retry-state="<?php echo esc_attr(wp_json_encode($retry_state)); ?>"
     >
         <h3><?php echo $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
         <?php if ($data['points_manquants'] > 0) : ?>
@@ -199,11 +205,12 @@ function charger_script_delai_soumission(): void
  */
 function charger_script_reponse_manuelle() {
     if (is_singular('enigme')) {
+        charger_script_delai_soumission();
         $path = '/assets/js/reponse-manuelle.js';
         wp_enqueue_script(
             'reponse-manuelle',
             get_stylesheet_directory_uri() . $path,
-            [],
+            ['riddle-retry-countdown'],
             filemtime(get_stylesheet_directory() . $path),
             true
         );

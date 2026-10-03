@@ -46,5 +46,17 @@
     document.addEventListener('visibilitychange', update, { once: true });
   };
 
-  window.RiddleRetryCountdown = { apply, clear, formatRemaining };
+  const initialize = root => {
+    (root || document).querySelectorAll('form[data-retry-state]').forEach(form => {
+      try {
+        apply(form, JSON.parse(form.dataset.retryState));
+      } catch (error) {
+        // Ignore malformed markup and keep server authorization authoritative.
+      }
+    });
+  };
+
+  window.RiddleRetryCountdown = { apply, clear, formatRemaining, initialize };
+  document.addEventListener('DOMContentLoaded', () => initialize(document));
+  document.addEventListener('riddle-step-content-updated', () => initialize(document));
 }());

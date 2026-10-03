@@ -176,7 +176,8 @@ remplace l'état local seulement avec les instants renvoyés par le serveur.
 - **Lot 3 en cours** : le contrat inclut maintenant `server_now` et les réponses AJAX automatiques transmettent l'état
   commun au client.
 - **Lot 4 en cours** : un contrôleur JavaScript partagé désactive les contrôles, recalcule le temps depuis les instants
-  serveur et réactive le formulaire à l'expiration, y compris après la reprise d'un onglet.
+  serveur et réactive le formulaire à l'expiration, y compris après la reprise d'un onglet. Les formulaires d'étape,
+  de réponse finale automatique et manuelle reçoivent aussi cet état dès leur rendu initial.
 - **Lot 5 restant** : les compteurs quotidiens de présentation et le vieux champ éditorial doivent encore être retirés.
 
 Cet ordre évite un déploiement intermédiaire où une étape et la réponse finale appliqueraient deux politiques

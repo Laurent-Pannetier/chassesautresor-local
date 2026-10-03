@@ -63,7 +63,7 @@ $mode_validation = get_field('enigme_mode_validation', $post_id);
 if (!in_array($mode_validation, ['automatique', 'manuelle'])) return;
 
 $cout = (int) get_field('enigme_tentative_cout_points', $post_id);
-$max = (int) get_field('enigme_tentative_max', $post_id);
+$max = 0;
 $solde_avant = get_user_points($user_id);
 $solde_apres = $solde_avant - $cout;
 $seuil_cout_eleve = (int) get_option('enigme_cout_eleve', 300);
@@ -119,7 +119,12 @@ if ($mode_validation === 'manuelle') {
     return;
 }
 
-$tentatives_du_jour = compter_tentatives_du_jour($user_id, $post_id);
+$tentatives_du_jour = 0;
+global $wpdb;
+$retry_state = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleRetry($wpdb)->getState(
+    (int) $user_id,
+    (int) $post_id
+);
   $boutique_url = esc_url(home_url('/boutique/'));
   $disabled = '';
   $label_btn = esc_html__('Valider', 'chassesautresor-com');
@@ -184,6 +189,7 @@ $nonce = wp_create_nonce('reponse_auto_nonce');
     data-solde-avant="<?= esc_attr($solde_avant); ?>"
     data-solde-apres="<?= esc_attr($solde_apres); ?>"
     data-seuil="<?= esc_attr($seuil_cout_eleve); ?>"
+    data-retry-state="<?= esc_attr(wp_json_encode($retry_state)); ?>"
 >
     <h3><?= $badge_html . esc_html__('Votre réponse', 'chassesautresor-com'); ?></h3>
 
