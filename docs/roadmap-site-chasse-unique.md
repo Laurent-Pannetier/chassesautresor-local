@@ -78,6 +78,9 @@ engagés une progression native accessible ainsi qu'un accès direct à la repri
 - Retirer les assets de catalogue devenus inutilisés de la présentation, sans supprimer les capacités du plugin.
 - Actualiser la documentation d'architecture et effectuer une recette de non-régression du parcours organisateur privé.
 
+La fiche de la chasse n'affiche plus l'ancien fil d'Ariane `Accueil > Organisateur > Chasse`, devenu incohérent avec
+la navigation mono-chasse. Le composant générique est conservé dans le thème pour les autres contextes éventuels.
+
 ## Transmission entre fils de discussion
 
 Un fil par lot est recommandé afin de conserver un contexte lisible. Chaque fin de lot doit ajouter ou actualiser un

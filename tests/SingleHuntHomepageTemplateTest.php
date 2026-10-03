@@ -89,4 +89,12 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('data-reset-stats', $theme);
         self::assertStringContainsString("querySelectorAll('[data-reset-stats]')", $script);
     }
+
+    public function testHuntPageDoesNotRenderTheObsoleteOrganizerBreadcrumb(): void
+    {
+        $template = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+
+        self::assertStringNotContainsString("template-parts/common/breadcrumb", $template);
+        self::assertStringNotContainsString('$breadcrumb_items', $template);
+    }
 }
