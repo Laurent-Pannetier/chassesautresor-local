@@ -122,10 +122,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
                   </span>
                 <?php endforeach; ?>
                 <span class="riddle-safe__dial" aria-hidden="true">
-                  <span class="riddle-safe__reading">
-                    <span class="riddle-safe__direction">✱</span>
-                    <span class="riddle-safe__value">0</span>
-                  </span>
+                  <span class="riddle-safe__value">0</span>
                 </span>
               </div>
               <output class="riddle-safe__sequence" aria-live="polite"></output>
