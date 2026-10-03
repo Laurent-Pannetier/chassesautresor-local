@@ -79,6 +79,10 @@ Une première passe d’accessibilité des widgets autonomes fournit des libell�
 séquences saisies et la valeur de la molette, rend les indicateurs de focus visibles et annule proprement un geste tactile
 interrompu. Une validation manuelle avec VoiceOver et NVDA reste recommandée sur les navigateurs cibles.
 
+Le rendu joueur des images d’étapes passe maintenant par la route protégée des énigmes, avec une autorisation liée à la
+progression et un cache privé. Le déplacement des fichiers sources dans un stockage inaccessible directement au serveur
+web reste nécessaire pour protéger aussi les anciennes URL déjà connues.
+
 ### Priorité 2 — moteur partagé
 
 Le code fonctionne pour les étapes, mais le moteur de widgets n’est pas encore réellement mutualisé avec la réponse

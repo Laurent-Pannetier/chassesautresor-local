@@ -23,14 +23,19 @@ global $wpdb;
 $image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleImages($wpdb);
 $asset_service = new ChassesAuTresor\Core\Media\ProtectedRiddleAssetService();
 $enigme_id = $image_service->findRiddleId($image_id);
+$step_image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStepImages($wpdb);
+$step_context = $enigme_id ? null : $step_image_service->findContext($image_id);
 
-if (!$enigme_id) {
+if (!$enigme_id && !$step_context) {
     http_response_code(403);
     exit(__('Image non autorisée', 'chassesautresor-com'));
 }
 
 // 🔐 Vérification d'accès
-if (!$asset_service->canViewRiddle($enigme_id, get_current_user_id())) {
+$can_view = $enigme_id
+    ? $asset_service->canViewRiddle($enigme_id, get_current_user_id())
+    : $step_image_service->canView($image_id, get_current_user_id());
+if (!$can_view) {
     http_response_code(403);
     exit(__('Accès refusé', 'chassesautresor-com'));
 }
@@ -65,7 +70,7 @@ do_action('litespeed_control_set_nocache');
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
 
-header('Cache-Control: public, max-age=3600, immutable');
+header('Cache-Control: private, no-store, max-age=0');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
 header('ETag: ' . $etag);
 

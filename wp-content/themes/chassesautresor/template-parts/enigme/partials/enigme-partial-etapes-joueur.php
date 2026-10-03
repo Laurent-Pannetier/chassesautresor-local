@@ -23,7 +23,24 @@ if ($riddleId <= 0 || $visibleIds === []) {
       data-player-step-id="<?= esc_attr($stepId); ?>"
     >
       <?php if ($imageId > 0) : ?>
-        <?= wp_get_attachment_image($imageId, 'large', false, ['class' => 'riddle-player-step__image']); ?>
+        <?php
+        $imageSource = wp_get_attachment_image_src($imageId, 'large');
+        $imageAlt = trim((string) get_post_meta($imageId, '_wp_attachment_image_alt', true));
+        $imageUrl = add_query_arg(
+            ['id' => $imageId, 'taille' => 'large'],
+            site_url('/voir-image-enigme')
+        );
+        ?>
+        <img
+          class="riddle-player-step__image"
+          src="<?= esc_url($imageUrl); ?>"
+          alt="<?= esc_attr($imageAlt); ?>"
+          loading="lazy"
+          <?php if (is_array($imageSource)) : ?>
+            width="<?= esc_attr((string) $imageSource[1]); ?>"
+            height="<?= esc_attr((string) $imageSource[2]); ?>"
+          <?php endif; ?>
+        >
       <?php endif; ?>
       <?php if (trim($content) !== '') : ?>
         <div class="riddle-player-step__content"><?= wp_kses_post($content); ?></div>

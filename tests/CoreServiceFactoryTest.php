@@ -31,6 +31,10 @@ final class CoreServiceFactoryTest extends TestCase
         self::assertInstanceOf(AccountMessageService::class, CoreServiceFactory::accountMessages($database));
         self::assertInstanceOf(RiddleImageService::class, CoreServiceFactory::riddleImages($database));
         self::assertInstanceOf(
+            \ChassesAuTresor\Core\Media\RiddleStepImageService::class,
+            CoreServiceFactory::riddleStepImages($database)
+        );
+        self::assertInstanceOf(
             RiddleSidebarStatisticsService::class,
             CoreServiceFactory::riddleSidebarStatistics($database)
         );

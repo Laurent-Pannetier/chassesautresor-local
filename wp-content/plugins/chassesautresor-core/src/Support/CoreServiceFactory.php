@@ -9,6 +9,8 @@ use ChassesAuTresor\Core\Messages\SiteMessageService;
 use ChassesAuTresor\Core\Messages\UserMessageRepository;
 use ChassesAuTresor\Core\Media\RiddleImageRepository;
 use ChassesAuTresor\Core\Media\RiddleImageService;
+use ChassesAuTresor\Core\Media\RiddleStepImageRepository;
+use ChassesAuTresor\Core\Media\RiddleStepImageService;
 use ChassesAuTresor\Core\Points\ConversionService;
 use ChassesAuTresor\Core\Points\PointsRepository;
 use ChassesAuTresor\Core\Points\PointsService;
@@ -135,5 +137,10 @@ final class CoreServiceFactory
     public static function riddleImages(object $database): RiddleImageService
     {
         return new RiddleImageService(new RiddleImageRepository($database));
+    }
+
+    public static function riddleStepImages(object $database): RiddleStepImageService
+    {
+        return new RiddleStepImageService(new RiddleStepImageRepository($database));
     }
 }

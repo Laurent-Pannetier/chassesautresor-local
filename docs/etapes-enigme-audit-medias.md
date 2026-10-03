@@ -1,15 +1,16 @@
 # Audit des médias des étapes d’énigme
 
-## Constat du dépôt
+## État après sécurisation du rendu joueur
 
 Le champ `etape_image` conserve un identifiant de pièce jointe WordPress. Le rendu joueur appelle directement
-`wp_get_attachment_image()`. Les URL générées sont donc celles de la médiathèque standard et ne passent pas par le
-contrôleur d’images protégées des énigmes.
+la route `/voir-image-enigme`, sans `srcset` pointant vers la médiathèque. Le contrôleur retrouve l’étape propriétaire,
+vérifie l’accès à l’énigme puis limite l’image aux étapes déjà visibles dans la progression du joueur. Ses réponses sont
+privées et non stockables afin qu’un cache partagé ne puisse pas servir l’image à un autre joueur.
 
-L’absence d’une étape future dans le HTML empêche la découverte directe de son image depuis la page joueur, mais elle
-ne protège pas le fichier si son URL est déjà connue. L’original et les tailles dérivées peuvent rester servis par le
-serveur web. Une page de pièce jointe ou l’API REST peut également exposer ses métadonnées selon la configuration du
-site et les extensions actives.
+Cette sécurisation empêche la page joueur de divulguer directement l’URL d’une étape future, mais elle ne protège pas
+encore le fichier physique si son ancienne URL est déjà connue. L’original et les tailles dérivées peuvent rester servis
+par le serveur web. Une page de pièce jointe ou l’API REST peut également exposer ses métadonnées selon la configuration
+du site et les extensions actives.
 
 ## Risque de migration
 
@@ -25,4 +26,5 @@ partagées entre plusieurs contenus et les installations qui n’utilisent pas A
 4. Bloquer ou filtrer en parallèle les réponses REST et les pages de pièce jointe pour ces médias.
 5. Migrer les pièces jointes existantes par lots, avec une table de correspondance et une procédure de retour arrière.
 
-La protection complète doit faire l’objet d’un lot distinct. Le présent lot ne modifie aucune URL existante.
+La migration du stockage physique reste un lot distinct. Le rendu joueur passe désormais par le contrôleur protégé,
+sans déplacer ni casser les pièces jointes existantes.
