@@ -28,4 +28,13 @@ final class RiddleStepTextAjaxHandlerTest extends TestCase {
         self::assertFalse(RiddleStepTextAjaxHandler::supportsWidgetType('click'));
         self::assertFalse(RiddleStepTextAjaxHandler::supportsWidgetType('unknown'));
     }
+
+    public function testDelegatesTransactionalPersistenceToSharedSubmissionService(): void {
+        $source = file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStepTextAjaxHandler.php'
+        );
+
+        self::assertStringContainsString('new RiddleStepSubmissionService(', $source);
+        self::assertStringNotContainsString("query('START TRANSACTION')", $source);
+    }
 }

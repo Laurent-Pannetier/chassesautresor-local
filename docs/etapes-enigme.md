@@ -53,6 +53,8 @@ affichées, tandis que leur widget est remplacé par un état en lecture seule.
 
 Une mauvaise réponse texte est enregistrée comme `faux` et consomme une tentative dans la limite globale de l’énigme.
 Une bonne réponse termine l’étape et révèle la suivante. Aucun point n’est débité par une étape intermédiaire.
+L’enregistrement de la tentative et l’avancement éventuel de l’étape utilisent une transaction commune. Une insertion
+incomplète est annulée, et une seconde soumission de la même étape est refusée après réévaluation de la progression.
 Les variantes personnalisées utilisent le format `réponse | message` : elles affichent leur message d’aide, ne terminent
 pas l’étape et ne consomment aucune tentative.
 Lorsque la casse est ignorée, les accents français le sont également. Les apostrophes typographiques et droites, ainsi

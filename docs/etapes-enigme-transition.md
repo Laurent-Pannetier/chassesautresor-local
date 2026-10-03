@@ -65,8 +65,8 @@ réussite. Le nom d’une étape reste un repère interne et n’est jamais affi
 
 - Retester le repositionnement après chargement d’images lentes, notamment après la dernière étape.
 - Faire une passe mobile et accessibilité sur les widgets et les messages AJAX.
-- Vérifier le comportement concurrent en cas de double soumission et envisager une orchestration transactionnelle entre
-  l’écriture de la tentative et celle de la progression.
+- Retester le comportement concurrent en conditions réelles de charge. Les soumissions passent désormais par une
+  orchestration transactionnelle commune et une seconde soumission d’une étape terminée est refusée.
 - Vérifier la protection des médias des étapes futures : ne pas se limiter à leur absence du HTML si leur URL reste
   devinable ou publiquement accessible.
 - Ajouter des tests d’intégration des actions AJAX, au-delà des tests unitaires de services et d’enregistrement de hooks.
@@ -124,7 +124,8 @@ Remplacer à terme la limite quotidienne par une politique de délai :
   configuration versionnée devra prévoir leur migration.
 - Le format de variante `réponse | message` est volontairement simple ; il faudra un adaptateur éditorial plus robuste
   avant d’autoriser des messages complexes.
-- Le passage tentative/progression n’est pas encapsulé dans une transaction SQL unique.
+- Les tests d’intégration du service de soumission couvrent le commit, le rollback, le rejet d’une seconde soumission,
+  le déblocage de la réponse finale et la séparation entre joueurs.
 - Le rendu joueur est intégré au bloc de réponse historique ; l’extraction du moteur partagé devra clarifier cette
   responsabilité.
 - La validité globale d’une énigme avant publication doit encore intégrer explicitement la complétude de toutes ses

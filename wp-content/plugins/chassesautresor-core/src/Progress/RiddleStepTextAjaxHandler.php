@@ -7,6 +7,7 @@ namespace ChassesAuTresor\Core\Progress;
 use ChassesAuTresor\Core\Content\RiddleStepPostTypeRegistrar;
 use ChassesAuTresor\Core\Content\RiddleStepQueryService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
+use Throwable;
 
 /** Evaluate a text response for the current intermediate step. */
 final class RiddleStepTextAjaxHandler {
@@ -45,22 +46,8 @@ final class RiddleStepTextAjaxHandler {
         if (!$lock->acquire($userId, $riddleId)) {
             wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
         }
-        $progress = CoreServiceFactory::riddleStepProgress($wpdb);
         $attempts = CoreServiceFactory::riddleAttempts($wpdb);
         $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
-        $state = $progress->getState($userId, $riddleId, $orderedIds);
-        if ($state['current_step_id'] !== $stepId) {
-            $lock->release($userId, $riddleId);
-            wp_send_json_error(['message' => __('Cette étape n’est pas disponible.', 'chassesautresor-com')]);
-        }
-
-        CoreServiceFactory::huntProgress($wpdb)->advanceRiddleStatus(
-            $userId,
-            $riddleId,
-            'en_cours',
-            (string) current_time('mysql')
-        );
-
         $max = (int) get_field('enigme_tentative_max', $riddleId);
         $failureCount = $attempts->countFailuresTodayForUser($userId, $riddleId);
         if ($max > 0 && $failureCount >= $max) {
@@ -71,40 +58,41 @@ final class RiddleStepTextAjaxHandler {
         $configuration = (new AnswerWidgetConfigurationService())->forStep($stepId);
         $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
         $uid = wp_generate_uuid4();
-        $wpdb->query('START TRANSACTION');
-        $created = $attempts->createForStep(
-            $uid,
-            $userId,
-            $riddleId,
-            $stepId,
-            $answer,
-            $evaluation['resultat'],
-            $_SERVER['REMOTE_ADDR'] ?? null,
-            $_SERVER['HTTP_USER_AGENT'] ?? null
-        );
-        if (!$created) {
-            $wpdb->query('ROLLBACK');
-            $lock->release($userId, $riddleId);
-            wp_send_json_error(['message' => __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')]);
-        }
-
-        if ($evaluation['resultat'] === 'bon') {
-            $state = $progress->completeCurrentStep(
+        try {
+            $submission = (new RiddleStepSubmissionService(
+                $wpdb,
+                $attempts,
+                CoreServiceFactory::riddleStepProgress($wpdb)
+            ))->submit(
                 $userId,
                 $riddleId,
                 $stepId,
                 $orderedIds,
+                $answer,
+                $evaluation['resultat'],
                 (string) current_time('mysql'),
-                $uid
+                $uid,
+                $_SERVER['REMOTE_ADDR'] ?? null,
+                $_SERVER['HTTP_USER_AGENT'] ?? null
             );
-            if ($state === null) {
-                $wpdb->query('ROLLBACK');
-                $lock->release($userId, $riddleId);
-                wp_send_json_error(['message' => __('Cette étape n’est plus disponible.', 'chassesautresor-com')]);
-            }
+        } catch (Throwable $exception) {
+            $lock->release($userId, $riddleId);
+            wp_send_json_error(['message' => __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')]);
         }
-
-        $wpdb->query('COMMIT');
+        if ($submission['status'] !== 'success') {
+            $lock->release($userId, $riddleId);
+            $message = $submission['status'] === 'attempt_failed'
+                ? __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')
+                : __('Cette étape n’est plus disponible.', 'chassesautresor-com');
+            wp_send_json_error(['message' => $message]);
+        }
+        $state = $submission['state'];
+        CoreServiceFactory::huntProgress($wpdb)->advanceRiddleStatus(
+            $userId,
+            $riddleId,
+            'en_cours',
+            (string) current_time('mysql')
+        );
         $lock->release($userId, $riddleId);
 
         wp_send_json_success([

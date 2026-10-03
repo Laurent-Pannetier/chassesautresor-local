@@ -19,4 +19,13 @@ final class RiddleStepClickAjaxHandlerTest extends TestCase {
             $hooks
         );
     }
+
+    public function testDelegatesTransactionalPersistenceToSharedSubmissionService(): void {
+        $source = file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStepClickAjaxHandler.php'
+        );
+
+        self::assertStringContainsString('new RiddleStepSubmissionService(', $source);
+        self::assertStringNotContainsString("query('START TRANSACTION')", $source);
+    }
 }
