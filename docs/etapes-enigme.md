@@ -37,6 +37,9 @@ l’étape par AJAX, puis restaure la liste sans ouvrir ni recharger une page d�
 
 Le sélecteur d’image réutilise la médiathèque déjà autorisée aux organisateurs. Les opérations AJAX vérifient le nonce,
 le droit de modifier l’énigme, l’appartenance de l’étape et la validité du média.
+Le serveur valide le contenu et toute la configuration du widget avant de créer ou modifier l’étape. Les codes
+directionnels, de couleurs, numériques et de coffre-fort contenant un symbole inconnu sont refusés au lieu d’être
+corrigés silencieusement. Une erreur de configuration ne peut donc pas laisser une étape publiée partiellement.
 
 ## Progression et tentatives
 

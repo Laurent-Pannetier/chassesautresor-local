@@ -7,15 +7,7 @@ namespace ChassesAuTresor\Core\Content;
 /** Validate and persist the non-answer content of an intermediate step. */
 final class RiddleStepContentService {
     /** @return true|\WP_Error */
-    public function save(
-        int $stepId,
-        string $title,
-        string $content,
-        int $imageId,
-        bool $requiresContent = true,
-        ?callable $updatePost = null,
-        ?callable $updateField = null
-    ) {
+    public function validate(string $title, string $content, int $imageId, bool $requiresContent = true) {
         $title = trim($title);
         $hasContent = trim(wp_strip_all_tags($content)) !== '';
         if ($title === '') {
@@ -27,6 +19,25 @@ final class RiddleStepContentService {
                 __('Ajoutez un texte ou une image à l’étape.', 'chassesautresor-com')
             );
         }
+
+        return true;
+    }
+
+    /** @return true|\WP_Error */
+    public function save(
+        int $stepId,
+        string $title,
+        string $content,
+        int $imageId,
+        bool $requiresContent = true,
+        ?callable $updatePost = null,
+        ?callable $updateField = null
+    ) {
+        $validation = $this->validate($title, $content, $imageId, $requiresContent);
+        if (is_wp_error($validation)) {
+            return $validation;
+        }
+        $title = trim($title);
 
         $updatePost = $updatePost ?? 'wp_update_post';
         $updateField = $updateField ?? 'update_field';

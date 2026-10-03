@@ -12,6 +12,14 @@ if (!function_exists('wp_strip_all_tags')) {
 }
 
 final class RiddleStepContentServiceTest extends TestCase {
+    public function testCanValidateContentWithoutPersistingIt(): void {
+        $service = new RiddleStepContentService();
+
+        self::assertTrue($service->validate('Étape', '', 0, false));
+        self::assertInstanceOf(WP_Error::class, $service->validate('', 'Contenu', 0));
+        self::assertInstanceOf(WP_Error::class, $service->validate('Étape', '', 0));
+    }
+
     public function testRequiresTextOrImage(): void {
         $result = (new RiddleStepContentService())->save(8, 'Étape', '', 0);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Progress\AnswerWidgetValidationService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** AJAX transport for editing, deleting and ordering intermediate steps. */
@@ -83,8 +84,53 @@ final class RiddleStepManagementAjaxHandler {
         }
 
         $created = false;
-        if ($stepId === 0) {
+        $isNew = $stepId === 0;
+        if (!$isNew && !self::belongsToRiddle($stepId, $riddleId)) {
+            wp_send_json_error(['message' => __('Étape introuvable.', 'chassesautresor-com')]);
+        }
+
+        $hasWidgetConfiguration = $widget !== ''
+            || $buttonLabel !== ''
+            || $acceptedAnswers !== ''
+            || $variants !== ''
+            || isset($_POST['case_sensitive'])
+            || $directionSequences !== ''
+            || $colorSequences !== ''
+            || $numberSequences !== ''
+            || $safeDialSequences !== '';
+        if ($isNew || $hasWidgetConfiguration) {
             self::assertStructureEditable($riddleId);
+        }
+
+        $storedWidget = $isNew ? '' : (string) (get_field('etape_reponse_widget', $stepId) ?: 'click');
+        $widgetType = $widget !== '' ? $widget : $storedWidget;
+        $widgetConfiguration = null;
+        if ($isNew || $hasWidgetConfiguration) {
+            $widgetConfiguration = (new AnswerWidgetValidationService())->validate([
+                'widget' => $widget,
+                'button_label' => $buttonLabel,
+                'accepted_answers' => $acceptedAnswers,
+                'case_sensitive' => $caseSensitive,
+                'variants' => $variants,
+                'direction_sequences' => $directionSequences,
+                'color_sequences' => $colorSequences,
+                'number_sequences' => $numberSequences,
+                'safe_dial_sequences' => $safeDialSequences,
+            ]);
+            if (is_wp_error($widgetConfiguration)) {
+                wp_send_json_error(['message' => $widgetConfiguration->get_error_message()]);
+            }
+            $widgetType = (string) $widgetConfiguration['widget'];
+        }
+
+        $requiresContent = in_array($widgetType, ['click', 'text'], true);
+        $contentService = new RiddleStepContentService();
+        $validation = $contentService->validate($title, $content, $imageId, $requiresContent);
+        if (is_wp_error($validation)) {
+            wp_send_json_error(['message' => $validation->get_error_message()]);
+        }
+
+        if ($isNew) {
             $position = count((new RiddleStepQueryService())->findOrderedIds($riddleId));
             $stepId = (new RiddleStepCreationService())->create(
                 $riddleId,
@@ -97,14 +143,9 @@ final class RiddleStepManagementAjaxHandler {
             }
             $stepId = (int) $stepId;
             $created = true;
-        } elseif (!self::belongsToRiddle($stepId, $riddleId)) {
-            wp_send_json_error(['message' => __('Étape introuvable.', 'chassesautresor-com')]);
         }
 
-        $storedWidget = (string) (get_field('etape_reponse_widget', $stepId) ?: 'click');
-        $widgetType = $widget !== '' ? $widget : $storedWidget;
-        $requiresContent = in_array($widgetType, ['click', 'text'], true);
-        $result = (new RiddleStepContentService())->save(
+        $result = $contentService->save(
             $stepId,
             $title,
             $content,
@@ -118,37 +159,16 @@ final class RiddleStepManagementAjaxHandler {
             wp_send_json_error(['message' => $result->get_error_message()]);
         }
 
-        if (
-            $widget !== ''
-            || $buttonLabel !== ''
-            || $acceptedAnswers !== ''
-            || $directionSequences !== ''
-            || $colorSequences !== ''
-            || $numberSequences !== ''
-            || $safeDialSequences !== ''
-        ) {
-            self::assertStructureEditable($riddleId);
-            $answers = array_filter(array_map('trim', preg_split('/\R/', $acceptedAnswers) ?: []));
-            if (
-                !in_array($widget, ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial'], true)
-                || ($widget === 'click' && $buttonLabel === '')
-                || ($widget === 'text' && $answers === [])
-                || ($widget === 'directions' && trim($directionSequences) === '')
-                || ($widget === 'colors' && trim($colorSequences) === '')
-                || ($widget === 'numbers' && trim($numberSequences) === '')
-                || ($widget === 'safe_dial' && trim($safeDialSequences) === '')
-            ) {
-                wp_send_json_error(['message' => __('Mode de réponse invalide.', 'chassesautresor-com')]);
-            }
-            update_field('etape_reponse_widget', $widget, $stepId);
-            update_field('etape_reponse_bouton', $buttonLabel, $stepId);
-            update_field('etape_reponses_texte', implode("\n", $answers), $stepId);
-            update_field('etape_reponse_casse', $caseSensitive, $stepId);
-            update_field('etape_reponses_variantes', $variants, $stepId);
-            update_field('etape_directions_sequences', $directionSequences, $stepId);
-            update_field('etape_color_sequences', $colorSequences, $stepId);
-            update_field('etape_number_sequences', $numberSequences, $stepId);
-            update_field('etape_safe_dial_sequences', $safeDialSequences, $stepId);
+        if (is_array($widgetConfiguration)) {
+            update_field('etape_reponse_widget', $widgetConfiguration['widget'], $stepId);
+            update_field('etape_reponse_bouton', $widgetConfiguration['button_label'], $stepId);
+            update_field('etape_reponses_texte', $widgetConfiguration['accepted_answers'], $stepId);
+            update_field('etape_reponse_casse', $widgetConfiguration['case_sensitive'], $stepId);
+            update_field('etape_reponses_variantes', $widgetConfiguration['variants'], $stepId);
+            update_field('etape_directions_sequences', $widgetConfiguration['direction_sequences'], $stepId);
+            update_field('etape_color_sequences', $widgetConfiguration['color_sequences'], $stepId);
+            update_field('etape_number_sequences', $widgetConfiguration['number_sequences'], $stepId);
+            update_field('etape_safe_dial_sequences', $widgetConfiguration['safe_dial_sequences'], $stepId);
         }
 
         wp_send_json_success([

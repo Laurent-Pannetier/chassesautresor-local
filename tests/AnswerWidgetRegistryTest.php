@@ -61,4 +61,24 @@ final class AnswerWidgetRegistryTest extends TestCase {
         self::assertSame('faux', $registry->evaluate('A11 H51', $configuration)['resultat']);
         self::assertSame('faux', $registry->evaluate('H100 A51', $configuration)['resultat']);
     }
+
+    /** @dataProvider malformedSequenceProvider */
+    public function testDoesNotSilentlyDiscardInvalidSubmittedTokens(
+        string $type,
+        string $accepted,
+        string $submitted
+    ): void {
+        $configuration = ['type' => $type, 'accepted_sequences' => [$accepted]];
+
+        self::assertSame('faux', (new AnswerWidgetRegistry())->evaluate($submitted, $configuration)['resultat']);
+    }
+
+    public function malformedSequenceProvider(): array {
+        return [
+            'direction' => ['directions', 'N,E', 'N,UP,E'],
+            'color' => ['colors', 'red,blue', 'red,turquoise,blue'],
+            'number' => ['numbers', '123', '12A3'],
+            'safe dial' => ['safe_dial', 'H11,A51', 'H11,INVALID,A51'],
+        ];
+    }
 }

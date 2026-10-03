@@ -71,6 +71,10 @@ réussite. Le nom d’une étape reste un repère interne et n’est jamais affi
   devinable ou publiquement accessible.
 - Ajouter des tests d’intégration des actions AJAX, au-delà des tests unitaires de services et d’enregistrement de hooks.
 
+La sauvegarde éditoriale valide désormais le contenu et la configuration complète du widget avant toute écriture. Les
+séquences mal formées sont refusées strictement, ce qui évite les créations fantômes et les modifications partielles
+lorsqu’une configuration est invalide ou que la structure est figée.
+
 ### Priorité 2 — moteur partagé
 
 Le code fonctionne pour les étapes, mais le moteur de widgets n’est pas encore réellement mutualisé avec la réponse
