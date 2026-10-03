@@ -129,11 +129,12 @@ defined('ABSPATH') || exit;
  */
 function charger_script_reponse_automatique() {
     if (is_singular('enigme')) {
+        charger_script_delai_soumission();
         $path = '/assets/js/reponse-automatique.js';
         wp_enqueue_script(
             'reponse-automatique',
             get_stylesheet_directory_uri() . $path,
-            [],
+            ['riddle-retry-countdown'],
             filemtime(get_stylesheet_directory() . $path),
             true
         );
@@ -150,11 +151,12 @@ function charger_script_etapes_enigme(): void
         return;
     }
 
+    charger_script_delai_soumission();
     $path = '/assets/js/riddle-step-player.js';
     wp_enqueue_script(
         'riddle-step-player',
         get_stylesheet_directory_uri() . $path,
-        [],
+        ['riddle-retry-countdown'],
         filemtime(get_stylesheet_directory() . $path),
         true
     );
@@ -172,6 +174,25 @@ function charger_script_etapes_enigme(): void
     ]);
 }
 add_action('wp_enqueue_scripts', 'charger_script_etapes_enigme');
+
+function charger_script_delai_soumission(): void
+{
+    if (wp_script_is('riddle-retry-countdown', 'enqueued')) {
+        return;
+    }
+
+    $path = '/assets/js/riddle-retry-countdown.js';
+    wp_enqueue_script(
+        'riddle-retry-countdown',
+        get_stylesheet_directory_uri() . $path,
+        [],
+        filemtime(get_stylesheet_directory() . $path),
+        true
+    );
+    wp_localize_script('riddle-retry-countdown', 'RiddleRetryCountdownConfig', [
+        'message' => __('Nouvelle tentative disponible dans', 'chassesautresor-com'),
+    ]);
+}
 
 /**
  * Charge le script gérant la soumission manuelle des réponses.

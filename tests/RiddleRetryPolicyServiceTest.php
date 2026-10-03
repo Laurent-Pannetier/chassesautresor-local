@@ -76,7 +76,13 @@ final class RiddleRetryPolicyServiceTest extends TestCase
     public function testNoPreviousFailureAllowsSubmission(): void
     {
         self::assertSame(
-            ['blocked' => false, 'retry_at' => null, 'remaining_seconds' => 0, 'message' => ''],
+            [
+                'blocked' => false,
+                'retry_at' => null,
+                'server_now' => '2026-10-03T12:00:00Z',
+                'remaining_seconds' => 0,
+                'message' => '',
+            ],
             $this->service->getState(7, 10)
         );
     }

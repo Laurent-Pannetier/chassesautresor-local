@@ -103,7 +103,12 @@ document.addEventListener('submit', async event => {
       throw new Error(RiddleStepPlayer.error);
     }
     if (!result || typeof result !== 'object') throw new Error(RiddleStepPlayer.error);
+    if (!result.success && result.data?.blocked) {
+      window.RiddleRetryCountdown?.apply(form, result.data);
+      keepDisabled = true;
+    }
     if (!result.success) throw new Error(result.data?.message || RiddleStepPlayer.error);
+    window.RiddleRetryCountdown?.apply(form, result.data.retry);
     if (result.data.resultat && result.data.resultat !== 'bon') {
       feedback.textContent = result.data.resultat === 'variante' && result.data.message
         ? result.data.message

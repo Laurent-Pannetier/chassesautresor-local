@@ -62,6 +62,12 @@ function initFormulaireAutomatique() {
       })
       .then(res => {
         if (!feedback) return;
+        if (!res.success && res.data?.blocked) {
+          window.RiddleRetryCountdown?.apply(form, res.data);
+        }
+        if (res.success) {
+          window.RiddleRetryCountdown?.apply(form, res.data?.retry);
+        }
         if (hideTimer) {
           clearTimeout(hideTimer);
           hideTimer = null;

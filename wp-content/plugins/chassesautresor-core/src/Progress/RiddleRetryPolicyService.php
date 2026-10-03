@@ -26,7 +26,7 @@ final class RiddleRetryPolicyService
         $this->clock = Closure::fromCallable($clock ?? [self::class, 'now']);
     }
 
-    /** @return array{blocked:bool,retry_at:?string,remaining_seconds:int,message:string} */
+    /** @return array{blocked:bool,retry_at:?string,server_now:string,remaining_seconds:int,message:string} */
     public function getState(int $userId, int $riddleId): array
     {
         $now = $this->currentTime();
@@ -41,6 +41,7 @@ final class RiddleRetryPolicyService
         return [
             'blocked' => $blocked,
             'retry_at' => $blocked ? $retryAt->format('Y-m-d\TH:i:s\Z') : null,
+            'server_now' => $now->format('Y-m-d\TH:i:s\Z'),
             'remaining_seconds' => $remaining,
             'message' => $blocked
                 ? __('Vous pourrez proposer une nouvelle réponse à l’expiration du délai.', 'chassesautresor-com')
