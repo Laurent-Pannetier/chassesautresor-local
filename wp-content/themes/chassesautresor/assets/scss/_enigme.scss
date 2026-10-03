@@ -1344,115 +1344,84 @@ body.no-scroll {
 .riddle-safe {
   --safe-angle: 0deg;
   --safe-size: min(82vw, 22rem);
-  --safe-ring-width: clamp(0.7rem, 3vw, 1rem);
+  --safe-ring-width: clamp(0.65rem, 3vw, 0.95rem);
   position: relative;
   width: var(--safe-size);
   height: var(--safe-size);
   margin: 0 auto;
-  border: var(--safe-ring-width) solid var(--safe-ring, #8c8f91);
+  border: var(--safe-ring-width) solid var(--safe-ring, #989b9d);
   border-radius: 50%;
-  background: #fdfdfc;
+  background: #fff;
   box-shadow:
-    0 0 0 1px #333,
-    inset 0 0 0 1px #777,
-    inset 0 0 1.1rem rgb(0 0 0 / 12%),
-    0 0.45rem 1rem rgb(0 0 0 / 18%);
+    0 0 0 1px #303030,
+    inset 0 0 0 1px #666,
+    0 0.55rem 1.25rem rgb(0 0 0 / 16%);
   touch-action: none;
   cursor: grab;
   user-select: none;
+  overflow: visible;
 }
 
 .riddle-safe:active { cursor: grabbing; }
 .riddle-safe:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 4px; }
-.riddle-safe::before {
-  content: '';
-  position: absolute;
-  inset: 0.35rem;
-  border-radius: 50%;
-  background: repeating-conic-gradient(#202224 0 0.8deg, transparent 0.8deg 3.6deg);
-  -webkit-mask: radial-gradient(circle closest-side, transparent 0 72%, #000 72.5% 88%, transparent 88.5%);
-  mask: radial-gradient(circle closest-side, transparent 0 72%, #000 72.5% 88%, transparent 88.5%);
-  transform: rotate(var(--safe-angle));
-  pointer-events: none;
-}
-
-.riddle-safe::after {
-  content: '';
-  position: absolute;
-  inset: 0.35rem;
-  border-radius: 50%;
-  background: repeating-conic-gradient(#202224 0 1.5deg, transparent 1.5deg 36deg);
-  -webkit-mask: radial-gradient(circle closest-side, transparent 0 68%, #000 68.5% 88%, transparent 88.5%);
-  mask: radial-gradient(circle closest-side, transparent 0 68%, #000 68.5% 88%, transparent 88.5%);
-  transform: rotate(var(--safe-angle));
-  pointer-events: none;
-}
-
 .riddle-safe__marker {
   position: absolute;
-  z-index: 4;
+  z-index: 2;
   top: calc(-1 * var(--safe-ring-width));
   left: 50%;
-  border-right: 0.7rem solid transparent;
-  border-left: 0.7rem solid transparent;
-  border-top: 1.4rem solid #202224;
-  filter: drop-shadow(0 1px 0 rgb(255 255 255 / 40%));
+  border-right: clamp(0.55rem, 2.5vw, 0.75rem) solid transparent;
+  border-left: clamp(0.55rem, 2.5vw, 0.75rem) solid transparent;
+  border-top: clamp(1.1rem, 5vw, 1.5rem) solid #202124;
   transform: translateX(-50%);
 }
 
 .riddle-safe__dial {
-  position: absolute;
-  z-index: 2;
-  inset: 27%;
-  background: #777;
-  clip-path: polygon(
-    50% 0%, 56% 5%, 63% 2%, 68% 9%, 76% 8%, 79% 16%, 87% 17%, 88% 26%,
-    96% 31%, 93% 39%, 100% 46%, 95% 53%, 98% 62%, 90% 66%, 90% 75%, 81% 78%,
-    78% 87%, 69% 87%, 63% 96%, 55% 92%, 47% 100%, 40% 94%, 31% 97%, 27% 88%,
-    18% 87%, 16% 78%, 7% 74%, 10% 65%, 2% 59%, 7% 51%, 0% 43%, 7% 37%,
-    4% 28%, 13% 24%, 14% 15%, 23% 14%, 29% 5%, 37% 9%, 44% 1%
-  );
-  filter: drop-shadow(0 0.2rem 0.2rem rgb(0 0 0 / 35%));
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.riddle-safe__dial::before {
-  content: '';
-  position: absolute;
-  inset: 11%;
-  border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #e3e3e3 0, #bdbdbd 35%, #858585 72%, #5f5f5f 100%);
-  box-shadow: inset -0.25rem -0.3rem 0.7rem rgb(0 0 0 / 22%);
+.riddle-safe__scale {
+  transform: rotate(var(--safe-angle));
+  transform-origin: 50% 50%;
+  transition: transform 60ms linear;
+}
+
+.riddle-safe__scale line {
+  stroke: #17191b;
+  stroke-linecap: round;
+  stroke-width: 0.8;
+}
+
+.riddle-safe__scale line:nth-of-type(5n + 1) { stroke-width: 1; }
+
+.riddle-safe__scale text {
+  fill: #111;
+  font-size: 7px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.riddle-safe__grip {
+  fill: #777;
+  filter: drop-shadow(0 0.8px 1px rgb(0 0 0 / 40%));
+}
+
+.riddle-safe__grip-face {
+  fill: rgb(255 255 255 / 12%);
+  stroke: rgb(255 255 255 / 38%);
+  stroke-width: 0.4;
 }
 
 .riddle-safe__value {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 1;
-  font-size: clamp(1.6rem, 8vw, 2.65rem);
+  fill: #111;
+  font-size: 13px;
   font-weight: 700;
-  color: #171717;
-  text-shadow: 0 1px 0 rgb(255 255 255 / 45%);
-  transform: translate(-50%, -50%);
-}
-
-.riddle-safe__number {
-  position: absolute;
-  z-index: 3;
-  top: 50%;
-  left: 50%;
-  min-width: 2ch;
-  padding: 0.15rem;
-  background: #fdfdfc;
-  transform: translate(-50%, -50%) rotate(calc(var(--safe-index) * 36deg + var(--safe-angle)))
-    translateY(calc(-0.365 * var(--safe-size)))
-    rotate(calc(var(--safe-index) * -36deg - var(--safe-angle)));
-  font-size: clamp(1rem, 4.8vw, 1.45rem);
-  font-weight: 800;
-  line-height: 1;
   text-align: center;
-  pointer-events: none;
+  text-anchor: middle;
+  dominant-baseline: middle;
 }
 
 .riddle-safe__sequence { margin-top: var(--space-md); font-weight: 700; }
