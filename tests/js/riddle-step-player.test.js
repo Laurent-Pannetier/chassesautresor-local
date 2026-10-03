@@ -51,6 +51,7 @@ describe('riddle step player positioning', () => {
     document.body.innerHTML = `
       <section class="riddle-steps-player">
         <article class="riddle-player-step is-current" data-player-step-id="1">
+          <div class="riddle-player-step__content"><p>&nbsp;</p></div>
           <form class="riddle-step-click-form">
             <input name="enigme_id" value="42">
             <button type="submit">Continue</button>

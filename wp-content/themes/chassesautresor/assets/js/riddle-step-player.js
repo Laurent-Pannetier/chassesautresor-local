@@ -18,6 +18,14 @@ const setWidgetSequenceLabel = (output, values = []) => {
   output.setAttribute('aria-label', `${RiddleStepPlayer.sequenceLabel}: ${value}`);
 };
 
+const hasMeaningfulStepContent = article => {
+  if (article.querySelector('.riddle-player-step__image')) return true;
+  const content = article.querySelector('.riddle-player-step__content');
+  if (!content) return false;
+  if (content.querySelector('img, picture, video, audio, iframe, canvas, svg')) return true;
+  return content.textContent.replace(/\u00a0/g, ' ').trim() !== '';
+};
+
 const positionRiddleStepTarget = async target => {
   const element = target === 'final'
     ? document.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle') ||
@@ -49,9 +57,7 @@ const unlockRiddleStepContent = (form, data) => {
   form.remove();
   currentArticle.classList.remove('is-current');
   currentArticle.classList.add('is-completed');
-  const emptyCompletedStep = !currentArticle.querySelector(
-    '.riddle-player-step__image, .riddle-player-step__content'
-  );
+  const emptyCompletedStep = !hasMeaningfulStepContent(currentArticle);
   if (emptyCompletedStep) currentArticle.remove();
 
   if (data.current_step_id) {

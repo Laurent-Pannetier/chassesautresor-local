@@ -17,7 +17,13 @@ if ($riddleId <= 0 || $visibleIds === []) {
     $completed = in_array($stepId, $completedIds, true);
     $imageId = (int) get_field('etape_image', $stepId);
     $content = (string) get_field('etape_contenu', $stepId);
-    if ($completed && $imageId <= 0 && trim($content) === '') {
+    $plainContent = html_entity_decode(wp_strip_all_tags($content), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $hasTextContent = preg_replace('/[\s\x{00A0}]+/u', '', $plainContent) !== '';
+    $hasEmbeddedContent = preg_match(
+        '/<(?:img|picture|video|audio|iframe|canvas|svg)\b/i',
+        $content
+    ) === 1;
+    if ($completed && $imageId <= 0 && !$hasTextContent && !$hasEmbeddedContent) {
         continue;
     }
     ?>
