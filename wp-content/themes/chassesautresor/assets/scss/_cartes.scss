@@ -53,6 +53,33 @@
   }
 }
 
+/* Les énigmes deviennent le contenu principal des expériences mono-chasse. */
+.page-chasse-wrapper--compact .cards-grid {
+  gap: var(--space-xl);
+
+  .carte-enigme {
+    max-width: 520px;
+  }
+
+  .carte-enigme-overlay {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: var(--space-md);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent 55%);
+    opacity: 1;
+  }
+
+  .carte-enigme-footer .footer-item--participants,
+  .carte-enigme-footer .footer-item--resolutions {
+    display: flex;
+  }
+
+  @media (--bp-tablet) {
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
+}
+
 /* ========== 🃏 Carte compacte ========== */
 .carte-compact-card {
   width: 100%;

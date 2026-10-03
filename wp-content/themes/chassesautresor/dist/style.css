@@ -52,6 +52,31 @@
   margin: 0 auto;
 }
 
+/* Les énigmes deviennent le contenu principal des expériences mono-chasse. */
+.page-chasse-wrapper--compact .cards-grid {
+  gap: var(--space-xl);
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme {
+  max-width: 520px;
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-overlay {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: var(--space-md);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent 55%);
+  opacity: 1;
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-footer .footer-item--participants,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-footer .footer-item--resolutions {
+  display: flex;
+}
+@media (min-width: 768px) {
+  .page-chasse-wrapper--compact .cards-grid {
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+  }
+}
+
 /* ========== 🃏 Carte compacte ========== */
 .carte-compact-card {
   width: 100%;
@@ -1016,6 +1041,118 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--grid-gap);
+}
+
+/* Bandeau de jeu réservé aux expériences Chasse unique et Démo. */
+.page-chasse-wrapper--compact .chasse-section-intro--compact {
+  border-bottom: 1px solid var(--color-secondary);
+}
+.page-chasse-wrapper--compact .chasse-fiche-container {
+  margin-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: var(--space-md);
+  align-items: center;
+}
+.page-chasse-wrapper--compact .chasse-visuel-wrapper {
+  width: 72px;
+  margin: 0;
+  align-self: start;
+}
+.page-chasse-wrapper--compact .champ-chasse.champ-img,
+.page-chasse-wrapper--compact .header-chasse__image,
+.page-chasse-wrapper--compact .header-chasse__image .image {
+  width: 72px;
+  height: 72px;
+}
+.page-chasse-wrapper--compact .header-chasse__image {
+  overflow: hidden;
+  border: 1px solid var(--color-secondary);
+  border-radius: 10px;
+}
+.page-chasse-wrapper--compact .header-chasse__image .chasse-image {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.page-chasse-wrapper--compact .header-chasse__image .badge-statut,
+.page-chasse-wrapper--compact .header-chasse__image .badge-cout,
+.page-chasse-wrapper--compact .header-chasse__image .mode-fin-icone,
+.page-chasse-wrapper--compact .chasse-visuel-wrapper .champ-liens,
+.page-chasse-wrapper--compact .chasse-details-wrapper > .separateur-3,
+.page-chasse-wrapper--compact .chasse-caracteristiques,
+.page-chasse-wrapper--compact .chasse-description,
+.page-chasse-wrapper--compact .chasse-lot-complet,
+.page-chasse-wrapper--compact .chasse-fiche-metas {
+  display: none;
+}
+.page-chasse-wrapper--compact .chasse-details-wrapper {
+  min-width: 0;
+}
+.page-chasse-wrapper--compact .chasse-organisateur {
+  margin-bottom: var(--space-xxs);
+}
+.page-chasse-wrapper--compact .chasse-organisateur__logo {
+  width: 28px;
+  height: 28px;
+}
+.page-chasse-wrapper--compact .header-chasse {
+  margin: 0 3rem var(--space-xs) 0;
+}
+.page-chasse-wrapper--compact .meta-row--headline {
+  margin: 0;
+  justify-content: flex-start;
+  gap: var(--space-md);
+}
+.page-chasse-wrapper--compact .chasse-cta-section {
+  margin-top: var(--space-sm);
+}
+.page-chasse-wrapper--compact .cta-chasse-row {
+  justify-content: flex-start;
+}
+.page-chasse-wrapper--compact .chasse-enigmes-wrapper {
+  margin-top: var(--space-xl);
+}
+.page-chasse-wrapper--compact .titre-enigmes-wrapper {
+  align-items: flex-start;
+  text-align: left;
+}
+@media (min-width: 600px) {
+  .page-chasse-wrapper--compact .chasse-fiche-container {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+  .page-chasse-wrapper--compact .chasse-visuel-wrapper,
+  .page-chasse-wrapper--compact .champ-chasse.champ-img,
+  .page-chasse-wrapper--compact .header-chasse__image,
+  .page-chasse-wrapper--compact .header-chasse__image .image {
+    width: 96px;
+    height: 96px;
+  }
+}
+@media (min-width: 768px) {
+  .page-chasse-wrapper--compact .chasse-fiche-container {
+    grid-template-columns: 120px minmax(0, 1fr);
+    padding-bottom: var(--space-xl);
+  }
+  .page-chasse-wrapper--compact .chasse-visuel-wrapper,
+  .page-chasse-wrapper--compact .champ-chasse.champ-img,
+  .page-chasse-wrapper--compact .header-chasse__image,
+  .page-chasse-wrapper--compact .header-chasse__image .image {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (min-width: 1024px) {
+  .page-chasse-wrapper--compact .chasse-fiche-container {
+    display: grid;
+  }
+  .page-chasse-wrapper--compact .chasse-visuel-wrapper {
+    position: static;
+    max-width: none;
+  }
 }
 
 .chasse-visuel-wrapper {

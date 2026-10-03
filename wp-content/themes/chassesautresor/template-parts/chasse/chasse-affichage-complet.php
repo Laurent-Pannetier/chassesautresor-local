@@ -112,7 +112,11 @@ if (current_user_can('administrator')) {
 }
 
 
+$compact_experience = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
 $classe_intro = 'chasse-section-intro';
+if ($compact_experience) {
+    $classe_intro .= ' chasse-section-intro--compact';
+}
 $est_complet = chasse_est_complet($chasse_id);
 if ($edition_active && !$est_complet) {
   $classe_intro .= ' champ-vide-obligatoire';
