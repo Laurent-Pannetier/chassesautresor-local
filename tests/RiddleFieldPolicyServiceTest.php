@@ -36,8 +36,8 @@ class RiddleFieldPolicyServiceTest extends TestCase {
             $this->service->getAttemptStorageField('enigme_tentative.enigme_tentative_cout_points')
         );
         $this->assertSame(
-            'enigme_tentative_max',
-            $this->service->getAttemptStorageField('enigme_tentative.enigme_tentative_max')
+            'enigme_tentative_delai_secondes',
+            $this->service->getAttemptStorageField('enigme_tentative.enigme_tentative_delai_secondes')
         );
         $this->assertNull($this->service->getAttemptStorageField('enigme_tentative.inconnu'));
     }

@@ -48,7 +48,7 @@ class RiddlePostFactory {
             'enigme_chasse_associee' => $huntId,
             'enigme_organisateur_associe' => $organizerId,
             'enigme_tentative_cout_points' => 0,
-            'enigme_tentative_max' => 5,
+            'enigme_tentative_delai_secondes' => 0,
             'enigme_reponse_casse' => true,
             'enigme_acces_condition' => 'immediat',
             'enigme_acces_pre_requis' => [],

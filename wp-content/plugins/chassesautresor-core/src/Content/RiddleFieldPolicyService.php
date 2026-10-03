@@ -22,8 +22,8 @@ class RiddleFieldPolicyService {
             'enigme_reponse_casse',
             'enigme_tentative_cout_points',
             'enigme_tentative.enigme_tentative_cout_points',
-            'enigme_tentative_max',
-            'enigme_tentative.enigme_tentative_max',
+            'enigme_tentative_delai_secondes',
+            'enigme_tentative.enigme_tentative_delai_secondes',
             'enigme_acces_condition',
             'enigme_acces_date',
             'enigme_acces_pre_requis',
@@ -42,7 +42,7 @@ class RiddleFieldPolicyService {
     public function getAttemptStorageField(string $submittedField): ?string {
         $fields = [
             'enigme_tentative.enigme_tentative_cout_points' => 'enigme_tentative_cout_points',
-            'enigme_tentative.enigme_tentative_max' => 'enigme_tentative_max',
+            'enigme_tentative.enigme_tentative_delai_secondes' => 'enigme_tentative_delai_secondes',
         ];
 
         return $fields[$submittedField] ?? null;
