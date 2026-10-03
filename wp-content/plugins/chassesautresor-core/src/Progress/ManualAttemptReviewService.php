@@ -6,6 +6,7 @@ namespace ChassesAuTresor\Core\Progress;
 
 use ChassesAuTresor\Core\Messages\AccountMessageService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
+use Throwable;
 
 /**
  * Apply an organizer decision to a pending manual answer.
@@ -15,46 +16,78 @@ final class ManualAttemptReviewService
     private RiddleAttemptService $attempts;
     private HuntProgressService $progress;
     private AccountMessageService $messages;
+    private $database;
+    private ?RiddleRetryPolicyService $retryPolicy;
 
     public function __construct(
         RiddleAttemptService $attempts,
         HuntProgressService $progress,
-        AccountMessageService $messages
+        AccountMessageService $messages,
+        $database = null,
+        ?RiddleRetryPolicyService $retryPolicy = null
     ) {
         $this->attempts = $attempts;
         $this->progress = $progress;
         $this->messages = $messages;
+        $this->database = $database;
+        $this->retryPolicy = $retryPolicy;
     }
 
     public function process(string $uid, string $result, int $reviewerId, bool $administrator): bool
     {
-        $attempt = $this->attempts->processManualAttempt(
-            $uid,
-            $result,
-            $reviewerId,
-            $administrator,
-            function (int $riddleId): array {
-                return $this->getOrganizerUserIds($riddleId);
+        $transactional = $this->database !== null && $this->retryPolicy !== null;
+        if ($transactional) {
+            $this->database->query('START TRANSACTION');
+        }
+
+        try {
+            $attempt = $this->attempts->processManualAttempt(
+                $uid,
+                $result,
+                $reviewerId,
+                $administrator,
+                function (int $riddleId): array {
+                    return $this->getOrganizerUserIds($riddleId);
+                }
+            );
+            if ($attempt === null) {
+                if ($transactional) {
+                    $this->database->query('ROLLBACK');
+                }
+                return false;
             }
-        );
-        if ($attempt === null) {
-            return false;
+
+            $userId = (int) $attempt->user_id;
+            $riddleId = (int) $attempt->enigme_id;
+            $plan = $this->attempts->buildProcessingPlan($userId, $riddleId, $result, 0, false, true);
+            if (
+                $plan === null
+                || ($this->retryPolicy !== null
+                    && !$this->retryPolicy->renewAfterFailure($userId, $riddleId, $result, $uid))
+            ) {
+                if ($transactional) {
+                    $this->database->query('ROLLBACK');
+                }
+                return false;
+            }
+
+            $outcome = $plan['outcome'];
+            $this->progress->advanceRiddleStatus(
+                $userId,
+                $riddleId,
+                (string) $outcome['user_status'],
+                (string) current_time('mysql')
+            );
+            if ($transactional) {
+                $this->database->query('COMMIT');
+            }
+        } catch (Throwable $exception) {
+            if ($transactional) {
+                $this->database->query('ROLLBACK');
+            }
+            throw $exception;
         }
 
-        $userId = (int) $attempt->user_id;
-        $riddleId = (int) $attempt->enigme_id;
-        $plan = $this->attempts->buildProcessingPlan($userId, $riddleId, $result, 0, false, true);
-        if ($plan === null) {
-            return false;
-        }
-
-        $outcome = $plan['outcome'];
-        $this->progress->advanceRiddleStatus(
-            $userId,
-            $riddleId,
-            (string) $outcome['user_status'],
-            (string) current_time('mysql')
-        );
         if ($outcome['resolved']) {
             do_action('enigme_resolue', $userId, $riddleId);
         }
