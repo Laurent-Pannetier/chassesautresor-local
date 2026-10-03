@@ -148,14 +148,39 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 aria-valuenow="0" aria-valuetext="<?= esc_attr__('Valeur de la molette : 0', 'chassesautresor-com'); ?>"
                 aria-label="<?= esc_attr__('Molette de coffre-fort', 'chassesautresor-com'); ?>">
                 <span class="riddle-safe__marker" aria-hidden="true"></span>
-                <?php foreach (range(0, 90, 10) as $index => $number) : ?>
-                  <span class="riddle-safe__number" style="--safe-index: <?= esc_attr($index); ?>" aria-hidden="true">
-                    <?= esc_html($number); ?>
-                  </span>
-                <?php endforeach; ?>
-                <span class="riddle-safe__dial" aria-hidden="true">
-                  <span class="riddle-safe__value">0</span>
-                </span>
+                <svg class="riddle-safe__dial" viewBox="0 0 100 100" aria-hidden="true">
+                  <defs>
+                    <radialGradient id="safe-center-gradient-<?= esc_attr($stepId); ?>" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#dedede"></stop>
+                      <stop offset="60%" stop-color="#b8b8b8"></stop>
+                      <stop offset="61%" stop-color="#8b8b8b"></stop>
+                      <stop offset="100%" stop-color="#565656"></stop>
+                    </radialGradient>
+                  </defs>
+                  <g class="riddle-safe__scale">
+                    <?php foreach (range(0, 99) as $number) : ?>
+                      <?php $tickStart = $number % 5 === 0 ? 9 : 6; ?>
+                      <line x1="50" y1="<?= esc_attr($tickStart); ?>" x2="50" y2="0"
+                        transform="rotate(<?= esc_attr($number * 3.6); ?> 50 50)"></line>
+                    <?php endforeach; ?>
+                    <?php foreach (range(0, 90, 10) as $number) : ?>
+                      <text x="50" y="15" transform="rotate(<?= esc_attr($number * 3.6); ?> 50 50)">
+                        <?= esc_html($number); ?>
+                      </text>
+                    <?php endforeach; ?>
+                  </g>
+                  <g class="riddle-safe__grip">
+                    <?php foreach (range(0, 15) as $handle) : ?>
+                      <circle cx="76" cy="50" r="3"
+                        transform="rotate(<?= esc_attr($handle * 22.5); ?> 50 50)"></circle>
+                    <?php endforeach; ?>
+                    <circle cx="50" cy="50" r="25"
+                      fill="url(#safe-center-gradient-<?= esc_attr($stepId); ?>)"></circle>
+                  </g>
+                  <text class="riddle-safe__display" x="50" y="51">
+                    <tspan class="riddle-safe__direction">*</tspan><tspan class="riddle-safe__value">0</tspan>
+                  </text>
+                </svg>
               </div>
               <output class="riddle-safe__sequence" aria-live="polite"
                 aria-label="<?= esc_attr__('Séquence saisie : vide', 'chassesautresor-com'); ?>"></output>

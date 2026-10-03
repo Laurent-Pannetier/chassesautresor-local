@@ -137,6 +137,8 @@ document.addEventListener('submit', async event => {
         safeDial.setAttribute('aria-valuenow', '0');
         safeDial.setAttribute('aria-valuetext', `${RiddleStepPlayer.safeValueLabel}: 0`);
         safeDial.querySelector('.riddle-safe__value').textContent = '0';
+        safeDial.querySelector('.riddle-safe__direction')?.replaceChildren('*');
+        delete safeDial.dataset.direction;
       }
       return;
     }
@@ -242,6 +244,17 @@ const setSafeDialValue = (dial, value) => {
   dial.querySelector('.riddle-safe__value').textContent = normalized;
 };
 
+const setSafeDialDirection = (dial, direction = '') => {
+  const directionOutput = dial.querySelector('.riddle-safe__direction');
+  const symbol = direction === 'H' ? '↷' : direction === 'A' ? '↶' : '*';
+  if (directionOutput) directionOutput.textContent = symbol;
+  if (direction) {
+    dial.dataset.direction = direction;
+  } else {
+    delete dial.dataset.direction;
+  }
+};
+
 const commitSafeDialMovement = (form, direction, value) => {
   if (!direction) return;
   const input = form.querySelector('input[name="reponse"]');
@@ -268,6 +281,7 @@ document.addEventListener('pointerdown', event => {
   dial.dataset.previousAngle = safeDialAngle(dial, event);
   dial.dataset.rotation = '0';
   dial.dataset.startValue = dial.dataset.value || '0';
+  dial.dataset.startDirection = dial.dataset.direction || '';
 });
 
 document.addEventListener('pointermove', event => {
@@ -281,6 +295,7 @@ document.addEventListener('pointermove', event => {
   const rotation = Number(dial.dataset.rotation) + delta;
   dial.dataset.previousAngle = angle;
   dial.dataset.rotation = rotation;
+  if (delta !== 0) setSafeDialDirection(dial, delta > 0 ? 'H' : 'A');
   setSafeDialValue(dial, Math.round(Number(dial.dataset.startValue) + rotation / 3.6));
 });
 
@@ -289,12 +304,15 @@ const finishSafeDialPointer = (event, shouldCommit) => {
   if (!dial || Number(dial.dataset.pointerId) !== event.pointerId) return;
   const rotation = Number(dial.dataset.rotation);
   const startValue = Number(dial.dataset.startValue || 0);
+  const startDirection = dial.dataset.startDirection || '';
   delete dial.dataset.pointerId;
   delete dial.dataset.previousAngle;
   delete dial.dataset.rotation;
   delete dial.dataset.startValue;
+  delete dial.dataset.startDirection;
   if (!shouldCommit) {
     setSafeDialValue(dial, startValue);
+    setSafeDialDirection(dial, startDirection);
     return;
   }
   if (Math.abs(rotation) < 1.8) return;
@@ -313,6 +331,7 @@ document.addEventListener('keydown', event => {
   if (!dial || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
   event.preventDefault();
   const direction = event.key === 'ArrowRight' ? 'H' : 'A';
+  setSafeDialDirection(dial, direction);
   setSafeDialValue(dial, Number(dial.dataset.value || 0) + (direction === 'H' ? 1 : -1));
   dial.dataset.keyboardDirection = direction;
 });
@@ -334,5 +353,7 @@ document.addEventListener('click', event => {
   form.querySelector('input[name="reponse"]').value = '';
   form.querySelector('.riddle-safe__sequence').textContent = '';
   setWidgetSequenceLabel(form.querySelector('.riddle-safe__sequence'));
-  setSafeDialValue(form.querySelector('.riddle-safe'), 0);
+  const dial = form.querySelector('.riddle-safe');
+  setSafeDialValue(dial, 0);
+  setSafeDialDirection(dial);
 });
