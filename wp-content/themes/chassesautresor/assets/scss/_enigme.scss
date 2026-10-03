@@ -535,7 +535,7 @@ li.active .enigme-menu__edit {
 /* Expérience de jeu recentrée pour les sites Chasse unique et Démo. */
 .page-enigme--compact {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1600px;
   margin: var(--space-lg) auto 0;
   padding-inline: var(--space-md);
   gap: var(--space-xl);
@@ -579,7 +579,6 @@ li.active .enigme-menu__edit {
     font-size: clamp(1rem, 2.5vw, 1.5rem);
   }
 
-  .hero-visuel,
   .contenu-principal,
   .participation,
   .solution {
@@ -589,14 +588,24 @@ li.active .enigme-menu__edit {
   }
 
   .hero-visuel {
+    width: 100%;
+    max-width: none;
     overflow: hidden;
     border-radius: 10px;
   }
 
+  .hero-visuel .galerie-enigme-wrapper,
+  .hero-visuel .image-principale,
+  .hero-visuel picture {
+    display: block;
+    width: 100%;
+    margin: 0;
+  }
+
   .hero-visuel img {
     width: 100%;
-    max-height: min(72vh, 760px);
-    object-fit: contain;
+    max-height: none;
+    height: auto;
   }
 
   .enigme-texte {
