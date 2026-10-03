@@ -6,6 +6,7 @@ namespace ChassesAuTresor\Core\Progress;
 
 use ChassesAuTresor\Core\Content\RiddleStepQueryService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -34,6 +35,12 @@ class RiddleAnswerSubmissionAjaxHandler {
         }
 
         $lock = self::acquireLock($riddleId, $userId);
+        $retryPolicy = CoreServiceFactory::riddleRetry(self::database());
+        $retryState = $retryPolicy->getState($userId, $riddleId);
+        if ($retryState['blocked']) {
+            self::releaseLock($lock, $riddleId, $userId);
+            wp_send_json_error($retryState);
+        }
         try {
             global $wpdb;
             $points = CoreServiceFactory::points($wpdb);
@@ -96,14 +103,26 @@ class RiddleAnswerSubmissionAjaxHandler {
         $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
 
         $lock = self::acquireLock($riddleId, $userId);
+        $retryPolicy = CoreServiceFactory::riddleRetry(self::database());
+        $retryState = $retryPolicy->getState($userId, $riddleId);
+        if ($retryState['blocked']) {
+            self::releaseLock($lock, $riddleId, $userId);
+            wp_send_json_error($retryState);
+        }
         try {
+            self::database()->query('START TRANSACTION');
             $uid = self::processAttempt(
                 $userId,
                 $riddleId,
                 $answer,
                 $evaluation['resultat']
             );
+            if (!$retryPolicy->renewAfterFailure($userId, $riddleId, $evaluation['resultat'], $uid)) {
+                throw new RuntimeException('Unable to persist the retry delay.');
+            }
+            self::database()->query('COMMIT');
         } catch (Throwable $exception) {
+            self::database()->query('ROLLBACK');
             self::releaseLock($lock, $riddleId, $userId);
             cat_debug('Erreur tentative : ' . $exception->getMessage());
             wp_send_json_error('erreur_interne');
@@ -116,6 +135,7 @@ class RiddleAnswerSubmissionAjaxHandler {
             'uid' => $uid,
             'compteur' => self::attempts()->countFailuresTodayForUser($userId, $riddleId),
             'points' => self::points()->getBalance($userId),
+            'retry' => $retryPolicy->getState($userId, $riddleId),
         ]);
     }
 
@@ -134,9 +154,6 @@ class RiddleAnswerSubmissionAjaxHandler {
         $status = $userId > 0 && $riddleId > 0
             ? (string) (CoreServiceFactory::huntProgress(self::database())->getRiddleStatus($userId, $riddleId) ?? '')
             : '';
-        $attempts = $userId > 0 && $riddleId > 0
-            ? self::attempts()->countFailuresTodayForUser($userId, $riddleId)
-            : 0;
         $finalAnswerUnlocked = true;
         if ($userId > 0 && $riddleId > 0) {
             $stepIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
@@ -154,8 +171,8 @@ class RiddleAnswerSubmissionAjaxHandler {
             $answer,
             $state,
             $status,
-            (int) get_field('enigme_tentative_max', $riddleId),
-            $attempts,
+            0,
+            0,
             (int) get_field('enigme_tentative_cout_points', $riddleId),
             $userId > 0 ? self::points()->getBalance($userId) : 0,
             $automatic,
@@ -225,6 +242,8 @@ class RiddleAnswerSubmissionAjaxHandler {
         );
         if ($created) {
             do_action('enigme_tentative_created', $riddleId);
+        } else {
+            throw new RuntimeException('Unable to persist the attempt.');
         }
 
         return $uid;

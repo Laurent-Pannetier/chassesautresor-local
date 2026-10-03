@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Progress\RiddleAttemptRepository;
 use ChassesAuTresor\Core\Progress\RiddleAttemptService;
+use ChassesAuTresor\Core\Progress\RiddleRetryConfiguration;
+use ChassesAuTresor\Core\Progress\RiddleRetryPolicyService;
+use ChassesAuTresor\Core\Progress\RiddleRetryRepository;
 use ChassesAuTresor\Core\Progress\RiddleStepProgressRepository;
 use ChassesAuTresor\Core\Progress\RiddleStepProgressService;
 use ChassesAuTresor\Core\Progress\RiddleStepSubmissionService;
@@ -69,6 +72,19 @@ final class RiddleStepSubmissionProgressRepositoryStub extends RiddleStepProgres
 
     private function key(int $userId, int $riddleId): string {
         return $userId . ':' . $riddleId;
+    }
+}
+
+final class RiddleStepSubmissionRetryDatabaseStub {
+    public string $prefix = 'wp_';
+    public bool $allowWrite = true;
+
+    public function prepare(string $query, ...$arguments): string {
+        return $query;
+    }
+
+    public function query(string $query) {
+        return $this->allowWrite ? 1 : false;
     }
 }
 
@@ -179,6 +195,37 @@ final class RiddleStepSubmissionServiceTest extends TestCase {
             self::assertSame('Database failure', $exception->getMessage());
         }
 
+        self::assertSame(['START TRANSACTION', 'ROLLBACK'], $this->database->queries);
+    }
+
+    public function testFailedRetryPersistenceRollsBackFailedAttempt(): void {
+        $retryDatabase = new RiddleStepSubmissionRetryDatabaseStub();
+        $retryDatabase->allowWrite = false;
+        $service = new RiddleStepSubmissionService(
+            $this->database,
+            new RiddleAttemptService($this->attemptRepository),
+            new RiddleStepProgressService($this->progressRepository),
+            new RiddleRetryPolicyService(
+                new RiddleRetryRepository($retryDatabase),
+                new RiddleRetryConfiguration(static fn (): int => 300),
+                static fn (): DateTimeImmutable => new DateTimeImmutable('2026-10-03 12:00:00 UTC')
+            )
+        );
+
+        $submission = $service->submit(
+            4,
+            9,
+            11,
+            [11, 12],
+            'essai',
+            'faux',
+            '2026-10-03 12:00:00',
+            'uid-retry',
+            '127.0.0.1',
+            'PHPUnit'
+        );
+
+        self::assertSame('retry_failed', $submission['status']);
         self::assertSame(['START TRANSACTION', 'ROLLBACK'], $this->database->queries);
     }
 

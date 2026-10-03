@@ -56,15 +56,15 @@ final class RiddleStepTextAjaxHandler {
 
         global $wpdb;
         $attempts = CoreServiceFactory::riddleAttempts($wpdb);
-        $max = (int) get_field('enigme_tentative_max', $riddleId);
-        $failureCount = $attempts->countFailuresTodayForUser($userId, $riddleId);
-        if ($requestPolicy->hasReachedLimit($max, $failureCount)) {
-            wp_send_json_error(['message' => __('Limite quotidienne atteinte.', 'chassesautresor-com')]);
-        }
-
         $lock = new RiddleSubmissionLock($wpdb);
         if (!$lock->acquire($userId, $riddleId)) {
             wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
+        }
+        $retryPolicy = CoreServiceFactory::riddleRetry($wpdb);
+        $retryState = $retryPolicy->getState($userId, $riddleId);
+        if ($retryState['blocked']) {
+            $lock->release($userId, $riddleId);
+            wp_send_json_error($retryState);
         }
         $submission = null;
         $evaluation = null;
@@ -76,7 +76,8 @@ final class RiddleStepTextAjaxHandler {
             $submission = (new RiddleStepSubmissionService(
                 $wpdb,
                 $attempts,
-                CoreServiceFactory::riddleStepProgress($wpdb)
+                CoreServiceFactory::riddleStepProgress($wpdb),
+                $retryPolicy
             ))->submit(
                 $userId,
                 $riddleId,
@@ -106,7 +107,7 @@ final class RiddleStepTextAjaxHandler {
             wp_send_json_error(['message' => __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')]);
         }
         if ($submission['status'] !== 'success') {
-            $message = $submission['status'] === 'attempt_failed'
+            $message = in_array($submission['status'], ['attempt_failed', 'retry_failed'], true)
                 ? __('Impossible d’enregistrer la tentative.', 'chassesautresor-com')
                 : __('Cette étape n’est plus disponible.', 'chassesautresor-com');
             wp_send_json_error(['message' => $message]);
@@ -122,6 +123,7 @@ final class RiddleStepTextAjaxHandler {
             'response_html' => $evaluation['resultat'] === 'bon'
                 ? self::renderResponse($riddleId, $userId)
                 : '',
+            'retry' => $retryPolicy->getState($userId, $riddleId),
         ]);
     }
 

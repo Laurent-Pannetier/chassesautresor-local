@@ -11,15 +11,18 @@ final class RiddleStepSubmissionService {
     private $database;
     private RiddleAttemptService $attempts;
     private RiddleStepProgressService $progress;
+    private ?RiddleRetryPolicyService $retryPolicy;
 
     public function __construct(
         $database,
         RiddleAttemptService $attempts,
-        RiddleStepProgressService $progress
+        RiddleStepProgressService $progress,
+        ?RiddleRetryPolicyService $retryPolicy = null
     ) {
         $this->database = $database;
         $this->attempts = $attempts;
         $this->progress = $progress;
+        $this->retryPolicy = $retryPolicy;
     }
 
     /**
@@ -58,6 +61,14 @@ final class RiddleStepSubmissionService {
             if (!$created) {
                 $this->database->query('ROLLBACK');
                 return ['status' => 'attempt_failed', 'state' => null];
+            }
+
+            if (
+                $this->retryPolicy !== null
+                && !$this->retryPolicy->renewAfterFailure($userId, $riddleId, $result, $uid)
+            ) {
+                $this->database->query('ROLLBACK');
+                return ['status' => 'retry_failed', 'state' => null];
             }
 
             if ($result === 'bon') {

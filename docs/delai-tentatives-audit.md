@@ -169,7 +169,9 @@ remplace l'état local seulement avec les instants renvoyés par le serveur.
 - **Remise à zéro livrée en avance sur le lot 5** : les nettoyages ciblé et global suppriment également l'état actif du
   délai, sans ajouter de suppression destructive à la migration.
 - **Lot 2 en cours** : les soumissions d'étape et de réponse finale utilisent désormais le même verrou MySQL nommé,
-  avec une compatibilité temporaire pour l'ancien nom de classe réservé aux étapes.
+  avec une compatibilité temporaire pour l'ancien nom de classe réservé aux étapes. Les étapes et réponses finales
+  relisent maintenant le délai sous ce verrou. Une erreur automatique renouvelle l'état dans la transaction qui crée
+  la tentative ; un rejet actif intervient avant insertion et avant débit de points.
 - **Lots 3 à 5 non commencés** : le quota quotidien reste la politique active tant que les handlers, les transactions,
   le contrat AJAX et l'interface n'ont pas été migrés ensemble. La présence de la nouvelle table ne change donc pas
   encore le comportement joueur.
