@@ -124,8 +124,7 @@ final class RiddlePlayerPanelRenderer {
             return '';
         }
 
-        $html = '<div class="participation-infos txt-small" '
-            . 'style="color:var(--color-text-primary);display:flex;justify-content:space-between;">';
+        $html = '<div class="participation-infos txt-small">';
         $html .= (int) $information['cost'] > 0
             ? '<span class="solde">' . sprintf(
                 esc_html__('Solde : %d pts', 'chassesautresor-com'),
@@ -151,7 +150,9 @@ final class RiddlePlayerPanelRenderer {
                 . '">' . esc_html($cost) . ' ' . esc_html__('pts', 'chassesautresor-com') . '</span>';
         }
 
-        return '<div class="participation-header"><span></span>' . $badge . '</div>';
+        $className = 'participation-header' . ($badge === '' ? ' participation-header--empty' : '');
+
+        return '<div class="' . $className . '"><span></span>' . $badge . '</div>';
     }
 
     private function progress(): HuntProgressService
