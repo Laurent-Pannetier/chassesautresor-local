@@ -58,10 +58,16 @@ l'accueil partagent désormais la même décision de présentation.
 
 ## Lot 4 — Consolidation du parcours joueur
 
+Statut : réalisé ; recette des états de compte à effectuer sur l'instance de production ou de préproduction.
+
 - Clarifier la transition entre présentation, inscription, engagement et première énigme.
 - Mettre en avant la progression et la reprise de partie.
 - Vérifier les états verrouillés, les prérequis, les indices, les solutions et la fin de chasse.
 - Vérifier l'accessibilité clavier, la structure des titres, les intitulés d'action et les annonces dynamiques.
+
+L'accueil distingue désormais les visiteurs, les joueurs connectés non engagés, les participants et les gestionnaires.
+Il propose la création de compte lorsqu'elle est autorisée, réutilise le CTA de participation et affiche aux joueurs
+engagés une progression native accessible ainsi qu'un accès direct à la reprise du parcours.
 
 ## Lot 5 — Référencement, mesure et nettoyage
 

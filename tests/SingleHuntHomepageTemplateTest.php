@@ -63,4 +63,19 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('single-hunt-manage-link', $navigation);
         self::assertStringContainsString('cta_get_primary_hunt_cta', $navigation);
     }
+
+    public function testSingleHuntHomepageGuidesGuestsParticipantsAndOrganizers(): void
+    {
+        $template = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/home/single-hunt.php'
+        );
+
+        self::assertStringContainsString('single-hunt-home__journey', $template);
+        self::assertStringContainsString('Créer mon compte', $template);
+        self::assertStringContainsString('$isEngaged', $template);
+        self::assertStringContainsString('$isOrganizer', $template);
+        self::assertStringContainsString('single-hunt-progress', $template);
+        self::assertStringContainsString('<progress', $template);
+        self::assertStringContainsString('Reprenez là où vous vous êtes arrêté.', $template);
+    }
 }
