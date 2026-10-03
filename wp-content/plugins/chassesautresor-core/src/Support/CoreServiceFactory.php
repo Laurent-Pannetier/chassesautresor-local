@@ -26,6 +26,9 @@ use ChassesAuTresor\Core\Progress\HuntStatisticsService;
 use ChassesAuTresor\Core\Progress\HuntWinnerRepository;
 use ChassesAuTresor\Core\Progress\RiddleAttemptRepository;
 use ChassesAuTresor\Core\Progress\RiddleAttemptService;
+use ChassesAuTresor\Core\Progress\RiddleRetryConfiguration;
+use ChassesAuTresor\Core\Progress\RiddleRetryPolicyService;
+use ChassesAuTresor\Core\Progress\RiddleRetryRepository;
 use ChassesAuTresor\Core\Progress\RiddleEngagementRepository;
 use ChassesAuTresor\Core\Progress\RiddleEngagementService;
 use ChassesAuTresor\Core\Progress\RiddleStatisticsRepository;
@@ -84,6 +87,14 @@ final class CoreServiceFactory
     public static function riddleAttempts(object $database): RiddleAttemptService
     {
         return new RiddleAttemptService(new RiddleAttemptRepository($database));
+    }
+
+    public static function riddleRetry(object $database): RiddleRetryPolicyService
+    {
+        return new RiddleRetryPolicyService(
+            new RiddleRetryRepository($database),
+            new RiddleRetryConfiguration()
+        );
     }
 
     public static function riddleStepProgress(object $database): RiddleStepProgressService

@@ -15,7 +15,9 @@ final class RiddleRetryConfiguration
 
     public function __construct(?callable $fieldReader = null)
     {
-        $this->fieldReader = Closure::fromCallable($fieldReader ?? 'get_field');
+        $this->fieldReader = $fieldReader !== null
+            ? Closure::fromCallable($fieldReader)
+            : static fn (string $field, int $riddleId) => get_field($field, $riddleId);
     }
 
     public function getDelaySeconds(int $riddleId): int

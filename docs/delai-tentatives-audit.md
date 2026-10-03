@@ -164,8 +164,10 @@ remplace l'état local seulement avec les instants renvoyés par le serveur.
 
 ### État d'avancement
 
-- **Lot 1 en cours** : le service de configuration, la table additive, le repository, l'horloge injectable et la
-  politique partagée sont maintenant posés et couverts par des tests unitaires.
+- **Lot 1 terminé** : le service de configuration, la table additive, le repository, l'horloge injectable et la
+  politique partagée sont posés, couverts par des tests unitaires et accessibles depuis la fabrique centrale.
+- **Remise à zéro livrée en avance sur le lot 5** : les nettoyages ciblé et global suppriment également l'état actif du
+  délai, sans ajouter de suppression destructive à la migration.
 - **Lots 2 à 5 non commencés** : le quota quotidien reste la politique active tant que les handlers, les transactions,
   le contrat AJAX et l'interface n'ont pas été migrés ensemble. La présence de la nouvelle table ne change donc pas
   encore le comportement joueur.
