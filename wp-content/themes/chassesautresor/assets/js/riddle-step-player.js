@@ -235,10 +235,12 @@ const safeDialAngle = (dial, event) => {
   return (Math.atan2(y, x) * 180 / Math.PI + 90 + 360) % 360;
 };
 
-const setSafeDialValue = (dial, value) => {
-  const normalized = (value + 100) % 100;
+const setSafeDialValue = (dial, value, angle = value * 3.6) => {
+  const normalized = ((value % 100) + 100) % 100;
+  const displayAngle = Math.round(angle * 10) / 10;
   dial.dataset.value = normalized;
-  dial.style.setProperty('--safe-angle', `${normalized * 3.6}deg`);
+  dial.dataset.angle = displayAngle;
+  dial.style.setProperty('--safe-angle', `${displayAngle}deg`);
   dial.setAttribute('aria-valuenow', normalized);
   dial.setAttribute('aria-valuetext', `${RiddleStepPlayer.safeValueLabel}: ${normalized}`);
   dial.querySelector('.riddle-safe__value').textContent = normalized;
@@ -281,6 +283,7 @@ document.addEventListener('pointerdown', event => {
   dial.dataset.previousAngle = safeDialAngle(dial, event);
   dial.dataset.rotation = '0';
   dial.dataset.startValue = dial.dataset.value || '0';
+  dial.dataset.startAngle = dial.dataset.angle || String(Number(dial.dataset.startValue) * 3.6);
   dial.dataset.startDirection = dial.dataset.direction || '';
 });
 
@@ -296,7 +299,12 @@ document.addEventListener('pointermove', event => {
   dial.dataset.previousAngle = angle;
   dial.dataset.rotation = rotation;
   if (delta !== 0) setSafeDialDirection(dial, delta > 0 ? 'H' : 'A');
-  setSafeDialValue(dial, Math.round(Number(dial.dataset.startValue) + rotation / 3.6));
+  const steps = Math.round(rotation / 3.6);
+  setSafeDialValue(
+    dial,
+    Number(dial.dataset.startValue) + steps,
+    Number(dial.dataset.startAngle) + steps * 3.6
+  );
 });
 
 const finishSafeDialPointer = (event, shouldCommit) => {
@@ -304,14 +312,16 @@ const finishSafeDialPointer = (event, shouldCommit) => {
   if (!dial || Number(dial.dataset.pointerId) !== event.pointerId) return;
   const rotation = Number(dial.dataset.rotation);
   const startValue = Number(dial.dataset.startValue || 0);
+  const startAngle = Number(dial.dataset.startAngle || startValue * 3.6);
   const startDirection = dial.dataset.startDirection || '';
   delete dial.dataset.pointerId;
   delete dial.dataset.previousAngle;
   delete dial.dataset.rotation;
   delete dial.dataset.startValue;
+  delete dial.dataset.startAngle;
   delete dial.dataset.startDirection;
   if (!shouldCommit) {
-    setSafeDialValue(dial, startValue);
+    setSafeDialValue(dial, startValue, startAngle);
     setSafeDialDirection(dial, startDirection);
     return;
   }
@@ -331,8 +341,13 @@ document.addEventListener('keydown', event => {
   if (!dial || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
   event.preventDefault();
   const direction = event.key === 'ArrowRight' ? 'H' : 'A';
+  const increment = direction === 'H' ? 1 : -1;
   setSafeDialDirection(dial, direction);
-  setSafeDialValue(dial, Number(dial.dataset.value || 0) + (direction === 'H' ? 1 : -1));
+  setSafeDialValue(
+    dial,
+    Number(dial.dataset.value || 0) + increment,
+    Number(dial.dataset.angle ?? Number(dial.dataset.value || 0) * 3.6) + increment * 3.6
+  );
   dial.dataset.keyboardDirection = direction;
 });
 

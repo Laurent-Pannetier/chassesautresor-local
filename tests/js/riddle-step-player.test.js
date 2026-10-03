@@ -32,6 +32,34 @@ describe('riddle step player positioning', () => {
     jest.restoreAllMocks();
   });
 
+  test('keeps the safe dial scale aligned when crossing zero', () => {
+    document.body.innerHTML = `
+      <form class="riddle-step-safe_dial-form">
+        <input type="hidden" name="reponse"><output class="riddle-safe__sequence"></output>
+        <div class="riddle-safe" tabindex="0" data-value="99" style="--safe-angle: 356.4deg">
+          <span class="riddle-safe__direction">*</span><span class="riddle-safe__value">99</span>
+        </div>
+      </form>`;
+    global.RiddleStepPlayer = {
+      safeValueLabel: 'Dial value',
+      clockwiseLabel: 'Clockwise',
+      counterclockwiseLabel: 'Counterclockwise'
+    };
+    eval(source);
+    const dial = document.querySelector('.riddle-safe');
+
+    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+
+    expect(dial.dataset.value).toBe('0');
+    expect(dial.querySelector('.riddle-safe__value').textContent).toBe('0');
+    expect(dial.style.getPropertyValue('--safe-angle')).toBe('360deg');
+
+    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+
+    expect(dial.dataset.value).toBe('1');
+    expect(dial.style.getPropertyValue('--safe-angle')).toBe('363.6deg');
+  });
+
   test('positions immediately, then corrects after preceding images load', async () => {
     const image = document.querySelector('#before');
     Object.defineProperty(image, 'complete', { configurable: true, value: false });

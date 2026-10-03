@@ -1409,6 +1409,13 @@ body.no-scroll {
   filter: drop-shadow(0 0.8px 1px rgb(0 0 0 / 40%));
 }
 
+.riddle-safe__gear {
+  stroke: #4f4f4f;
+  stroke-linejoin: round;
+  stroke-width: 0.65;
+  vector-effect: non-scaling-stroke;
+}
+
 .riddle-safe__display {
   fill: #111;
   font-size: 13px;
