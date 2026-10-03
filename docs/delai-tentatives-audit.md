@@ -162,6 +162,17 @@ remplace l'état local seulement avec les instants renvoyés par le serveur.
 
 ## Feuille de route en lots courts
 
+### État d'avancement
+
+- **Lot 1 en cours** : le service de configuration, la table additive, le repository, l'horloge injectable et la
+  politique partagée sont maintenant posés et couverts par des tests unitaires.
+- **Lots 2 à 5 non commencés** : le quota quotidien reste la politique active tant que les handlers, les transactions,
+  le contrat AJAX et l'interface n'ont pas été migrés ensemble. La présence de la nouvelle table ne change donc pas
+  encore le comportement joueur.
+
+Cet ordre évite un déploiement intermédiaire où une étape et la réponse finale appliqueraient deux politiques
+différentes. Chaque lot doit conserver les suites complètes vertes et peut être relu indépendamment avant le suivant.
+
 ### Lot 1 — domaine, stockage et migration additive
 
 - Ajouter le champ ACF canonique et son accès via un service de configuration.

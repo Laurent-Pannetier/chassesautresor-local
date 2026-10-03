@@ -147,6 +147,10 @@ require_once __DIR__ . '/src/Progress/RiddleAttemptRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressTable.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptStepMigration.php';
+require_once __DIR__ . '/src/Progress/RiddleRetryConfiguration.php';
+require_once __DIR__ . '/src/Progress/RiddleRetryRepository.php';
+require_once __DIR__ . '/src/Progress/RiddleRetryTable.php';
+require_once __DIR__ . '/src/Progress/RiddleRetryPolicyService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepSubmissionLock.php';
@@ -560,6 +564,11 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Progress\RiddleRetryTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Messages\UserMessagesCleanup::class, 'schedule']
 );
 
@@ -690,6 +699,11 @@ add_action(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Progress\RiddleAttemptStepMigration::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\RiddleRetryTable::class, 'maybeUpgrade']
 );
 
 add_action(
