@@ -82,6 +82,8 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[data-player-step-id="1"] form')).toBeNull();
     expect(document.querySelector('[data-player-step-id="1"]').classList).toContain('is-completed');
     expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
+    expect(document.activeElement).toBe(document.querySelector('[data-player-step-id="2"]'));
+    expect(document.activeElement.getAttribute('tabindex')).toBe('-1');
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
   });
 
@@ -123,8 +125,36 @@ describe('riddle step player positioning', () => {
     await new Promise(resolve => window.setTimeout(resolve, 0));
 
     expect(document.querySelector('.formulaire-reponse-auto')).not.toBeNull();
+    expect(document.activeElement).toBe(document.querySelector('.formulaire-reponse-auto'));
     expect(updated).toHaveBeenCalledTimes(1);
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+  });
+
+  test('restores the form and announces a malformed AJAX response', async () => {
+    window.sessionStorage.clear();
+    document.body.innerHTML = `
+      <article class="riddle-player-step is-current">
+        <form class="riddle-step-text-form" data-widget-action="soumettre_reponse_etape">
+          <input name="reponse" value="answer">
+          <button type="submit">Submit</button>
+          <p class="riddle-step-click-form__feedback" role="status"></p>
+        </form>
+      </article>
+    `;
+    global.RiddleStepPlayer = { ajaxUrl: '/ajax', error: 'Unable to submit' };
+    global.fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.reject(new SyntaxError('Invalid JSON'))
+    });
+
+    eval(source);
+    const form = document.querySelector('form');
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    expect(form.getAttribute('aria-busy')).toBe('true');
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+
+    expect(form.getAttribute('aria-busy')).toBe('false');
+    expect(form.querySelector('button').disabled).toBe(false);
+    expect(form.querySelector('[role="alert"]').textContent).toBe('Unable to submit');
   });
 
   test('builds and resets a direction sequence', () => {

@@ -15,6 +15,7 @@ final class RiddleWidgetAccessibilityTest extends TestCase {
         self::assertStringContainsString('aria-valuetext=', $source);
         self::assertStringContainsString("__('Nord-ouest', 'chassesautresor-com')", $source);
         self::assertStringContainsString('data-label="<?= esc_attr($label); ?>"', $source);
+        self::assertStringContainsString('aria-busy="false"', $source);
     }
 
     public function testPlayerScriptHandlesInterruptedPointerGestures(): void {
@@ -25,5 +26,7 @@ final class RiddleWidgetAccessibilityTest extends TestCase {
         self::assertStringContainsString("document.addEventListener('pointercancel'", $source);
         self::assertStringContainsString('setWidgetSequenceLabel(output', $source);
         self::assertStringContainsString("setAttribute('aria-valuetext'", $source);
+        self::assertStringContainsString("setAttribute('role', 'alert')", $source);
+        self::assertStringContainsString('focusUnlockedContent(target)', $source);
     }
 }

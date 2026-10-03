@@ -65,6 +65,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
           class="<?= esc_attr($widgetView['form_class']); ?>"
           data-widget-action="<?= esc_attr($widgetView['action']); ?>"
           data-max-failures="<?= esc_attr($maxFailures); ?>"
+          aria-busy="false"
         >
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
           <input type="hidden" name="etape_id" value="<?= esc_attr($stepId); ?>">

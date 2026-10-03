@@ -81,7 +81,9 @@ lorsqu’une configuration est invalide ou que la structure est figée.
 
 Une première passe d’accessibilité des widgets autonomes fournit des libellés explicites aux directions, annonce les
 séquences saisies et la valeur de la molette, rend les indicateurs de focus visibles et annule proprement un geste tactile
-interrompu. Une validation manuelle avec VoiceOver et NVDA reste recommandée sur les navigateurs cibles.
+interrompu. Les formulaires signalent aussi leur état occupé, les erreurs AJAX sont annoncées comme des alertes et le
+focus rejoint le contenu nouvellement débloqué. Une validation manuelle avec VoiceOver et NVDA reste recommandée sur les
+navigateurs cibles.
 
 Le rendu joueur des images d’étapes passe maintenant par la route protégée des énigmes, avec une autorisation liée à la
 progression et un cache privé. Le déplacement des fichiers sources dans un stockage inaccessible directement au serveur

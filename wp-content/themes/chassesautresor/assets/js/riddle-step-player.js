@@ -67,6 +67,12 @@ const unlockRiddleStepContent = (form, data) => {
   return finalForm;
 };
 
+const focusUnlockedContent = target => {
+  if (!target) return;
+  if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+  target.focus({ preventScroll: true });
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
   const target = window.sessionStorage.getItem('riddleStepScrollTarget');
   if (!target) return;
@@ -83,10 +89,20 @@ document.addEventListener('submit', async event => {
   const feedback = form.querySelector('.riddle-step-click-form__feedback');
   const data = new FormData(form);
   data.append('action', form.dataset.widgetAction);
+  form.setAttribute('aria-busy', 'true');
+  feedback.setAttribute('role', 'status');
+  feedback.textContent = '';
   button.disabled = true;
+  let keepDisabled = false;
   try {
     const response = await fetch(RiddleStepPlayer.ajaxUrl, { method: 'POST', body: data });
-    const result = await response.json();
+    let result;
+    try {
+      result = await response.json();
+    } catch (error) {
+      throw new Error(RiddleStepPlayer.error);
+    }
+    if (!result || typeof result !== 'object') throw new Error(RiddleStepPlayer.error);
     if (!result.success) throw new Error(result.data?.message || RiddleStepPlayer.error);
     if (result.data.resultat && result.data.resultat !== 'bon') {
       feedback.textContent = result.data.resultat === 'variante' && result.data.message
@@ -118,22 +134,29 @@ document.addEventListener('submit', async event => {
       const maximum = Number.parseInt(form.dataset.maxFailures || '0', 10);
       if (maximum > 0 && result.data.compteur >= maximum) {
         answerInput?.setAttribute('disabled', 'disabled');
-        button.disabled = true;
+        keepDisabled = true;
         feedback.textContent = RiddleStepPlayer.limitReached;
         return;
       }
-      button.disabled = false;
       return;
     }
     const target = unlockRiddleStepContent(form, result.data);
     if (!target) throw new Error(RiddleStepPlayer.error);
+    focusUnlockedContent(target);
     target.scrollIntoView({
       behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       block: 'start'
     });
   } catch (error) {
-    feedback.textContent = error.message;
-    button.disabled = false;
+    feedback.setAttribute('role', 'alert');
+    feedback.textContent = error instanceof Error && error.message
+      ? error.message
+      : RiddleStepPlayer.error;
+  } finally {
+    if (form.isConnected) {
+      form.setAttribute('aria-busy', 'false');
+      button.disabled = keepDisabled;
+    }
   }
 });
 
