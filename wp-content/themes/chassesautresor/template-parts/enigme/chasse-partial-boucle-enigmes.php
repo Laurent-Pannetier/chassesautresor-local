@@ -140,7 +140,7 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
       $mapping_visuel = get_mapping_visuel_enigme($enigme_id);
       $cout_points    = (int) get_field('enigme_tentative_cout_points', $enigme_id);
       $nb_participants = enigme_compter_joueurs_engages($enigme_id);
-      $nb_resolutions  = enigme_compter_bonnes_solutions($enigme_id);
+      $nb_resolveurs   = enigme_compter_joueurs_resolveurs($enigme_id);
     ?>
         <article class="<?= esc_attr($classes_carte); ?>" data-enigme-id="<?= esc_attr($enigme_id); ?>"<?= $attr_draggable; ?>>
             <?php if ($peut_reordonner) : ?>
@@ -266,7 +266,7 @@ if (!function_exists('compter_tentatives_du_jour') || !function_exists('compter_
                   <?php if ($mode_validation !== 'aucune') : ?>
                     <span class="footer-item footer-item--resolutions" title="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>" aria-label="<?= esc_attr__('nombre de joueurs ayant trouvé la bonne réponse', 'chassesautresor-com'); ?>">
                       <?= get_svg_icon('idea'); ?>
-                      <?= esc_html($nb_resolutions); ?>
+                      <?= esc_html($nb_resolveurs); ?>
                     </span>
                   <?php endif; ?>
                 </div>
