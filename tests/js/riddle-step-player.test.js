@@ -36,7 +36,7 @@ describe('riddle step player positioning', () => {
     document.body.innerHTML = `
       <form class="riddle-step-safe_dial-form">
         <input type="hidden" name="reponse"><output class="riddle-safe__sequence"></output>
-        <div class="riddle-safe" tabindex="0" data-value="99" style="--safe-angle: 356.4deg">
+        <div class="riddle-safe" tabindex="0" data-value="99" style="--safe-angle: -356.4deg">
           <span class="riddle-safe__direction">*</span><span class="riddle-safe__value">99</span>
         </div>
       </form>`;
@@ -48,16 +48,58 @@ describe('riddle step player positioning', () => {
     eval(source);
     const dial = document.querySelector('.riddle-safe');
 
-    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
 
     expect(dial.dataset.value).toBe('0');
     expect(dial.querySelector('.riddle-safe__value').textContent).toBe('0');
-    expect(dial.style.getPropertyValue('--safe-angle')).toBe('360deg');
+    expect(dial.style.getPropertyValue('--safe-angle')).toBe('-360deg');
 
-    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
 
     expect(dial.dataset.value).toBe('1');
-    expect(dial.style.getPropertyValue('--safe-angle')).toBe('363.6deg');
+    expect(dial.style.getPropertyValue('--safe-angle')).toBe('-363.6deg');
+  });
+
+  test('uses the outer marker value and the net pointer direction', () => {
+    document.body.innerHTML = `
+      <form class="riddle-step-safe_dial-form">
+        <input type="hidden" name="reponse"><output class="riddle-safe__sequence"></output>
+        <div class="riddle-safe" tabindex="0" data-value="0">
+          <span class="riddle-safe__direction">*</span><span class="riddle-safe__value">0</span>
+        </div>
+      </form>`;
+    global.RiddleStepPlayer = {
+      safeValueLabel: 'Dial value',
+      clockwiseLabel: 'Clockwise',
+      counterclockwiseLabel: 'Counterclockwise'
+    };
+    eval(source);
+    const dial = document.querySelector('.riddle-safe');
+    dial.setPointerCapture = jest.fn();
+    dial.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 100 });
+    const pointerEvent = (type, angle) => {
+      const radians = angle * Math.PI / 180;
+      const event = new MouseEvent(type, {
+        bubbles: true,
+        clientX: 50 + Math.sin(radians) * 40,
+        clientY: 50 - Math.cos(radians) * 40
+      });
+      Object.defineProperty(event, 'pointerId', { value: 1 });
+      return event;
+    };
+
+    dial.dispatchEvent(pointerEvent('pointerdown', 0));
+    dial.dispatchEvent(pointerEvent('pointermove', 54));
+    expect(dial.dataset.value).toBe('85');
+    expect(dial.dataset.direction).toBe('H');
+
+    dial.dispatchEvent(pointerEvent('pointermove', 50.4));
+    expect(dial.dataset.value).toBe('86');
+    expect(dial.dataset.direction).toBe('H');
+
+    dial.dispatchEvent(pointerEvent('pointermove', 356.4));
+    expect(dial.dataset.value).toBe('1');
+    expect(dial.dataset.direction).toBe('A');
   });
 
   test('positions immediately, then corrects after preceding images load', async () => {

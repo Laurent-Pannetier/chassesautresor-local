@@ -132,11 +132,7 @@ document.addEventListener('submit', async event => {
       form.querySelectorAll('[class$="__sequence"]').forEach(output => setWidgetSequenceLabel(output));
       const safeDial = form.querySelector('.riddle-safe');
       if (safeDial) {
-        safeDial.dataset.value = '0';
-        safeDial.style.setProperty('--safe-angle', '0deg');
-        safeDial.setAttribute('aria-valuenow', '0');
-        safeDial.setAttribute('aria-valuetext', `${RiddleStepPlayer.safeValueLabel}: 0`);
-        safeDial.querySelector('.riddle-safe__value').textContent = '0';
+        setSafeDialAngle(safeDial, 0);
         safeDial.querySelector('.riddle-safe__direction')?.replaceChildren('*');
         delete safeDial.dataset.direction;
       }
@@ -235,9 +231,10 @@ const safeDialAngle = (dial, event) => {
   return (Math.atan2(y, x) * 180 / Math.PI + 90 + 360) % 360;
 };
 
-const setSafeDialValue = (dial, value, angle = value * 3.6) => {
-  const normalized = ((value % 100) + 100) % 100;
+const setSafeDialAngle = (dial, angle) => {
   const displayAngle = Math.round(angle * 10) / 10;
+  const markerValue = Math.round(-displayAngle / 3.6);
+  const normalized = ((markerValue % 100) + 100) % 100;
   dial.dataset.value = normalized;
   dial.dataset.angle = displayAngle;
   dial.style.setProperty('--safe-angle', `${displayAngle}deg`);
@@ -282,8 +279,7 @@ document.addEventListener('pointerdown', event => {
   dial.dataset.pointerId = event.pointerId;
   dial.dataset.previousAngle = safeDialAngle(dial, event);
   dial.dataset.rotation = '0';
-  dial.dataset.startValue = dial.dataset.value || '0';
-  dial.dataset.startAngle = dial.dataset.angle || String(Number(dial.dataset.startValue) * 3.6);
+  dial.dataset.startAngle = dial.dataset.angle || String(-Number(dial.dataset.value || 0) * 3.6);
   dial.dataset.startDirection = dial.dataset.direction || '';
 });
 
@@ -298,30 +294,24 @@ document.addEventListener('pointermove', event => {
   const rotation = Number(dial.dataset.rotation) + delta;
   dial.dataset.previousAngle = angle;
   dial.dataset.rotation = rotation;
-  if (delta !== 0) setSafeDialDirection(dial, delta > 0 ? 'H' : 'A');
+  if (rotation !== 0) setSafeDialDirection(dial, rotation > 0 ? 'H' : 'A');
   const steps = Math.round(rotation / 3.6);
-  setSafeDialValue(
-    dial,
-    Number(dial.dataset.startValue) + steps,
-    Number(dial.dataset.startAngle) + steps * 3.6
-  );
+  setSafeDialAngle(dial, Number(dial.dataset.startAngle) + steps * 3.6);
 });
 
 const finishSafeDialPointer = (event, shouldCommit) => {
   const dial = event.target.closest('.riddle-safe');
   if (!dial || Number(dial.dataset.pointerId) !== event.pointerId) return;
   const rotation = Number(dial.dataset.rotation);
-  const startValue = Number(dial.dataset.startValue || 0);
-  const startAngle = Number(dial.dataset.startAngle || startValue * 3.6);
+  const startAngle = Number(dial.dataset.startAngle || 0);
   const startDirection = dial.dataset.startDirection || '';
   delete dial.dataset.pointerId;
   delete dial.dataset.previousAngle;
   delete dial.dataset.rotation;
-  delete dial.dataset.startValue;
   delete dial.dataset.startAngle;
   delete dial.dataset.startDirection;
   if (!shouldCommit) {
-    setSafeDialValue(dial, startValue, startAngle);
+    setSafeDialAngle(dial, startAngle);
     setSafeDialDirection(dial, startDirection);
     return;
   }
@@ -343,11 +333,8 @@ document.addEventListener('keydown', event => {
   const direction = event.key === 'ArrowRight' ? 'H' : 'A';
   const increment = direction === 'H' ? 1 : -1;
   setSafeDialDirection(dial, direction);
-  setSafeDialValue(
-    dial,
-    Number(dial.dataset.value || 0) + increment,
-    Number(dial.dataset.angle ?? Number(dial.dataset.value || 0) * 3.6) + increment * 3.6
-  );
+  const currentAngle = Number(dial.dataset.angle ?? -Number(dial.dataset.value || 0) * 3.6);
+  setSafeDialAngle(dial, currentAngle + increment * 3.6);
   dial.dataset.keyboardDirection = direction;
 });
 
@@ -369,6 +356,6 @@ document.addEventListener('click', event => {
   form.querySelector('.riddle-safe__sequence').textContent = '';
   setWidgetSequenceLabel(form.querySelector('.riddle-safe__sequence'));
   const dial = form.querySelector('.riddle-safe');
-  setSafeDialValue(dial, 0);
+  setSafeDialAngle(dial, 0);
   setSafeDialDirection(dial);
 });
