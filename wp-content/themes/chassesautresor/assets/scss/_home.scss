@@ -689,6 +689,59 @@ body.accueil-fullscreen {
     font-weight: 700;
 }
 
+.demo-reset-stats {
+    position: fixed;
+    top: 5.25rem;
+    right: var(--space-md);
+    z-index: 9990;
+}
+
+.admin-bar .demo-reset-stats {
+    top: 7.5rem;
+}
+
+.demo-reset-stats__button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 2.75rem;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid rgba(255, 215, 0, 0.55);
+    border-radius: 999px;
+    background: rgba(6, 10, 31, 0.94);
+    box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.35);
+    color: var(--color-primary);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+}
+
+.demo-reset-stats__button:hover,
+.demo-reset-stats__button:focus-visible {
+    border-color: var(--color-primary);
+    background: var(--color-background-dark);
+    color: var(--color-white);
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.demo-reset-stats__button:disabled {
+    cursor: progress;
+    opacity: 0.65;
+}
+
+@media (--bp-tablet) {
+    .demo-reset-stats {
+        top: 6.5rem;
+        right: var(--space-xl);
+    }
+
+    .admin-bar .demo-reset-stats {
+        top: 8.5rem;
+    }
+}
+
 @media (--bp-mobile) {
     .single-hunt-home section {
         padding-block: var(--space-4xl);

@@ -27,6 +27,8 @@ Après déploiement, sélectionner la chasse dans **Réglages > Expérience du s
 
 Le mode démo rend uniquement la présentation d'accueil accessible et l'identifie clairement comme un aperçu. Il ne
 publie pas le contenu WordPress et ne contourne pas les permissions des énigmes ou des fichiers protégés.
+Pour accélérer les recettes, tout utilisateur connecté dispose dans ce mode d'une pastille **Reset stats**. L'action
+reste protégée par un nonce, exige une confirmation et redevient strictement administrative hors mode démo.
 
 ## Lot 2 — Nouvel accueil éditorial mono-chasse
 

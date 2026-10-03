@@ -46,6 +46,18 @@ final class SiteExperienceServiceTest extends TestCase
         self::assertFalse($service->areOrganizerApplicationsOpen($settings));
     }
 
+    public function testStatisticsResetIsAvailableToLoggedInDemoUsersAndAdministratorsOnly(): void
+    {
+        $service = new SiteExperienceService();
+        $demo = ['mode' => SiteExperienceService::MODE_DEMO];
+        $singleHunt = ['mode' => SiteExperienceService::MODE_SINGLE_HUNT];
+
+        self::assertTrue($service->canResetStatistics(false, true, $demo));
+        self::assertFalse($service->canResetStatistics(false, false, $demo));
+        self::assertFalse($service->canResetStatistics(false, true, $singleHunt));
+        self::assertTrue($service->canResetStatistics(true, true, $singleHunt));
+    }
+
     public function testSanitizeRejectsAnInvalidPrimaryHuntAndClosesSingleHuntApplications(): void
     {
         $service = new SiteExperienceService();

@@ -144,7 +144,7 @@ final class AccountToolsRenderer {
                 <h3><?php esc_html_e('Reset stats', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="stats-content">
-                <button id="reset-stats-btn" class="btn-danger">
+                <button id="reset-stats-btn" class="btn-danger" data-reset-stats>
                     <?php esc_html_e('Effacer', 'chassesautresor-com'); ?>
                 </button>
             </div>

@@ -78,4 +78,15 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('<progress', $template);
         self::assertStringContainsString('Reprenez là où vous vous êtes arrêté.', $template);
     }
+
+    public function testDemoModeProvidesAnAuthenticatedStatisticsResetShortcut(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
+        $script = (string) file_get_contents(self::THEME_PATH . '/assets/js/reset-stats-card.js');
+
+        self::assertStringContainsString('cta_render_demo_reset_stats_button', $theme);
+        self::assertStringContainsString("cat_is_demo_mode()", $theme);
+        self::assertStringContainsString('data-reset-stats', $theme);
+        self::assertStringContainsString("querySelectorAll('[data-reset-stats]')", $script);
+    }
 }

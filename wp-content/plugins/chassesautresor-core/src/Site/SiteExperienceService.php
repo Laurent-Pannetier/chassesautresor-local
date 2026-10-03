@@ -50,6 +50,14 @@ final class SiteExperienceService
 
     /**
      * @param array<string, mixed> $settings
+     */
+    public function canResetStatistics(bool $administrator, bool $loggedIn, array $settings): bool
+    {
+        return $administrator || ($loggedIn && $this->isDemoMode($settings));
+    }
+
+    /**
+     * @param array<string, mixed> $settings
      *
      * @return array{mode:string,primary_hunt_id:int,organizer_applications_open:int}
      */

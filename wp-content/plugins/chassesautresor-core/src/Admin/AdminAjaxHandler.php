@@ -6,6 +6,7 @@ namespace ChassesAuTresor\Core\Admin;
 
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 use ChassesAuTresor\Core\Relationships\OrganizerRepository;
+use ChassesAuTresor\Core\Site\SiteExperienceService;
 use Closure;
 
 final class AdminAjaxHandler
@@ -129,7 +130,17 @@ final class AdminAjaxHandler
 
     public static function resetStatistics(): void
     {
-        if (!self::isAdministrator(__('Non autorisé', 'chassesautresor-com'))) {
+        $settings = function_exists('cat_get_site_experience_settings')
+            ? cat_get_site_experience_settings()
+            : [];
+        $canReset = (new SiteExperienceService())->canResetStatistics(
+            current_user_can('administrator'),
+            is_user_logged_in(),
+            $settings
+        );
+
+        if (!$canReset) {
+            wp_send_json_error(__('Non autorisé', 'chassesautresor-com'));
             return;
         }
         check_ajax_referer('cta_reset_stats', 'nonce');
