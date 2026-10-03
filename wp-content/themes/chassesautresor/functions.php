@@ -90,6 +90,10 @@ add_action( 'init', 'cta_handle_language' );
  * @return void
  */
 function ca_register_home_hunts_search_context(): void {
+    if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+        return;
+    }
+
     ca_register_search_context('home-hunts', [
         'fields' => [
             'sql' => [
@@ -374,17 +378,25 @@ add_action('wp_enqueue_scripts', function () {
     wp_set_script_translations('help-modal', 'chassesautresor-com');
 
     if (is_front_page()) {
-        wp_enqueue_script(
-            'home-hero',
-            $script_dir . 'home-hero.js',
-            [],
-            filemtime($theme_path . '/assets/js/home-hero.js'),
-            true
-        );
-
         $is_single_hunt_site = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
 
-        if (!$is_single_hunt_site) {
+        if ($is_single_hunt_site) {
+            wp_enqueue_script(
+                'single-hunt-analytics',
+                $script_dir . 'single-hunt-analytics.js',
+                [],
+                filemtime($theme_path . '/assets/js/single-hunt-analytics.js'),
+                true
+            );
+        } else {
+            wp_enqueue_script(
+                'home-hero',
+                $script_dir . 'home-hero.js',
+                [],
+                filemtime($theme_path . '/assets/js/home-hero.js'),
+                true
+            );
+
             wp_enqueue_script(
                 'home-hunts-filters',
                 $script_dir . 'home-hunts-filters.js',
@@ -443,6 +455,16 @@ add_action('wp_enqueue_scripts', function () {
     }
 
     if (is_singular('enigme')) {
+        if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+            wp_enqueue_script(
+                'single-hunt-analytics',
+                $script_dir . 'single-hunt-analytics.js',
+                [],
+                filemtime($theme_path . '/assets/js/single-hunt-analytics.js'),
+                true
+            );
+        }
+
         wp_enqueue_script(
             'accordeon',
             $script_dir . 'accordeon.js',
@@ -637,6 +659,7 @@ require_once $inc_path . 'search/helpers.php';
 require_once $inc_path . 'search/form.php';
 require_once $inc_path . 'homepage-filters.php';
 require_once $inc_path . 'single-hunt-navigation.php';
+require_once $inc_path . 'single-hunt-seo.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';

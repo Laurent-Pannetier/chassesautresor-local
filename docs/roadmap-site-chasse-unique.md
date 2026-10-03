@@ -73,10 +73,21 @@ engagés une progression native accessible ainsi qu'un accès direct à la repri
 
 ## Lot 5 — Référencement, mesure et nettoyage
 
+Statut : réalisé ; les rapports GA4 et l'aperçu des partages sociaux restent à valider après déploiement.
+
 - Réécrire les titres, descriptions sociales et données structurées autour de la chasse principale.
 - Mesurer les étapes du tunnel : découverte, inscription, engagement, première ouverture et première résolution.
 - Retirer les assets de catalogue devenus inutilisés de la présentation, sans supprimer les capacités du plugin.
 - Actualiser la documentation d'architecture et effectuer une recette de non-régression du parcours organisateur privé.
+
+La page d'accueil mono-chasse fournit désormais un titre éditorial, une description, les métadonnées Open Graph et
+des données structurées centrées sur la chasse principale. Le mode démo ajoute une directive `noindex` afin qu'une
+chasse non validée ne soit pas indexée. Les événements GA4 couvrent les CTA, l'inscription, l'engagement, l'accès aux
+énigmes, leur première ouverture et leur résolution automatique, sans transmettre d'identifiant utilisateur.
+
+Les scripts d'animation et de filtrage du catalogue ne sont plus chargés en mode mono-chasse. Leur code et le gabarit
+de plateforme restent toutefois disponibles pour garantir la réversibilité. Après déploiement, aucune configuration
+fonctionnelle supplémentaire n'est requise ; il faut seulement vérifier la réception des événements dans GA4.
 
 La fiche de la chasse n'affiche plus l'ancien fil d'Ariane `Accueil > Organisateur > Chasse`, devenu incohérent avec
 la navigation mono-chasse. Le composant générique est conservé dans le thème pour les autres contextes éventuels.

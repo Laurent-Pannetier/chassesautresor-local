@@ -97,4 +97,29 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString("template-parts/common/breadcrumb", $template);
         self::assertStringNotContainsString('$breadcrumb_items', $template);
     }
+
+    public function testSingleHuntSeoProtectsDemoModeAndProvidesStructuredData(): void
+    {
+        $seo = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-seo.php');
+
+        self::assertStringContainsString('pre_get_document_title', $seo);
+        self::assertStringContainsString('noindex,nofollow,noarchive', $seo);
+        self::assertStringContainsString('application/ld+json', $seo);
+        self::assertStringContainsString("'@type'      => 'WebPage'", $seo);
+    }
+
+    public function testSingleHuntAnalyticsCoversThePlayerFunnel(): void
+    {
+        $script = (string) file_get_contents(self::THEME_PATH . '/assets/js/single-hunt-analytics.js');
+
+        self::assertStringContainsString('single_hunt_registration', $this->getSingleHuntTemplate());
+        self::assertStringContainsString('single_hunt_engagement_start', $script);
+        self::assertStringContainsString('single_hunt_riddle_open', $script);
+        self::assertStringContainsString('single_hunt_riddle_resolved', $script);
+    }
+
+    private function getSingleHuntTemplate(): string
+    {
+        return (string) file_get_contents(self::THEME_PATH . '/template-parts/home/single-hunt.php');
+    }
 }

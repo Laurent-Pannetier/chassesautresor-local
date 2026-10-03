@@ -168,7 +168,11 @@ $editorialContent = $frontPage instanceof WP_Post
                     echo $cta['cta_html'] ?? ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     ?>
                     <?php if (get_option('users_can_register')) : ?>
-                        <a class="bouton-secondaire" href="<?php echo esc_url($registrationUrl); ?>">
+                        <a
+                            class="bouton-secondaire"
+                            href="<?php echo esc_url($registrationUrl); ?>"
+                            data-single-hunt-event="single_hunt_registration"
+                        >
                             <?php esc_html_e('Créer mon compte', 'chassesautresor-com'); ?>
                         </a>
                     <?php endif; ?>
@@ -280,7 +284,11 @@ $editorialContent = $frontPage instanceof WP_Post
                     <?php
                     echo $cta['cta_html'] ?? ''; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                     ?>
-                    <a class="single-hunt-home__details-link" href="<?php echo esc_url($detailsUrl); ?>">
+                    <a
+                        class="single-hunt-home__details-link"
+                        href="<?php echo esc_url($detailsUrl); ?>"
+                        data-single-hunt-event="single_hunt_details"
+                    >
                         <?php
                         echo esc_html(
                             $isDemoMode
@@ -366,7 +374,10 @@ $editorialContent = $frontPage instanceof WP_Post
                         <?php esc_html_e('Les énigmes vous attendent', 'chassesautresor-com'); ?>
                     </h2>
                 </div>
-                <a href="<?php echo esc_url($riddlesUrl); ?>">
+                <a
+                    href="<?php echo esc_url($riddlesUrl); ?>"
+                    data-single-hunt-event="single_hunt_riddles_access"
+                >
                     <?php esc_html_e('Accéder aux énigmes', 'chassesautresor-com'); ?>
                 </a>
             </div>
