@@ -80,7 +80,7 @@ describe('riddle step player positioning', () => {
     await new Promise(resolve => window.setTimeout(resolve, 0));
 
     expect(document.querySelector('[data-player-step-id="1"] form')).toBeNull();
-    expect(document.querySelector('[data-player-step-id="1"]').classList).toContain('is-completed');
+    expect(document.querySelector('[data-player-step-id="1"]')).toBeNull();
     expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
     expect(document.activeElement).toBe(document.querySelector('[data-player-step-id="2"]'));
     expect(document.activeElement.getAttribute('tabindex')).toBe('-1');

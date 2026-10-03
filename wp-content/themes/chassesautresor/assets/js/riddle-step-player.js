@@ -49,6 +49,10 @@ const unlockRiddleStepContent = (form, data) => {
   form.remove();
   currentArticle.classList.remove('is-current');
   currentArticle.classList.add('is-completed');
+  const emptyCompletedStep = !currentArticle.querySelector(
+    '.riddle-player-step__image, .riddle-player-step__content'
+  );
+  if (emptyCompletedStep) currentArticle.remove();
 
   if (data.current_step_id) {
     const selector = `[data-player-step-id="${data.current_step_id}"]`;
@@ -59,7 +63,7 @@ const unlockRiddleStepContent = (form, data) => {
   }
 
   const finalForm = parsed.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle');
-  if (!finalForm) return currentArticle;
+  if (!finalForm) return emptyCompletedStep ? player : currentArticle;
   player.insertAdjacentElement('afterend', finalForm);
   const manualFeedback = parsed.querySelector('.formulaire-reponse-manuelle + .reponse-feedback');
   if (manualFeedback) finalForm.insertAdjacentElement('afterend', manualFeedback);

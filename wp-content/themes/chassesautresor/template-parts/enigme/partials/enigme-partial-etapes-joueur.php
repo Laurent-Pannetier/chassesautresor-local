@@ -17,6 +17,9 @@ if ($riddleId <= 0 || $visibleIds === []) {
     $completed = in_array($stepId, $completedIds, true);
     $imageId = (int) get_field('etape_image', $stepId);
     $content = (string) get_field('etape_contenu', $stepId);
+    if ($completed && $imageId <= 0 && trim($content) === '') {
+        continue;
+    }
     ?>
     <article
       class="riddle-player-step<?= $completed ? ' is-completed' : ' is-current'; ?>"
