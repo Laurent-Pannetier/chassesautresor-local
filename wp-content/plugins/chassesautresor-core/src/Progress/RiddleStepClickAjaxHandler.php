@@ -20,20 +20,34 @@ final class RiddleStepClickAjaxHandler {
         $userId = (int) get_current_user_id();
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
         $stepId = isset($_POST['etape_id']) ? (int) $_POST['etape_id'] : 0;
-        if (
-            $userId <= 0
-            || get_post_type($riddleId) !== 'enigme'
-            || !function_exists('utilisateur_peut_voir_enigme')
-            || !utilisateur_peut_voir_enigme($riddleId, $userId)
-            || utilisateur_peut_modifier_post($riddleId)
-        ) {
+        $riddlePostType = (string) get_post_type($riddleId);
+        $stepPostType = (string) get_post_type($stepId);
+        $accessFunctionAvailable = function_exists('utilisateur_peut_voir_enigme');
+        $canViewRiddle = $userId > 0
+            && $riddlePostType === 'enigme'
+            && $accessFunctionAvailable
+            && utilisateur_peut_voir_enigme($riddleId, $userId);
+        $canModifyRiddle = $riddlePostType === 'enigme' && utilisateur_peut_modifier_post($riddleId);
+        $configuration = (new AnswerWidgetConfigurationService())->forStep($stepId);
+        $requestError = (new RiddleStepSubmissionRequestPolicy())->validate(
+            $userId,
+            $riddleId,
+            $stepId,
+            '',
+            false,
+            $riddlePostType,
+            $accessFunctionAvailable,
+            $canViewRiddle,
+            $canModifyRiddle,
+            $stepPostType,
+            (int) get_field('etape_enigme_associee', $stepId),
+            (string) ($configuration['type'] ?? ''),
+            ['click']
+        );
+        if ($requestError === RiddleStepSubmissionRequestPolicy::ACCESS_DENIED) {
             wp_send_json_error(['message' => __('Accès refusé.', 'chassesautresor-com')]);
         }
-        if (
-            get_post_type($stepId) !== RiddleStepPostTypeRegistrar::POST_TYPE
-            || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
-            || (new AnswerWidgetConfigurationService())->forStep($stepId)['type'] !== 'click'
-        ) {
+        if ($requestError !== null) {
             wp_send_json_error(['message' => __('Étape invalide.', 'chassesautresor-com')]);
         }
 

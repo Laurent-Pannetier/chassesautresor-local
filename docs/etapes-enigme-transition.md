@@ -71,6 +71,10 @@ réussite. Le nom d’une étape reste un repère interne et n’est jamais affi
   devinable ou publiquement accessible.
 - Ajouter des tests d’intégration des actions AJAX, au-delà des tests unitaires de services et d’enregistrement de hooks.
 
+La politique commune des soumissions AJAX couvre désormais la matrice d’accès joueur, le rattachement de l’étape, le
+type de widget, la présence d’une réponse et le quota d’erreurs. Un test WordPress de bout en bout des contrôleurs HTTP
+reste souhaitable pour couvrir les nonces et le format JSON réel.
+
 La sauvegarde éditoriale valide désormais le contenu et la configuration complète du widget avant toute écriture. Les
 séquences mal formées sont refusées strictement, ce qui évite les créations fantômes et les modifications partielles
 lorsqu’une configuration est invalide ou que la structure est figée.

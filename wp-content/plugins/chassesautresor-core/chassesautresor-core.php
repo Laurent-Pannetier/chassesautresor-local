@@ -150,6 +150,7 @@ require_once __DIR__ . '/src/Progress/RiddleAttemptStepMigration.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressRepository.php';
 require_once __DIR__ . '/src/Progress/RiddleStepProgressService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepSubmissionLock.php';
+require_once __DIR__ . '/src/Progress/RiddleStepSubmissionRequestPolicy.php';
 require_once __DIR__ . '/src/Progress/RiddleStepSubmissionService.php';
 require_once __DIR__ . '/src/Progress/RiddleStepClickAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/RiddleStepTextAjaxHandler.php';

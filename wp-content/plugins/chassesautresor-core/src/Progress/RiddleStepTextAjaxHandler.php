@@ -25,37 +25,48 @@ final class RiddleStepTextAjaxHandler {
         $answer = isset($_POST['reponse'])
             ? sanitize_text_field(wp_unslash((string) $_POST['reponse']))
             : '';
-        if (
-            $userId <= 0
-            || $answer === ''
-            || get_post_type($riddleId) !== 'enigme'
-            || !function_exists('utilisateur_peut_voir_enigme')
-            || !utilisateur_peut_voir_enigme($riddleId, $userId)
-            || utilisateur_peut_modifier_post($riddleId)
-            || get_post_type($stepId) !== RiddleStepPostTypeRegistrar::POST_TYPE
-            || (int) get_field('etape_enigme_associee', $stepId) !== $riddleId
-            || !self::supportsWidgetType(
-                (string) (new AnswerWidgetConfigurationService())->forStep($stepId)['type']
-            )
-        ) {
+        $riddlePostType = (string) get_post_type($riddleId);
+        $stepPostType = (string) get_post_type($stepId);
+        $accessFunctionAvailable = function_exists('utilisateur_peut_voir_enigme');
+        $canViewRiddle = $userId > 0
+            && $riddlePostType === 'enigme'
+            && $accessFunctionAvailable
+            && utilisateur_peut_voir_enigme($riddleId, $userId);
+        $canModifyRiddle = $riddlePostType === 'enigme' && utilisateur_peut_modifier_post($riddleId);
+        $configuration = (new AnswerWidgetConfigurationService())->forStep($stepId);
+        $requestPolicy = new RiddleStepSubmissionRequestPolicy();
+        $requestError = $requestPolicy->validate(
+            $userId,
+            $riddleId,
+            $stepId,
+            $answer,
+            true,
+            $riddlePostType,
+            $accessFunctionAvailable,
+            $canViewRiddle,
+            $canModifyRiddle,
+            $stepPostType,
+            (int) get_field('etape_enigme_associee', $stepId),
+            (string) ($configuration['type'] ?? ''),
+            self::SUPPORTED_WIDGETS
+        );
+        if ($requestError !== null) {
             wp_send_json_error(['message' => __('Réponse invalide.', 'chassesautresor-com')]);
         }
 
         global $wpdb;
+        $attempts = CoreServiceFactory::riddleAttempts($wpdb);
+        $max = (int) get_field('enigme_tentative_max', $riddleId);
+        $failureCount = $attempts->countFailuresTodayForUser($userId, $riddleId);
+        if ($requestPolicy->hasReachedLimit($max, $failureCount)) {
+            wp_send_json_error(['message' => __('Limite quotidienne atteinte.', 'chassesautresor-com')]);
+        }
+
         $lock = new RiddleStepSubmissionLock($wpdb);
         if (!$lock->acquire($userId, $riddleId)) {
             wp_send_json_error(['message' => __('Traitement déjà en cours.', 'chassesautresor-com')]);
         }
-        $attempts = CoreServiceFactory::riddleAttempts($wpdb);
         $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
-        $max = (int) get_field('enigme_tentative_max', $riddleId);
-        $failureCount = $attempts->countFailuresTodayForUser($userId, $riddleId);
-        if ($max > 0 && $failureCount >= $max) {
-            $lock->release($userId, $riddleId);
-            wp_send_json_error(['message' => __('Limite quotidienne atteinte.', 'chassesautresor-com')]);
-        }
-
-        $configuration = (new AnswerWidgetConfigurationService())->forStep($stepId);
         $evaluation = (new AnswerWidgetRegistry())->evaluate($answer, $configuration);
         $uid = wp_generate_uuid4();
         try {
