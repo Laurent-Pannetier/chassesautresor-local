@@ -16,17 +16,20 @@ final class SingleHuntPublicAccessHandler
 
     public static function redirectClosedEntrances(): void
     {
-        if (!cat_is_single_hunt_mode() || current_user_can('manage_options')) {
+        if (current_user_can('manage_options')) {
             return;
         }
 
         $isOrganizerConfirmation = get_query_var('confirmation_organisateur') === '1';
 
-        if (is_page(self::CLOSED_PAGE_SLUGS) || $isOrganizerConfirmation) {
+        if (
+            !cat_are_organizer_applications_open()
+            && (is_page(self::CLOSED_PAGE_SLUGS) || $isOrganizerConfirmation)
+        ) {
             self::redirectToPublicEntry();
         }
 
-        if (!is_singular('organisateur')) {
+        if (!cat_is_single_hunt_mode() || !is_singular('organisateur')) {
             return;
         }
 

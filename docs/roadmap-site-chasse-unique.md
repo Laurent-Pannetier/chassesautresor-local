@@ -26,11 +26,17 @@ Après déploiement, sélectionner la chasse dans **Réglages > Expérience du s
 
 ## Lot 2 — Nouvel accueil éditorial mono-chasse
 
+Statut : implémentation réalisée ; recette visuelle à effectuer sur une instance reliée à la base de données.
+
 - Remplacer le catalogue, la recherche et les filtres par une landing page dédiée à la chasse principale.
-- Construire les sections : promesse, informations essentielles, univers, fonctionnement, aperçu des énigmes et FAQ.
+- Construire les sections : promesse, informations essentielles, univers, fonctionnement et aperçu des énigmes.
+- Prévoir un emplacement éditorial facultatif pouvant notamment accueillir une FAQ.
 - Réutiliser les données de la chasse sans dupliquer la logique métier dans le thème.
 - Prévoir des états éditoriaux propres avant le lancement, pendant la chasse et après sa clôture.
 - Réaliser une recette visuelle mobile et ordinateur.
+
+Le contenu saisi dans l'éditeur de la page d'accueil est conservé comme section éditoriale facultative. Le catalogue
+historique reste disponible en mode `plateforme`, ce qui garantit la réversibilité de la présentation.
 
 ## Lot 3 — Navigation et CTA contextuels
 

@@ -79,8 +79,11 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
     // 🧩 HEADER VISUEL (selon contexte)
     // ==================================================
     $is_account_area      = function_exists( 'is_user_account_area' ) ? is_user_account_area() : false;
-    $is_organisation_page = function_exists( 'myaccount_is_organisation_page' ) ? myaccount_is_organisation_page() : false;
+    $is_organisation_page = function_exists( 'myaccount_is_organisation_page' )
+        ? myaccount_is_organisation_page()
+        : false;
     $should_hide_hero     = $is_account_area || $is_organisation_page;
+    $is_single_hunt_site  = function_exists( 'cat_is_single_hunt_mode' ) && cat_is_single_hunt_mode();
 
     if ( is_cart() ) {
         get_template_part('template-parts/header-panier');
@@ -100,16 +103,20 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             esc_html__( 'chasses au trésor', 'chassesautresor-com' )
         );
 
-        ob_start();
-        get_header_fallback(
-            [
-                'titre'      => $titre,
-                'sous_titre' => '',
-                'image_fond' => $image_url,
-                'logo_id'    => 475,
-            ]
-        );
-        $fallback_markup = ob_get_clean();
+        $fallback_markup = '';
+
+        if ( ! $is_single_hunt_site ) {
+            ob_start();
+            get_header_fallback(
+                [
+                    'titre'      => $titre,
+                    'sous_titre' => '',
+                    'image_fond' => $image_url,
+                    'logo_id'    => 475,
+                ]
+            );
+            $fallback_markup = ob_get_clean();
+        }
 
         if ( $fallback_markup ) {
             $fallback_markup = preg_replace(
@@ -195,6 +202,7 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
                     'description' => $description,
                     'cta_html'    => $cta_data['cta_html'] ?? '',
                     'cta_message' => $cta_data['cta_message'] ?? '',
+                    'single_hunt' => $is_single_hunt_site,
                 ]
             );
             $latest_hero_markup = ob_get_clean();
@@ -210,7 +218,10 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
             }
 
             if ( $latest_hero_markup ) {
-                echo '<div class="homepage-hero homepage-hero--latest" data-home-hero-latest>';
+                $latest_class = $is_single_hunt_site
+                    ? 'homepage-hero homepage-hero--latest is-home-hero-visible'
+                    : 'homepage-hero homepage-hero--latest';
+                echo '<div class="' . esc_attr( $latest_class ) . '" data-home-hero-latest>';
                 echo $latest_hero_markup; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 echo '</div>';
             }
@@ -280,7 +291,12 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
 
 	
         <div id="content" class="site-content">
-                <div class="ast-container<?php echo ( is_singular('enigme') || is_singular('chasse') ) ? '' : ' ast-container--boxed'; ?>">
+                <?php
+                $content_container_class = is_singular( 'enigme' ) || is_singular( 'chasse' )
+                    ? ''
+                    : ' ast-container--boxed';
+                ?>
+                <div class="ast-container<?php echo esc_attr( $content_container_class ); ?>">
                 <?php astra_content_top(); ?>
                 <?php if (!is_page_template('templates/page-devenir-organisateur.php')) : ?>
                 <section class="msg-important"><?php print_site_messages(); ?></section>
