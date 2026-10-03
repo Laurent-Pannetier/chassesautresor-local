@@ -33,8 +33,9 @@ describe('self-contained riddle widgets', () => {
       <form class="riddle-step-safe_dial-form">
         <input name="reponse"><output class="riddle-safe__sequence"></output>
         <div class="riddle-safe" tabindex="0" data-value="0" aria-valuenow="0">
-          <span class="riddle-safe__value">0</span>
+          <span class="riddle-safe__direction">*</span><span class="riddle-safe__value">0</span>
         </div>
+        <button type="button" class="riddle-widget-reset">Reset</button>
       </form>`;
   });
 
@@ -61,14 +62,17 @@ describe('self-contained riddle widgets', () => {
   test('records keyboard dial movement on release with H and A notation', () => {
     const dial = document.querySelector('.riddle-safe');
     dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↷');
     dial.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight', bubbles: true }));
     dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↶');
     dial.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowLeft', bubbles: true }));
 
     expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toBe('H1,A0');
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↻ 1');
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↺ 0');
     expect(dial.getAttribute('aria-valuetext')).toBe('Valeur de la molette: 0');
+    expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↶');
     expect(document.querySelector('.riddle-safe__sequence').getAttribute('aria-label'))
       .toContain('sens horaire 1');
   });
@@ -92,6 +96,7 @@ describe('self-contained riddle widgets', () => {
 
     expect(Number(dial.dataset.value)).toBeGreaterThan(0);
     expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toMatch(/^H\d+$/);
+    expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↷');
   });
 
   test('cancels an interrupted pointer movement without recording it', () => {
@@ -111,5 +116,14 @@ describe('self-contained riddle widgets', () => {
     expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toBe('');
     expect(dial.dataset.pointerId).toBeUndefined();
     expect(dial.dataset.value).toBe('0');
+    expect(document.querySelector('.riddle-safe__direction').textContent).toBe('*');
+  });
+
+  test('restores the initial star when the dial is reset', () => {
+    const dial = document.querySelector('.riddle-safe');
+    dial.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    document.querySelector('.riddle-step-safe_dial-form .riddle-widget-reset').click();
+
+    expect(document.querySelector('.riddle-safe__direction').textContent).toBe('*');
   });
 });

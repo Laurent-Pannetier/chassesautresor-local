@@ -8075,19 +8075,16 @@ body.no-scroll {
   filter: drop-shadow(0 0.8px 1px rgba(0, 0, 0, 0.4));
 }
 
-.riddle-safe__grip-face {
-  fill: rgba(255, 255, 255, 0.12);
-  stroke: rgba(255, 255, 255, 0.38);
-  stroke-width: 0.4;
-}
-
-.riddle-safe__value {
+.riddle-safe__display {
   fill: #111;
   font-size: 13px;
   font-weight: 700;
-  text-align: center;
   text-anchor: middle;
   dominant-baseline: middle;
+}
+
+.riddle-safe__direction {
+  font-size: 11px;
 }
 
 .riddle-safe__sequence {

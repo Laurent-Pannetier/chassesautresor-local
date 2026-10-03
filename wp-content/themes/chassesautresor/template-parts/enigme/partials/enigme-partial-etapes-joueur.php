@@ -150,7 +150,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 <span class="riddle-safe__marker" aria-hidden="true"></span>
                 <svg class="riddle-safe__dial" viewBox="0 0 100 100" aria-hidden="true">
                   <defs>
-                    <radialGradient id="safe-center-gradient-<?= esc_attr($stepId); ?>" cx="45%" cy="40%" r="58%">
+                    <radialGradient id="safe-center-gradient-<?= esc_attr($stepId); ?>" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stop-color="#dedede"></stop>
                       <stop offset="60%" stop-color="#b8b8b8"></stop>
                       <stop offset="61%" stop-color="#8b8b8b"></stop>
@@ -176,9 +176,10 @@ if ($riddleId <= 0 || $visibleIds === []) {
                     <?php endforeach; ?>
                     <circle cx="50" cy="50" r="25"
                       fill="url(#safe-center-gradient-<?= esc_attr($stepId); ?>)"></circle>
-                    <circle class="riddle-safe__grip-face" cx="50" cy="50" r="20"></circle>
                   </g>
-                  <text class="riddle-safe__value" x="50" y="51">0</text>
+                  <text class="riddle-safe__display" x="50" y="51">
+                    <tspan class="riddle-safe__direction">*</tspan><tspan class="riddle-safe__value">0</tspan>
+                  </text>
                 </svg>
               </div>
               <output class="riddle-safe__sequence" aria-live="polite"
