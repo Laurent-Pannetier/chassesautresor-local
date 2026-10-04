@@ -127,4 +127,14 @@ final class SiteExperienceServiceTest extends TestCase
         self::assertTrue($service->isPointsUiEnabled(['points_ui_enabled' => 1]));
         self::assertFalse($service->isPointsUiEnabled(['points_ui_enabled' => 0]));
     }
+
+    public function testPlatformModeIsDetectedExplicitly(): void
+    {
+        $service = new SiteExperienceService();
+
+        self::assertTrue($service->isPlatformMode(['mode' => SiteExperienceService::MODE_PLATFORM]));
+        self::assertFalse($service->isPlatformMode(['mode' => SiteExperienceService::MODE_SINGLE_HUNT]));
+        self::assertFalse($service->isPlatformMode(['mode' => SiteExperienceService::MODE_DEMO]));
+        self::assertFalse($service->isPlatformMode([]));
+    }
 }

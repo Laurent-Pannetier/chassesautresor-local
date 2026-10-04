@@ -36,3 +36,9 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
   `RiddleStatisticsApplicationService::overviewForHunt()`.
 - Accueil admin : protection globale active ; Points / taux / ACF en zone inactive.
 - Styles `.switch-control` sous `.myaccount-layout` (polish complet reporté Lot UI).
+
+## Nav CPT hors plateforme
+
+- Hors mode `platform` : pas de lien/icône organisateur dans le menu gauche ;
+  la chasse reste visible et stylée distinctement des énigmes.
+- Accès fiche `organisateur` redirigé vers l’accueil sauf admin.

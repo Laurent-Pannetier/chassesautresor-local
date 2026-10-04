@@ -280,7 +280,10 @@ function myaccount_get_organizer_nav(int $user_id): ?array
 
     $pending_enigmes = recuperer_enigmes_tentatives_en_attente($organizer_id);
 
+    $show_organizer = !function_exists('cat_is_platform_mode') || cat_is_platform_mode();
+
     $data = [
+        'show_organizer' => $show_organizer,
         'organizer' => [
             'url'     => get_permalink($organizer_id),
             'title'   => get_the_title($organizer_id),
@@ -349,13 +352,19 @@ function myaccount_get_organizer_nav(int $user_id): ?array
  */
 function myaccount_render_organizer_nav(array $data): string
 {
+    $show_organizer = !empty($data['show_organizer']);
     ob_start();
     ?>
-    <nav class="dashboard-nav organizer-nav">
-        <a href="<?php echo esc_url($data['organizer']['url']); ?>" class="<?php echo esc_attr($data['organizer']['classes']); ?>">
-            <i class="fas fa-landmark"></i>
-            <span class="nav-title"><?php echo esc_html($data['organizer']['title']); ?></span>
-        </a>
+    <nav
+        class="dashboard-nav organizer-nav<?php echo $show_organizer ? '' : ' organizer-nav--hunt-first'; ?>"
+        aria-label="<?php esc_attr_e('Organisation', 'chassesautresor-com'); ?>"
+    >
+        <?php if ($show_organizer) : ?>
+            <a href="<?php echo esc_url($data['organizer']['url']); ?>" class="<?php echo esc_attr($data['organizer']['classes']); ?>">
+                <i class="fas fa-landmark" aria-hidden="true"></i>
+                <span class="nav-title"><?php echo esc_html($data['organizer']['title']); ?></span>
+            </a>
+        <?php endif; ?>
         <?php foreach ($data['chasses'] as $chasse) : ?>
             <?php
             $tag  = $chasse['url'] ? 'a' : 'span';
@@ -364,7 +373,7 @@ function myaccount_render_organizer_nav(array $data): string
             <<?php echo $tag . $attr; ?> class="<?php echo esc_attr($chasse['classes']); ?>">
                 <span class="nav-title"><?php echo esc_html($chasse['title']); ?></span>
                 <?php if ($chasse['pending_icon']) : ?>
-                    <i class="fas fa-hourglass-half"></i>
+                    <i class="fas fa-hourglass-half" aria-hidden="true"></i>
                 <?php endif; ?>
             </<?php echo $tag; ?>>
             <?php foreach ($chasse['enigmes'] as $enigme) : ?>

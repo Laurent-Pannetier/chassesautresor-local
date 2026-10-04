@@ -33,7 +33,10 @@ class OrganizerNavigationServiceTest extends TestCase
     {
         $presentation = $this->service->getHuntPresentation(true, 'pending', 'en_attente', true);
 
-        $this->assertSame('dashboard-nav-sublink status-pending status-eligible', $presentation['classes']);
+        $this->assertSame(
+            'dashboard-nav-sublink organizer-nav-hunt status-pending status-eligible',
+            $presentation['classes']
+        );
         $this->assertTrue($presentation['pending_icon']);
     }
 
@@ -41,7 +44,10 @@ class OrganizerNavigationServiceTest extends TestCase
     {
         $presentation = $this->service->getHuntPresentation(true, 'publish', 'valide', false);
 
-        $this->assertSame('dashboard-nav-sublink status-published', $presentation['classes']);
+        $this->assertSame(
+            'dashboard-nav-sublink organizer-nav-hunt status-published',
+            $presentation['classes']
+        );
         $this->assertFalse($presentation['pending_icon']);
     }
 
@@ -49,11 +55,11 @@ class OrganizerNavigationServiceTest extends TestCase
     {
         $this->assertNull($this->service->getRiddleClasses(true, 'pending', 'invalide', false));
         $this->assertSame(
-            'dashboard-nav-subitem status-published status-important',
+            'dashboard-nav-subitem organizer-nav-riddle status-published status-important',
             $this->service->getRiddleClasses(true, 'publish', 'accessible', true)
         );
         $this->assertSame(
-            'dashboard-nav-subitem status-published',
+            'dashboard-nav-subitem organizer-nav-riddle status-published',
             $this->service->getRiddleClasses(true, 'publish', 'accessible', false)
         );
     }

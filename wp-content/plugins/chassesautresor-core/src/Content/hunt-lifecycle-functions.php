@@ -73,7 +73,13 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
         $relationships = new RelationshipService();
         $organizerId = $relationships->normalizeId(get_field('chasse_cache_organisateur', $huntId)) ?? 0;
 
-        if ($organizerId > 0) {
+        $showOrganizerLink = $organizerId > 0
+            && (
+                !function_exists('cat_is_single_hunt_mode')
+                || !cat_is_single_hunt_mode()
+                || current_user_can('manage_options')
+            );
+        if ($showOrganizerLink) {
             $links[] = [
                 'label' => __('Organisateur', 'chassesautresor-com'),
                 'url' => add_query_arg(['edition' => 'open'], get_permalink($organizerId)),

@@ -34,6 +34,14 @@ final class SiteExperienceService
     /**
      * @param array<string, mixed> $settings
      */
+    public function isPlatformMode(array $settings): bool
+    {
+        return ($settings['mode'] ?? '') === self::MODE_PLATFORM;
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     */
     public function areOrganizerApplicationsOpen(array $settings): bool
     {
         return !$this->isSingleHuntMode($settings)

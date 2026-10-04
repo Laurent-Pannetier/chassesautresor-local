@@ -33,15 +33,10 @@ final class SingleHuntPublicAccessHandler
             return;
         }
 
-        $organizerId = get_queried_object_id();
-        $userId = get_current_user_id();
-        $ownerId = (int) get_post_field('post_author', $organizerId);
-
-        if ($userId > 0 && $userId === $ownerId) {
-            return;
-        }
-
-        self::redirectToPublicEntry();
+        // Hors plateforme : la fiche organisateur n’est plus une entrée utile
+        // (y compris pour l’organisateur propriétaire). Seul l’admin passe.
+        wp_safe_redirect(home_url('/'), 302, 'ChassesAuTresor');
+        exit;
     }
 
     private static function redirectToPublicEntry(): void

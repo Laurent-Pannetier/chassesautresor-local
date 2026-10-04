@@ -377,6 +377,91 @@
     --status-bullet: var(--etat-enigme-menu-eligible);
 }
 
+.organizer-nav .dashboard-nav-sublink,
+.organizer-nav .dashboard-nav-subitem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.organizer-nav .dashboard-nav-sublink .nav-title,
+.organizer-nav .dashboard-nav-subitem .nav-title {
+    position: relative;
+    padding-left: 16px;
+}
+
+.organizer-nav .dashboard-nav-sublink .nav-title::before,
+.organizer-nav .dashboard-nav-subitem .nav-title::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background-color: var(--status-bullet, transparent);
+    box-shadow: 0 0 0 1px var(--status-bullet, transparent);
+}
+
+.organizer-nav .organizer-nav-hunt,
+.organizer-organisation-nav .organizer-nav-hunt {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--color-text-primary);
+}
+
+.organizer-nav .organizer-nav-hunt:hover,
+.organizer-nav .organizer-nav-hunt:focus,
+.organizer-organisation-nav .organizer-nav-hunt:hover,
+.organizer-organisation-nav .organizer-nav-hunt:focus {
+    color: var(--color-primary);
+    background-color: rgba(255, 255, 255, 0.08);
+    text-decoration: underline;
+}
+
+.organizer-nav .organizer-nav-riddle {
+    margin-left: 0.75rem;
+    padding-left: 1.25rem;
+    font-weight: 500;
+    font-size: 0.8125rem;
+    color: var(--color-primary, #e1a95f);
+}
+
+.organizer-nav .organizer-nav-riddle:hover,
+.organizer-nav .organizer-nav-riddle:focus {
+    color: var(--color-primary, #e1a95f);
+    background-color: rgba(255, 255, 255, 0.06);
+    text-decoration: underline;
+}
+
+.organizer-nav .organizer-nav-hunt.status-important,
+.organizer-nav .organizer-nav-riddle.status-important {
+    --status-bullet: hsl(var(--destructive));
+}
+
+.organizer-nav .organizer-nav-hunt.status-pending,
+.organizer-nav .organizer-nav-riddle.status-pending {
+    --status-bullet: var(--etat-enigme-menu-en-attente);
+}
+
+.organizer-nav .organizer-nav-hunt.status-published,
+.organizer-nav .organizer-nav-riddle.status-published {
+    --status-bullet: var(--etat-enigme-menu-succes);
+}
+
+.organizer-nav .organizer-nav-hunt.status-eligible {
+    --status-bullet: var(--etat-enigme-menu-eligible);
+}
+
+.organizer-nav--hunt-first {
+    margin-top: 0.25rem;
+}
+
 .myaccount-main {
     flex: 1;
     display: flex;

@@ -37,6 +37,13 @@ if (!function_exists('cat_is_demo_mode')) {
     }
 }
 
+if (!function_exists('cat_is_platform_mode')) {
+    function cat_is_platform_mode(): bool
+    {
+        return (new SiteExperienceService())->isPlatformMode(cat_get_site_experience_settings());
+    }
+}
+
 if (!function_exists('cat_is_points_ui_enabled')) {
     function cat_is_points_ui_enabled(): bool
     {

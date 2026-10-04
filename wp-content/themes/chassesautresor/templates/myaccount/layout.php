@@ -107,68 +107,83 @@ get_header();
                     : 0;
 
                 if ($organizer_id && function_exists('get_the_title')) {
+                    $show_organizer_link = !function_exists('cat_is_platform_mode')
+                        || cat_is_platform_mode();
                     $organisation_title = get_the_title($organizer_id);
                     $organisation_url   = function_exists('get_permalink')
                         ? get_permalink($organizer_id)
                         : '';
-                    if ($organisation_title && $organisation_url) {
-                        $organizer_hunt_ids = array();
-                        if (function_exists('get_chasses_de_organisateur')) {
-                            $hunts_query = get_chasses_de_organisateur($organizer_id);
-                            if ($hunts_query instanceof WP_Query) {
-                                $organizer_hunt_ids = array_map('intval', $hunts_query->posts);
-                            } elseif (is_array($hunts_query)) {
-                                $organizer_hunt_ids = array_map('intval', $hunts_query);
+                    $organizer_hunt_ids = array();
+                    if (function_exists('get_chasses_de_organisateur')) {
+                        $hunts_query = get_chasses_de_organisateur($organizer_id);
+                        if ($hunts_query instanceof WP_Query) {
+                            $organizer_hunt_ids = array_map('intval', $hunts_query->posts);
+                        } elseif (is_array($hunts_query)) {
+                            $organizer_hunt_ids = array_map('intval', $hunts_query);
+                        }
+                    }
+
+                    if (function_exists('chasse_est_visible_pour_utilisateur')) {
+                        $organizer_hunt_ids = array_values(array_filter(
+                            $organizer_hunt_ids,
+                            static function ($hunt_id) use ($current_user) {
+                                return chasse_est_visible_pour_utilisateur((int) $hunt_id, (int) $current_user->ID);
+                            }
+                        ));
+                    }
+
+                    $organizer_hunts = array();
+                    if (!empty($organizer_hunt_ids) && function_exists('get_permalink')) {
+                        foreach ($organizer_hunt_ids as $hunt_id) {
+                            $hunt_title = get_the_title($hunt_id);
+                            $hunt_link  = get_permalink($hunt_id);
+                            if ($hunt_title && $hunt_link) {
+                                $organizer_hunts[] = array(
+                                    'title' => $hunt_title,
+                                    'url'   => $hunt_link,
+                                );
                             }
                         }
+                    }
 
-                        if (function_exists('chasse_est_visible_pour_utilisateur')) {
-                            $organizer_hunt_ids = array_values(array_filter(
-                                $organizer_hunt_ids,
-                                static function ($hunt_id) use ($current_user) {
-                                    return chasse_est_visible_pour_utilisateur((int) $hunt_id, (int) $current_user->ID);
-                                }
-                            ));
-                        }
-
-                        $organizer_hunts = array();
-                        if (!empty($organizer_hunt_ids) && function_exists('get_permalink')) {
-                            foreach ($organizer_hunt_ids as $hunt_id) {
-                                $hunt_title = get_the_title($hunt_id);
-                                $hunt_link  = get_permalink($hunt_id);
-                                if ($hunt_title && $hunt_link) {
-                                    $organizer_hunts[] = array(
-                                        'title' => $hunt_title,
-                                        'url'   => $hunt_link,
-                                    );
-                                }
-                            }
-                        }
+                    if (($show_organizer_link && $organisation_title && $organisation_url) || !empty($organizer_hunts)) :
                         ?>
-                        <nav class="dashboard-nav organizer-organisation-nav" aria-label="<?php esc_attr_e('Organisation', 'chassesautresor-com'); ?>">
+                        <nav
+                            class="dashboard-nav organizer-organisation-nav<?php echo $show_organizer_link ? '' : ' organizer-nav--hunt-first'; ?>"
+                            aria-label="<?php esc_attr_e('Organisation', 'chassesautresor-com'); ?>"
+                        >
                             <ul class="organizer-nav-tree">
-                                <li class="organizer-nav-item organizer-nav-root">
-                                    <a href="<?php echo esc_url($organisation_url); ?>" class="dashboard-nav-link organizer-nav-link">
-                                        <i class="fas fa-landmark" aria-hidden="true"></i>
-                                        <span><?php echo esc_html($organisation_title); ?></span>
-                                    </a>
-                                    <?php if (!empty($organizer_hunts)) : ?>
-                                        <ul class="organizer-nav-children">
-                                            <?php foreach ($organizer_hunts as $organizer_hunt) : ?>
-                                                <li class="organizer-nav-item">
-                                                    <a href="<?php echo esc_url($organizer_hunt['url']); ?>" class="dashboard-nav-link organizer-nav-link">
-                                                        <i class="fas fa-map" aria-hidden="true"></i>
-                                                        <span><?php echo esc_html($organizer_hunt['title']); ?></span>
-                                                    </a>
-                                                </li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    <?php endif; ?>
-                                </li>
+                                <?php if ($show_organizer_link && $organisation_title && $organisation_url) : ?>
+                                    <li class="organizer-nav-item organizer-nav-root">
+                                        <a href="<?php echo esc_url($organisation_url); ?>" class="dashboard-nav-link organizer-nav-link">
+                                            <i class="fas fa-landmark" aria-hidden="true"></i>
+                                            <span><?php echo esc_html($organisation_title); ?></span>
+                                        </a>
+                                        <?php if (!empty($organizer_hunts)) : ?>
+                                            <ul class="organizer-nav-children">
+                                                <?php foreach ($organizer_hunts as $organizer_hunt) : ?>
+                                                    <li class="organizer-nav-item">
+                                                        <a href="<?php echo esc_url($organizer_hunt['url']); ?>" class="dashboard-nav-link organizer-nav-link organizer-nav-hunt">
+                                                            <span class="nav-title"><?php echo esc_html($organizer_hunt['title']); ?></span>
+                                                        </a>
+                                                    </li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        <?php endif; ?>
+                                    </li>
+                                <?php else : ?>
+                                    <?php foreach ($organizer_hunts as $organizer_hunt) : ?>
+                                        <li class="organizer-nav-item">
+                                            <a href="<?php echo esc_url($organizer_hunt['url']); ?>" class="dashboard-nav-link organizer-nav-link organizer-nav-hunt">
+                                                <span class="nav-title"><?php echo esc_html($organizer_hunt['title']); ?></span>
+                                            </a>
+                                        </li>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
                             </ul>
                         </nav>
                         <?php
-                    }
+                    endif;
                 }
             }
         }
