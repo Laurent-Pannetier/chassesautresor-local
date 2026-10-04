@@ -40,6 +40,8 @@ final class HuntLifecycleApplicationService
      *   can_deactivate:bool,
      *   disabled:bool,
      *   status_label:string,
+     *   badge_label:string,
+     *   badge_icon:string,
      *   help:string
      * }
      */
@@ -62,6 +64,8 @@ final class HuntLifecycleApplicationService
             'can_deactivate' => $canDeactivate,
             'disabled' => !($checked ? $canDeactivate : $canActivate),
             'status_label' => $this->statusLabel($state, $isAdmin),
+            'badge_label' => $this->badgeLabel($state),
+            'badge_icon' => $this->lifecycle->stateIcon($state),
             'help' => $this->helpText($state, $isDemoMode, $isAdmin, $canActivate, $canDeactivate),
         ];
     }
@@ -219,6 +223,16 @@ final class HuntLifecycleApplicationService
                 : __('Demande de validation en attente', 'chassesautresor-com'),
             HuntLifecycleService::STATE_EDITABLE => __('Éditable', 'chassesautresor-com'),
             default => __('Non disponible', 'chassesautresor-com'),
+        };
+    }
+
+    private function badgeLabel(string $state): string
+    {
+        return match ($state) {
+            HuntLifecycleService::STATE_ACTIVE => __('Active', 'chassesautresor-com'),
+            HuntLifecycleService::STATE_PENDING => __('En attente', 'chassesautresor-com'),
+            HuntLifecycleService::STATE_EDITABLE => __('Éditable', 'chassesautresor-com'),
+            default => __('Indisponible', 'chassesautresor-com'),
         };
     }
 

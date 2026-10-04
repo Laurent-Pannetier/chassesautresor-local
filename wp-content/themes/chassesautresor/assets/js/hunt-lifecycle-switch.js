@@ -4,13 +4,15 @@
     return;
   }
 
-  const applyView = (card, toggle, status, help, view) => {
+  const applyView = (card, toggle, status, help, badgeLabel, icon, labelOff, labelOn, view) => {
     toggle.checked = !!view.checked;
     toggle.disabled = !!view.disabled;
     card.setAttribute('data-state', view.state || '');
+
     if (status) {
       status.textContent = view.status_label || '';
     }
+
     if (help) {
       if (view.help) {
         help.hidden = false;
@@ -19,6 +21,22 @@
         help.hidden = true;
         help.textContent = '';
       }
+    }
+
+    if (badgeLabel) {
+      badgeLabel.textContent = view.badge_label || '';
+    }
+
+    if (icon) {
+      const nextIcon = view.badge_icon || 'fa-pen';
+      icon.className = 'fas ' + nextIcon;
+    }
+
+    if (labelOff) {
+      labelOff.classList.toggle('is-current', !view.checked);
+    }
+    if (labelOn) {
+      labelOn.classList.toggle('is-current', !!view.checked);
     }
   };
 
@@ -32,6 +50,10 @@
       const toggle = card.querySelector('[data-hunt-lifecycle-toggle]');
       const status = card.querySelector('[data-hunt-lifecycle-status]');
       const help = card.querySelector('[data-hunt-lifecycle-help]');
+      const badgeLabel = card.querySelector('[data-hunt-lifecycle-badge-label]');
+      const icon = card.querySelector('[data-hunt-lifecycle-icon]');
+      const labelOff = card.querySelector('[data-hunt-lifecycle-label-off]');
+      const labelOn = card.querySelector('[data-hunt-lifecycle-label-on]');
       if (!toggle) {
         return;
       }
@@ -73,7 +95,7 @@
               );
               return;
             }
-            applyView(card, toggle, status, help, view);
+            applyView(card, toggle, status, help, badgeLabel, icon, labelOff, labelOn, view);
           })
           .catch(() => {
             toggle.checked = previous;

@@ -34,6 +34,17 @@ final class HuntLifecycleService
         return $state === self::STATE_ACTIVE;
     }
 
+    /** Font Awesome icon class (without the `fas` prefix) for the header state badge. */
+    public function stateIcon(string $state): string
+    {
+        return match ($state) {
+            self::STATE_ACTIVE => 'fa-circle-check',
+            self::STATE_PENDING => 'fa-hourglass-half',
+            self::STATE_EDITABLE => 'fa-pen',
+            default => 'fa-ban',
+        };
+    }
+
     /**
      * Whether the actor may turn the switch ON (activate / request activation).
      */

@@ -12623,6 +12623,51 @@ body.woocommerce h2 {
   font-weight: 600;
 }
 
+.hunt-lifecycle-card__header {
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hunt-lifecycle-card__state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+}
+
+.hunt-lifecycle-card__state-badge i {
+  font-size: 0.8rem;
+}
+
+.hunt-lifecycle-card[data-state=editable] .hunt-lifecycle-card__state-badge {
+  background: rgba(225, 169, 95, 0.18);
+  color: var(--color-primary, #e1a95f);
+}
+
+.hunt-lifecycle-card[data-state=pending] .hunt-lifecycle-card__state-badge {
+  background: rgba(255, 193, 7, 0.16);
+  color: #ffc107;
+}
+
+.hunt-lifecycle-card[data-state=active] .hunt-lifecycle-card__state-badge {
+  background: rgba(46, 204, 113, 0.16);
+  color: #2ecc71;
+}
+
+.hunt-lifecycle-card[data-state=blocked] .hunt-lifecycle-card__state-badge {
+  background: rgba(231, 76, 60, 0.16);
+  color: #e74c3c;
+}
+
 .hunt-lifecycle-card__content {
   display: flex;
   flex-direction: column;
@@ -12632,20 +12677,53 @@ body.woocommerce h2 {
 .hunt-lifecycle-card__control {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 0.85rem;
   flex-wrap: wrap;
+}
+
+.myaccount-layout .switch-control--lifecycle {
+  width: 52px;
+  height: 30px;
+}
+
+.myaccount-layout .switch-control--lifecycle .switch-slider::before {
+  width: 26px;
+  height: 26px;
+}
+
+.myaccount-layout .switch-control--lifecycle input:checked + .switch-slider::before {
+  transform: translateX(22px);
 }
 
 .hunt-lifecycle-card__label-off,
 .hunt-lifecycle-card__label-on {
-  font-size: 0.875rem;
+  min-width: 3.5rem;
+  font-size: 0.9375rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.hunt-lifecycle-card__label-off.is-current,
+.hunt-lifecycle-card__label-on.is-current {
+  color: var(--color-text-primary, #fff);
+  font-weight: 700;
+}
+
+.hunt-lifecycle-card[data-state=active] .hunt-lifecycle-card__label-on.is-current {
+  color: #2ecc71;
+}
+
+.hunt-lifecycle-card[data-state=pending] .hunt-lifecycle-card__label-off.is-current {
+  color: #ffc107;
 }
 
 .hunt-lifecycle-card__status {
   margin: 0;
   font-weight: 600;
+  text-align: center;
 }
 
 .hunt-lifecycle-card__help {
@@ -12653,8 +12731,19 @@ body.woocommerce h2 {
   font-size: 0.875rem;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.72);
+  text-align: center;
 }
 
+@media (max-width: 480px) {
+  .hunt-lifecycle-card__control {
+    gap: 0.65rem;
+  }
+  .hunt-lifecycle-card__label-off,
+  .hunt-lifecycle-card__label-on {
+    min-width: 3rem;
+    font-size: 0.875rem;
+  }
+}
 .hunt-quick-edit-list {
   list-style: none;
   margin: 0;

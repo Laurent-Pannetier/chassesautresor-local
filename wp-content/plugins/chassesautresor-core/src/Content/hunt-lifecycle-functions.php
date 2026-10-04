@@ -115,31 +115,57 @@ if (!function_exists('cat_render_hunt_lifecycle_switch')) {
             return '';
         }
 
+        $badgeIcon = (string) ($view['badge_icon'] ?? 'fa-pen');
+        $badgeLabel = (string) ($view['badge_label'] ?? '');
+        $isOn = !empty($view['checked']);
+
         ob_start();
         ?>
         <div
             class="dashboard-card hunt-lifecycle-card"
             data-hunt-lifecycle
             data-hunt-id="<?php echo esc_attr((string) $view['hunt_id']); ?>"
-            data-state="<?php echo esc_attr($view['state']); ?>"
+            data-state="<?php echo esc_attr((string) $view['state']); ?>"
         >
-            <div class="dashboard-card-header">
-                <i class="fas fa-toggle-on" aria-hidden="true"></i>
+            <div class="dashboard-card-header hunt-lifecycle-card__header">
+                <span class="hunt-lifecycle-card__state-badge" data-hunt-lifecycle-badge>
+                    <i
+                        class="fas <?php echo esc_attr($badgeIcon); ?>"
+                        aria-hidden="true"
+                        data-hunt-lifecycle-icon
+                    ></i>
+                    <span data-hunt-lifecycle-badge-label><?php echo esc_html($badgeLabel); ?></span>
+                </span>
                 <h3><?php esc_html_e('Éditer / Activer', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="dashboard-card-content hunt-lifecycle-card__content">
-                <div class="hunt-lifecycle-card__control">
-                    <span class="hunt-lifecycle-card__label-off"><?php esc_html_e('Éditer', 'chassesautresor-com'); ?></span>
-                    <label class="switch-control">
+                <div
+                    class="hunt-lifecycle-card__control"
+                    role="group"
+                    aria-label="<?php esc_attr_e('Basculer entre édition et activation', 'chassesautresor-com'); ?>"
+                >
+                    <span
+                        class="hunt-lifecycle-card__label-off<?php echo $isOn ? '' : ' is-current'; ?>"
+                        data-hunt-lifecycle-label-off
+                    >
+                        <?php esc_html_e('Éditer', 'chassesautresor-com'); ?>
+                    </span>
+                    <label class="switch-control switch-control--lifecycle">
                         <input
                             type="checkbox"
                             data-hunt-lifecycle-toggle
-                            <?php checked(!empty($view['checked'])); ?>
+                            <?php checked($isOn); ?>
                             <?php disabled(!empty($view['disabled'])); ?>
+                            aria-label="<?php esc_attr_e('Activer la chasse', 'chassesautresor-com'); ?>"
                         >
-                        <span class="switch-slider"></span>
+                        <span class="switch-slider" aria-hidden="true"></span>
                     </label>
-                    <span class="hunt-lifecycle-card__label-on"><?php esc_html_e('Activer', 'chassesautresor-com'); ?></span>
+                    <span
+                        class="hunt-lifecycle-card__label-on<?php echo $isOn ? ' is-current' : ''; ?>"
+                        data-hunt-lifecycle-label-on
+                    >
+                        <?php esc_html_e('Activer', 'chassesautresor-com'); ?>
+                    </span>
                 </div>
                 <p class="hunt-lifecycle-card__status" data-hunt-lifecycle-status>
                     <?php echo esc_html((string) $view['status_label']); ?>

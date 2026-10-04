@@ -254,11 +254,11 @@ Statut : livré (à recetter).
 
 ### Lot UI — Présentation du switch Éditer / Activer
 
-Statut : reporté (après Lot E).
+Statut : livré (à recetter).
 
-- Remplacer la checkbox native par un vrai commutateur Orgy (slider visible).
-- Icône / pastille d’état dans l’en-tête de carte (Éditable / En attente / Active).
-- Labels Éditer / Activer toujours lisibles, y compris mobile.
+1. [x] Commutateur Orgy agrandi (`switch-control--lifecycle`) + slider visible.
+2. [x] Pastille d’état dynamique en en-tête (Éditable / En attente / Active).
+3. [x] Labels Éditer / Activer mis en avant selon l’état, lisibles mobile.
 
 ### Lot F — Plus tard
 
@@ -296,4 +296,4 @@ Statut : reporté (après Lot E).
 
 ## 7. Prochaine étape
 
-Lot UI (présentation du switch Éditer/Activer), puis Lot F (équipes, file admin).
+Lot F : file admin correction/bannir sur Accueil, puis équipes / récompenses.

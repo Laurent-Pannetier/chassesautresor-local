@@ -83,4 +83,14 @@ final class HuntLifecycleServiceTest extends TestCase
         self::assertSame('cancel', $service->deactivateAction(HuntLifecycleService::STATE_PENDING));
         self::assertSame('reopen', $service->deactivateAction(HuntLifecycleService::STATE_ACTIVE));
     }
+
+    public function testStateIconsMapToHeaderBadgeIcons(): void
+    {
+        $service = new HuntLifecycleService();
+
+        self::assertSame('fa-pen', $service->stateIcon(HuntLifecycleService::STATE_EDITABLE));
+        self::assertSame('fa-hourglass-half', $service->stateIcon(HuntLifecycleService::STATE_PENDING));
+        self::assertSame('fa-circle-check', $service->stateIcon(HuntLifecycleService::STATE_ACTIVE));
+        self::assertSame('fa-ban', $service->stateIcon(HuntLifecycleService::STATE_BLOCKED));
+    }
 }

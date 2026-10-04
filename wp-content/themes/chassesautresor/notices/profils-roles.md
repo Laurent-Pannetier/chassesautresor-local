@@ -42,3 +42,8 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
 - Hors mode `platform` : pas de lien/icône organisateur dans le menu gauche ;
   la chasse reste visible et stylée distinctement des énigmes.
 - Accès fiche `organisateur` redirigé vers l’accueil sauf admin.
+
+## Lot UI (livré)
+
+- Switch Éditer/Activer : pastille d’état en en-tête + gros commutateur Orgy.
+- Labels Éditer/Activer mis en avant selon l’état (`is-current`).
