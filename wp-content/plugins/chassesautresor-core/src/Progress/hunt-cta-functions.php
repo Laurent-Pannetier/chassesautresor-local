@@ -25,7 +25,7 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 
         return [
             'cta_html'    => sprintf(
-                '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
+                '<a href="%s" class="bouton-cta bouton-cta--color cta-chasse-action">%s</a>',
                 esc_url($login_url),
                 esc_html__('S\'identifier', 'chassesautresor-com')
             ),
@@ -75,7 +75,9 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
 
         return [
             'cta_html'    => sprintf(
-                '<a href="%s" class="bouton-secondaire">%s</a>',
+                '<a href="%s" class="cta-chasse-link cta-chasse-link--stats">'
+                . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
+                . '<span>%s</span></a>',
                 esc_url($stats_url),
                 esc_html__('Statistiques', 'chassesautresor-com')
             ),

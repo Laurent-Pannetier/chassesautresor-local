@@ -128,7 +128,7 @@ class GenererCtaChasseTest extends TestCase
 
         $this->assertSame(
             [
-                'cta_html'    => '<a href="https://example.com/wp-login.php?redirect_to=https%3A%2F%2Fexample.com%2Fchasse%2F123" class="bouton-cta bouton-cta--color">S\'identifier</a>',
+                'cta_html'    => '<a href="https://example.com/wp-login.php?redirect_to=https%3A%2F%2Fexample.com%2Fchasse%2F123" class="bouton-cta bouton-cta--color cta-chasse-action">S\'identifier</a>',
                 'cta_message' => '',
                 'type'        => 'connexion',
             ],
@@ -169,7 +169,9 @@ class GenererCtaChasseTest extends TestCase
 
         $this->assertSame(
             [
-                'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
+                'cta_html'    => '<a href="' . $expected_url . '" class="cta-chasse-link cta-chasse-link--stats">'
+                    . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
+                    . '<span>Statistiques</span></a>',
                 'cta_message' => '',
                 'type'        => 'statistiques',
             ],
@@ -192,7 +194,9 @@ class GenererCtaChasseTest extends TestCase
 
         $this->assertSame(
             [
-                'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
+                'cta_html'    => '<a href="' . $expected_url . '" class="cta-chasse-link cta-chasse-link--stats">'
+                    . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
+                    . '<span>Statistiques</span></a>',
                 'cta_message' => '',
                 'type'        => 'statistiques',
             ],
@@ -215,7 +219,9 @@ class GenererCtaChasseTest extends TestCase
 
         $this->assertSame(
             [
-                'cta_html'    => '<a href="' . $expected_url . '" class="bouton-secondaire">Statistiques</a>',
+                'cta_html'    => '<a href="' . $expected_url . '" class="cta-chasse-link cta-chasse-link--stats">'
+                    . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
+                    . '<span>Statistiques</span></a>',
                 'cta_message' => '',
                 'type'        => 'statistiques',
             ],
