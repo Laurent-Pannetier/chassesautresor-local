@@ -7,6 +7,17 @@
 - Wrap all user-facing strings in WordPress internationalization functions and use the `chassesautresor-com` text domain.
 - Write CSS and SCSS using a mobile-first approach: base styles for small screens, then extend via media queries.
 
+## CSS / SCSS (obligatoire dans ce monorepo)
+- Le build CSS vit **ici** (`chassesautresor-local`), pas dans `chassesautresor-wp` (qui n’a pas de `package.json` / `build:css`).
+- Feuille servie en front : `wp-content/themes/chassesautresor/dist/style.css` (le `style.css` racine du thème n’est que l’en-tête WP).
+- **Dès qu’un fichier SCSS du thème est modifié** (ou qu’un changement doit se refléter dans `dist/`), exécuter **systématiquement** avant commit / fin de lot :
+  ```bash
+  npm install
+  npm run build:css
+  ```
+- Committer le `dist/style.css` régénéré avec les sources SCSS.
+- Ne pas demander à Laurent de lancer ce build : c’est la responsabilité de l’agent sur ce dépôt.
+
 ## Testing
 - Before committing any change, run the project tests.
 - Use the provided helper script to get the correct PHP and Composer executables:
@@ -46,7 +57,8 @@ Détail : [`docs/deploy.md`](docs/deploy.md).
 - Le tooling de tests de ce monorepo (`vendor/`, `bin/`, suite PHPUnit racine) **n’existe pas** en ligne.
 
 ### Avant une mise en ligne
-1. Lancer les tests ici (voir section Testing) et `npm run build:css` si le CSS a changé.
-2. Synchroniser le thème vers `chassesautresor-wp`, puis déployer via Hostinger Git.
-3. Si le Core a changé : déployer le **même état** de `chassesautresor-core` via l’UI Hostinger.
-4. Vérifier ACF / migrations SQL si le lot en dépend.
+1. Lancer les tests ici (voir section Testing).
+2. Si le SCSS a changé : `npm run build:css` **dans ce dépôt** (voir section CSS / SCSS), puis inclure `dist/style.css` dans le copier-coller thème → `chassesautresor-wp`.
+3. Synchroniser le thème vers `chassesautresor-wp`, puis déployer via Hostinger Git.
+4. Si le Core a changé : déployer le **même état** de `chassesautresor-core` via l’UI Hostinger.
+5. Vérifier ACF / migrations SQL si le lot en dépend.
