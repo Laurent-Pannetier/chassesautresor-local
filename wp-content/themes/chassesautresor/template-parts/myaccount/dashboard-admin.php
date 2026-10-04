@@ -49,12 +49,10 @@ myaccount_render_dashboard_section(
     __('Indicateurs par énigme pour suivre la participation.', 'chassesautresor-com')
 );
 ?>
-<div class="dashboard-grid">
+<div class="dashboard-grid dashboard-grid--wide">
     <?php
-    myaccount_render_dashboard_placeholder(
-        __('Statistiques des énigmes', 'chassesautresor-com'),
-        __('Participants, étapes, réussites et classements seront affichés ici.', 'chassesautresor-com')
-    );
+    $stats_renderer = new ChassesAuTresor\Core\Messages\AccountHuntRiddleStatisticsRenderer();
+    echo $stats_renderer->render($hunt_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     ?>
 </div>
 
@@ -66,10 +64,8 @@ myaccount_render_dashboard_section(
 ?>
 <div class="dashboard-grid">
     <?php
-    myaccount_render_dashboard_placeholder(
-        __('Protection globale', 'chassesautresor-com'),
-        __('Le contrôle de protection du site sera déplacé ici depuis Outils.', 'chassesautresor-com')
-    );
+    $tools_renderer = new ChassesAuTresor\Core\Messages\AccountToolsRenderer();
+    echo $tools_renderer->renderProtectionCard(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     ?>
 </div>
 <div class="dashboard-grid dashboard-grid--inactive" aria-disabled="true">

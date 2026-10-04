@@ -29,3 +29,10 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
 - Accueil org/admin : accès rapide édition, switch, reset stats (démo).
 - CTA validation retiré des fiches chasse/énigme ; messages d’éligibilité nettoyés.
 - Annulation de demande rouvre bien en `correction` + `revision`.
+
+## Lot E (livré)
+
+- Stats par énigme V1 : `AccountHuntRiddleStatisticsRenderer` +
+  `RiddleStatisticsApplicationService::overviewForHunt()`.
+- Accueil admin : protection globale active ; Points / taux / ACF en zone inactive.
+- Styles `.switch-control` sous `.myaccount-layout` (polish complet reporté Lot UI).

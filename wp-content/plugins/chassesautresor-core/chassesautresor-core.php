@@ -400,6 +400,7 @@ require_once __DIR__ . '/src/Messages/important-messages.php';
 require_once __DIR__ . '/src/Messages/AccountMessageDismissalAjaxHandler.php';
 require_once __DIR__ . '/src/Messages/AccountSectionAccessService.php';
 require_once __DIR__ . '/src/Messages/AccountStatisticsRenderer.php';
+require_once __DIR__ . '/src/Messages/AccountHuntRiddleStatisticsRenderer.php';
 require_once __DIR__ . '/src/Messages/AccountToolsRenderer.php';
 require_once __DIR__ . '/src/Messages/organizer-moderation-functions.php';
 require_once __DIR__ . '/src/Messages/AccountOrganizersRenderer.php';

@@ -39,6 +39,11 @@ class RiddleStatisticsService
             : 0;
     }
 
+    public function countSolvedPlayers(int $id): int
+    {
+        return $id > 0 ? $this->repository->countSolvedPlayers($id) : 0;
+    }
+
     public function calculateResolutionRate(int $id): float
     {
         if ($id <= 0) {
@@ -50,7 +55,7 @@ class RiddleStatisticsService
             return 0.0;
         }
 
-        return (100 * $this->repository->countSolvedPlayers($id)) / $engaged;
+        return (100 * $this->countSolvedPlayers($id)) / $engaged;
     }
 
     public function listSolvers(int $id, array $excludedUserIds = []): array

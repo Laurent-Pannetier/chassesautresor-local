@@ -245,15 +245,27 @@ Statut : livré (à recetter).
 
 ### Lot E — Statistiques & outils
 
-1. Stats par énigme (V1 : participants, réussites / trouvées, tentatives, classement simple ; étapes intermédiaires si données dispo).
-2. Masquer les 3 blocs points.
-3. Outils bas de page : protection active ; Points / taux / ACF inactifs.
+Statut : livré (à recetter).
+
+1. [x] Stats par énigme (V1 : participants, trouvées, tentatives, classement simple ; étapes si dispo).
+2. [x] Masquer les 3 blocs points (déjà conditionné par `points_ui_enabled`).
+3. [x] Outils bas de page : protection active ; Points / taux / ACF inactifs.
+4. [x] Styles `.switch-control` sur Mon compte (polish UI complet = Lot UI).
+
+### Lot UI — Présentation du switch Éditer / Activer
+
+Statut : reporté (après Lot E).
+
+- Remplacer la checkbox native par un vrai commutateur Orgy (slider visible).
+- Icône / pastille d’état dans l’en-tête de carte (Éditable / En attente / Active).
+- Labels Éditer / Activer toujours lisibles, y compris mobile.
 
 ### Lot F — Plus tard
 
 - Équipes complètes.
 - Récompenses.
 - Réactivation Points via le paramètre d’expérience.
+- File d’actions admin (correction / bannir) entièrement sur Accueil.
 
 ---
 
@@ -284,5 +296,4 @@ Statut : livré (à recetter).
 
 ## 7. Prochaine étape
 
-Valider ce document, puis ouvrir le **Lot A** (navigation & coque) en ticket
-dédié, sans y mélanger le switch ni les stats.
+Lot UI (présentation du switch Éditer/Activer), puis Lot F (équipes, file admin).

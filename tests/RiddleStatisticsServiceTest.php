@@ -70,6 +70,16 @@ class RiddleStatisticsServiceTest extends TestCase
         $this->assertSame(0, $service->countEngagedPlayers(0));
     }
 
+    public function testSolvedPlayersCountIsDelegated(): void
+    {
+        $repository = new RiddleStatisticsRepositoryStub();
+        $service = new RiddleStatisticsService($repository);
+
+        $this->assertSame(2, $service->countSolvedPlayers(10));
+        $this->assertSame([10], $repository->arguments);
+        $this->assertSame(0, $service->countSolvedPlayers(0));
+    }
+
     public function testResolutionRateUsesEngagedAndSolvedPlayers(): void
     {
         $service = new RiddleStatisticsService(new RiddleStatisticsRepositoryStub());

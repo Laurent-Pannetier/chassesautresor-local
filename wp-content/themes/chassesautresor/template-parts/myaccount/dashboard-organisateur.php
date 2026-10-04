@@ -49,11 +49,9 @@ myaccount_render_dashboard_section(
     __('Vue détaillée de la participation à votre chasse.', 'chassesautresor-com')
 );
 ?>
-<div class="dashboard-grid">
+<div class="dashboard-grid dashboard-grid--wide">
     <?php
-    myaccount_render_dashboard_placeholder(
-        __('Statistiques de la chasse', 'chassesautresor-com'),
-        __('Les indicateurs détaillés de votre chasse seront affichés ici.', 'chassesautresor-com')
-    );
+    $stats_renderer = new ChassesAuTresor\Core\Messages\AccountHuntRiddleStatisticsRenderer();
+    echo $stats_renderer->render($hunt_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     ?>
 </div>

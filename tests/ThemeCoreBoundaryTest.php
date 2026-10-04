@@ -1482,6 +1482,32 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class AccountToolsRenderer', $renderer);
     }
 
+    public function testAccountHuntRiddleStatisticsRenderingBelongsToCore(): void
+    {
+        $adminDashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
+        );
+        $orgDashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-organisateur.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountHuntRiddleStatisticsRenderer.php'
+        );
+
+        self::assertStringContainsString(
+            'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
+            $adminDashboard
+        );
+        self::assertStringContainsString(
+            'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
+            $orgDashboard
+        );
+        self::assertStringContainsString('renderProtectionCard', $adminDashboard);
+        self::assertStringContainsString('class AccountHuntRiddleStatisticsRenderer', $renderer);
+        self::assertStringNotContainsString('RiddleStatisticsApplicationService', $adminDashboard);
+        self::assertStringNotContainsString('RiddleStatisticsApplicationService', $orgDashboard);
+    }
+
     public function testOrganizerModerationAttemptHelpersBelongToCore(): void
     {
         $attempts = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');

@@ -74,6 +74,22 @@ class RiddleStepProgressRepository {
         ) > 0;
     }
 
+    public function countPlayersWithCompletedSteps(int $riddleId): int {
+        if ($riddleId <= 0) {
+            return 0;
+        }
+
+        $table = $this->wpdb->prefix . 'enigme_etapes_progression';
+
+        return (int) $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(DISTINCT user_id) FROM {$table} "
+                    . "WHERE enigme_id = %d AND statut = 'trouvee'",
+                $riddleId
+            )
+        );
+    }
+
     public function deleteForRiddle(int $riddleId): int {
         if ($riddleId <= 0) {
             return 0;
