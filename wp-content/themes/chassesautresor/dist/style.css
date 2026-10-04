@@ -7515,7 +7515,7 @@ li.active .enigme-menu__edit {
   text-align: left;
 }
 .page-enigme--compact .enigme-hunt-context {
-  display: none;
+  display: inline-flex;
   align-items: center;
   align-self: flex-start;
   gap: var(--space-xs);
@@ -7631,9 +7631,6 @@ li.active .enigme-menu__edit {
   .page-enigme--compact {
     padding-inline: var(--space-xl);
     gap: var(--space-2xl);
-  }
-  .page-enigme--compact .enigme-hunt-context {
-    display: inline-flex;
   }
   .page-enigme--compact .participation {
     width: 100%;
@@ -7828,6 +7825,12 @@ li.active .enigme-menu__edit {
   background-color: transparent;
 }
 
+/* Sans pastille, le header mobile n’a rien d’utile au-dessus du breakpoint desktop. */
+@media (min-width: 1024px) {
+  .enigme-mobile-header--no-back {
+    display: none;
+  }
+}
 .enigme-mobile-actions {
   display: none;
 }
@@ -7898,6 +7901,9 @@ li.active .enigme-menu__edit {
     padding-right: calc(var(--space-md) + env(safe-area-inset-right));
     padding-bottom: 0;
     background-color: transparent;
+  }
+  .enigme-mobile-header--no-back {
+    justify-content: flex-end;
   }
   .enigme-mobile-actions {
     display: flex;
