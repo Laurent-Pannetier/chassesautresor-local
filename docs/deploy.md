@@ -40,12 +40,19 @@ Les deux canaux de prod sont **volontairement séparés**. On ne fusionne pas th
 - Pointer la destination sur `wp-content` pour y coller thème + Core est **refusé** : risque d’écraser WooCommerce, ACF, Astra, etc.
 - Décision produit actuelle : **ne rien changer** à ce mapping ; garder Git = thème only.
 
+## Build CSS (Local uniquement)
+
+- Commande : `npm run build:css` à la **racine de `chassesautresor-local`**.
+- Entrée : `wp-content/themes/chassesautresor/assets/scss/` → sortie : `wp-content/themes/chassesautresor/dist/style.css`.
+- Le dépôt `chassesautresor-wp` **ne compile pas** le CSS : il reçoit le `dist/` déjà généré via le copier-coller Windows du thème.
+- Les agents qui modifient du SCSS dans ce monorepo doivent lancer le build **systématiquement** avant commit (voir `AGENTS.md`).
+
 ## Checklist avant mise en ligne
 
 1. Sur Local (`chassesautresor-local`) :
    - `source ./setup-env.sh && composer install`
    - `vendor/bin/phpunit -c tests/phpunit.xml`
-   - `npm run build:css` si SCSS / styles modifiés
+   - `npm run build:css` si SCSS / styles modifiés (commit / copier aussi `dist/style.css`)
    - éventuellement `npm test` (Jest) si JS touché
 2. Propagrer le thème vers le dépôt **`chassesautresor-wp`**, puis déployer la branche Hostinger (`dev_60`).
 3. Si le lot touche le Core : déployer le **même état** de `chassesautresor-core` via Hostinger.
