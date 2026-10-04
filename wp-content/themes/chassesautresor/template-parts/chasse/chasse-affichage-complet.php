@@ -453,7 +453,13 @@ if ($edition_active && !$est_complet) {
         $show_cta_section = $compact_experience
             ? ($has_cta && $cta_type !== 'engage')
             : true;
-        $cta_section_class = 'chasse-cta-section' . ($has_cta ? ' cta-chasse' : '');
+        $cta_section_class = 'chasse-cta-section';
+        if ($has_cta) {
+            $cta_section_class .= ' chasse-cta-section--has-action';
+            if ($cta_type !== '') {
+                $cta_section_class .= ' chasse-cta-section--' . sanitize_html_class($cta_type);
+            }
+        }
         ?>
         <?php if ($show_cta_section) : ?>
         <div class="<?= esc_attr($cta_section_class); ?>">
