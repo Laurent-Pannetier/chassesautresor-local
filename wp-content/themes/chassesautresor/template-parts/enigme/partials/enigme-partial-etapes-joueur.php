@@ -285,16 +285,18 @@ if ($riddleId <= 0 || $visibleIds === []) {
                   </div>
                 <?php endforeach; ?>
               </div>
-              <output class="riddle-piano__sequence" aria-live="polite"
-                aria-label="<?= esc_attr__('Séquence saisie : vide', 'chassesautresor-com'); ?>"></output>
-              <button type="button" class="riddle-piano__play" disabled>
-                <?= esc_html__('Jouer la séquence', 'chassesautresor-com'); ?>
-              </button>
-              <div class="riddle-widget-actions">
-                <button type="button" class="riddle-widget-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
-                <button type="submit" class="bouton-cta bouton-cta--color" disabled>
-                  <?= esc_html($widgetView['button_label']); ?>
+              <div class="riddle-piano__controls">
+                <output class="riddle-piano__sequence" aria-live="polite"
+                  aria-label="<?= esc_attr__('Séquence saisie : vide', 'chassesautresor-com'); ?>"></output>
+                <button type="button" class="riddle-piano__play" disabled>
+                  <?= esc_html__('Jouer la séquence', 'chassesautresor-com'); ?>
                 </button>
+                <div class="riddle-piano__actions riddle-widget-actions">
+                  <button type="button" class="riddle-widget-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                  <button type="submit" class="bouton-cta bouton-cta--color riddle-piano__submit" disabled>
+                    <?= esc_html($widgetView['button_label']); ?>
+                  </button>
+                </div>
               </div>
             <?php endif; ?>
           <?php elseif ($widgetView['type'] === 'gps') : ?>
