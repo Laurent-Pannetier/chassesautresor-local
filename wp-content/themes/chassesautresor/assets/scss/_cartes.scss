@@ -53,8 +53,10 @@
   }
 }
 
-/* Mono-chasse : cartes poster homogènes (image dominante, titre en bas, sans CTA redondant). */
-.page-chasse-wrapper--compact .cards-grid {
+/* Mono-chasse : cartes poster homogènes (image dominante, titre en bas, sans CTA redondant).
+   `.cards-grid--poster` sécurise le rendu même si un panneau d'édition casse le wrapper. */
+.page-chasse-wrapper--compact .cards-grid,
+.cards-grid--poster {
   --carte-enigme-poster-max-width: 20rem;
   gap: var(--space-lg);
   width: 100%;
