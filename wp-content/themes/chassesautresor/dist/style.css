@@ -1197,7 +1197,32 @@
 .page-chasse-wrapper--compact .meta-row--headline {
   margin: 0;
   justify-content: flex-start;
-  gap: var(--space-md);
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  row-gap: var(--space-xs);
+}
+.page-chasse-wrapper--compact .meta-row--with-cta {
+  width: 100%;
+}
+.page-chasse-wrapper--compact .meta-row__cta {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+.page-chasse-wrapper--compact .meta-row__cta .cta-action {
+  display: flex;
+  align-items: center;
+}
+.page-chasse-wrapper--compact .meta-row__cta .bouton-cta,
+.page-chasse-wrapper--compact .meta-row__cta .cta-chasse-action,
+.page-chasse-wrapper--compact .meta-row__cta .cta-chasse-link {
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 .page-chasse-wrapper--compact .chasse-cta-section {
   margin-top: var(--space-sm);
@@ -1215,6 +1240,12 @@
 .page-chasse-wrapper--compact .cta-action .bouton-cta,
 .page-chasse-wrapper--compact .cta-action .cta-chasse-action {
   margin-top: 0;
+}
+@media (max-width: 419px) {
+  .page-chasse-wrapper--compact .meta-row__cta {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 .page-chasse-wrapper--compact .chasse-enigmes-wrapper {
   margin-top: var(--space-xl);
