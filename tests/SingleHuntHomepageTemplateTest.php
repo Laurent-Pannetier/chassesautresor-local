@@ -139,6 +139,22 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('$breadcrumb_items', $template);
     }
 
+    public function testCompactHuntPageSkipsVisibleEnigmesIntroBlock(): void
+    {
+        $template = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+        $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_chasse.scss');
+
+        self::assertMatchesRegularExpression(
+            '/if \(\$compact_experience\)\s*:\s*\?>\s*<h2 class="screen-reader-text">/s',
+            $template
+        );
+        self::assertStringContainsString("esc_html_e('Les énigmes', 'chassesautresor-com')", $template);
+        self::assertStringContainsString('if (!$compact_experience)', $template);
+        self::assertStringContainsString('titre-enigmes-wrapper', $template);
+        self::assertStringContainsString('margin-top: var(--space-md);', $styles);
+        self::assertStringNotContainsString('.titre-enigmes-wrapper {', $styles);
+    }
+
     public function testSingleHuntSeoProtectsDemoModeAndProvidesStructuredData(): void
     {
         $seo = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-seo.php');

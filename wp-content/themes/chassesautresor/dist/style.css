@@ -1251,11 +1251,7 @@
   margin-top: 0;
 }
 .page-chasse-wrapper--compact .chasse-enigmes-wrapper {
-  margin-top: var(--space-xl);
-}
-.page-chasse-wrapper--compact .titre-enigmes-wrapper {
-  align-items: flex-start;
-  text-align: left;
+  margin-top: var(--space-md);
 }
 @media (min-width: 600px) {
   .page-chasse-wrapper--compact .chasse-fiche-container {
