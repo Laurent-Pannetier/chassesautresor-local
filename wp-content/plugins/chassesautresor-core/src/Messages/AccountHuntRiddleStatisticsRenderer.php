@@ -45,32 +45,43 @@ final class AccountHuntRiddleStatisticsRenderer
                 <h3><?php esc_html_e('Statistiques des énigmes', 'chassesautresor-com'); ?></h3>
             </div>
             <div class="dashboard-card-content">
-                <div class="stats-table-wrapper">
-                    <table class="stats-table compact myaccount-riddle-stats-table">
-                        <thead>
-                            <tr>
-                                <th scope="col"><?php esc_html_e('Énigme', 'chassesautresor-com'); ?></th>
-                                <th scope="col"><?php esc_html_e('Participants', 'chassesautresor-com'); ?></th>
-                                <th scope="col"><?php esc_html_e('Trouvées', 'chassesautresor-com'); ?></th>
-                                <th scope="col"><?php esc_html_e('Tentatives', 'chassesautresor-com'); ?></th>
-                                <th scope="col"><?php esc_html_e('Étapes', 'chassesautresor-com'); ?></th>
-                                <th scope="col"><?php esc_html_e('Classement', 'chassesautresor-com'); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($rows as $row) : ?>
-                                <tr>
-                                    <th scope="row"><?php echo esc_html((string) ($row['title'] ?? '')); ?></th>
-                                    <td><?php echo esc_html((string) (int) ($row['participants'] ?? 0)); ?></td>
-                                    <td><?php echo esc_html((string) (int) ($row['trouves'] ?? 0)); ?></td>
-                                    <td><?php echo esc_html((string) (int) ($row['tentatives'] ?? 0)); ?></td>
-                                    <td><?php echo esc_html($this->stepsLabel($row)); ?></td>
-                                    <td><?php echo esc_html($this->rankingLabel((array) ($row['ranking'] ?? []))); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+                <ul class="myaccount-riddle-stats-list">
+                    <?php foreach ($rows as $row) : ?>
+                        <li class="myaccount-riddle-stats-item">
+                            <h4 class="myaccount-riddle-stats-item__title">
+                                <?php echo esc_html((string) ($row['title'] ?? '')); ?>
+                            </h4>
+                            <dl class="myaccount-riddle-stats-metrics">
+                                <?php
+                                echo $this->metric(
+                                    __('Participants', 'chassesautresor-com'),
+                                    (string) (int) ($row['participants'] ?? 0)
+                                );
+                                echo $this->metric(
+                                    __('Trouvées', 'chassesautresor-com'),
+                                    (string) (int) ($row['trouves'] ?? 0)
+                                );
+                                echo $this->metric(
+                                    __('Tentatives', 'chassesautresor-com'),
+                                    (string) (int) ($row['tentatives'] ?? 0)
+                                );
+                                echo $this->metric(
+                                    __('Étapes', 'chassesautresor-com'),
+                                    $this->stepsLabel($row)
+                                );
+                                ?>
+                            </dl>
+                            <div class="myaccount-riddle-stats-ranking">
+                                <span class="myaccount-riddle-stats-ranking__label">
+                                    <?php esc_html_e('Classement', 'chassesautresor-com'); ?>
+                                </span>
+                                <span class="myaccount-riddle-stats-ranking__value">
+                                    <?php echo esc_html($this->rankingLabel((array) ($row['ranking'] ?? []))); ?>
+                                </span>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             </div>
         </div>
         <?php
@@ -88,6 +99,14 @@ final class AccountHuntRiddleStatisticsRenderer
         );
 
         return $application->overviewForHunt($huntId);
+    }
+
+    private function metric(string $label, string $value): string
+    {
+        return '<div class="myaccount-riddle-stats-metric">'
+            . '<dt>' . esc_html($label) . '</dt>'
+            . '<dd>' . esc_html($value) . '</dd>'
+            . '</div>';
     }
 
     /** @param array<string, mixed> $row */

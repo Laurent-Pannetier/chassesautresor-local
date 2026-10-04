@@ -11,7 +11,7 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function testRendersRiddleOverviewTable(): void
+    public function testRendersReadablePerRiddleMetrics(): void
     {
         function __($value): string
         {
@@ -49,13 +49,16 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
 
         $html = (new AccountHuntRiddleStatisticsRenderer($rowsProvider))->render(12);
 
-        self::assertStringContainsString('myaccount-riddle-stats-table', $html);
+        self::assertStringContainsString('myaccount-riddle-stats-list', $html);
+        self::assertStringContainsString('myaccount-riddle-stats-metric', $html);
         self::assertStringContainsString('Énigme Alpha', $html);
+        self::assertStringContainsString('Participants', $html);
         self::assertStringContainsString('3 (1 joueur)', $html);
         self::assertStringContainsString('1. alice · 2. bob', $html);
-        self::assertStringContainsString('>4</td>', $html);
-        self::assertStringContainsString('>2</td>', $html);
-        self::assertStringContainsString('>11</td>', $html);
+        self::assertStringContainsString('<dd>4</dd>', $html);
+        self::assertStringContainsString('<dd>2</dd>', $html);
+        self::assertStringContainsString('<dd>11</dd>', $html);
+        self::assertStringNotContainsString('<table', $html);
     }
 
     /**
