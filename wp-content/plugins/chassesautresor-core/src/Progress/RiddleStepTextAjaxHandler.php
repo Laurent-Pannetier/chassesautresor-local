@@ -11,7 +11,7 @@ use Throwable;
 
 /** Evaluate a text response for the current intermediate step. */
 final class RiddleStepTextAjaxHandler {
-    private const SUPPORTED_WIDGETS = ['text', 'directions', 'colors', 'numbers', 'safe_dial'];
+    private const SUPPORTED_WIDGETS = ['text', 'directions', 'colors', 'numbers', 'safe_dial', 'gps'];
 
     public static function register(callable $addAction): void {
         $addAction('wp_ajax_soumettre_reponse_etape', [self::class, 'submit']);

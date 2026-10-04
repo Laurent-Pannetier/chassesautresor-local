@@ -18,6 +18,56 @@ const setWidgetSequenceLabel = (output, values = []) => {
   output.setAttribute('aria-label', `${RiddleStepPlayer.sequenceLabel}: ${value}`);
 };
 
+const initializeGpsWidgets = root => {
+  if (typeof window.L === 'undefined') return;
+  root.querySelectorAll('.riddle-step-gps-form:not([data-map-ready])').forEach(form => {
+    const container = form.querySelector('.riddle-gps__map');
+    const latitude = form.querySelector('.riddle-gps__latitude');
+    const longitude = form.querySelector('.riddle-gps__longitude');
+    const answer = form.querySelector('input[name="reponse"]');
+    const submit = form.querySelector('button[type="submit"]');
+    const map = window.L.map(container, { center: [20, 0], zoom: 2 });
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(map);
+    let marker;
+
+    const setCoordinates = (lat, lng, pan = false) => {
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return;
+      const point = window.L.latLng(lat, lng);
+      if (!marker) {
+        marker = window.L.marker(point, { draggable: true }).addTo(map);
+        marker.on('dragend', () => setCoordinates(marker.getLatLng().lat, marker.getLatLng().lng));
+      } else {
+        marker.setLatLng(point);
+      }
+      latitude.value = point.lat.toFixed(6);
+      longitude.value = point.lng.toFixed(6);
+      answer.value = `${latitude.value} ${longitude.value}`;
+      submit.disabled = false;
+      if (pan) map.setView(point, Math.max(map.getZoom(), 12));
+    };
+
+    map.on('click', event => setCoordinates(event.latlng.lat, event.latlng.lng));
+    [latitude, longitude].forEach(input => input.addEventListener('input', () => {
+      setCoordinates(Number.parseFloat(latitude.value), Number.parseFloat(longitude.value), true);
+    }));
+    form.querySelector('.riddle-gps-reset').addEventListener('click', () => {
+      if (marker) marker.remove();
+      marker = undefined;
+      latitude.value = '';
+      longitude.value = '';
+      answer.value = '';
+      submit.disabled = true;
+      map.setView([20, 0], 2);
+      latitude.focus();
+    });
+    form.dataset.mapReady = '1';
+    window.setTimeout(() => map.invalidateSize(), 0);
+  });
+};
+
 const hasMeaningfulStepContent = article => {
   if (article.querySelector('.riddle-player-step__image')) return true;
   const content = article.querySelector('.riddle-player-step__content');
@@ -65,6 +115,7 @@ const unlockRiddleStepContent = (form, data) => {
     const nextArticle = parsed.querySelector(selector);
     if (!nextArticle || player.querySelector(selector)) return null;
     player.append(nextArticle);
+    initializeGpsWidgets(nextArticle);
     return nextArticle;
   }
 
@@ -84,6 +135,7 @@ const focusUnlockedContent = target => {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  initializeGpsWidgets(document);
   const target = window.sessionStorage.getItem('riddleStepScrollTarget');
   if (!target) return;
   window.history.scrollRestoration = 'manual';
@@ -125,6 +177,7 @@ document.addEventListener('submit', async event => {
         : RiddleStepPlayer.wrong;
       const answerInput = form.querySelector('input[name="reponse"]');
       if (answerInput) answerInput.value = '';
+      form.querySelector('.riddle-gps-reset')?.click();
       form.querySelector('.riddle-directions__sequence')?.replaceChildren();
       form.querySelector('.riddle-colors__sequence')?.replaceChildren();
       form.querySelector('.riddle-numbers__sequence')?.replaceChildren();

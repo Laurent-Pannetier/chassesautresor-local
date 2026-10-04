@@ -16,7 +16,7 @@ final class AnswerWidgetValidationService {
     /** @param array<string,mixed> $configuration @return array<string,mixed>|\WP_Error */
     public function validate(array $configuration) {
         $type = (string) ($configuration['widget'] ?? '');
-        if (!in_array($type, ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial'], true)) {
+        if (!in_array($type, ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'gps'], true)) {
             return $this->error();
         }
 
@@ -34,6 +34,18 @@ final class AnswerWidgetValidationService {
             }
             $configuration['accepted_answers'] = implode("\n", $answers);
             $configuration['variants'] = implode("\n", $variants);
+            return $configuration;
+        }
+
+        if ($type === 'gps') {
+            $coordinates = trim((string) ($configuration['gps_coordinates'] ?? ''));
+            $tolerance = filter_var($configuration['gps_tolerance'] ?? null, FILTER_VALIDATE_FLOAT);
+            $invalidTolerance = $tolerance === false || $tolerance < 1 || $tolerance > 100000;
+            if (!$this->isValidCoordinates($coordinates) || $invalidTolerance) {
+                return $this->error();
+            }
+            $configuration['gps_coordinates'] = $coordinates;
+            $configuration['gps_tolerance'] = (string) $tolerance;
             return $configuration;
         }
 
@@ -93,6 +105,15 @@ final class AnswerWidgetValidationService {
         }
 
         return true;
+    }
+
+    private function isValidCoordinates(string $value): bool {
+        if (preg_match('/^\s*(-?\d+(?:[.,]\d+)?)\s*[;|\s]\s*(-?\d+(?:[.,]\d+)?)\s*$/', $value, $matches) !== 1) {
+            return false;
+        }
+
+        return abs((float) str_replace(',', '.', $matches[1])) <= 90
+            && abs((float) str_replace(',', '.', $matches[2])) <= 180;
     }
 
     private function error(): \WP_Error {

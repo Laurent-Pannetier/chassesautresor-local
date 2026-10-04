@@ -42,6 +42,8 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'non-numeric code' => [['widget' => 'numbers', 'number_sequences' => '12A3']],
             'invalid safe value' => [['widget' => 'safe_dial', 'safe_dial_sequences' => 'H100 A12']],
             'invalid safe direction' => [['widget' => 'safe_dial', 'safe_dial_sequences' => 'D11 A12']],
+            'invalid GPS latitude' => [['widget' => 'gps', 'gps_coordinates' => '91 2', 'gps_tolerance' => '25']],
+            'invalid GPS tolerance' => [['widget' => 'gps', 'gps_coordinates' => '48 2', 'gps_tolerance' => '0']],
         ];
     }
 
@@ -76,6 +78,20 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'color_sequences' => '',
             'number_sequences' => '',
             'safe_dial_sequences' => '',
+            'gps_coordinates' => '',
+            'gps_tolerance' => '',
         ], $changes);
+    }
+
+    public function testAcceptsGpsCoordinatesAndTolerance(): void {
+        $configuration = $this->service->validate($this->configuration([
+            'widget' => 'gps',
+            'gps_coordinates' => '48.85837 2.29448',
+            'gps_tolerance' => '25',
+        ]));
+
+        self::assertIsArray($configuration);
+        self::assertSame('48.85837 2.29448', $configuration['gps_coordinates']);
+        self::assertSame('25', $configuration['gps_tolerance']);
     }
 }

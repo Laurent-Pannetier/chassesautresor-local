@@ -42,6 +42,8 @@ final class RiddleStepManagementAjaxHandler {
             'color_sequences' => (string) get_field('etape_color_sequences', $stepId),
             'number_sequences' => (string) get_field('etape_number_sequences', $stepId),
             'safe_dial_sequences' => (string) get_field('etape_safe_dial_sequences', $stepId),
+            'gps_coordinates' => (string) get_field('etape_gps_coordinates', $stepId),
+            'gps_tolerance' => (string) get_field('etape_gps_tolerance', $stepId),
         ]);
     }
 
@@ -79,6 +81,12 @@ final class RiddleStepManagementAjaxHandler {
         $safeDialSequences = isset($_POST['safe_dial_sequences'])
             ? sanitize_textarea_field(wp_unslash((string) $_POST['safe_dial_sequences']))
             : '';
+        $gpsCoordinates = isset($_POST['gps_coordinates'])
+            ? sanitize_text_field(wp_unslash((string) $_POST['gps_coordinates']))
+            : '';
+        $gpsTolerance = isset($_POST['gps_tolerance'])
+            ? sanitize_text_field(wp_unslash((string) $_POST['gps_tolerance']))
+            : '';
         if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
             wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
         }
@@ -97,7 +105,9 @@ final class RiddleStepManagementAjaxHandler {
             || $directionSequences !== ''
             || $colorSequences !== ''
             || $numberSequences !== ''
-            || $safeDialSequences !== '';
+            || $safeDialSequences !== ''
+            || $gpsCoordinates !== ''
+            || $gpsTolerance !== '';
         if ($isNew || $hasWidgetConfiguration) {
             self::assertStructureEditable($riddleId);
         }
@@ -116,6 +126,8 @@ final class RiddleStepManagementAjaxHandler {
                 'color_sequences' => $colorSequences,
                 'number_sequences' => $numberSequences,
                 'safe_dial_sequences' => $safeDialSequences,
+                'gps_coordinates' => $gpsCoordinates,
+                'gps_tolerance' => $gpsTolerance,
             ]);
             if (is_wp_error($widgetConfiguration)) {
                 wp_send_json_error(['message' => $widgetConfiguration->get_error_message()]);
@@ -169,6 +181,8 @@ final class RiddleStepManagementAjaxHandler {
             update_field('etape_color_sequences', $widgetConfiguration['color_sequences'], $stepId);
             update_field('etape_number_sequences', $widgetConfiguration['number_sequences'], $stepId);
             update_field('etape_safe_dial_sequences', $widgetConfiguration['safe_dial_sequences'], $stepId);
+            update_field('etape_gps_coordinates', $widgetConfiguration['gps_coordinates'], $stepId);
+            update_field('etape_gps_tolerance', $widgetConfiguration['gps_tolerance'], $stepId);
         }
         do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
 

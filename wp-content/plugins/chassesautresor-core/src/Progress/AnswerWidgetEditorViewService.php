@@ -117,6 +117,24 @@ final class AnswerWidgetEditorViewService {
                     ),
                 ],
             ],
+            [
+                'type' => 'gps',
+                'label' => __('Coordonnées GPS', 'chassesautresor-com'),
+                'fields' => [
+                    $this->field(
+                        'text',
+                        'gps_coordinates',
+                        __('Coordonnées attendues (latitude longitude)', 'chassesautresor-com'),
+                        ['help' => __('Exemple : 48.85837 2.29448', 'chassesautresor-com')]
+                    ),
+                    $this->field(
+                        'text',
+                        'gps_tolerance',
+                        __('Rayon de tolérance en mètres', 'chassesautresor-com'),
+                        ['default' => '25']
+                    ),
+                ],
+            ],
         ];
     }
 

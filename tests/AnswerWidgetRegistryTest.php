@@ -62,6 +62,19 @@ final class AnswerWidgetRegistryTest extends TestCase {
         self::assertSame('faux', $registry->evaluate('H100 A51', $configuration)['resultat']);
     }
 
+    public function testEvaluatesGpsCoordinatesWithinConfiguredRadius(): void {
+        $registry = new AnswerWidgetRegistry();
+        $configuration = [
+            'type' => 'gps',
+            'target_coordinates' => '48.858370 2.294481',
+            'tolerance_meters' => 25,
+        ];
+
+        self::assertSame('bon', $registry->evaluate('48.858400 2.294500', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('48.860000 2.294500', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('91 2', $configuration)['resultat']);
+    }
+
     /** @dataProvider malformedSequenceProvider */
     public function testDoesNotSilentlyDiscardInvalidSubmittedTokens(
         string $type,

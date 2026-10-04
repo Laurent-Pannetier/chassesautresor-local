@@ -80,4 +80,20 @@ final class AnswerWidgetConfigurationServiceTest extends TestCase {
         self::assertSame(['0129', '987'], $numbers['accepted_sequences']);
         self::assertSame(['H11 A51', 'A4 H92'], $safeDial['accepted_sequences']);
     }
+
+    public function testAdaptsGpsConfiguration(): void {
+        $fields = [
+            'etape_reponse_widget' => 'gps',
+            'etape_gps_coordinates' => '48.85837 2.29448',
+            'etape_gps_tolerance' => '30',
+        ];
+        $configuration = (new AnswerWidgetConfigurationService())->forStep(
+            21,
+            static fn (string $field, int $postId) => $fields[$field] ?? null
+        );
+
+        self::assertSame('gps', $configuration['type']);
+        self::assertSame('48.85837 2.29448', $configuration['target_coordinates']);
+        self::assertSame(30, $configuration['tolerance_meters']);
+    }
 }

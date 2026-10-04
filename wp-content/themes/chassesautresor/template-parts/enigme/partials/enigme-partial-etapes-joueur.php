@@ -254,6 +254,39 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
               </div>
             <?php endif; ?>
+          <?php elseif ($widgetView['type'] === 'gps') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <p class="riddle-gps__title">
+                <?= esc_html__('Placez le repère ou saisissez les coordonnées', 'chassesautresor-com'); ?>
+              </p>
+              <div
+                class="riddle-gps__map"
+                role="application"
+                aria-label="<?= esc_attr__('Carte de sélection des coordonnées', 'chassesautresor-com'); ?>"
+              ></div>
+              <div class="riddle-gps__fields">
+                <label>
+                  <span><?= esc_html__('Latitude', 'chassesautresor-com'); ?></span>
+                  <input type="number" class="riddle-gps__latitude" step="any" min="-90" max="90" required>
+                </label>
+                <label>
+                  <span><?= esc_html__('Longitude', 'chassesautresor-com'); ?></span>
+                  <input type="number" class="riddle-gps__longitude" step="any" min="-180" max="180" required>
+                </label>
+              </div>
+              <input type="hidden" name="reponse" value="">
+              <div class="riddle-widget-actions">
+                <button type="button" class="riddle-gps-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                <button type="submit" class="bouton-cta bouton-cta--color" disabled>
+                  <?= esc_html($widgetView['button_label']); ?>
+                </button>
+              </div>
+              <p class="txt-small riddle-gps__privacy">
+                <?= esc_html__('Aucune position personnelle n’est demandée ni partagée.', 'chassesautresor-com'); ?>
+              </p>
+            <?php endif; ?>
           <?php elseif ($widgetView['type'] === 'text') : ?>
             <?php if ($widgetView['limit_reached']) : ?>
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
