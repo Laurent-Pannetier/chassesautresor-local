@@ -694,23 +694,6 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    // 🔐 Admin or organiser: front-end edition
-    if ($is_orga && in_array($validation, ['creation', 'correction'], true)) {
-        $edition_url = function_exists('add_query_arg')
-            ? add_query_arg(['edition' => 'open', 'tab' => 'param'], $permalink)
-            : $permalink . '?edition=open&tab=param';
-
-        return [
-            'cta_html'    => sprintf(
-                '<a href="%s" class="bouton-secondaire">%s</a>',
-                esc_url($edition_url),
-                esc_html__('Continuer l’édition', 'chassesautresor-com')
-            ),
-            'cta_message' => '',
-            'type'        => 'edition',
-        ];
-    }
-
     if (
         $is_orga
         && in_array($statut, ['en_cours', 'payante'], true)
@@ -729,6 +712,14 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
             'cta_message' => '',
             'type'        => 'statistiques',
         ];
+    }
+
+    // Draft editing is available via the header gear icon — no CTA banner.
+    if (
+        ($is_admin || $is_orga)
+        && in_array($validation, ['creation', 'correction'], true)
+    ) {
+        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     }
 
     if ($is_admin || $is_orga) {
