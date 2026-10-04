@@ -126,8 +126,8 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
 
     $items[] = [
         'endpoint' => 'edit-account',
-        'label'    => __('Réglages', 'chassesautresor-com'),
-        'icon'     => 'fas fa-cog',
+        'label'    => __('Profil', 'chassesautresor-com'),
+        'icon'     => 'fas fa-user',
         'url'      => wc_get_account_endpoint_url('edit-account'),
         'active'   => $is_settings,
     ];
@@ -204,7 +204,7 @@ function myaccount_enqueue_header_account_menu(): void
             'labels'      => [
                 'menu'     => __('Menu du compte', 'chassesautresor-com'),
                 'account'  => __('Mon compte', 'chassesautresor-com'),
-                'settings' => __('Réglages', 'chassesautresor-com'),
+                'settings' => __('Profil', 'chassesautresor-com'),
                 'logout'   => __('Déconnexion', 'chassesautresor-com'),
             ],
         ]

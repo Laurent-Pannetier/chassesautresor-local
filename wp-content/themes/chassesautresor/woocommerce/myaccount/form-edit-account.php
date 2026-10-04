@@ -114,7 +114,7 @@ $orders_url = function_exists( 'wc_get_account_endpoint_url' )
     <header class="dashboard-section-header">
         <h2 class="dashboard-section-title"><?php esc_html_e( 'Commandes', 'chassesautresor-com' ); ?></h2>
         <p class="dashboard-section-intro">
-            <?php esc_html_e( 'Historique de vos commandes, accessible depuis les réglages du compte.', 'chassesautresor-com' ); ?>
+            <?php esc_html_e( 'Historique de vos commandes, accessible depuis le profil.', 'chassesautresor-com' ); ?>
         </p>
     </header>
     <div class="dashboard-section-body">

@@ -35,6 +35,12 @@ final class AccountToolsRendererTest extends TestCase {
             }
         }
 
+        if (!function_exists('cat_is_points_ui_enabled')) {
+            function cat_is_points_ui_enabled(): bool {
+                return true;
+            }
+        }
+
         require_once __DIR__
             . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountToolsRenderer.php';
 

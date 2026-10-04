@@ -53,11 +53,11 @@ Chasse principale : `primary_hunt_id` (sinon fallback documenté dans le service
 
 ### 2.2 Navigation latérale
 
-- **Profil** devient **Réglages**.
-- **Commandes** quitte le menu latéral et vit **dans Réglages**.
+- L’entrée menu s’appelle **Profil** (elle regroupe profil WooCommerce + commandes).
+- **Commandes** quitte le menu latéral et vit **dans Profil**.
 - **Déconnexion** quitte le menu latéral ; elle n’existe plus que dans le menu compte de la **barre supérieure** (survol + comportement tactile).
 - Le **nav CPT organisateur** (arbre organisateur → chasses → énigmes) **reste à gauche**, toujours visible pour org/admin concernés.
-- **Points** : entrée de menu **désactivée partout** pour l’instant (voir §2.4).
+- **Points** : UI pilotée par `points_ui_enabled` (défaut off) — voir §2.4.
 
 Menus cibles :
 
@@ -65,19 +65,19 @@ Menus cibles :
 
 1. Accueil
 2. Tentatives
-3. Réglages
+3. Profil
 
 **Organisateur**
 
 1. Accueil
 2. Nav CPT (existant, à gauche)
-3. Réglages
+3. Profil
 
 **Administrateur** (hors besoin d’entrées admin dédiées)
 
 1. Accueil
 2. Nav CPT si pertinent
-3. Réglages
+3. Profil
 
 Supprimés du menu latéral admin :
 
@@ -219,9 +219,11 @@ Statut : livré (à recetter sur instance).
 
 ### Lot B — Paramètre Points + nettoyage surfaces Points
 
-1. Ajouter `points_ui_enabled` (défaut off) dans Expérience du site.
-2. Masquer menu Points et blocs dashboard points quand désactivé.
-3. Helpers du type `cat_is_points_ui_enabled()`.
+Statut : livré (à recetter).
+
+1. [x] Ajouter `points_ui_enabled` (défaut off) dans Expérience du site.
+2. [x] Masquer soldes/modales/blocs stats points quand désactivé.
+3. [x] Helper `cat_is_points_ui_enabled()`.
 
 ### Lot C — Accueil joueur + Tentatives
 

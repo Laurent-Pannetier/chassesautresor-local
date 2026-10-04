@@ -181,7 +181,7 @@ get_header();
             $page_title    = '';
             $page_greeting = '';
             if (is_wc_endpoint_url('edit-account') || is_wc_endpoint_url('orders') || is_wc_endpoint_url('edit-address')) {
-                $page_title = __('Réglages', 'chassesautresor-com');
+                $page_title = __('Profil', 'chassesautresor-com');
             } elseif (is_wc_endpoint_url('tentatives')) {
                 $page_title = __('Tentatives', 'chassesautresor-com');
             } elseif (is_account_page() && empty($_GET['section'])) {

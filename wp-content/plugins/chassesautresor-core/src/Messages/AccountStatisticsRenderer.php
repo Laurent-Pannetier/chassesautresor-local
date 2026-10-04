@@ -21,10 +21,8 @@ final class AccountStatisticsRenderer {
     }
 
     public function render(int $userId): string {
-        $points = ($this->pointsFactory)();
-        $usedPoints = $points->getTotalUsed();
-        $circulationPoints = $points->getTotalInCirculation();
         $wins = (int) ($this->winsCounter)($userId);
+        $pointsUiEnabled = !function_exists('cat_is_points_ui_enabled') || cat_is_points_ui_enabled();
 
         ob_start();
         ?>
@@ -32,26 +30,33 @@ final class AccountStatisticsRenderer {
             <h1 class="mb-4 text-xl font-semibold">
                 <?= esc_html__('Statistiques', 'chassesautresor-com'); ?>
             </h1>
-            <div class="dashboard-grid stats-cards myaccount-points-cards">
-                <?= $this->card(
-                    'points-used',
-                    'fa-hand-holding-dollar',
-                    __('Points utilisés', 'chassesautresor-com'),
-                    $usedPoints
-                ); ?>
-                <?= $this->card(
-                    'points-bought',
-                    'fa-cart-shopping',
-                    __('Points achetés', 'chassesautresor-com'),
-                    __('À implémenter', 'chassesautresor-com')
-                ); ?>
-                <?= $this->card(
-                    'points-circulation',
-                    'fa-arrows-rotate',
-                    __('Points en circulation', 'chassesautresor-com'),
-                    $circulationPoints
-                ); ?>
-            </div>
+            <?php if ($pointsUiEnabled) : ?>
+                <?php
+                $points = ($this->pointsFactory)();
+                $usedPoints = $points->getTotalUsed();
+                $circulationPoints = $points->getTotalInCirculation();
+                ?>
+                <div class="dashboard-grid stats-cards myaccount-points-cards">
+                    <?= $this->card(
+                        'points-used',
+                        'fa-hand-holding-dollar',
+                        __('Points utilisés', 'chassesautresor-com'),
+                        $usedPoints
+                    ); ?>
+                    <?= $this->card(
+                        'points-bought',
+                        'fa-cart-shopping',
+                        __('Points achetés', 'chassesautresor-com'),
+                        __('À implémenter', 'chassesautresor-com')
+                    ); ?>
+                    <?= $this->card(
+                        'points-circulation',
+                        'fa-arrows-rotate',
+                        __('Points en circulation', 'chassesautresor-com'),
+                        $circulationPoints
+                    ); ?>
+                </div>
+            <?php endif; ?>
             <p><?= esc_html(sprintf(__('Chasses gagnées : %d', 'chassesautresor-com'), $wins)); ?></p>
         </section>
         <?php

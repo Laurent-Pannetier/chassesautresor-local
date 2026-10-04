@@ -7,9 +7,9 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
 
 - S’appuyer sur `chassesautresor_site_experience` / `SiteExperienceService`
   (`single_hunt`, `demo`, `platform`) — ne pas inventer un second flag.
-- Menus : Accueil + (Tentatives si joueur) + Réglages ; Commandes dans Réglages ;
+- Menus : Accueil + (Tentatives si joueur) + Profil ; Commandes dans Profil ;
   déconnexion uniquement via la barre supérieure ; nav CPT org conservée à gauche.
-- Points UI pilotée par un réglage d’expérience du site (défaut off).
+- Points UI pilotée par `points_ui_enabled` / `cat_is_points_ui_enabled()` (défaut off).
 - Switch Éditer/Activer sur l’accueil profil : activation directe en `demo` ;
   demande de validation + confirmation admin en `single_hunt`.
 - Design : primitives Orgy uniquement (`dashboard-section`, `dashboard-card`,

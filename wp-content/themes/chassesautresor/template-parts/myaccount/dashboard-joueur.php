@@ -7,17 +7,9 @@
 
 defined('ABSPATH') || exit;
 
-ob_start();
 if (function_exists('ca_render_dashboard_engaged_hunts')) {
     ca_render_dashboard_engaged_hunts();
 }
-$progression_html = ob_get_clean();
-
-myaccount_render_dashboard_section(
-    __('Votre progression', 'chassesautresor-com'),
-    __('Suivez où vous en êtes dans l’aventure.', 'chassesautresor-com'),
-    $progression_html
-);
 
 ob_start();
 echo '<div class="dashboard-grid">';

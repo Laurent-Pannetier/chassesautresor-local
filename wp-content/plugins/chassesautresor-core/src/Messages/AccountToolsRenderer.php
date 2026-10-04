@@ -24,11 +24,13 @@ final class AccountToolsRenderer {
     public function render(): string {
         $rate = (float) ($this->rateProvider)();
         $protectionActive = (bool) ($this->protectionProvider)();
+        $pointsUiEnabled = !function_exists('cat_is_points_ui_enabled') || cat_is_points_ui_enabled();
         ob_start();
         ?>
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Outils', 'chassesautresor-com'); ?></h1>
     <div class="dashboard-grid">
+        <?php if ($pointsUiEnabled) : ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-coins"></i>
@@ -67,6 +69,7 @@ final class AccountToolsRenderer {
                 </form>
             </div>
         </div>
+        <?php endif; ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-lock"></i>
@@ -86,6 +89,7 @@ final class AccountToolsRenderer {
                 </span>
             </div>
         </div>
+        <?php if ($pointsUiEnabled) : ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-euro-sign"></i>
@@ -99,7 +103,7 @@ final class AccountToolsRenderer {
                 </p>
                     <div class="overlay-taux">
                         <button class="bouton-secondaire" id="modifier-taux">
-                            <?php esc_html_e('Modifier', 'chassesautresor-com'); ?>
+                            <?php esc_html_e('modifier', 'chassesautresor-com'); ?>
                         </button>
                     </div>
                     <form method="POST" class="form-taux-conversion" id="form-taux-conversion" style="display: none;">
@@ -122,6 +126,7 @@ final class AccountToolsRenderer {
                     </form>
             </div>
         </div>
+        <?php endif; ?>
 
         <div class="dashboard-card">
             <i class="fas fa-tools"></i>

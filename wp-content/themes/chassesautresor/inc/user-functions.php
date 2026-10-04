@@ -270,7 +270,9 @@ function ca_render_dashboard_engaged_hunts(): void
         true
     );
 
-    $section_title = esc_html__('Vos chasses en cours', 'chassesautresor-com');
+    $section_title = (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+        ? esc_html__('Progression de la chasse', 'chassesautresor-com')
+        : esc_html__('Vos chasses en cours', 'chassesautresor-com');
     $error_message = __('Une erreur est survenue lors du chargement des chasses. Veuillez réessayer.', 'chassesautresor-com');
     $content_html  = ca_get_engaged_hunts_content_html(
         $pagination['ids'],

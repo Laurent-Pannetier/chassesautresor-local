@@ -31,8 +31,11 @@ final class AccountDashboardHookHandler {
             return;
         }
         $pagination = $context['pagination'];
+        $title = (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+            ? __('Progression de la chasse', 'chassesautresor-com')
+            : __('Vos chasses en cours', 'chassesautresor-com');
         echo '<section class="chassesautresor-account-hunts"><h2>'
-            . esc_html__('Vos chasses en cours', 'chassesautresor-com') . '</h2>'
+            . esc_html($title) . '</h2>'
             . (new EngagedHuntsRenderer())->render($pagination) . '</section>';
     }
 

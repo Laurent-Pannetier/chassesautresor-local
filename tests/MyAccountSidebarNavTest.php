@@ -59,9 +59,9 @@ class MyAccountSidebarNavTest extends TestCase
         $items = myaccount_get_sidebar_nav_items($user);
         $labels = array_column($items, 'label');
 
-        $this->assertSame(['Accueil', 'Tentatives', 'Réglages'], $labels);
+        $this->assertSame(['Accueil', 'Tentatives', 'Profil'], $labels);
         $this->assertFalse(in_array('Commandes', $labels, true));
-        $this->assertFalse(in_array('Profil', $labels, true));
+        $this->assertFalse(in_array('Réglages', $labels, true));
         $this->assertFalse(in_array('Déconnexion', $labels, true));
     }
 
@@ -86,7 +86,7 @@ class MyAccountSidebarNavTest extends TestCase
         $items = myaccount_get_sidebar_nav_items($user);
         $labels = array_column($items, 'label');
 
-        $this->assertSame(['Accueil', 'Réglages'], $labels);
+        $this->assertSame(['Accueil', 'Profil'], $labels);
         $this->assertTrue(myaccount_user_is_player($player));
         $this->assertFalse(myaccount_user_is_player($user));
     }

@@ -51,6 +51,14 @@ final class SiteExperienceService
     /**
      * @param array<string, mixed> $settings
      */
+    public function isPointsUiEnabled(array $settings): bool
+    {
+        return !empty($settings['points_ui_enabled']);
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     */
     public function canResetStatistics(bool $administrator, bool $loggedIn, array $settings): bool
     {
         return $administrator || ($loggedIn && $this->isDemoMode($settings));
@@ -59,7 +67,12 @@ final class SiteExperienceService
     /**
      * @param array<string, mixed> $settings
      *
-     * @return array{mode:string,primary_hunt_id:int,organizer_applications_open:int}
+     * @return array{
+     *     mode:string,
+     *     primary_hunt_id:int,
+     *     organizer_applications_open:int,
+     *     points_ui_enabled:int
+     * }
      */
     public function sanitize(array $settings, callable $isHunt): array
     {
@@ -82,6 +95,7 @@ final class SiteExperienceService
                 && !empty($settings['organizer_applications_open'])
                 ? 1
                 : 0,
+            'points_ui_enabled' => !empty($settings['points_ui_enabled']) ? 1 : 0,
         ];
     }
 }
