@@ -164,6 +164,11 @@
     margin-top: var(--space-md);
   }
 
+  .chasse-enigmes-liste {
+    width: 100%;
+    min-width: 0;
+  }
+
   @media (--bp-mobile) {
     .chasse-fiche-container {
       grid-template-columns: 96px minmax(0, 1fr);

@@ -52,86 +52,145 @@
   margin: 0 auto;
 }
 
-/* Mono-chasse : cartes poster (image dominante, titre en bas, sans CTA redondant). */
-.page-chasse-wrapper--compact .cards-grid {
+/* Mono-chasse : cartes poster homogènes (image dominante, titre en bas, sans CTA redondant).
+   `.cards-grid--poster` sécurise le rendu même si un panneau d'édition casse le wrapper. */
+.page-chasse-wrapper--compact .cards-grid,
+.cards-grid--poster {
+  --carte-enigme-poster-max-width: 20rem;
   gap: var(--space-lg);
+  width: 100%;
+  max-width: calc(var(--carte-enigme-poster-max-width) * 2 + var(--space-xl));
+  margin-inline: auto;
+  justify-content: center;
 }
 @media (min-width: 768px) {
-  .page-chasse-wrapper--compact .cards-grid {
+  .page-chasse-wrapper--compact .cards-grid,
+  .cards-grid--poster {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xl);
   }
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme,
+.cards-grid--poster .carte-enigme {
   width: 100%;
-  max-width: none;
+  max-width: var(--carte-enigme-poster-max-width);
+  min-width: 0;
   min-height: 0;
-  aspect-ratio: 4/5;
-  border-color: rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
+  aspect-ratio: 3/4;
+  margin: 0 auto;
+  border-color: rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
   background: var(--color-background-dark);
-  box-shadow: 0 16px 40px rgba(var(--color-black-rgb), 0.35);
-  transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+  box-shadow: 0 12px 32px rgba(var(--color-black-rgb), 0.3);
+  transition: transform var(--transition-medium), box-shadow var(--transition-medium), border-color var(--transition-fast);
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme:hover,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 48px rgba(var(--color-black-rgb), 0.42);
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within,
+.cards-grid--poster .carte-enigme:hover,
+.cards-grid--poster .carte-enigme:focus-within {
+  transform: translateY(-4px);
+  border-color: rgba(255, 215, 0, 0.38);
+  box-shadow: 0 18px 40px rgba(var(--color-black-rgb), 0.4);
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within,
+.cards-grid--poster .carte-enigme:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme-lien,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme .carte-core {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme .carte-core,
+.cards-grid--poster .carte-enigme-lien,
+.cards-grid--poster .carte-enigme .carte-core {
   position: absolute;
   inset: 0;
   display: block;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme-overlay,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-action {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-action,
+.cards-grid--poster .carte-enigme-overlay,
+.cards-grid--poster .carte-enigme-action {
   display: none !important;
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-image {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-image,
+.cards-grid--poster .carte-enigme-image {
   position: absolute;
   inset: 0;
   z-index: 0;
   height: 100%;
   flex: none;
   aspect-ratio: auto;
+  overflow: hidden;
   background: var(--color-background-dark);
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme-image picture,
 .page-chasse-wrapper--compact .cards-grid .carte-enigme-image img,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-image .enigme-placeholder {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-image .enigme-placeholder,
+.cards-grid--poster .carte-enigme-image picture,
+.cards-grid--poster .carte-enigme-image img,
+.cards-grid--poster .carte-enigme-image .enigme-placeholder {
   display: block;
   width: 100%;
   height: 100%;
+  max-width: 100%;
   max-height: none;
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-image img {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-image img,
+.cards-grid--poster .carte-enigme-image img {
   -o-object-fit: cover;
      object-fit: cover;
   -o-object-position: center;
      object-position: center;
-  transition: transform 0.45s ease;
+  transition: transform 0.45s ease, filter var(--transition-medium);
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme:hover .carte-enigme-image img,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within .carte-enigme-image img {
-  transform: scale(1.03);
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within .carte-enigme-image img,
+.cards-grid--poster .carte-enigme:hover .carte-enigme-image img,
+.cards-grid--poster .carte-enigme:focus-within .carte-enigme-image img {
+  transform: scale(1.04);
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-statut {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-statut,
+.cards-grid--poster .carte-enigme-statut {
   display: inline-flex;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee .carte-enigme-image img,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee .carte-enigme-image .enigme-placeholder {
-  filter: grayscale(0.85) contrast(0.8) brightness(0.72);
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee .carte-enigme-image .enigme-placeholder,
+.cards-grid--poster .carte-enigme--statut-non_commencee .carte-enigme-image img,
+.cards-grid--poster .carte-enigme--statut-non_commencee .carte-enigme-image .enigme-placeholder {
+  filter: grayscale(0.55) contrast(0.92) brightness(0.84);
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee h3 {
-  opacity: 0.78;
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee h3,
+.cards-grid--poster .carte-enigme--statut-non_commencee h3 {
+  opacity: 0.9;
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee:hover .carte-enigme-image img,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee:hover .carte-enigme-image .enigme-placeholder,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee:focus-within .carte-enigme-image img,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee:focus-within .carte-enigme-image .enigme-placeholder,
+.cards-grid--poster .carte-enigme--statut-non_commencee:hover .carte-enigme-image img,
+.cards-grid--poster .carte-enigme--statut-non_commencee:hover .carte-enigme-image .enigme-placeholder,
+.cards-grid--poster .carte-enigme--statut-non_commencee:focus-within .carte-enigme-image img,
+.cards-grid--poster .carte-enigme--statut-non_commencee:focus-within .carte-enigme-image .enigme-placeholder {
+  filter: grayscale(0.2) contrast(0.98) brightness(0.96);
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee:hover h3,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee:focus-within h3,
+.cards-grid--poster .carte-enigme--statut-non_commencee:hover h3,
+.cards-grid--poster .carte-enigme--statut-non_commencee:focus-within h3 {
+  opacity: 1;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-non_commencee .carte-enigme-statut,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-en_cours .carte-enigme-statut {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-en_cours .carte-enigme-statut,
+.cards-grid--poster .carte-enigme--statut-non_commencee .carte-enigme-statut,
+.cards-grid--poster .carte-enigme--statut-en_cours .carte-enigme-statut {
   display: none;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue .carte-enigme-statut,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee .carte-enigme-statut {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee .carte-enigme-statut,
+.cards-grid--poster .carte-enigme--statut-resolue .carte-enigme-statut,
+.cards-grid--poster .carte-enigme--statut-terminee .carte-enigme-statut {
   width: 2.25rem;
   height: 2.25rem;
   min-height: 0;
@@ -142,7 +201,8 @@
   font-size: 1rem;
   box-shadow: 0 3px 12px rgba(var(--color-black-rgb), 0.38);
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme h3 {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme h3,
+.cards-grid--poster .carte-enigme h3 {
   position: absolute;
   left: 0;
   right: 0;
@@ -151,29 +211,43 @@
   height: auto;
   min-height: 0;
   margin: 0;
-  padding: var(--space-3xl) var(--space-lg) var(--space-lg);
+  padding: var(--space-3xl) var(--space-md) var(--space-md);
   justify-content: flex-end;
   align-items: flex-end;
   text-align: left;
   color: var(--color-text-primary);
   background: linear-gradient(to top, rgba(6, 10, 31, 0.94) 0%, rgba(6, 10, 31, 0.58) 55%, rgba(6, 10, 31, 0) 100%);
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme h3 .carte-enigme-titre {
-  font-size: 1.2rem;
+.page-chasse-wrapper--compact .cards-grid .carte-enigme h3 .carte-enigme-titre,
+.cards-grid--poster .carte-enigme h3 .carte-enigme-titre {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: 1.05rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.3;
   color: var(--color-text-primary);
   text-shadow: 0 1px 2px rgba(var(--color-black-rgb), 0.45);
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-footer {
+@media (min-width: 768px) {
+  .page-chasse-wrapper--compact .cards-grid .carte-enigme h3 .carte-enigme-titre,
+  .cards-grid--poster .carte-enigme h3 .carte-enigme-titre {
+    font-size: 1.125rem;
+  }
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-footer,
+.cards-grid--poster .carte-enigme-footer {
   display: none;
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme:has(.carte-enigme-footer--texte) h3 {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:has(.carte-enigme-footer--texte) h3,
+.cards-grid--poster .carte-enigme:has(.carte-enigme-footer--texte) h3 {
   bottom: 3.25rem;
   padding-bottom: var(--space-xs);
   background: none;
 }
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-footer--texte {
+.page-chasse-wrapper--compact .cards-grid .carte-enigme-footer--texte,
+.cards-grid--poster .carte-enigme-footer--texte {
   display: flex;
   position: absolute;
   left: 0;
@@ -181,11 +255,12 @@
   bottom: 0;
   z-index: 1;
   margin: 0;
-  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
   color: var(--color-text-primary);
   background: linear-gradient(to top, rgba(6, 10, 31, 0.94) 0%, rgba(6, 10, 31, 0.55) 70%, rgba(6, 10, 31, 0) 100%);
 }
-.page-chasse-wrapper--compact .cards-grid .carte-icons .settings-icon {
+.page-chasse-wrapper--compact .cards-grid .carte-icons .settings-icon,
+.cards-grid--poster .carte-icons .settings-icon {
   background: rgba(11, 19, 43, 0.72);
   color: var(--color-text-primary);
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -193,15 +268,21 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .page-chasse-wrapper--compact .cards-grid .carte-enigme,
-  .page-chasse-wrapper--compact .cards-grid .carte-enigme-image img {
+  .page-chasse-wrapper--compact .cards-grid .carte-enigme-image img,
+  .cards-grid--poster .carte-enigme,
+  .cards-grid--poster .carte-enigme-image img {
     transition: none;
   }
   .page-chasse-wrapper--compact .cards-grid .carte-enigme:hover,
-  .page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within {
+  .page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within,
+  .cards-grid--poster .carte-enigme:hover,
+  .cards-grid--poster .carte-enigme:focus-within {
     transform: none;
   }
   .page-chasse-wrapper--compact .cards-grid .carte-enigme:hover .carte-enigme-image img,
-  .page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within .carte-enigme-image img {
+  .page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within .carte-enigme-image img,
+  .cards-grid--poster .carte-enigme:hover .carte-enigme-image img,
+  .cards-grid--poster .carte-enigme:focus-within .carte-enigme-image img {
     transform: none;
   }
 }
@@ -1328,6 +1409,10 @@
 }
 .page-chasse-wrapper--compact .chasse-enigmes-wrapper {
   margin-top: var(--space-md);
+}
+.page-chasse-wrapper--compact .chasse-enigmes-liste {
+  width: 100%;
+  min-width: 0;
 }
 @media (min-width: 600px) {
   .page-chasse-wrapper--compact .chasse-fiche-container {

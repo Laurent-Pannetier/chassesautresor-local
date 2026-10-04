@@ -158,20 +158,59 @@ final class SingleHuntHomepageTemplateTest extends TestCase
     public function testCompactHuntEnigmaCardsUsePosterLayout(): void
     {
         $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_cartes.scss');
-
-        self::assertStringContainsString(
-            '/* Mono-chasse : cartes poster (image dominante, titre en bas, sans CTA redondant). */',
-            $styles
+        $partial = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/enigme/chasse-partial-boucle-enigmes.php'
         );
-        self::assertStringContainsString('aspect-ratio: 4 / 5;', $styles);
+
+        self::assertStringContainsString('.cards-grid--poster', $styles);
+        self::assertStringContainsString('--carte-enigme-poster-max-width: 20rem;', $styles);
+        self::assertStringContainsString('aspect-ratio: 3 / 4;', $styles);
+        self::assertStringContainsString('max-width: var(--carte-enigme-poster-max-width);', $styles);
+        self::assertStringContainsString('min-width: 0;', $styles);
         self::assertStringContainsString('object-fit: cover;', $styles);
         self::assertStringContainsString('.carte-enigme-action {', $styles);
         self::assertStringContainsString('display: none !important;', $styles);
         self::assertStringContainsString('.carte-enigme-footer {', $styles);
         self::assertStringContainsString('display: none;', $styles);
+        self::assertStringContainsString('-webkit-line-clamp: 3;', $styles);
         self::assertStringContainsString(
             'rgba(6, 10, 31, 0.94)',
             $styles
+        );
+        self::assertStringContainsString("cards-grid cards-grid--poster", $partial);
+        self::assertStringContainsString('cat_is_single_hunt_mode()', $partial);
+    }
+
+    public function testChasseEditionPanelHasBalancedDivMarkup(): void
+    {
+        $raw = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/chasse/chasse-edition-main.php'
+        );
+
+        $html = '';
+        $offset = 0;
+        $length = strlen($raw);
+        while ($offset < $length) {
+            $start = strpos($raw, '<?', $offset);
+            if ($start === false) {
+                $html .= substr($raw, $offset);
+                break;
+            }
+            $html .= substr($raw, $offset, $start - $offset);
+            $end = strpos($raw, '?>', $start);
+            if ($end === false) {
+                break;
+            }
+            $offset = $end + 2;
+        }
+
+        preg_match_all('/<div\b/i', $html, $opens);
+        preg_match_all('/<\/div>/i', $html, $closes);
+
+        self::assertSame(
+            count($opens[0]),
+            count($closes[0]),
+            'chasse-edition-main.php must keep balanced <div> tags so cards stay inside the compact wrapper'
         );
     }
 
