@@ -39,5 +39,10 @@ final class AnswerWidgetPlayerViewServiceTest extends TestCase {
 
         self::assertSame('numbers', $service->build(['type' => 'numbers'])['type']);
         self::assertSame('safe_dial', $service->build(['type' => 'safe_dial'])['type']);
+        self::assertSame('piano', $service->build(['type' => 'piano'])['type']);
+        self::assertSame(
+            'riddle-step-text-form riddle-step-piano-form',
+            $service->build(['type' => 'piano'])['form_class']
+        );
     }
 }

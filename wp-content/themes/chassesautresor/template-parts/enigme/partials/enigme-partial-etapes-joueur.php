@@ -264,15 +264,19 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 <?php foreach ([1, 2] as $octave) : ?>
                   <div class="riddle-piano__octave">
                     <?php foreach (['C', 'D', 'E', 'F', 'G', 'A', 'B'] as $note) : ?>
+                      <?php $noteId = $note . $octave; ?>
                       <button type="button" class="riddle-piano__key riddle-piano__key--white"
-                        data-note="<?= esc_attr($note . $octave); ?>">
-                        <span><?= esc_html($note); ?></span>
+                        data-note="<?= esc_attr($noteId); ?>"
+                        aria-label="<?= esc_attr(sprintf(__('Note %s', 'chassesautresor-com'), $noteId)); ?>">
+                        <span aria-hidden="true"><?= esc_html($note); ?></span>
                       </button>
                     <?php endforeach; ?>
                     <?php foreach (['C' => 1, 'D' => 2, 'F' => 4, 'G' => 5, 'A' => 6] as $note => $position) : ?>
+                      <?php $noteId = $note . '#' . $octave; ?>
                       <button type="button" class="riddle-piano__key riddle-piano__key--black"
-                        data-position="<?= esc_attr($position); ?>" data-note="<?= esc_attr($note . '#' . $octave); ?>">
-                        <span><?= esc_html($note . '#'); ?></span>
+                        data-position="<?= esc_attr($position); ?>" data-note="<?= esc_attr($noteId); ?>"
+                        aria-label="<?= esc_attr(sprintf(__('Note %s', 'chassesautresor-com'), $noteId)); ?>">
+                        <span aria-hidden="true"><?= esc_html($note . '#'); ?></span>
                       </button>
                     <?php endforeach; ?>
                     <span class="riddle-piano__octave-label" aria-hidden="true">

@@ -26,10 +26,13 @@ const pianoFrequencies = {
 };
 
 let pianoAudioContext;
-const playPianoNote = (note, delay = 0) => {
+const playPianoNote = (note, delay = 0, key = null) => {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext || !pianoFrequencies[note]) return;
   pianoAudioContext ||= new AudioContext();
+  if (pianoAudioContext.state === 'suspended') {
+    pianoAudioContext.resume().catch(() => {});
+  }
   const start = pianoAudioContext.currentTime + delay;
   const oscillator = pianoAudioContext.createOscillator();
   const gain = pianoAudioContext.createGain();
@@ -41,6 +44,12 @@ const playPianoNote = (note, delay = 0) => {
   oscillator.connect(gain).connect(pianoAudioContext.destination);
   oscillator.start(start);
   oscillator.stop(start + 0.56);
+  if (!key) return;
+  const highlightDelay = Math.max(0, delay * 1000);
+  window.setTimeout(() => {
+    key.classList.add('is-playing');
+    window.setTimeout(() => key.classList.remove('is-playing'), 280);
+  }, highlightDelay);
 };
 
 const initializeGpsWidgets = root => {
@@ -253,7 +262,10 @@ document.addEventListener('click', event => {
     return;
   }
   if (event.target.closest('.riddle-piano__play')) {
-    input.value.split(',').filter(Boolean).forEach((note, index) => playPianoNote(note, index * 0.45));
+    input.value.split(',').filter(Boolean).forEach((note, index) => {
+      const key = form.querySelector(`.riddle-piano__key[data-note="${note}"]`);
+      playPianoNote(note, index * 0.45, key);
+    });
     return;
   }
   const key = event.target.closest('.riddle-piano__key');
@@ -265,7 +277,7 @@ document.addEventListener('click', event => {
   playButton.disabled = false;
   submitButton.disabled = false;
   setWidgetSequenceLabel(output, sequence);
-  playPianoNote(key.dataset.note);
+  playPianoNote(key.dataset.note, 0, key);
 });
 
 document.addEventListener('click', event => {

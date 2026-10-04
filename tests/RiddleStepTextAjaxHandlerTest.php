@@ -21,7 +21,7 @@ final class RiddleStepTextAjaxHandlerTest extends TestCase {
     }
 
     public function testAcceptsEveryWidgetSubmittedThroughTheAnswerHandler(): void {
-        foreach (['text', 'directions', 'colors', 'numbers', 'safe_dial'] as $type) {
+        foreach (['text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'] as $type) {
             self::assertTrue(RiddleStepTextAjaxHandler::supportsWidgetType($type));
         }
 

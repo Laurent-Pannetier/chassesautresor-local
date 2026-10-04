@@ -88,6 +88,7 @@ require_once __DIR__ . '/src/Progress/DirectionAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/ColorAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/NumericAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/SafeDialAnswerWidget.php';
+require_once __DIR__ . '/src/Progress/PianoAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/GpsAnswerWidget.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetRegistry.php';
 require_once __DIR__ . '/src/Progress/AnswerWidgetValidationService.php';
