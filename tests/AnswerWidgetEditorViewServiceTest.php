@@ -27,4 +27,13 @@ final class AnswerWidgetEditorViewServiceTest extends TestCase {
         self::assertSame('piano_sequences', $widgets[6]['fields'][0]['name']);
         self::assertSame(['gps_coordinates', 'gps_tolerance'], array_column($widgets[7]['fields'], 'name'));
     }
+
+    public function testExcludesClickWidgetForFinalRiddleTarget(): void {
+        $widgets = (new AnswerWidgetEditorViewService())->widgetsForTarget('enigme');
+
+        self::assertSame(
+            ['text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'],
+            array_column($widgets, 'type')
+        );
+    }
 }

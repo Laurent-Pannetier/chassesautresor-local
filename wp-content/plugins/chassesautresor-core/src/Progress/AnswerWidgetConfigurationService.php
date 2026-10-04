@@ -72,7 +72,49 @@ final class AnswerWidgetConfigurationService {
     /** @return array<string,mixed> */
     public function forRiddle(int $riddleId, ?callable $getField = null): array {
         $getField = $getField ?? 'get_field';
-        $configuration = $this->base('enigme', $riddleId, 'text');
+        $type = (string) ($getField('enigme_reponse_widget', $riddleId) ?: 'text');
+        if (!in_array($type, ['text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'], true)) {
+            $type = 'text';
+        }
+
+        $configuration = $this->base('enigme', $riddleId, $type);
+        if ($type === 'directions') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('enigme_directions_sequences', $riddleId)
+            );
+            return $configuration;
+        }
+        if ($type === 'colors') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('enigme_color_sequences', $riddleId)
+            );
+            return $configuration;
+        }
+        if ($type === 'numbers') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('enigme_number_sequences', $riddleId)
+            );
+            return $configuration;
+        }
+        if ($type === 'safe_dial') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('enigme_safe_dial_sequences', $riddleId)
+            );
+            return $configuration;
+        }
+        if ($type === 'piano') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('enigme_piano_sequences', $riddleId)
+            );
+            return $configuration;
+        }
+        if ($type === 'gps') {
+            $configuration['target_coordinates'] = (string) $getField('enigme_gps_coordinates', $riddleId);
+            $tolerance = (int) $getField('enigme_gps_tolerance', $riddleId);
+            $configuration['tolerance_meters'] = max(1, $tolerance > 0 ? $tolerance : 25);
+            return $configuration;
+        }
+
         $configuration['accepted_answers'] = $this->riddleAnswers->get($riddleId);
         $configuration['case_sensitive'] = (int) $getField('enigme_reponse_casse', $riddleId) === 1;
         $configuration['variants'] = [];

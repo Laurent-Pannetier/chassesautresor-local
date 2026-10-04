@@ -116,6 +116,17 @@ le nonce, le champ de saisie, le libellé et l’état de limite ; le JavaScript
 classe CSS. Le sélecteur et les champs de l’éditeur d’étape sont également produits à partir de descriptions communes
 de widgets. Le moteur dispose donc de ses adaptateurs serveur, joueur et édition avant l’ajout d’un nouveau widget.
 
+#### Mutualisation de la réponse finale livrée
+
+La réponse automatique d’une énigme utilise désormais le même moteur de widgets que les étapes :
+
+- `AnswerWidgetPlayerViewService` différencie les cibles `enigme` et `enigme_etape` (actions AJAX et nonces) ;
+- le panneau d’édition d’énigme propose un sélecteur de widget (hors Simple clic) avec les mêmes champs que les étapes ;
+- le stockage texte historique (`enigme_reponse_bonne`, variantes `texte_n` / `message_n`) est conservé ;
+- les widgets interactifs de la réponse finale utilisent de nouveaux champs ACF `enigme_*` ;
+- le rendu joueur mutualise les contrôles via `enigme-partial-answer-widget-controls.php` ;
+- les modes **manuelle** et **aucune**, ainsi que le coût en points, restent hors du moteur de widgets.
+
 ### Priorité 3 — nouveaux widgets
 
 - Pavé à huit directions.

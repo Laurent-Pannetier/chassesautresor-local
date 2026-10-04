@@ -45,4 +45,27 @@ final class AnswerWidgetPlayerViewServiceTest extends TestCase {
             $service->build(['type' => 'piano'])['form_class']
         );
     }
+
+    public function testBuildsFinalAnswerTextViewWithLegacyAction(): void {
+        $view = (new AnswerWidgetPlayerViewService())->build([
+            'type' => 'text',
+            'target_type' => 'enigme',
+        ]);
+
+        self::assertSame('soumettre_reponse_automatique', $view['action']);
+        self::assertSame('reponse_auto_nonce', $view['nonce_action']);
+        self::assertSame('bloc-reponse formulaire-reponse-auto', $view['form_class']);
+    }
+
+    public function testBuildsFinalAnswerInteractiveViewWithoutStepSubmitClass(): void {
+        $view = (new AnswerWidgetPlayerViewService())->build([
+            'type' => 'gps',
+            'target_type' => 'enigme',
+        ]);
+
+        self::assertSame('soumettre_reponse_automatique', $view['action']);
+        self::assertStringContainsString('formulaire-reponse-auto', $view['form_class']);
+        self::assertStringContainsString('riddle-step-gps-form', $view['form_class']);
+        self::assertStringNotContainsString('riddle-step-text-form', $view['form_class']);
+    }
 }

@@ -8,6 +8,24 @@ namespace ChassesAuTresor\Core\Progress;
 final class AnswerWidgetEditorViewService {
     /** @return array<int,array<string,mixed>> */
     public function widgets(): array {
+        return $this->widgetsForTarget('enigme_etape');
+    }
+
+    /** @return array<int,array<string,mixed>> */
+    public function widgetsForTarget(string $targetType): array {
+        $widgets = $this->allWidgets();
+        if ($targetType !== 'enigme') {
+            return $widgets;
+        }
+
+        return array_values(array_filter(
+            $widgets,
+            static fn (array $widget): bool => ($widget['type'] ?? '') !== 'click'
+        ));
+    }
+
+    /** @return array<int,array<string,mixed>> */
+    private function allWidgets(): array {
         return [
             [
                 'type' => 'click',
