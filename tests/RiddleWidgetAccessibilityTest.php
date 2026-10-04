@@ -8,6 +8,10 @@ final class RiddleWidgetAccessibilityTest extends TestCase {
     public function testPlayerTemplateProvidesAccessibleSequenceAndDirectionLabels(): void {
         $source = file_get_contents(
             __DIR__ . '/../wp-content/themes/chassesautresor/'
+            . 'template-parts/enigme/partials/enigme-partial-answer-widget-controls.php'
+        );
+        $player = file_get_contents(
+            __DIR__ . '/../wp-content/themes/chassesautresor/'
             . 'template-parts/enigme/partials/enigme-partial-etapes-joueur.php'
         );
 
@@ -16,7 +20,8 @@ final class RiddleWidgetAccessibilityTest extends TestCase {
         self::assertStringContainsString("__('Nord-ouest', 'chassesautresor-com')", $source);
         self::assertStringContainsString('data-label="<?= esc_attr($label); ?>"', $source);
         self::assertStringContainsString("__('Note %s', 'chassesautresor-com')", $source);
-        self::assertStringContainsString('aria-busy="false"', $source);
+        self::assertStringContainsString('aria-busy="false"', $player);
+        self::assertStringContainsString('enigme-partial-answer-widget-controls', $player);
     }
 
     public function testPlayerScriptHandlesInterruptedPointerGestures(): void {

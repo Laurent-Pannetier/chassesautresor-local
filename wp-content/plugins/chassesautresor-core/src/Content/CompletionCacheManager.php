@@ -6,7 +6,7 @@ namespace ChassesAuTresor\Core\Content;
 
 use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
-use ChassesAuTresor\Core\Progress\RiddleAnswerService;
+use ChassesAuTresor\Core\Progress\RiddleFinalAnswerWidgetPersistenceService;
 
 /**
  * Calculate and persist completion caches for editable content.
@@ -148,6 +148,6 @@ class CompletionCacheManager {
     }
 
     private function hasAnswers(int $riddleId): bool {
-        return (new RiddleAnswerService())->get($riddleId) !== [];
+        return (new RiddleFinalAnswerWidgetPersistenceService())->isComplete($riddleId);
     }
 }

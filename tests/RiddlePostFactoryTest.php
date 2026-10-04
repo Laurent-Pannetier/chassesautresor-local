@@ -22,6 +22,7 @@ class RiddlePostFactoryTest extends TestCase {
                 'enigme_acces_condition' => 'immediat',
                 'enigme_acces_pre_requis' => [],
                 'enigme_mode_validation' => 'automatique',
+                'enigme_reponse_widget' => 'text',
                 'enigme_acces_date' => '2026-10-30 12:00:00',
             ],
             $factory->getInitialFields(12, 34, '2026-10-30 12:00:00')

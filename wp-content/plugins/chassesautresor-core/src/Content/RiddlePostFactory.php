@@ -53,6 +53,7 @@ class RiddlePostFactory {
             'enigme_acces_condition' => 'immediat',
             'enigme_acces_pre_requis' => [],
             'enigme_mode_validation' => 'automatique',
+            'enigme_reponse_widget' => 'text',
             'enigme_acces_date' => $unlockDate,
         ];
     }

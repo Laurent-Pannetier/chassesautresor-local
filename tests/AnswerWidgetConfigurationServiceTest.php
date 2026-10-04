@@ -49,6 +49,37 @@ final class AnswerWidgetConfigurationServiceTest extends TestCase {
         self::assertSame('almost', $configuration['variants'][1]['texte']);
     }
 
+    public function testAdaptsRiddleGpsWidgetConfiguration(): void {
+        $fields = [
+            'enigme_reponse_widget' => 'gps',
+            'enigme_gps_coordinates' => '48.85837 2.29448',
+            'enigme_gps_tolerance' => '40',
+        ];
+        $configuration = (new AnswerWidgetConfigurationService())->forRiddle(
+            55,
+            static fn (string $field, int $postId) => $fields[$field] ?? null
+        );
+
+        self::assertSame('gps', $configuration['type']);
+        self::assertSame('enigme', $configuration['target_type']);
+        self::assertSame('48.85837 2.29448', $configuration['target_coordinates']);
+        self::assertSame(40, $configuration['tolerance_meters']);
+    }
+
+    public function testAdaptsRiddleDirectionSequences(): void {
+        $fields = [
+            'enigme_reponse_widget' => 'directions',
+            'enigme_directions_sequences' => "N,E\nS,O",
+        ];
+        $configuration = (new AnswerWidgetConfigurationService())->forRiddle(
+            56,
+            static fn (string $field, int $postId) => $fields[$field] ?? null
+        );
+
+        self::assertSame('directions', $configuration['type']);
+        self::assertSame(['N,E', 'S,O'], $configuration['accepted_sequences']);
+    }
+
     public function testAdaptsDirectionSequences(): void {
         $fields = [
             'etape_reponse_widget' => 'directions',
