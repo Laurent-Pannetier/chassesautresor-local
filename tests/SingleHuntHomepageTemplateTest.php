@@ -64,7 +64,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cta_get_primary_hunt_cta', $navigation);
     }
 
-    public function testSingleHuntHomepageGuidesGuestsParticipantsAndOrganizers(): void
+    public function testSingleHuntHomepageGuidesGuestsAndParticipantsWithoutOrganizerNextStep(): void
     {
         $template = (string) file_get_contents(
             self::THEME_PATH . '/template-parts/home/single-hunt.php'
@@ -77,6 +77,10 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('single-hunt-progress', $template);
         self::assertStringContainsString('<progress', $template);
         self::assertStringContainsString('Reprenez là où vous vous êtes arrêté.', $template);
+        self::assertStringNotContainsString('Prochaine étape', $template);
+        self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);
+        self::assertStringNotContainsString('Modifiez la chasse ou consultez son activité.', $template);
+        self::assertStringNotContainsString('Rejoignez la chasse pour révéler les énigmes.', $template);
     }
 
     public function testSingleHuntHomepageUsesCompactRiddleCardsAndLimitsPrimaryCtas(): void
