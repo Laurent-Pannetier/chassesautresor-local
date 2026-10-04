@@ -42,6 +42,7 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'non-numeric code' => [['widget' => 'numbers', 'number_sequences' => '12A3']],
             'invalid safe value' => [['widget' => 'safe_dial', 'safe_dial_sequences' => 'H100 A12']],
             'invalid safe direction' => [['widget' => 'safe_dial', 'safe_dial_sequences' => 'D11 A12']],
+            'invalid piano note' => [['widget' => 'piano', 'piano_sequences' => 'C1 H2']],
             'invalid GPS latitude' => [['widget' => 'gps', 'gps_coordinates' => '91 2', 'gps_tolerance' => '25']],
             'invalid GPS tolerance' => [['widget' => 'gps', 'gps_coordinates' => '48 2', 'gps_tolerance' => '0']],
         ];
@@ -64,6 +65,7 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'colors' => ['colors', 'color_sequences', 'red, pink, black'],
             'leading zeroes' => ['numbers', 'number_sequences', '00129'],
             'safe dial' => ['safe_dial', 'safe_dial_sequences', 'H11 A51'],
+            'piano' => ['piano', 'piano_sequences', 'F1 F#2 B2 C1'],
         ];
     }
 
@@ -78,6 +80,7 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'color_sequences' => '',
             'number_sequences' => '',
             'safe_dial_sequences' => '',
+            'piano_sequences' => '',
             'gps_coordinates' => '',
             'gps_tolerance' => '',
         ], $changes);

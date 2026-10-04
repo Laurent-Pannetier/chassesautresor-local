@@ -62,6 +62,15 @@ final class AnswerWidgetRegistryTest extends TestCase {
         self::assertSame('faux', $registry->evaluate('H100 A51', $configuration)['resultat']);
     }
 
+    public function testEvaluatesPianoNotesWithOctavesAndSharps(): void {
+        $registry = new AnswerWidgetRegistry();
+        $configuration = ['type' => 'piano', 'accepted_sequences' => ['F1 F#2 B2 C1']];
+
+        self::assertSame('bon', $registry->evaluate('f1,f#2,b2,c1', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('F1,F#1,B2,C1', $configuration)['resultat']);
+        self::assertSame('faux', $registry->evaluate('F1,H2', $configuration)['resultat']);
+    }
+
     public function testEvaluatesGpsCoordinatesWithinConfiguredRadius(): void {
         $registry = new AnswerWidgetRegistry();
         $configuration = [
@@ -92,6 +101,7 @@ final class AnswerWidgetRegistryTest extends TestCase {
             'color' => ['colors', 'red,blue', 'red,turquoise,blue'],
             'number' => ['numbers', '123', '12A3'],
             'safe dial' => ['safe_dial', 'H11,A51', 'H11,INVALID,A51'],
+            'piano' => ['piano', 'C1,E1,G1', 'C1,X1,G1'],
         ];
     }
 }

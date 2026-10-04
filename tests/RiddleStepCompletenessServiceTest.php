@@ -26,6 +26,11 @@ final class RiddleStepCompletenessServiceTest extends TestCase {
             'colors' => ['colors', ['etape_color_sequences' => 'red,blue']],
             'numbers' => ['numbers', ['etape_number_sequences' => '0129']],
             'safe dial' => ['safe_dial', ['etape_safe_dial_sequences' => 'H11 A51']],
+            'piano' => ['piano', ['etape_piano_sequences' => 'F1 F#2 B2 C1']],
+            'gps' => ['gps', [
+                'etape_gps_coordinates' => '48.858370 2.294481',
+                'etape_gps_tolerance' => '25',
+            ]],
         ];
     }
 
@@ -80,6 +85,9 @@ final class RiddleStepCompletenessServiceTest extends TestCase {
             'etape_color_sequences' => '',
             'etape_number_sequences' => '',
             'etape_safe_dial_sequences' => '',
+            'etape_piano_sequences' => '',
+            'etape_gps_coordinates' => '',
+            'etape_gps_tolerance' => '',
             'etape_contenu' => '',
             'etape_image' => 0,
         ];

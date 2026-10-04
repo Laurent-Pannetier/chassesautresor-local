@@ -118,6 +118,21 @@ final class AnswerWidgetEditorViewService {
                 ],
             ],
             [
+                'type' => 'piano',
+                'label' => __('Piano', 'chassesautresor-com'),
+                'fields' => [
+                    $this->field(
+                        'textarea',
+                        'piano_sequences',
+                        __('Séquences musicales acceptées — une par ligne', 'chassesautresor-com'),
+                        [
+                            'rows' => 4,
+                            'help' => __('Notes de C1 à B2. Exemple : F1 F#2 B2 C1.', 'chassesautresor-com'),
+                        ]
+                    ),
+                ],
+            ],
+            [
                 'type' => 'gps',
                 'label' => __('Coordonnées GPS', 'chassesautresor-com'),
                 'fields' => [

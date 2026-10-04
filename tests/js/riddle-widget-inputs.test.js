@@ -36,6 +36,14 @@ describe('self-contained riddle widgets', () => {
           <span class="riddle-safe__direction">*</span><span class="riddle-safe__value">0</span>
         </div>
         <button type="button" class="riddle-widget-reset">Reset</button>
+      </form>
+      <form class="riddle-step-piano-form">
+        <input name="reponse"><output class="riddle-piano__sequence"></output>
+        <button type="button" class="riddle-piano__key" data-note="F1">F</button>
+        <button type="button" class="riddle-piano__key" data-note="F#2">F#</button>
+        <button type="button" class="riddle-piano__play" disabled>Play</button>
+        <button type="button" class="riddle-widget-reset">Reset</button>
+        <button type="submit" disabled>Submit</button>
       </form>`;
   });
 
@@ -75,6 +83,22 @@ describe('self-contained riddle widgets', () => {
     expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↶');
     expect(document.querySelector('.riddle-safe__sequence').getAttribute('aria-label'))
       .toContain('sens horaire 1');
+  });
+
+  test('records, enables and resets piano sequences', () => {
+    const form = document.querySelector('.riddle-step-piano-form');
+    form.querySelector('[data-note="F1"]').click();
+    form.querySelector('[data-note="F#2"]').click();
+
+    expect(form.querySelector('[name="reponse"]').value).toBe('F1,F#2');
+    expect(form.querySelector('.riddle-piano__sequence').textContent).toBe('F1 F#2');
+    expect(form.querySelector('.riddle-piano__play').disabled).toBe(false);
+    expect(form.querySelector('[type="submit"]').disabled).toBe(false);
+
+    form.querySelector('.riddle-widget-reset').click();
+    expect(form.querySelector('[name="reponse"]').value).toBe('');
+    expect(form.querySelector('.riddle-piano__play').disabled).toBe(true);
+    expect(form.querySelector('[type="submit"]').disabled).toBe(true);
   });
 
   test('accumulates small pointer movements before recording on release', () => {

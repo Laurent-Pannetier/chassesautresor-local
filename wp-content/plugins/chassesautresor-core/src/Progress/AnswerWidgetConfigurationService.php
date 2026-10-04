@@ -45,6 +45,12 @@ final class AnswerWidgetConfigurationService {
             );
             return $configuration;
         }
+        if ($type === 'piano') {
+            $configuration['accepted_sequences'] = $this->lines(
+                (string) $getField('etape_piano_sequences', $stepId)
+            );
+            return $configuration;
+        }
         if ($type === 'gps') {
             $configuration['target_coordinates'] = (string) $getField('etape_gps_coordinates', $stepId);
             $configuration['tolerance_meters'] = max(1, (int) $getField('etape_gps_tolerance', $stepId));
