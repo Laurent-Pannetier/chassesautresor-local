@@ -27,6 +27,8 @@ vendor/bin/phpunit -c tests/phpunit.xml
 
 Avant tout déploiement, exécutez `npm run build:css` pour générer les feuilles de style.
 
+Le workflow Local → Hostinger (thème via `chassesautresor-wp`, plugin Core via l’UI Hostinger) est documenté dans [`docs/deploy.md`](docs/deploy.md) et résumé dans `AGENTS.md`.
+
 Gestion des traductions du thème
 --------------------------------
 
