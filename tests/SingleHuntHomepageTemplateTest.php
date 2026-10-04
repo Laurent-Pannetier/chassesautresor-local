@@ -139,6 +139,42 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('$breadcrumb_items', $template);
     }
 
+    public function testCompactHuntPageSkipsVisibleEnigmesIntroBlock(): void
+    {
+        $template = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+        $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_chasse.scss');
+
+        self::assertMatchesRegularExpression(
+            '/if \(\$compact_experience\)\s*:\s*\?>\s*<h2 class="screen-reader-text">/s',
+            $template
+        );
+        self::assertStringContainsString("esc_html_e('Les énigmes', 'chassesautresor-com')", $template);
+        self::assertStringContainsString('if (!$compact_experience)', $template);
+        self::assertStringContainsString('titre-enigmes-wrapper', $template);
+        self::assertStringContainsString('margin-top: var(--space-md);', $styles);
+        self::assertStringNotContainsString('.titre-enigmes-wrapper {', $styles);
+    }
+
+    public function testCompactHuntEnigmaCardsUsePosterLayout(): void
+    {
+        $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_cartes.scss');
+
+        self::assertStringContainsString(
+            '/* Mono-chasse : cartes poster (image dominante, titre en bas, sans CTA redondant). */',
+            $styles
+        );
+        self::assertStringContainsString('aspect-ratio: 4 / 5;', $styles);
+        self::assertStringContainsString('object-fit: cover;', $styles);
+        self::assertStringContainsString('.carte-enigme-action {', $styles);
+        self::assertStringContainsString('display: none !important;', $styles);
+        self::assertStringContainsString('.carte-enigme-footer {', $styles);
+        self::assertStringContainsString('display: none;', $styles);
+        self::assertStringContainsString(
+            'rgba(6, 10, 31, 0.94)',
+            $styles
+        );
+    }
+
     public function testSingleHuntSeoProtectsDemoModeAndProvidesStructuredData(): void
     {
         $seo = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-seo.php');
