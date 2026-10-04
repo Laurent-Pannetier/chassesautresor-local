@@ -22,3 +22,10 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
 - Endpoint WooCommerce `tentatives` ; Tentatives retirées de l’Accueil.
 - Menu compte header : `assets/js/header-account-menu.js`.
 - Shells Accueil joueur / org / admin avec placeholders.
+
+## Lot D (livré)
+
+- Switch Éditer/Activer : `HuntLifecycleService` + AJAX `cta_toggle_hunt_lifecycle`.
+- Accueil org/admin : accès rapide édition, switch, reset stats (démo).
+- CTA validation retiré des fiches chasse/énigme ; messages d’éligibilité nettoyés.
+- Annulation de demande rouvre bien en `correction` + `revision`.

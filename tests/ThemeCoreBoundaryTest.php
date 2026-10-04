@@ -80,7 +80,7 @@ final class ThemeCoreBoundaryTest extends TestCase
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntValidationAjaxHandler.php'
         );
 
-        self::assertStringContainsString("update_field('chasse_cache_statut', 'a_venir'", $handler);
+        self::assertStringContainsString("update_field('chasse_cache_statut', 'revision'", $handler);
         self::assertStringContainsString("update_field('chasse_cache_statut_validation', 'correction'", $handler);
     }
 

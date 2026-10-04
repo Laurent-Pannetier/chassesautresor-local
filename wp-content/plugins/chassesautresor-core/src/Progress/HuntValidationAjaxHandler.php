@@ -51,9 +51,10 @@ class HuntValidationAjaxHandler {
     }
 
     public static function cancelValidation(int $huntId): void {
-        (new HuntStatusUpdater())->synchronizePublication($huntId, 'a_venir');
-        update_field('chasse_cache_statut', 'a_venir', $huntId);
+        // Reopen for edition: pending publication + correction validation + revision status.
+        (new HuntStatusUpdater())->synchronizePublication($huntId, 'correction');
         update_field('chasse_cache_statut_validation', 'correction', $huntId);
+        update_field('chasse_cache_statut', 'revision', $huntId);
     }
 
     public static function refreshCta(): void {

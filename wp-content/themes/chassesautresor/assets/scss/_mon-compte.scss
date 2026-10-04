@@ -1304,6 +1304,58 @@ body.woocommerce h2 {
     margin: var(--space-sm) 0 0;
 }
 
+.hunt-lifecycle-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.hunt-lifecycle-card__control {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.hunt-lifecycle-card__label-off,
+.hunt-lifecycle-card__label-on {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.hunt-lifecycle-card__status {
+    margin: 0;
+    font-weight: 600;
+}
+
+.hunt-lifecycle-card__help {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.hunt-quick-edit-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.hunt-quick-edit-list a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.hunt-quick-edit-list a:hover,
+.hunt-quick-edit-list a:focus-visible {
+    color: var(--color-primary, #e1a95f);
+}
+
 /* Tentatives table alignment */
 .myaccount-tentatives .table-header {
     display: flex;

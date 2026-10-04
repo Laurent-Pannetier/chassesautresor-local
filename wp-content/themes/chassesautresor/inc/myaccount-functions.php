@@ -173,6 +173,49 @@ function myaccount_render_dashboard_placeholder(string $title, string $message):
 }
 
 /**
+ * Enqueue account-home lifecycle switch assets.
+ */
+function myaccount_enqueue_hunt_lifecycle_switch(): void
+{
+    if (!is_account_page() || !is_user_logged_in()) {
+        return;
+    }
+
+    $path = get_stylesheet_directory() . '/assets/js/hunt-lifecycle-switch.js';
+    if (!file_exists($path)) {
+        return;
+    }
+
+    $hunt_id = function_exists('cat_get_managed_hunt_id_for_user')
+        ? cat_get_managed_hunt_id_for_user()
+        : 0;
+    if ($hunt_id <= 0) {
+        return;
+    }
+
+    wp_enqueue_script(
+        'hunt-lifecycle-switch',
+        get_stylesheet_directory_uri() . '/assets/js/hunt-lifecycle-switch.js',
+        [],
+        filemtime($path),
+        true
+    );
+
+    wp_localize_script(
+        'hunt-lifecycle-switch',
+        'ctaHuntLifecycle',
+        [
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonces' => [
+                (string) $hunt_id => wp_create_nonce('cta_toggle_hunt_lifecycle_' . $hunt_id),
+            ],
+            'errorMessage' => __('Impossible de mettre à jour l’état de la chasse.', 'chassesautresor-com'),
+        ]
+    );
+}
+add_action('wp_enqueue_scripts', 'myaccount_enqueue_hunt_lifecycle_switch');
+
+/**
  * Enqueue the top-bar account menu (hover + touch).
  */
 function myaccount_enqueue_header_account_menu(): void

@@ -289,6 +289,10 @@ require_once __DIR__ . '/src/Content/HuntValidationAccessResolver.php';
 require_once __DIR__ . '/src/Messages/HuntCorrectionMessageService.php';
 require_once __DIR__ . '/src/Messages/HuntValidationMessageHookHandler.php';
 require_once __DIR__ . '/src/Content/hunt-validation-functions.php';
+require_once __DIR__ . '/src/Content/HuntLifecycleService.php';
+require_once __DIR__ . '/src/Content/HuntLifecycleApplicationService.php';
+require_once __DIR__ . '/src/Content/HuntLifecycleAjaxHandler.php';
+require_once __DIR__ . '/src/Content/hunt-lifecycle-functions.php';
 require_once __DIR__ . '/src/Content/HuntModerationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationMutationService.php';
 require_once __DIR__ . '/src/Content/HuntModerationRequestHandler.php';
@@ -455,6 +459,7 @@ ChassesAuTresor\Core\Content\HuntWelcomeModalViewHookHandler::register('add_acti
 ChassesAuTresor\Core\Content\HuntViewMaintenanceHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntDisplayCacheInvalidationHookHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Content\HuntModerationRequestHandler::register('add_action');
+ChassesAuTresor\Core\Content\HuntLifecycleAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler::register('add_action');
 ChassesAuTresor\Core\Relationships\OrganizerContactRouteHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Points\PurchasePointsHookHandler::register('add_action');

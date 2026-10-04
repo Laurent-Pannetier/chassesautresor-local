@@ -234,12 +234,14 @@ Statut : livré (à recetter).
 
 ### Lot D — Lifecycle switch + accueil org/admin
 
-1. Composant switch commun + bandeau d’état.
-2. Branchement `demo` (activation directe) vs `single_hunt` / `platform` (demande + confirmation admin).
-3. Suppression CTA / messages validation sur pages entités.
-4. File d’actions admin (validation / correction) sur Accueil (remplace la page Organisateurs pour ce flux).
-5. Accès rapide édition entités.
-6. Reset stats uniquement sur Accueil, selon `canResetStatistics` / mode démo.
+Statut : livré (à recetter).
+
+1. [x] Composant switch commun + bandeau d’état.
+2. [x] Branchement `demo` (activation directe) vs `single_hunt` / `platform` (demande + confirmation admin).
+3. [x] Suppression CTA / messages validation sur pages entités.
+4. [ ] File d’actions admin correction/bannir encore sur fiche chasse (Valider passe par le switch).
+5. [x] Accès rapide édition entités.
+6. [x] Reset stats sur Accueil ; pastille flottante démo retirée.
 
 ### Lot E — Statistiques & outils
 

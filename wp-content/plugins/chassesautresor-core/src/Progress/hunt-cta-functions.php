@@ -34,13 +34,8 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         ];
     }
 
-    if (function_exists('peut_valider_chasse') && peut_valider_chasse($chasse_id, $user_id)) {
-        return [
-            'cta_html'    => render_form_validation_chasse($chasse_id),
-            'cta_message' => '',
-            'type'        => 'validation',
-        ];
-    }
+    // Validation CTA removed from entity pages: lifecycle lives on Mon compte Accueil.
+    // Fall through to edition / public CTAs.
 
     // 🔐 Admin or organiser info
     $admin_override = $GLOBALS['force_admin_override'] ?? null;
@@ -48,20 +43,19 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $orga_override = $GLOBALS['force_organisateur_override'] ?? null;
     $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
-    if ($validation === 'en_attente') {
-        if ($is_orga) {
-            return [
-                'cta_html'    => render_form_annulation_validation_chasse($chasse_id),
-                'cta_message' => '',
-                'type'        => 'annuler_validation',
-            ];
-        }
+    if ($validation === 'en_attente' && $is_orga) {
+        $account_url = function_exists('wc_get_account_endpoint_url')
+            ? wc_get_account_endpoint_url('dashboard')
+            : home_url('/mon-compte/');
+
         return [
-            'cta_html'    => '<span class="bouton-cta bouton-cta--pending" aria-disabled="true">'
-                . esc_html__( 'Demande de validation en cours', 'chassesautresor-com' )
-                . '</span>',
+            'cta_html'    => sprintf(
+                '<a href="%s" class="bouton-secondaire">%s</a>',
+                esc_url($account_url),
+                esc_html__('Gérer l’activation dans Mon compte', 'chassesautresor-com')
+            ),
             'cta_message' => '',
-            'type'        => 'en_attente',
+            'type'        => 'lifecycle_account',
         ];
     }
 
@@ -327,19 +321,8 @@ function cat_build_hunt_validation_cta(int $chasse_id, int $enigme_id): string
         verifier_ou_mettre_a_jour_cache_complet($p->ID);
     }
 
-    ob_start();
-    if (
-        function_exists('peut_valider_chasse')
-        && peut_valider_chasse($chasse_id, get_current_user_id())
-    ) {
-        echo '<div id="cta-validation-chasse" class="cta-chasse-row">';
-        echo '<div class="cta-action">' . render_form_validation_chasse($chasse_id) . '</div>';
-        echo '<div class="cta-message" aria-live="polite"></div>';
-        echo '</div>';
-    }
-    $html = ob_get_clean();
-
-    return (string) $html;
+    // Entity-page validation CTA retired; lifecycle switch lives on Mon compte Accueil.
+    return '';
 }
 
 if (class_exists(ChassesAuTresor\Core\Progress\HuntValidationAjaxHandler::class)) {
