@@ -253,8 +253,31 @@ if ($edition_active && !$est_complet) {
 
     <!-- 📟 Informations -->
     <div class="chasse-details-wrapper">
+      <?php
+      $cta_data = $infos_chasse['cta_data'] ?? [];
+      $cta_type = (string) ($cta_data['type'] ?? '');
+      $cta_html = trim((string) ($cta_data['cta_html'] ?? ''));
+      $cta_message = trim((string) ($cta_data['cta_message'] ?? ''));
+      $has_cta = $cta_html !== '' || $cta_message !== '';
+      // Compact header: short CTAs sit on the share/gear actions row.
+      $compact_inline_cta = $compact_experience
+          && $has_cta
+          && $cta_type !== 'engage'
+          && $cta_message === '';
+      $cta_id = $cta_type === 'validation' ? 'cta-validation-chasse' : '';
+      ?>
 
-      <div class="chasse-details-actions">
+      <div class="chasse-details-actions<?= $compact_inline_cta ? ' chasse-details-actions--with-cta' : ''; ?>">
+        <?php if ($compact_inline_cta) : ?>
+          <div
+            class="cta-chasse-row chasse-details-actions__cta"
+            <?php echo $cta_id ? ' id="' . esc_attr($cta_id) . '"' : ''; ?>
+          >
+            <div class="cta-action">
+              <?= $cta_data['cta_html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            </div>
+          </div>
+        <?php endif; ?>
         <?php if (function_exists('ADDTOANY_SHARE_SAVE_BUTTON')) : ?>
           <?php
           $share_url   = get_permalink($chasse_id);
@@ -397,16 +420,6 @@ if ($edition_active && !$est_complet) {
           $date_plage_title = __('Dates non spécifiées', 'chassesautresor-com');
       }
 
-      $cta_data = $infos_chasse['cta_data'] ?? [];
-      $cta_type = (string) ($cta_data['type'] ?? '');
-      $cta_html = trim((string) ($cta_data['cta_html'] ?? ''));
-      $cta_message = trim((string) ($cta_data['cta_message'] ?? ''));
-      $has_cta = $cta_html !== '' || $cta_message !== '';
-      // Compact header: keep short CTAs on the meta row (same band as the hunt icon).
-      $compact_inline_cta = $compact_experience
-          && $has_cta
-          && $cta_type !== 'engage'
-          && $cta_message === '';
       // Compact mode hides the characteristics list: only keep the section when a CTA remains.
       $show_cta_section = $compact_experience
           ? ($has_cta && $cta_type !== 'engage' && ! $compact_inline_cta)
@@ -418,9 +431,8 @@ if ($edition_active && !$est_complet) {
               $cta_section_class .= ' chasse-cta-section--' . sanitize_html_class($cta_type);
           }
       }
-      $cta_id = $cta_type === 'validation' ? 'cta-validation-chasse' : '';
       ?>
-      <div class="meta-row svg-xsmall meta-row--headline<?= $compact_inline_cta ? ' meta-row--with-cta' : ''; ?>">
+      <div class="meta-row svg-xsmall meta-row--headline">
         <div class="meta-regular">
           <span class="meta-indic meta-indic--static">
             <?php echo get_svg_icon('enigme'); ?>
@@ -459,16 +471,6 @@ if ($edition_active && !$est_complet) {
             </span>
           </span>
         </div>
-        <?php if ($compact_inline_cta) : ?>
-          <div
-            class="cta-chasse-row meta-row__cta"
-            <?php echo $cta_id ? ' id="' . esc_attr($cta_id) . '"' : ''; ?>
-          >
-            <div class="cta-action">
-              <?= $cta_data['cta_html']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-            </div>
-          </div>
-        <?php endif; ?>
       </div>
 
       <div class="separateur-3">

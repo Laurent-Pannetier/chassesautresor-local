@@ -103,30 +103,40 @@
     row-gap: var(--space-xs);
   }
 
-  .meta-row--with-cta {
-    width: 100%;
+  .chasse-details-actions {
+    top: 0.35rem;
+    right: 0;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100% - 0.25rem);
   }
 
-  .meta-row__cta {
-    flex: 0 0 auto;
-    margin-left: auto;
+  .chasse-details-actions__cta {
+    flex: 0 1 auto;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .chasse-details-actions__cta .cta-action {
     display: flex;
     align-items: center;
   }
 
-  .meta-row__cta .cta-action {
-    display: flex;
-    align-items: center;
-  }
-
-  .meta-row__cta .bouton-cta,
-  .meta-row__cta .cta-chasse-action,
-  .meta-row__cta .cta-chasse-link {
+  .chasse-details-actions__cta .bouton-cta,
+  .chasse-details-actions__cta .cta-chasse-action,
+  .chasse-details-actions__cta .cta-chasse-link {
     margin: 0;
-    padding: 0.35rem 0.7rem;
+    padding: 0.3rem 0.55rem;
     font-size: 0.8125rem;
     line-height: 1.2;
     white-space: nowrap;
+  }
+
+  .chasse-details-actions__cta .bouton-cta,
+  .chasse-details-actions__cta .cta-chasse-action {
+    margin-top: 0;
   }
 
   .chasse-cta-section {
@@ -148,14 +158,6 @@
   .cta-action .bouton-cta,
   .cta-action .cta-chasse-action {
     margin-top: 0;
-  }
-
-  // Narrow phones: keep CTA on the meta band, left-aligned when it wraps.
-  @media (max-width: 419px) {
-    .meta-row__cta {
-      margin-left: 0;
-      width: 100%;
-    }
   }
 
   .chasse-enigmes-wrapper {
