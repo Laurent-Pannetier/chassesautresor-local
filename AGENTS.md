@@ -29,3 +29,24 @@
 - Un CPT `indices` gère les indices associés à une chasse ou une énigme.
 - Les tables personnalisées incluent `wp_indices_deblocages` et la colonne `indice_id` dans `wp_engagements`.
 - Le champ `origin_type` de `wp_user_points` accepte désormais la valeur `indice`.
+
+## Environnements et déploiement (ne pas confondre)
+
+Détail : [`docs/deploy.md`](docs/deploy.md).
+
+| Élément | Rôle |
+|---------|------|
+| **Ce dépôt** (`chassesautresor-local`) | Bac à sable **Local WP** + tests agents (PHPUnit, Jest, `bin/`, `setup-env.sh`). **Ce n’est pas l’artefact de production.** |
+| **`chassesautresor-wp`** | Dépôt Git du **thème seul** déployé en prod Hostinger. |
+| **Plugin `chassesautresor-core`** | Mis à jour en prod **séparément**, via l’interface Hostinger (pas via le sync Git du thème). |
+
+### Prod Hostinger (inchangé volontairement)
+- Sync Git Hostinger : origine = dépôt `chassesautresor-wp`, branche typique `dev_60` → destination = dossier du thème (`wp-content/themes/chassesautresor`).
+- **Ne pas** pointer la destination Git Hostinger sur `wp-content` : cela risquerait d’écraser les autres plugins / thèmes.
+- Le tooling de tests de ce monorepo (`vendor/`, `bin/`, suite PHPUnit racine) **n’existe pas** en ligne.
+
+### Avant une mise en ligne
+1. Lancer les tests ici (voir section Testing) et `npm run build:css` si le CSS a changé.
+2. Synchroniser le thème vers `chassesautresor-wp`, puis déployer via Hostinger Git.
+3. Si le Core a changé : déployer le **même état** de `chassesautresor-core` via l’UI Hostinger.
+4. Vérifier ACF / migrations SQL si le lot en dépend.
