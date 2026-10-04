@@ -136,10 +136,12 @@ function cta_add_single_hunt_body_class(array $classes): array
 add_filter('body_class', 'cta_add_single_hunt_body_class');
 
 /**
- * Renders the unique "Énigmes" top-bar link in Astra's primary header.
+ * Renders the unique "Énigmes" top-bar link in Astra's visible header row.
  *
- * Hooked on both desktop and mobile builders so the item stays in the top bar
- * at every breakpoint (instead of living only inside the off-canvas menu).
+ * The production header keeps logo / account / cart / language in the `above`
+ * row (same place as the language switcher). We therefore prefer `above/right`,
+ * with a fallback to `primary/right` when the above row is absent. Desktop and
+ * mobile builders each render once so the link stays outside the hamburger.
  *
  * @param string $row    Header builder row.
  * @param string $column Header builder column.
@@ -150,9 +152,21 @@ function cta_render_single_hunt_enigmes_topbar_link(string $row, string $column)
         return;
     }
 
-    if ('primary' !== $row || 'right' !== $column) {
+    if ('right' !== $column || !in_array($row, ['above', 'primary'], true)) {
         return;
     }
+
+    static $rendered = [
+        'desktop' => false,
+        'mobile'  => false,
+    ];
+
+    $device = current_action() === 'astra_render_mobile_header_column' ? 'mobile' : 'desktop';
+    if (!empty($rendered[$device])) {
+        return;
+    }
+
+    $rendered[$device] = true;
 
     $url = cta_get_single_hunt_enigmes_nav_url();
     $isCurrent = cta_is_single_hunt_enigmes_nav_current();

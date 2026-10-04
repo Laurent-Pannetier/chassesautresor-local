@@ -10648,18 +10648,19 @@ header.site-header {
 .cta-topbar-enigmes {
   display: flex;
   align-items: center;
-  margin-right: 0.75rem;
+  margin-right: 0.85rem;
   flex-shrink: 0;
+  order: -1; /* Keep the text link before account / cart / language icons */
 }
 
 .cta-topbar-enigmes__link {
   display: inline-flex;
   align-items: center;
-  padding: 0.35rem 0.15rem;
+  padding: 0.4rem 0.2rem;
   color: #fff;
-  font-size: 0.95rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   text-decoration: none;
   text-transform: none;
   white-space: nowrap;

@@ -64,6 +64,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString("['organisateur', 'chasse']", $navigation);
         self::assertStringContainsString('cta_render_single_hunt_enigmes_topbar_link', $navigation);
         self::assertStringContainsString('astra_render_mobile_header_column', $navigation);
+        self::assertStringContainsString("['above', 'primary']", $navigation);
         self::assertStringContainsString('Énigmes', $navigation);
         self::assertStringContainsString('cta_get_single_hunt_enigmes_nav_url', $navigation);
         self::assertStringContainsString('cat-single-hunt', $navigation);
