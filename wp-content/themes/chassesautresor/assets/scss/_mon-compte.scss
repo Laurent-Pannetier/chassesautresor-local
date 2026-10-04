@@ -829,9 +829,13 @@
 ========================================================== */
 .dashboard-grid {
     display: grid;
-    gap: 24px;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    margin-top: 20px;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-top: 1rem;
+}
+
+.myaccount-main .dashboard-grid {
+    gap: 1.35rem;
 }
 
 .myaccount-chasses-engagees {
@@ -1016,7 +1020,7 @@
     padding: 16px;
     text-decoration: none;
     color: hsl(var(--foreground));
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1068,6 +1072,60 @@
 .dashboard-card-content {
     font-size: 0.875rem;
     color: hsl(var(--muted-foreground));
+}
+
+/* Tuiles Mon compte : surface sombre lisible (évite gris clair sur blanc) */
+.myaccount-main .dashboard-card {
+    background: rgba(9, 15, 36, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    padding: 1.25rem 1.35rem;
+    color: rgba(255, 255, 255, 0.96);
+    gap: 0.9rem;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(8px);
+}
+
+.myaccount-main .dashboard-card:hover {
+    background: rgba(14, 22, 48, 0.88);
+    border-color: rgba(225, 169, 95, 0.4);
+}
+
+.myaccount-main .dashboard-card-header {
+    gap: 0.65rem;
+}
+
+.myaccount-main .dashboard-card-header h3 {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #fff;
+}
+
+.myaccount-main .dashboard-card-header > i {
+    color: var(--color-primary, #e1a95f);
+    font-size: 1.05rem;
+}
+
+.myaccount-main .dashboard-card-content {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.myaccount-main .dashboard-card .stat-value {
+    color: #fff;
+}
+
+.myaccount-main .dashboard-placeholder {
+    background: rgba(255, 255, 255, 0.04);
+    border-style: dashed;
+    opacity: 0.85;
+}
+
+.myaccount-main .dashboard-placeholder .dashboard-card-content p {
+    color: rgba(255, 255, 255, 0.78);
 }
 /* listes */
 .dashboard-card ul li {
@@ -1406,18 +1464,23 @@ body.woocommerce h2 {
 }
 
 .myaccount-layout .switch-control input {
+    position: absolute;
     opacity: 0;
-    width: 0;
-    height: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+    z-index: 1;
 }
 
 .myaccount-layout .switch-slider {
     position: absolute;
     inset: 0;
-    background-color: rgba(255, 255, 255, 0.28);
+    background-color: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.42);
     border-radius: 999px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .myaccount-layout .switch-slider::before {
@@ -1426,19 +1489,25 @@ body.woocommerce h2 {
     width: 20px;
     height: 20px;
     left: 2px;
-    top: 2px;
+    top: 1px;
     background-color: #fff;
     border-radius: 50%;
     transition: transform 0.2s ease;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 
 .myaccount-layout .switch-control input:checked + .switch-slider {
     background-color: var(--color-primary, #e1a95f);
+    border-color: var(--color-primary, #e1a95f);
 }
 
 .myaccount-layout .switch-control input:checked + .switch-slider::before {
     transform: translateX(18px);
+}
+
+.myaccount-layout .switch-control input:focus-visible + .switch-slider {
+    outline: 2px solid var(--color-primary, #e1a95f);
+    outline-offset: 2px;
 }
 
 .myaccount-layout .switch-control input:disabled + .switch-slider {
@@ -1456,11 +1525,49 @@ body.woocommerce h2 {
 
 .myaccount-riddle-stats-table {
     width: 100%;
+    border-collapse: collapse;
+}
+
+.myaccount-main .myaccount-riddle-stats-table th,
+.myaccount-main .myaccount-riddle-stats-table td {
+    padding: 0.7rem 0.75rem;
+    color: rgba(255, 255, 255, 0.94);
+    border: 0;
+    vertical-align: middle;
+}
+
+.myaccount-main .myaccount-riddle-stats-table thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.myaccount-main .myaccount-riddle-stats-table tbody tr {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.myaccount-main .myaccount-riddle-stats-table tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.myaccount-main .myaccount-riddle-stats-table tbody tr:nth-child(even) {
+    background: transparent;
 }
 
 .myaccount-riddle-stats-table th[scope='row'] {
     text-align: left;
-    font-weight: 600;
+    font-weight: 700;
+    color: #fff;
+}
+
+.myaccount-main .stats-table-wrapper {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hunt-lifecycle-card__header {
@@ -1473,14 +1580,15 @@ body.woocommerce h2 {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.2rem 0.55rem;
+    padding: 0.28rem 0.65rem;
     border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.01em;
     line-height: 1.2;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.22);
     white-space: nowrap;
 }
 
@@ -1489,23 +1597,27 @@ body.woocommerce h2 {
 }
 
 .hunt-lifecycle-card[data-state='editable'] .hunt-lifecycle-card__state-badge {
-    background: rgba(225, 169, 95, 0.18);
-    color: var(--color-primary, #e1a95f);
+    background: rgba(225, 169, 95, 0.28);
+    color: #ffe2b0;
+    border-color: rgba(225, 169, 95, 0.55);
 }
 
 .hunt-lifecycle-card[data-state='pending'] .hunt-lifecycle-card__state-badge {
-    background: rgba(255, 193, 7, 0.16);
-    color: #ffc107;
+    background: rgba(255, 193, 7, 0.22);
+    color: #ffe082;
+    border-color: rgba(255, 193, 7, 0.5);
 }
 
 .hunt-lifecycle-card[data-state='active'] .hunt-lifecycle-card__state-badge {
-    background: rgba(46, 204, 113, 0.16);
-    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.22);
+    color: #9af0c0;
+    border-color: rgba(46, 204, 113, 0.5);
 }
 
 .hunt-lifecycle-card[data-state='blocked'] .hunt-lifecycle-card__state-badge {
-    background: rgba(231, 76, 60, 0.16);
-    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.22);
+    color: #ffb3aa;
+    border-color: rgba(231, 76, 60, 0.5);
 }
 
 .hunt-lifecycle-card__content {
@@ -1523,54 +1635,58 @@ body.woocommerce h2 {
 }
 
 .myaccount-layout .switch-control--lifecycle {
-    width: 52px;
-    height: 30px;
+    width: 56px;
+    height: 32px;
 }
 
 .myaccount-layout .switch-control--lifecycle .switch-slider::before {
     width: 26px;
     height: 26px;
+    top: 2px;
+    left: 3px;
 }
 
 .myaccount-layout .switch-control--lifecycle input:checked + .switch-slider::before {
-    transform: translateX(22px);
+    transform: translateX(24px);
 }
 
 .hunt-lifecycle-card__label-off,
 .hunt-lifecycle-card__label-on {
-    min-width: 3.5rem;
-    font-size: 0.9375rem;
+    min-width: 3.75rem;
+    font-size: 1rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.68);
     text-align: center;
     transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .hunt-lifecycle-card__label-off.is-current,
 .hunt-lifecycle-card__label-on.is-current {
-    color: var(--color-text-primary, #fff);
-    font-weight: 700;
+    color: #fff;
+    font-weight: 800;
 }
 
 .hunt-lifecycle-card[data-state='active'] .hunt-lifecycle-card__label-on.is-current {
-    color: #2ecc71;
+    color: #9af0c0;
 }
 
 .hunt-lifecycle-card[data-state='pending'] .hunt-lifecycle-card__label-off.is-current {
-    color: #ffc107;
+    color: #ffe082;
 }
 
 .hunt-lifecycle-card__status {
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1rem;
     text-align: center;
+    color: #fff;
 }
 
 .hunt-lifecycle-card__help {
     margin: 0;
     font-size: 0.875rem;
-    line-height: 1.45;
-    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.78);
     text-align: center;
 }
 
@@ -1647,18 +1763,27 @@ body.woocommerce h2 {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.65rem;
 }
 
 .hunt-quick-edit-list a {
-    color: inherit;
+    color: var(--color-primary, #e1a95f);
+    font-weight: 600;
     text-decoration: underline;
-    text-underline-offset: 0.15em;
+    text-underline-offset: 0.18em;
 }
 
 .hunt-quick-edit-list a:hover,
 .hunt-quick-edit-list a:focus-visible {
-    color: var(--color-primary, #e1a95f);
+    color: #f0c27a;
+}
+
+.myaccount-main .btn-danger,
+.myaccount-main button.btn-danger {
+    min-height: 2.5rem;
+    padding: 0.55rem 1.1rem;
+    font-weight: 700;
+    border-radius: 8px;
 }
 
 /* Tentatives table alignment */
