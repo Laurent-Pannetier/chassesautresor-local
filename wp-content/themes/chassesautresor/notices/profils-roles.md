@@ -47,3 +47,9 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
 
 - Switch Éditer/Activer : pastille d’état en en-tête + gros commutateur Orgy.
 - Labels Éditer/Activer mis en avant selon l’état (`is-current`).
+
+## Lot F — file admin (livré)
+
+- Accueil admin : carte `Actions en attente` (Correction / Bannir).
+- Valider reste sur le switch ; correction/bannir retirés de la fiche chasse.
+- Après action : retour Accueil (`/mon-compte/`).

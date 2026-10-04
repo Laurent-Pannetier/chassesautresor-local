@@ -239,7 +239,7 @@ Statut : livré (à recetter).
 1. [x] Composant switch commun + bandeau d’état.
 2. [x] Branchement `demo` (activation directe) vs `single_hunt` / `platform` (demande + confirmation admin).
 3. [x] Suppression CTA / messages validation sur pages entités.
-4. [ ] File d’actions admin correction/bannir encore sur fiche chasse (Valider passe par le switch).
+4. [x] File d’actions admin correction/bannir déplacée sur Accueil (Valider via le switch).
 5. [x] Accès rapide édition entités.
 6. [x] Reset stats sur Accueil ; pastille flottante démo retirée.
 
@@ -260,12 +260,15 @@ Statut : livré (à recetter).
 2. [x] Pastille d’état dynamique en en-tête (Éditable / En attente / Active).
 3. [x] Labels Éditer / Activer mis en avant selon l’état, lisibles mobile.
 
-### Lot F — Plus tard
+### Lot F — File admin Accueil (+ suites métier)
 
-- Équipes complètes.
-- Récompenses.
-- Réactivation Points via le paramètre d’expérience.
-- File d’actions admin (correction / bannir) entièrement sur Accueil.
+Statut : partiel — file correction/bannir livrée ; suites métier plus tard.
+
+1. [x] File d’actions admin (correction / bannir) sur Accueil.
+2. [x] Retrait correction/bannir de la fiche chasse (Supprimer reste en édition).
+3. [ ] Équipes complètes.
+4. [ ] Récompenses.
+5. [ ] Réactivation Points via le paramètre d’expérience.
 
 ---
 
@@ -296,4 +299,4 @@ Statut : livré (à recetter).
 
 ## 7. Prochaine étape
 
-Lot F : file admin correction/bannir sur Accueil, puis équipes / récompenses.
+Suites Lot F métier : équipes, récompenses, réactivation Points.

@@ -90,7 +90,7 @@ final class HuntModerationRequestHandler
             $message
         );
 
-        wp_safe_redirect(home_url('/mon-compte/organisateurs/'));
+        wp_safe_redirect(home_url('/mon-compte/'));
         exit;
     }
 

@@ -1508,6 +1508,27 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('RiddleStatisticsApplicationService', $orgDashboard);
     }
 
+    public function testAdminModerationQueueLivesOnAccountHomeNotHuntPage(): void
+    {
+        $adminDashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
+        );
+        $huntPage = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+        $edition = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/chasse/chasse-edition-main.php'
+        );
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntModerationRequestHandler.php'
+        );
+
+        self::assertStringContainsString('cat_render_hunt_moderation_queue_card', $adminDashboard);
+        self::assertStringNotContainsString('chasse-validation-actions', $huntPage);
+        self::assertStringNotContainsString("value=\"correction\"", $edition);
+        self::assertStringNotContainsString("value=\"bannir\"", $edition);
+        self::assertStringContainsString("home_url('/mon-compte/')", $handler);
+        self::assertStringNotContainsString("home_url('/mon-compte/organisateurs/')", $handler);
+    }
+
     public function testOrganizerModerationAttemptHelpersBelongToCore(): void
     {
         $attempts = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/tentatives.php');

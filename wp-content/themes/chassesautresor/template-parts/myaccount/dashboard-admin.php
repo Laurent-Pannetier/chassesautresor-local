@@ -16,7 +16,7 @@ $can_reset = function_exists('cat_is_demo_mode')
 
 myaccount_render_dashboard_section(
     __('Pilotage', 'chassesautresor-com'),
-    __('Accès rapide et cycle de vie de la chasse.', 'chassesautresor-com')
+    __('Accès rapide, cycle de vie et file d’actions administrateur.', 'chassesautresor-com')
 );
 ?>
 <div class="dashboard-grid">
@@ -26,6 +26,9 @@ myaccount_render_dashboard_section(
     }
     if (function_exists('cat_render_hunt_lifecycle_switch')) {
         echo cat_render_hunt_lifecycle_switch($hunt_id); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    }
+    if (function_exists('cat_render_hunt_moderation_queue_card')) {
+        echo cat_render_hunt_moderation_queue_card(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
     if ($can_reset || current_user_can('administrator')) :
         ?>

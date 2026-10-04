@@ -217,3 +217,132 @@ if (!function_exists('cat_render_hunt_quick_edit_card')) {
         return (string) ob_get_clean();
     }
 }
+
+if (!function_exists('cat_get_pending_moderation_hunts')) {
+    /**
+     * Hunts waiting for admin moderation (validation request pending).
+     *
+     * @return array<int, array{id:int,title:string,url:string}>
+     */
+    function cat_get_pending_moderation_hunts(): array
+    {
+        if (!current_user_can('administrator')) {
+            return [];
+        }
+
+        $huntIds = [];
+        if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+            $managedId = function_exists('cat_get_managed_hunt_id_for_user')
+                ? cat_get_managed_hunt_id_for_user()
+                : 0;
+            if ($managedId > 0) {
+                $huntIds = [$managedId];
+            }
+        } else {
+            $huntIds = array_map(
+                'intval',
+                (array) get_posts([
+                    'post_type' => 'chasse',
+                    'post_status' => ['publish', 'pending', 'draft', 'private'],
+                    'posts_per_page' => 20,
+                    'fields' => 'ids',
+                    'meta_key' => 'chasse_cache_statut_validation',
+                    'meta_value' => 'en_attente',
+                    'orderby' => 'date',
+                    'order' => 'DESC',
+                    'no_found_rows' => true,
+                ])
+            );
+        }
+
+        $rows = [];
+        foreach ($huntIds as $huntId) {
+            if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
+                continue;
+            }
+            if ((string) get_field('chasse_cache_statut_validation', $huntId) !== 'en_attente') {
+                continue;
+            }
+
+            $title = (string) get_the_title($huntId);
+            $url = (string) get_permalink($huntId);
+            $rows[] = [
+                'id' => $huntId,
+                'title' => $title !== '' ? $title : __('Chasse', 'chassesautresor-com'),
+                'url' => $url,
+            ];
+        }
+
+        return $rows;
+    }
+}
+
+if (!function_exists('cat_render_hunt_moderation_queue_card')) {
+    /**
+     * Admin Accueil card: correction / ban queue for pending hunts.
+     * Validation itself stays on the Edit / Activate switch.
+     */
+    function cat_render_hunt_moderation_queue_card(): string
+    {
+        $hunts = cat_get_pending_moderation_hunts();
+        if ($hunts === []) {
+            return '';
+        }
+
+        ob_start();
+        ?>
+        <div class="dashboard-card hunt-moderation-queue-card">
+            <div class="dashboard-card-header">
+                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                <h3><?php esc_html_e('Actions en attente', 'chassesautresor-com'); ?></h3>
+            </div>
+            <div class="dashboard-card-content hunt-moderation-queue-card__content">
+                <p class="hunt-moderation-queue-card__intro">
+                    <?php esc_html_e(
+                        'Demandes de validation : corriger ou bannir ici. Pour publier, utilisez le commutateur Activer.',
+                        'chassesautresor-com'
+                    ); ?>
+                </p>
+                <ul class="hunt-moderation-queue-list">
+                    <?php foreach ($hunts as $hunt) : ?>
+                        <li class="hunt-moderation-queue-item">
+                            <div class="hunt-moderation-queue-item__title">
+                                <?php if ($hunt['url'] !== '') : ?>
+                                    <a href="<?php echo esc_url($hunt['url']); ?>">
+                                        <?php echo esc_html($hunt['title']); ?>
+                                    </a>
+                                <?php else : ?>
+                                    <span><?php echo esc_html($hunt['title']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <form
+                                method="post"
+                                action="<?php echo esc_url(admin_url('admin-post.php')); ?>"
+                                class="form-traitement-validation-chasse hunt-moderation-queue-item__actions"
+                            >
+                                <?php wp_nonce_field('validation_admin_' . $hunt['id'], 'validation_admin_nonce'); ?>
+                                <input type="hidden" name="action" value="traiter_validation_chasse">
+                                <input type="hidden" name="chasse_id" value="<?php echo esc_attr((string) $hunt['id']); ?>">
+                                <button type="button" class="bouton-tertiaire btn-correction">
+                                    <?php esc_html_e('Correction', 'chassesautresor-com'); ?>
+                                </button>
+                                <button
+                                    type="submit"
+                                    name="validation_admin_action"
+                                    value="bannir"
+                                    class="btn-danger"
+                                    onclick="return confirm('<?php echo esc_js(__('Bannir cette chasse ?', 'chassesautresor-com')); ?>');"
+                                >
+                                    <?php esc_html_e('Bannir', 'chassesautresor-com'); ?>
+                                </button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+        <?php
+
+        return (string) ob_get_clean();
+    }
+}
