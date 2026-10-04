@@ -40,6 +40,8 @@
 - Un CPT `indices` gère les indices associés à une chasse ou une énigme.
 - Les tables personnalisées incluent `wp_indices_deblocages` et la colonne `indice_id` dans `wp_engagements`.
 - Le champ `origin_type` de `wp_user_points` accepte désormais la valeur `indice`.
+- Le plugin Core installe aussi via `dbDelta` : `wp_engagements`, `wp_indices_deblocages`,
+  `wp_enigme_tentatives`, `wp_enigme_statuts_utilisateur` (activation + `plugins_loaded` maybeUpgrade).
 
 ## Environnements et déploiement (ne pas confondre)
 

@@ -25,6 +25,8 @@ class ConversionModalAjaxHandler {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
+        check_ajax_referer('conversion-history-nonce', 'nonce');
+
         global $wpdb;
         $userId = (int) get_current_user_id();
         $points = CoreServiceFactory::points($wpdb);

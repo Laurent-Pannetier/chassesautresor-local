@@ -60,10 +60,20 @@ Les deux canaux de prod sont **volontairement séparés**. On ne fusionne pas th
 5. Si besoin : champs ACF, CPT ACF, migrations / tables SQL custom.
 6. Smoke test prod : chasse, énigme, soumission de réponse, mon-compte.
 
+## Tables Core et déploiement plugin
+
+Après déploiement du plugin Core, les tables métier sont créées/mises à niveau
+automatiquement via `maybeUpgrade` sur `plugins_loaded` (pas besoin de réactiver
+le plugin sur un site déjà en ligne). Cela couvre notamment `engagements`,
+`indices_deblocages`, `enigme_tentatives` et `enigme_statuts_utilisateur`.
+
+Les endpoints AJAX sensibles (avatar, dismiss messages, admin paiements, etc.)
+exigent désormais un nonce : déployer **thème + plugin** ensemble pour ces lots.
+
 ## Ce qui reste hors Git de prod
 
 - Configuration ACF (souvent en base).
-- Tables custom et données.
+- Données des tables custom (le schéma est géré par Core).
 - `wp-config.php`, uploads, cache.
 - Plugins tiers (WooCommerce, ACF Pro, Hostinger, etc.).
 - Tooling de tests du monorepo local.

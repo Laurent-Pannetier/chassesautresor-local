@@ -24,6 +24,8 @@ class RiddleAttemptListAjaxHandler {
     }
 
     public static function handle(): void {
+        check_ajax_referer('modifier_champ_enigme', 'nonce');
+
         $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
         $canModify = is_user_logged_in()
             && (new RiddleAttemptAccessService())->canModifyRiddle((int) get_current_user_id(), $riddleId);

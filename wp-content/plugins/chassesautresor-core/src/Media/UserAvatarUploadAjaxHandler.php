@@ -17,6 +17,9 @@ class UserAvatarUploadAjaxHandler {
         if (!is_user_logged_in()) {
             wp_send_json_error(['message' => __('Vous devez être connecté.', 'chassesautresor-com')]);
         }
+
+        check_ajax_referer('upload_user_avatar', 'nonce');
+
         if (!isset($_FILES['avatar']) || !is_array($_FILES['avatar'])) {
             wp_send_json_error(['message' => __('Aucun fichier reçu.', 'chassesautresor-com')]);
         }

@@ -18,6 +18,8 @@ class AccountSectionAjaxHandler {
     }
 
     public static function handle(): void {
+        check_ajax_referer('cta_load_admin_section', 'nonce');
+
         $section = sanitize_key($_GET['section'] ?? '');
         $decision = (new AccountSectionAccessService())->resolve(
             is_user_logged_in(),

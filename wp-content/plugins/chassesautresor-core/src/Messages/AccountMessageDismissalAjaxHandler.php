@@ -15,6 +15,8 @@ class AccountMessageDismissalAjaxHandler {
             wp_send_json_error(['message' => __('Unauthorized', 'chassesautresor-com')], 403);
         }
 
+        check_ajax_referer('cta_dismiss_message', 'nonce');
+
         $key = sanitize_key($_POST['key'] ?? '');
         if ($key === '') {
             wp_send_json_error(['message' => __('Clé de message invalide.', 'chassesautresor-com')], 400);

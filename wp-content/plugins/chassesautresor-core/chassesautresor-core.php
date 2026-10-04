@@ -117,6 +117,10 @@ require_once __DIR__ . '/src/Progress/ManualAttemptReviewService.php';
 require_once __DIR__ . '/src/Progress/ManualAttemptReviewHandler.php';
 require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
 require_once __DIR__ . '/src/Progress/HuntWinnersTable.php';
+require_once __DIR__ . '/src/Progress/EngagementsTable.php';
+require_once __DIR__ . '/src/Progress/HintUnlocksTable.php';
+require_once __DIR__ . '/src/Progress/RiddleAttemptsTable.php';
+require_once __DIR__ . '/src/Progress/RiddleUserStatusesTable.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementRepository.php';
 require_once __DIR__ . '/src/Progress/HuntEngagementService.php';
 require_once __DIR__ . '/src/Progress/hunt-functions.php';
@@ -562,6 +566,26 @@ register_activation_hook(
 
 register_activation_hook(
     __FILE__,
+    [ChassesAuTresor\Core\Progress\EngagementsTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Progress\HintUnlocksTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Progress\RiddleAttemptsTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Progress\RiddleUserStatusesTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
     [ChassesAuTresor\Core\Progress\RiddleStepProgressTable::class, 'install']
 );
 
@@ -697,6 +721,26 @@ add_action(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Progress\HuntWinnersTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\EngagementsTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\HintUnlocksTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\RiddleAttemptsTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Progress\RiddleUserStatusesTable::class, 'maybeUpgrade']
 );
 
 add_action(
