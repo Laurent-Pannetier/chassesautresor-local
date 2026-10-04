@@ -1241,7 +1241,67 @@ body.woocommerce h2 {
 
 /* Sections for account dashboard */
 .dashboard-section {
-    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+}
+
+.dashboard-section + .dashboard-section {
+    margin-top: var(--space-xl);
+}
+
+.dashboard-section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.dashboard-section-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-transform: none;
+}
+
+.dashboard-section-intro {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    max-width: 42rem;
+}
+
+.dashboard-section-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.dashboard-placeholder {
+    opacity: 0.72;
+    pointer-events: none;
+    cursor: default;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.dashboard-placeholder .dashboard-card-content p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.45;
+}
+
+.dashboard-grid--inactive {
+    margin-top: var(--space-md);
+    opacity: 0.55;
+}
+
+.dashboard-grid--inactive .dashboard-placeholder {
+    opacity: 1;
+}
+
+.myaccount-settings-orders-link {
+    margin: var(--space-sm) 0 0;
 }
 
 /* Tentatives table alignment */

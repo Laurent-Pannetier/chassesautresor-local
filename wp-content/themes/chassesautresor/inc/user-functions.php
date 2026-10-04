@@ -99,6 +99,26 @@ function ca_get_engaged_hunts_content_html(
  */
 function ca_render_recommended_hunts_empty_state(): string
 {
+    if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+        ob_start();
+        ?>
+        <div class="dashboard-card dashboard-placeholder" aria-disabled="true">
+            <div class="dashboard-card-content">
+                <p>
+                    <?php
+                    esc_html_e(
+                        'Votre progression apparaîtra ici dès que vous aurez commencé l’aventure.',
+                        'chassesautresor-com'
+                    );
+                    ?>
+                </p>
+            </div>
+        </div>
+        <?php
+
+        return ob_get_clean();
+    }
+
     $recommended_ids = (new ChassesAuTresor\Core\Progress\EngagedHuntsRecommendationService())->find(3);
 
     $catalog_url = apply_filters(

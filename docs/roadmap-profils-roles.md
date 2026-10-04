@@ -205,15 +205,17 @@ Règles :
 ### Lot P0 — Cadrage (ce document)
 
 - [x] Décisions modes / menus / switch / points / placeholders
-- [ ] Validation explicite de ce document avant code
+- [x] Validation explicite de ce document avant code
 
 ### Lot A — Socle navigation & coque
 
-1. Menus latéraux par rôle (Accueil, Tentatives joueur, Réglages ; logout retiré).
-2. Commandes intégrées à Réglages.
-3. Menu compte barre supérieure (hover + tactile) avec déconnexion.
-4. Shell Accueil + primitives Orgy (sections, cards, placeholders).
-5. Conservation du nav CPT à gauche.
+Statut : livré (à recetter sur instance).
+
+1. [x] Menus latéraux par rôle (Accueil, Tentatives joueur, Réglages ; logout retiré).
+2. [x] Commandes intégrées à Réglages.
+3. [x] Menu compte barre supérieure (hover + tactile) avec déconnexion.
+4. [x] Shell Accueil + primitives Orgy (sections, cards, placeholders).
+5. [x] Conservation du nav CPT à gauche.
 
 ### Lot B — Paramètre Points + nettoyage surfaces Points
 

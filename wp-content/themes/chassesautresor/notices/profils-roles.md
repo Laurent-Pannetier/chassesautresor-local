@@ -14,3 +14,11 @@ Fiche courte. Le cadrage complet (décisions, modes, lots, critères) est dans
   demande de validation + confirmation admin en `single_hunt`.
 - Design : primitives Orgy uniquement (`dashboard-section`, `dashboard-card`,
   `dashboard-stat`, `dashboard-placeholder`, `dashboard-switch`).
+
+## Lot A (livré)
+
+- Helpers `myaccount_get_sidebar_nav_items()`, `myaccount_user_is_player()`,
+  `myaccount_render_dashboard_section()`, `myaccount_render_dashboard_placeholder()`.
+- Endpoint WooCommerce `tentatives` ; Tentatives retirées de l’Accueil.
+- Menu compte header : `assets/js/header-account-menu.js`.
+- Shells Accueil joueur / org / admin avec placeholders.

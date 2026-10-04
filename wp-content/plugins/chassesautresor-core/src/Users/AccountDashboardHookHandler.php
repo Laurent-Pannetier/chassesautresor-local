@@ -11,7 +11,7 @@ use ChassesAuTresor\Core\Progress\UserAttemptsRenderer;
 final class AccountDashboardHookHandler {
     public static function register(callable $addAction): void {
         $addAction('woocommerce_account_dashboard', [self::class, 'renderEngagedHunts'], 10);
-        $addAction('woocommerce_account_dashboard', [self::class, 'renderAttempts'], 20);
+        // Tentatives live on the dedicated account endpoint, not Accueil.
     }
 
     public static function renderEngagedHunts(): void {
