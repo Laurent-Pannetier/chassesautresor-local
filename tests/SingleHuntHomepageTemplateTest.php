@@ -27,7 +27,8 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cat_is_demo_mode()', $template);
         self::assertStringContainsString('single-hunt-home__facts', $template);
         self::assertStringContainsString('single-hunt-home__story', $template);
-        self::assertStringContainsString('single-hunt-home__riddles', $template);
+        self::assertStringNotContainsString('single-hunt-home__riddles', $template);
+        self::assertStringNotContainsString('Le parcours', $template);
         self::assertStringNotContainsString('home-hunts__toolbar', $template);
         self::assertStringNotContainsString('ca_home_filter_chasse_ids', $template);
     }
@@ -64,7 +65,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cta_get_primary_hunt_cta', $navigation);
     }
 
-    public function testSingleHuntHomepageGuidesGuestsParticipantsAndOrganizers(): void
+    public function testSingleHuntHomepageGuidesGuestsAndParticipantsWithoutOrganizerNextStep(): void
     {
         $template = (string) file_get_contents(
             self::THEME_PATH . '/template-parts/home/single-hunt.php'
@@ -73,22 +74,30 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('single-hunt-home__journey', $template);
         self::assertStringContainsString('Créer mon compte', $template);
         self::assertStringContainsString('$isEngaged', $template);
-        self::assertStringContainsString('$isOrganizer', $template);
         self::assertStringContainsString('single-hunt-progress', $template);
         self::assertStringContainsString('<progress', $template);
         self::assertStringContainsString('Reprenez là où vous vous êtes arrêté.', $template);
+        self::assertStringNotContainsString('Prochaine étape', $template);
+        self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);
+        self::assertStringNotContainsString('Modifiez la chasse ou consultez son activité.', $template);
+        self::assertStringNotContainsString('Rejoignez la chasse pour révéler les énigmes.', $template);
+        self::assertStringNotContainsString('Les énigmes vous attendent', $template);
+        self::assertStringNotContainsString('home-enigmes', $template);
     }
 
-    public function testSingleHuntHomepageUsesCompactRiddleCardsAndLimitsPrimaryCtas(): void
+    public function testSingleHuntHomepageLimitsPrimaryCtasAndRemovesRiddleParcours(): void
     {
         $template = $this->getSingleHuntTemplate();
-
-        self::assertStringContainsString(
-            'single-hunt-home__riddles page-chasse-wrapper--compact',
-            $template
+        $navigation = (string) file_get_contents(
+            self::THEME_PATH . '/inc/single-hunt-navigation.php'
         );
+
         self::assertSame(1, substr_count($template, "echo \$cta['cta_html']"));
         self::assertStringNotContainsString('single_hunt_riddles_access', $template);
+        self::assertStringNotContainsString('chasse-partial-boucle-enigmes', $template);
+        self::assertStringNotContainsString('/#home-enigmes', $navigation);
+        self::assertStringContainsString('#chasse-enigmes-wrapper', $navigation);
+        self::assertStringContainsString('/#single-hunt-story-title', $navigation);
     }
 
     public function testDemoModeProvidesAnAuthenticatedStatisticsResetShortcut(): void
