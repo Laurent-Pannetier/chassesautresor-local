@@ -16,7 +16,6 @@ final class AccountDashboardHookHandlerTest extends TestCase {
 
         self::assertSame([
             ['woocommerce_account_dashboard', [AccountDashboardHookHandler::class, 'renderEngagedHunts'], 10],
-            ['woocommerce_account_dashboard', [AccountDashboardHookHandler::class, 'renderAttempts'], 20],
         ], $hooks);
     }
 }

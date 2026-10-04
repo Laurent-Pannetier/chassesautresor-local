@@ -24,11 +24,13 @@ final class AccountToolsRenderer {
     public function render(): string {
         $rate = (float) ($this->rateProvider)();
         $protectionActive = (bool) ($this->protectionProvider)();
+        $pointsUiEnabled = !function_exists('cat_is_points_ui_enabled') || cat_is_points_ui_enabled();
         ob_start();
         ?>
 <section>
     <h1 class="mb-4 text-xl font-semibold"><?php esc_html_e('Outils', 'chassesautresor-com'); ?></h1>
     <div class="dashboard-grid">
+        <?php if ($pointsUiEnabled) : ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-coins"></i>
@@ -67,25 +69,9 @@ final class AccountToolsRenderer {
                 </form>
             </div>
         </div>
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-lock"></i>
-                <h3><?php esc_html_e('Protection globale', 'chassesautresor-com'); ?></h3>
-            </div>
-            <div class="stats-content">
-                <label class="switch-control">
-                    <input type="checkbox" id="site-protection-toggle" <?php checked($protectionActive); ?>>
-                    <span class="switch-slider"></span>
-                </label>
-                <span id="site-protection-status">
-                    <?php
-                    echo $protectionActive
-                        ? esc_html__('Activé', 'chassesautresor-com')
-                        : esc_html__('Désactivé', 'chassesautresor-com');
-                    ?>
-                </span>
-            </div>
-        </div>
+        <?php endif; ?>
+        <?= $this->renderProtectionCard($protectionActive); ?>
+        <?php if ($pointsUiEnabled) : ?>
         <div class="dashboard-card">
             <div class="dashboard-card-header">
                 <i class="fas fa-euro-sign"></i>
@@ -99,7 +85,7 @@ final class AccountToolsRenderer {
                 </p>
                     <div class="overlay-taux">
                         <button class="bouton-secondaire" id="modifier-taux">
-                            <?php esc_html_e('Modifier', 'chassesautresor-com'); ?>
+                            <?php esc_html_e('modifier', 'chassesautresor-com'); ?>
                         </button>
                     </div>
                     <form method="POST" class="form-taux-conversion" id="form-taux-conversion" style="display: none;">
@@ -122,6 +108,7 @@ final class AccountToolsRenderer {
                     </form>
             </div>
         </div>
+        <?php endif; ?>
 
         <div class="dashboard-card">
             <i class="fas fa-tools"></i>
@@ -153,6 +140,35 @@ final class AccountToolsRenderer {
 </section>
 
         <?php
+        return trim((string) ob_get_clean());
+    }
+
+    public function renderProtectionCard(?bool $protectionActive = null): string
+    {
+        $isActive = $protectionActive ?? (bool) ($this->protectionProvider)();
+        ob_start();
+        ?>
+        <div class="dashboard-card site-protection-card">
+            <div class="dashboard-card-header">
+                <i class="fas fa-lock" aria-hidden="true"></i>
+                <h3><?php esc_html_e('Protection globale', 'chassesautresor-com'); ?></h3>
+            </div>
+            <div class="dashboard-card-content stats-content">
+                <label class="switch-control">
+                    <input type="checkbox" id="site-protection-toggle" <?php checked($isActive); ?>>
+                    <span class="switch-slider"></span>
+                </label>
+                <span id="site-protection-status">
+                    <?php
+                    echo $isActive
+                        ? esc_html__('Activé', 'chassesautresor-com')
+                        : esc_html__('Désactivé', 'chassesautresor-com');
+                    ?>
+                </span>
+            </div>
+        </div>
+        <?php
+
         return trim((string) ob_get_clean());
     }
 }

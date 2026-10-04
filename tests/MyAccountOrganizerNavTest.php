@@ -35,13 +35,26 @@ class MyAccountOrganizerNavTest extends TestCase
         eval('function get_permalink($id){return "https://example.com/post-$id";}');
         eval('function get_the_title($id){return "Post $id";}');
         eval('function peut_valider_chasse($cid,$uid){return false;}');
+        eval('function cat_is_platform_mode(){return false;}');
+        eval('function esc_url($url){return $url;}');
+        eval('function esc_attr($value){return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");}');
+        eval('function esc_html($value){return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");}');
+        eval('function esc_attr_e($value){echo htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");}');
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/myaccount-functions.php';
 
         $nav = myaccount_get_organizer_nav(1);
 
         $this->assertNotNull($nav);
+        $this->assertFalse($nav['show_organizer']);
         $this->assertSame('https://example.com/post-200', $nav['chasses'][0]['enigmes'][0]['url']);
+
+        $html = myaccount_render_organizer_nav($nav);
+        $this->assertStringNotContainsString('fa-landmark', $html);
+        $this->assertStringNotContainsString('Post 99', $html);
+        $this->assertStringContainsString('organizer-nav--hunt-first', $html);
+        $this->assertStringContainsString('organizer-nav-hunt', $html);
+        $this->assertStringContainsString('organizer-nav-riddle', $html);
     }
 
     /**
@@ -63,13 +76,23 @@ class MyAccountOrganizerNavTest extends TestCase
         eval('function get_permalink($id){return "https://example.com/post-$id";}');
         eval('function get_the_title($id){return "Post $id";}');
         eval('function peut_valider_chasse($cid,$uid){return true;}');
+        eval('function cat_is_platform_mode(){return true;}');
+        eval('function esc_url($url){return $url;}');
+        eval('function esc_attr($value){return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");}');
+        eval('function esc_html($value){return htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");}');
+        eval('function esc_attr_e($value){echo htmlspecialchars((string)$value, ENT_QUOTES, "UTF-8");}');
 
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/myaccount-functions.php';
 
         $nav = myaccount_get_organizer_nav(1);
 
         $this->assertNotNull($nav);
+        $this->assertTrue($nav['show_organizer']);
         $this->assertStringContainsString('status-eligible', $nav['chasses'][0]['classes']);
+
+        $html = myaccount_render_organizer_nav($nav);
+        $this->assertStringContainsString('fa-landmark', $html);
+        $this->assertStringContainsString('Post 99', $html);
     }
 }
 

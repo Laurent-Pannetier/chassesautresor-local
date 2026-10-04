@@ -80,7 +80,7 @@ final class ThemeCoreBoundaryTest extends TestCase
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntValidationAjaxHandler.php'
         );
 
-        self::assertStringContainsString("update_field('chasse_cache_statut', 'a_venir'", $handler);
+        self::assertStringContainsString("update_field('chasse_cache_statut', 'revision'", $handler);
         self::assertStringContainsString("update_field('chasse_cache_statut_validation', 'correction'", $handler);
     }
 
@@ -1480,6 +1480,53 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringNotContainsString('get_option(', $template);
         self::assertStringContainsString('new ChassesAuTresor\\Core\\Messages\\AccountToolsRenderer', $template);
         self::assertStringContainsString('class AccountToolsRenderer', $renderer);
+    }
+
+    public function testAccountHuntRiddleStatisticsRenderingBelongsToCore(): void
+    {
+        $adminDashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
+        );
+        $orgDashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-organisateur.php'
+        );
+        $renderer = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountHuntRiddleStatisticsRenderer.php'
+        );
+
+        self::assertStringContainsString(
+            'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
+            $adminDashboard
+        );
+        self::assertStringContainsString(
+            'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
+            $orgDashboard
+        );
+        self::assertStringContainsString('renderProtectionCard', $adminDashboard);
+        self::assertStringContainsString('class AccountHuntRiddleStatisticsRenderer', $renderer);
+        self::assertStringNotContainsString('RiddleStatisticsApplicationService', $adminDashboard);
+        self::assertStringNotContainsString('RiddleStatisticsApplicationService', $orgDashboard);
+    }
+
+    public function testAdminModerationQueueLivesOnAccountHomeNotHuntPage(): void
+    {
+        $adminDashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
+        );
+        $huntPage = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
+        $edition = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/chasse/chasse-edition-main.php'
+        );
+        $handler = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/HuntModerationRequestHandler.php'
+        );
+
+        self::assertStringContainsString('cat_render_hunt_moderation_queue_card', $adminDashboard);
+        self::assertStringNotContainsString('chasse-validation-actions', $huntPage);
+        self::assertStringNotContainsString("value=\"correction\"", $edition);
+        self::assertStringNotContainsString("value=\"bannir\"", $edition);
+        self::assertStringContainsString("home_url('/mon-compte/')", $handler);
+        self::assertStringNotContainsString("home_url('/mon-compte/organisateurs/')", $handler);
     }
 
     public function testOrganizerModerationAttemptHelpersBelongToCore(): void

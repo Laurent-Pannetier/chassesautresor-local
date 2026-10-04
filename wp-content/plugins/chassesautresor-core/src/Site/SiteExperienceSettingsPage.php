@@ -35,6 +35,7 @@ final class SiteExperienceSettingsPage
                     'mode' => SiteExperienceService::MODE_SINGLE_HUNT,
                     'primary_hunt_id' => 0,
                     'organizer_applications_open' => 0,
+                    'points_ui_enabled' => 0,
                 ],
             ]
         );
@@ -43,7 +44,12 @@ final class SiteExperienceSettingsPage
     /**
      * @param mixed $value
      *
-     * @return array{mode:string,primary_hunt_id:int,organizer_applications_open:int}
+     * @return array{
+     *     mode:string,
+     *     primary_hunt_id:int,
+     *     organizer_applications_open:int,
+     *     points_ui_enabled:int
+     * }
      */
     public static function sanitize($value): array
     {
@@ -176,6 +182,31 @@ final class SiteExperienceSettingsPage
                             <p class="description">
                                 <?php esc_html_e(
                                     'Les candidatures restent toujours fermées en mode chasse unique.',
+                                    'chassesautresor-com'
+                                ); ?>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Points', 'chassesautresor-com'); ?></th>
+                        <td>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="<?php echo esc_attr($optionName); ?>[points_ui_enabled]"
+                                    value="1"
+                                    <?php checked($service->isPointsUiEnabled($settings)); ?>
+                                >
+                                <?php
+                                esc_html_e(
+                                    'Afficher l’interface Points (menus, soldes, statistiques)',
+                                    'chassesautresor-com'
+                                );
+                                ?>
+                            </label>
+                            <p class="description">
+                                <?php esc_html_e(
+                                    'Désactivé par défaut. Le moteur de points reste disponible ; seule l’UI est masquée.',
                                     'chassesautresor-com'
                                 ); ?>
                             </p>

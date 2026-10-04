@@ -73,6 +73,16 @@ final class RiddleStepProgressRepositoryTest extends TestCase {
         self::assertSame([12], $wpdb->preparedArguments);
     }
 
+    public function testCountsDistinctPlayersWithCompletedSteps(): void {
+        $wpdb = new RiddleStepProgressWpdbStub();
+        $wpdb->status = '3';
+        $repository = new RiddleStepProgressRepository($wpdb);
+
+        self::assertSame(3, $repository->countPlayersWithCompletedSteps(12));
+        self::assertSame([12], $wpdb->preparedArguments);
+        self::assertSame(0, $repository->countPlayersWithCompletedSteps(0));
+    }
+
     public function testDeletesProgressByRiddleOrStep(): void {
         $wpdb = new RiddleStepProgressWpdbStub();
         $repository = new RiddleStepProgressRepository($wpdb);

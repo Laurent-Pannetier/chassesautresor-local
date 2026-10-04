@@ -74,6 +74,7 @@ final class SiteExperienceServiceTest extends TestCase
             'mode' => SiteExperienceService::MODE_SINGLE_HUNT,
             'primary_hunt_id' => 0,
             'organizer_applications_open' => 0,
+            'points_ui_enabled' => 0,
         ], $settings);
     }
 
@@ -85,6 +86,7 @@ final class SiteExperienceServiceTest extends TestCase
                 'mode' => SiteExperienceService::MODE_PLATFORM,
                 'primary_hunt_id' => 42,
                 'organizer_applications_open' => 1,
+                'points_ui_enabled' => 1,
             ],
             static fn(int $postId): bool => $postId === 42
         );
@@ -93,6 +95,7 @@ final class SiteExperienceServiceTest extends TestCase
             'mode' => SiteExperienceService::MODE_PLATFORM,
             'primary_hunt_id' => 42,
             'organizer_applications_open' => 1,
+            'points_ui_enabled' => 1,
         ], $settings);
     }
 
@@ -112,6 +115,26 @@ final class SiteExperienceServiceTest extends TestCase
             'mode' => SiteExperienceService::MODE_DEMO,
             'primary_hunt_id' => 84,
             'organizer_applications_open' => 0,
+            'points_ui_enabled' => 0,
         ], $settings);
+    }
+
+    public function testPointsUiIsDisabledByDefaultAndCanBeEnabled(): void
+    {
+        $service = new SiteExperienceService();
+
+        self::assertFalse($service->isPointsUiEnabled([]));
+        self::assertTrue($service->isPointsUiEnabled(['points_ui_enabled' => 1]));
+        self::assertFalse($service->isPointsUiEnabled(['points_ui_enabled' => 0]));
+    }
+
+    public function testPlatformModeIsDetectedExplicitly(): void
+    {
+        $service = new SiteExperienceService();
+
+        self::assertTrue($service->isPlatformMode(['mode' => SiteExperienceService::MODE_PLATFORM]));
+        self::assertFalse($service->isPlatformMode(['mode' => SiteExperienceService::MODE_SINGLE_HUNT]));
+        self::assertFalse($service->isPlatformMode(['mode' => SiteExperienceService::MODE_DEMO]));
+        self::assertFalse($service->isPlatformMode([]));
     }
 }

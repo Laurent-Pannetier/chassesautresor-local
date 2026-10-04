@@ -11,7 +11,7 @@ use ChassesAuTresor\Core\Progress\UserAttemptsRenderer;
 final class AccountDashboardHookHandler {
     public static function register(callable $addAction): void {
         $addAction('woocommerce_account_dashboard', [self::class, 'renderEngagedHunts'], 10);
-        $addAction('woocommerce_account_dashboard', [self::class, 'renderAttempts'], 20);
+        // Tentatives live on the dedicated account endpoint, not Accueil.
     }
 
     public static function renderEngagedHunts(): void {
@@ -31,8 +31,11 @@ final class AccountDashboardHookHandler {
             return;
         }
         $pagination = $context['pagination'];
+        $title = (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+            ? __('Progression de la chasse', 'chassesautresor-com')
+            : __('Vos chasses en cours', 'chassesautresor-com');
         echo '<section class="chassesautresor-account-hunts"><h2>'
-            . esc_html__('Vos chasses en cours', 'chassesautresor-com') . '</h2>'
+            . esc_html($title) . '</h2>'
             . (new EngagedHuntsRenderer())->render($pagination) . '</section>';
     }
 

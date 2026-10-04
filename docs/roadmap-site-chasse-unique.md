@@ -92,6 +92,13 @@ fonctionnelle supplémentaire n'est requise ; il faut seulement vérifier la ré
 La fiche de la chasse n'affiche plus l'ancien fil d'Ariane `Accueil > Organisateur > Chasse`, devenu incohérent avec
 la navigation mono-chasse. Le composant générique est conservé dans le thème pour les autres contextes éventuels.
 
+## Suite — pages de profil par rôle
+
+Le cockpit **Mon compte** (menus, accueil joueur/org/admin, switch Éditer/Activer,
+paramètre Points) est cadré dans
+[`docs/roadmap-profils-roles.md`](roadmap-profils-roles.md).
+Pas d’implémentation de ce volet tant que ce document n’est pas validé.
+
 ## Transmission entre fils de discussion
 
 Un fil par lot est recommandé afin de conserver un contexte lisible. Chaque fin de lot doit ajouter ou actualiser un

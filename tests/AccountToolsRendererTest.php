@@ -35,6 +35,12 @@ final class AccountToolsRendererTest extends TestCase {
             }
         }
 
+        if (!function_exists('cat_is_points_ui_enabled')) {
+            function cat_is_points_ui_enabled(): bool {
+                return true;
+            }
+        }
+
         require_once __DIR__
             . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountToolsRenderer.php';
 
@@ -43,7 +49,40 @@ final class AccountToolsRendererTest extends TestCase {
 
         self::assertStringContainsString('1 000 points = <strong>72.5 €</strong>', $html);
         self::assertStringContainsString('checked="checked"', $html);
+        self::assertStringContainsString('site-protection-toggle', $html);
         self::assertStringContainsString('gestion_points_nonce', $html);
         self::assertStringContainsString('modifier_taux_conversion_nonce', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testRendersStandaloneProtectionCard(): void
+    {
+        function esc_html_e($value): void
+        {
+            echo htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        }
+        function esc_html__($value): string
+        {
+            return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        }
+        function checked(bool $checked): void
+        {
+            if ($checked) {
+                echo 'checked="checked"';
+            }
+        }
+
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountToolsRenderer.php';
+
+        $html = (new AccountToolsRenderer(null, static fn (): bool => false))->renderProtectionCard();
+
+        self::assertStringContainsString('site-protection-card', $html);
+        self::assertStringContainsString('site-protection-toggle', $html);
+        self::assertStringContainsString('Désactivé', $html);
+        self::assertStringNotContainsString('checked="checked"', $html);
     }
 }

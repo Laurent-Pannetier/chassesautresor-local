@@ -31,7 +31,7 @@ class OrganizerNavigationService
             return null;
         }
 
-        $classes = 'dashboard-nav-sublink';
+        $classes = 'dashboard-nav-sublink organizer-nav-hunt';
         $pendingIcon = false;
 
         if (!$complete) {
@@ -56,7 +56,7 @@ class OrganizerNavigationService
         string $systemState,
         bool $hasPendingAttempt
     ): ?string {
-        $classes = 'dashboard-nav-subitem';
+        $classes = 'dashboard-nav-subitem organizer-nav-riddle';
         if (!$complete) {
             return $classes . ' status-important';
         }
