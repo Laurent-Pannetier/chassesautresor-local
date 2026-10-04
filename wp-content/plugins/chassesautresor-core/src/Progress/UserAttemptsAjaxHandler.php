@@ -28,6 +28,8 @@ class UserAttemptsAjaxHandler {
     }
 
     public static function handle(): void {
+        check_ajax_referer('ca_fetch_tentatives', 'nonce');
+
         $userId = (int) get_current_user_id();
         $request = (new UserProgressPaginationService())->prepare(
             is_user_logged_in(),

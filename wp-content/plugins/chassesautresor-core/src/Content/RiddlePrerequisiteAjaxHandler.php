@@ -11,6 +11,8 @@ class RiddlePrerequisiteAjaxHandler {
     }
 
     public static function handle(): void {
+        check_ajax_referer('modifier_champ_enigme', 'nonce');
+
         $authenticated = is_user_logged_in();
         $userId = $authenticated ? (int) get_current_user_id() : 0;
         $riddleId = isset($_POST['post_id']) ? (int) $_POST['post_id'] : 0;

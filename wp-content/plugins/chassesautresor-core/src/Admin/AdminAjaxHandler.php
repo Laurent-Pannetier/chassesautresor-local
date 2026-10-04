@@ -46,6 +46,7 @@ final class AdminAjaxHandler
         if (!self::isAdministrator(__('⛔ Accès refusé.', 'chassesautresor-com'), true)) {
             return;
         }
+        check_ajax_referer('cta_admin_tools', 'nonce');
         $search = isset($_GET['term']) && is_scalar($_GET['term'])
             ? sanitize_text_field((string) $_GET['term']) : '';
         if (empty($search)) {
@@ -75,6 +76,7 @@ final class AdminAjaxHandler
         if (!self::isAdministrator()) {
             return;
         }
+        check_ajax_referer('cta_admin_tools', 'nonce');
         $page = max(1, isset($_POST['page']) ? (int) $_POST['page'] : 1);
         $service = self::conversionService();
         $requests = $service->getRequests(null, null, self::PAYMENTS_PER_PAGE, ($page - 1) * self::PAYMENTS_PER_PAGE);
@@ -96,6 +98,7 @@ final class AdminAjaxHandler
         if (!self::isAdministrator()) {
             return;
         }
+        check_ajax_referer('cta_admin_tools', 'nonce');
         $paymentId = isset($_POST['paiement_id']) ? (int) $_POST['paiement_id'] : 0;
         $status = isset($_POST['statut']) && is_scalar($_POST['statut'])
             ? sanitize_text_field((string) $_POST['statut']) : '';
@@ -120,6 +123,7 @@ final class AdminAjaxHandler
         if (!self::isAdministrator(__('Non autorisé', 'chassesautresor-com'))) {
             return;
         }
+        check_ajax_referer('cta_admin_tools', 'nonce');
         ob_start();
         foreach (self::acfGroupKeys() as $key) {
             acf_inspect_field_group($key);

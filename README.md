@@ -50,6 +50,12 @@ Le projet utilise plusieurs tables SQL dédiées pour suivre l'activité des jou
 - `wp_indices_deblocages` trace le déblocage des indices et les points dépensés.
 - `wp_user_points` inclut la valeur `indice` dans le champ `origin_type` pour comptabiliser ces dépenses.
 - `wp_user_messages` stocke les messages associés aux utilisateurs ou au site.
+- `wp_enigme_tentatives` et `wp_enigme_statuts_utilisateur` suivent les tentatives et la progression joueur.
+
+Ces tables (ainsi que `wp_chasse_winners`, `wp_enigme_etapes_progression`, `wp_enigme_delais_soumission`)
+sont créées/mises à niveau par le plugin `chassesautresor-core` à l’activation et via `maybeUpgrade`
+sur `plugins_loaded`. Sur un site déjà en prod, déployer le Core suffit : pas besoin de réactiver
+le plugin si `plugins_loaded` tourne normalement.
 
 ### Table `wp_user_messages`
 
