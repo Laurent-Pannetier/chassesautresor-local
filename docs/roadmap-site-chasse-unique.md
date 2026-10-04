@@ -48,15 +48,15 @@ historique reste disponible en mode `plateforme`, ce qui garantit la réversibil
 
 Statut : réalisé ; la composition finale du menu reste à vérifier avec les menus WordPress de production.
 
-- Réduire le menu public à la chasse, aux énigmes, au règlement, à la FAQ et au compte.
+- Réduire le menu public à un unique lien top bar **Énigmes** (vers la page chasse), visible aussi sur mobile.
 - Supprimer les liens publics vers les organisateurs et les parcours de candidature.
 - Adapter le CTA principal à l'état du joueur : découvrir, participer, commencer, reprendre ou revoir.
-- Donner à l'organisateur connecté un accès explicite à la gestion, sans l'exposer au public.
+- Conserver l'accès organisateur via Mon compte, sans l'exposer dans le menu public.
 
-En mode chasse unique ou démo, les entrées de chasse et d'organisateur devenues obsolètes sont retirées des menus
-WordPress. Les liens canoniques **La chasse** et **Les énigmes** sont ajoutés aux menus principal et mobile. Un lien
-**Gérer la chasse** est réservé à l'organisateur associé et aux administrateurs. Les CTA du hero et du corps de
-l'accueil partagent désormais la même décision de présentation.
+En mode chasse unique ou démo, les menus principal et mobile Astra sont vidés au profit d'un unique lien top bar
+**Énigmes**, rendu hors `wp_nav_menu` pour rester visible sur petits écrans (sans dépendre du panneau hamburger).
+Ce lien renvoie vers la page de la chasse principale. Les entrées organisateur / candidature restent retirées des
+autres menus. Les CTA du hero et du corps de l'accueil partagent désormais la même décision de présentation.
 
 ## Lot 4 — Consolidation du parcours joueur
 

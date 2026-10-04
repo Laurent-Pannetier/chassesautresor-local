@@ -51,18 +51,28 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('$single_hunt ? \'false\' : \'true\'', $template);
     }
 
-    public function testSingleHuntNavigationRemovesOrganizerEntrancesAndAddsPlayerLinks(): void
+    public function testSingleHuntNavigationExposesAUniqueAlwaysVisibleEnigmesLink(): void
     {
         $navigation = (string) file_get_contents(
             self::THEME_PATH . '/inc/single-hunt-navigation.php'
         );
+        $layoutStyles = (string) file_get_contents(
+            self::THEME_PATH . '/assets/scss/_layout.scss'
+        );
 
         self::assertStringContainsString('/devenir-organisateur', $navigation);
         self::assertStringContainsString("['organisateur', 'chasse']", $navigation);
-        self::assertStringContainsString('single-hunt-story-link', $navigation);
-        self::assertStringContainsString('single-hunt-riddles-link', $navigation);
-        self::assertStringContainsString('single-hunt-manage-link', $navigation);
+        self::assertStringContainsString('cta_render_single_hunt_enigmes_topbar_link', $navigation);
+        self::assertStringContainsString('astra_render_mobile_header_column', $navigation);
+        self::assertStringContainsString('Énigmes', $navigation);
+        self::assertStringContainsString('cta_get_single_hunt_enigmes_nav_url', $navigation);
+        self::assertStringContainsString('cat-single-hunt', $navigation);
         self::assertStringContainsString('cta_get_primary_hunt_cta', $navigation);
+        self::assertStringNotContainsString('single-hunt-story-link', $navigation);
+        self::assertStringNotContainsString('single-hunt-riddles-link', $navigation);
+        self::assertStringNotContainsString('single-hunt-manage-link', $navigation);
+        self::assertStringContainsString('.cta-topbar-enigmes', $layoutStyles);
+        self::assertStringContainsString('.cat-single-hunt .ast-mobile-menu-buttons', $layoutStyles);
     }
 
     public function testSingleHuntHomepageGuidesGuestsAndParticipantsWithoutOrganizerNextStep(): void
@@ -97,7 +107,8 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('chasse-partial-boucle-enigmes', $template);
         self::assertStringNotContainsString('/#home-enigmes', $navigation);
         self::assertStringContainsString('#chasse-enigmes-wrapper', $navigation);
-        self::assertStringContainsString('/#single-hunt-story-title', $navigation);
+        self::assertStringContainsString('cta_get_single_hunt_enigmes_nav_url', $navigation);
+        self::assertStringContainsString("get_permalink(\$huntId)", $navigation);
     }
 
     public function testDemoModeProvidesAnAuthenticatedStatisticsResetShortcut(): void
