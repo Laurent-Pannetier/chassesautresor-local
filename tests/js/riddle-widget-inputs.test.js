@@ -68,13 +68,13 @@ describe('self-contained riddle widgets', () => {
     expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↶');
     dial.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowLeft', bubbles: true }));
 
-    expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toBe('H1,A0');
-    expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↻ 1');
+    expect(document.querySelector('.riddle-step-safe_dial-form [name="reponse"]').value).toBe('H99,A0');
+    expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↻ 99');
     expect(document.querySelector('.riddle-safe__sequence').textContent).toContain('↺ 0');
     expect(dial.getAttribute('aria-valuetext')).toBe('Valeur de la molette: 0');
     expect(document.querySelector('.riddle-safe__direction').textContent).toBe('↶');
     expect(document.querySelector('.riddle-safe__sequence').getAttribute('aria-label'))
-      .toContain('sens horaire 1');
+      .toContain('sens horaire 99');
   });
 
   test('accumulates small pointer movements before recording on release', () => {
