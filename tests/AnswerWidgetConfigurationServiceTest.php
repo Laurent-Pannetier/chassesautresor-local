@@ -96,4 +96,18 @@ final class AnswerWidgetConfigurationServiceTest extends TestCase {
         self::assertSame('48.85837 2.29448', $configuration['target_coordinates']);
         self::assertSame(30, $configuration['tolerance_meters']);
     }
+
+    public function testAdaptsPianoSequences(): void {
+        $fields = [
+            'etape_reponse_widget' => 'piano',
+            'etape_piano_sequences' => "F1 F#2 B2 C1\nC1 E1 G1",
+        ];
+        $configuration = (new AnswerWidgetConfigurationService())->forStep(
+            22,
+            static fn (string $field, int $postId) => $fields[$field] ?? null
+        );
+
+        self::assertSame('piano', $configuration['type']);
+        self::assertSame(['F1 F#2 B2 C1', 'C1 E1 G1'], $configuration['accepted_sequences']);
+    }
 }

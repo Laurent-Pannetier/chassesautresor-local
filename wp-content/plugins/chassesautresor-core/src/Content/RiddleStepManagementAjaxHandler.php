@@ -42,6 +42,7 @@ final class RiddleStepManagementAjaxHandler {
             'color_sequences' => (string) get_field('etape_color_sequences', $stepId),
             'number_sequences' => (string) get_field('etape_number_sequences', $stepId),
             'safe_dial_sequences' => (string) get_field('etape_safe_dial_sequences', $stepId),
+            'piano_sequences' => (string) get_field('etape_piano_sequences', $stepId),
             'gps_coordinates' => (string) get_field('etape_gps_coordinates', $stepId),
             'gps_tolerance' => (string) get_field('etape_gps_tolerance', $stepId),
         ]);
@@ -81,6 +82,9 @@ final class RiddleStepManagementAjaxHandler {
         $safeDialSequences = isset($_POST['safe_dial_sequences'])
             ? sanitize_textarea_field(wp_unslash((string) $_POST['safe_dial_sequences']))
             : '';
+        $pianoSequences = isset($_POST['piano_sequences'])
+            ? sanitize_textarea_field(wp_unslash((string) $_POST['piano_sequences']))
+            : '';
         $gpsCoordinates = isset($_POST['gps_coordinates'])
             ? sanitize_text_field(wp_unslash((string) $_POST['gps_coordinates']))
             : '';
@@ -106,6 +110,7 @@ final class RiddleStepManagementAjaxHandler {
             || $colorSequences !== ''
             || $numberSequences !== ''
             || $safeDialSequences !== ''
+            || $pianoSequences !== ''
             || $gpsCoordinates !== ''
             || $gpsTolerance !== '';
         if ($isNew || $hasWidgetConfiguration) {
@@ -126,6 +131,7 @@ final class RiddleStepManagementAjaxHandler {
                 'color_sequences' => $colorSequences,
                 'number_sequences' => $numberSequences,
                 'safe_dial_sequences' => $safeDialSequences,
+                'piano_sequences' => $pianoSequences,
                 'gps_coordinates' => $gpsCoordinates,
                 'gps_tolerance' => $gpsTolerance,
             ]);
@@ -181,6 +187,7 @@ final class RiddleStepManagementAjaxHandler {
             update_field('etape_color_sequences', $widgetConfiguration['color_sequences'], $stepId);
             update_field('etape_number_sequences', $widgetConfiguration['number_sequences'], $stepId);
             update_field('etape_safe_dial_sequences', $widgetConfiguration['safe_dial_sequences'], $stepId);
+            update_field('etape_piano_sequences', $widgetConfiguration['piano_sequences'], $stepId);
             update_field('etape_gps_coordinates', $widgetConfiguration['gps_coordinates'], $stepId);
             update_field('etape_gps_tolerance', $widgetConfiguration['gps_tolerance'], $stepId);
         }

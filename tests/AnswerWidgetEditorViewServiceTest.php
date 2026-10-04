@@ -10,7 +10,7 @@ final class AnswerWidgetEditorViewServiceTest extends TestCase {
         $widgets = (new AnswerWidgetEditorViewService())->widgets();
 
         self::assertSame(
-            ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'gps'],
+            ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'],
             array_column($widgets, 'type')
         );
         self::assertSame('button_label', $widgets[0]['fields'][0]['name']);
@@ -24,6 +24,7 @@ final class AnswerWidgetEditorViewServiceTest extends TestCase {
         self::assertSame('color_sequences', $widgets[3]['fields'][0]['name']);
         self::assertSame('number_sequences', $widgets[4]['fields'][0]['name']);
         self::assertSame('safe_dial_sequences', $widgets[5]['fields'][0]['name']);
-        self::assertSame(['gps_coordinates', 'gps_tolerance'], array_column($widgets[6]['fields'], 'name'));
+        self::assertSame('piano_sequences', $widgets[6]['fields'][0]['name']);
+        self::assertSame(['gps_coordinates', 'gps_tolerance'], array_column($widgets[7]['fields'], 'name'));
     }
 }

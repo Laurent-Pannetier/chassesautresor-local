@@ -19,6 +19,7 @@ final class AnswerWidgetRegistry {
             new ColorAnswerWidget(),
             new NumericAnswerWidget(),
             new SafeDialAnswerWidget(),
+            new PianoAnswerWidget(),
             new GpsAnswerWidget(),
         ];
         foreach ($definitions ?? $defaults as $definition) {

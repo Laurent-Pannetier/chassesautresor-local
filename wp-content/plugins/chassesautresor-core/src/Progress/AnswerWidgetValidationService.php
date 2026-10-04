@@ -11,12 +11,13 @@ final class AnswerWidgetValidationService {
         'colors' => 'color_sequences',
         'numbers' => 'number_sequences',
         'safe_dial' => 'safe_dial_sequences',
+        'piano' => 'piano_sequences',
     ];
 
     /** @param array<string,mixed> $configuration @return array<string,mixed>|\WP_Error */
     public function validate(array $configuration) {
         $type = (string) ($configuration['widget'] ?? '');
-        if (!in_array($type, ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'gps'], true)) {
+        if (!in_array($type, ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'], true)) {
             return $this->error();
         }
 
@@ -79,6 +80,13 @@ final class AnswerWidgetValidationService {
                 '/^(?:[HA]\s*\d{1,2})(?:[\s,;>]+[HA]\s*\d{1,2})*$/i',
                 $sequence
             ) === 1;
+        }
+        if ($type === 'piano') {
+            $tokens = preg_split('/[\s,;>]+/', strtoupper($sequence), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+            return $tokens !== [] && count(array_filter(
+                $tokens,
+                static fn (string $token): bool => preg_match('/^[A-G](?:#)?[12]$/', $token) !== 1
+            )) === 0;
         }
 
         $tokens = preg_split('/[\s,;>\-]+/', strtoupper($sequence), -1, PREG_SPLIT_NO_EMPTY) ?: [];
