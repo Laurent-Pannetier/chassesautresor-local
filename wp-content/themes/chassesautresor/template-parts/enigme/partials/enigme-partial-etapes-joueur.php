@@ -254,6 +254,45 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 <button type="submit" class="bouton-cta bouton-cta--color"><?= esc_html($widgetView['button_label']); ?></button>
               </div>
             <?php endif; ?>
+          <?php elseif ($widgetView['type'] === 'piano') : ?>
+            <?php if ($widgetView['limit_reached']) : ?>
+              <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>
+            <?php else : ?>
+              <p class="riddle-piano__title"><?= esc_html__('Séquence de déverrouillage', 'chassesautresor-com'); ?></p>
+              <input type="hidden" name="reponse" value="">
+              <div class="riddle-piano" role="group" aria-label="<?= esc_attr__('Clavier de piano à deux octaves', 'chassesautresor-com'); ?>">
+                <?php foreach ([1, 2] as $octave) : ?>
+                  <div class="riddle-piano__octave">
+                    <?php foreach (['C', 'D', 'E', 'F', 'G', 'A', 'B'] as $note) : ?>
+                      <button type="button" class="riddle-piano__key riddle-piano__key--white"
+                        data-note="<?= esc_attr($note . $octave); ?>">
+                        <span><?= esc_html($note); ?></span>
+                      </button>
+                    <?php endforeach; ?>
+                    <?php foreach (['C' => 1, 'D' => 2, 'F' => 4, 'G' => 5, 'A' => 6] as $note => $position) : ?>
+                      <button type="button" class="riddle-piano__key riddle-piano__key--black"
+                        data-position="<?= esc_attr($position); ?>" data-note="<?= esc_attr($note . '#' . $octave); ?>">
+                        <span><?= esc_html($note . '#'); ?></span>
+                      </button>
+                    <?php endforeach; ?>
+                    <span class="riddle-piano__octave-label" aria-hidden="true">
+                      <?= esc_html(sprintf(__('Octave %d', 'chassesautresor-com'), $octave)); ?>
+                    </span>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+              <output class="riddle-piano__sequence" aria-live="polite"
+                aria-label="<?= esc_attr__('Séquence saisie : vide', 'chassesautresor-com'); ?>"></output>
+              <button type="button" class="riddle-piano__play" disabled>
+                <?= esc_html__('Jouer la séquence', 'chassesautresor-com'); ?>
+              </button>
+              <div class="riddle-widget-actions">
+                <button type="button" class="riddle-widget-reset" aria-label="<?= esc_attr__('Recommencer', 'chassesautresor-com'); ?>">↻</button>
+                <button type="submit" class="bouton-cta bouton-cta--color" disabled>
+                  <?= esc_html($widgetView['button_label']); ?>
+                </button>
+              </div>
+            <?php endif; ?>
           <?php elseif ($widgetView['type'] === 'gps') : ?>
             <?php if ($widgetView['limit_reached']) : ?>
               <p class="message-limite"><?= esc_html__('Limite quotidienne atteinte.', 'chassesautresor-com'); ?></p>

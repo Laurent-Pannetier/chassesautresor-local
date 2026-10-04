@@ -41,6 +41,7 @@ final class RiddleStepCompletenessService {
             'color_sequences' => (string) $getField('etape_color_sequences', $stepId),
             'number_sequences' => (string) $getField('etape_number_sequences', $stepId),
             'safe_dial_sequences' => (string) $getField('etape_safe_dial_sequences', $stepId),
+            'piano_sequences' => (string) $getField('etape_piano_sequences', $stepId),
             'gps_coordinates' => (string) $getField('etape_gps_coordinates', $stepId),
             'gps_tolerance' => (string) $getField('etape_gps_tolerance', $stepId),
         ]);

@@ -11,7 +11,7 @@ final class RiddleWidgetAccessibilityTest extends TestCase {
             . 'template-parts/enigme/partials/enigme-partial-etapes-joueur.php'
         );
 
-        self::assertSame(4, substr_count($source, "__('Séquence saisie : vide', 'chassesautresor-com')"));
+        self::assertSame(5, substr_count($source, "__('Séquence saisie : vide', 'chassesautresor-com')"));
         self::assertStringContainsString('aria-valuetext=', $source);
         self::assertStringContainsString("__('Nord-ouest', 'chassesautresor-com')", $source);
         self::assertStringContainsString('data-label="<?= esc_attr($label); ?>"', $source);
