@@ -69,12 +69,7 @@ $riddleLabel = sprintf(
     $riddleCount
 );
 $isLoggedIn = is_user_logged_in();
-$isOrganizer = current_user_can('manage_options')
-    || utilisateur_est_organisateur_associe_a_chasse($userId, $huntId);
 $isEngaged = $isLoggedIn && utilisateur_est_engage_dans_chasse($userId, $huntId);
-$canShowRiddles = $isOrganizer
-    || $isEngaged
-    || $status === 'termine';
 $progress = is_array($huntInfo['progression'] ?? null) ? $huntInfo['progression'] : [];
 $resolvedCount = max(0, (int) ($progress['resolues'] ?? 0));
 $engagedCount = max(0, (int) ($progress['engagees'] ?? 0));
@@ -316,50 +311,6 @@ $editorialContent = $frontPage instanceof WP_Post
             </div>
         </section>
     <?php endif; ?>
-
-    <section
-        id="home-enigmes"
-        class="single-hunt-home__riddles page-chasse-wrapper--compact"
-        aria-labelledby="single-hunt-riddles-title"
-    >
-        <div class="conteneur">
-            <div class="single-hunt-home__section-heading">
-                <div>
-                    <p class="single-hunt-home__eyebrow"><?php esc_html_e('Le parcours', 'chassesautresor-com'); ?></p>
-                    <h2 id="single-hunt-riddles-title">
-                        <?php esc_html_e('Les énigmes vous attendent', 'chassesautresor-com'); ?>
-                    </h2>
-                </div>
-            </div>
-            <?php if ($canShowRiddles) : ?>
-                <?php
-                get_template_part(
-                    'template-parts/enigme/chasse-partial-boucle-enigmes',
-                    null,
-                    [
-                        'chasse_id' => $huntId,
-                        'infos_chasse' => $huntInfo,
-                        'show_help_icon' => false,
-                    ]
-                );
-                ?>
-            <?php else : ?>
-                <div class="single-hunt-home__riddles-teaser">
-                    <span class="single-hunt-home__riddles-count"><?php echo esc_html((string) $riddleCount); ?></span>
-                    <div>
-                        <h3><?php echo esc_html($riddleLabel); ?></h3>
-                        <p>
-                            <?php esc_html_e(
-                                'Rejoignez la chasse pour révéler les cartes d’énigmes '
-                                    . 'et commencer votre progression.',
-                                'chassesautresor-com'
-                            ); ?>
-                        </p>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-    </section>
 
     <section class="single-hunt-home__final-cta" aria-labelledby="single-hunt-final-title">
         <div class="conteneur">

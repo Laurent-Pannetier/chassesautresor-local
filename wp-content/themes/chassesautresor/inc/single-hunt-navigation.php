@@ -77,17 +77,10 @@ function cta_add_single_hunt_primary_links(string $items, $args): string
     $huntId = function_exists('cat_get_primary_hunt_id') ? cat_get_primary_hunt_id() : 0;
     $homeUrl = home_url('/');
     $storyUrl = $homeUrl . '#single-hunt-story-title';
-    $riddlesUrl = $homeUrl . '#home-enigmes';
     $userId = get_current_user_id();
-
-    if (
-        $huntId > 0
-        && get_post_status($huntId) === 'publish'
-        && function_exists('utilisateur_est_engage_dans_chasse')
-        && utilisateur_est_engage_dans_chasse($userId, $huntId)
-    ) {
-        $riddlesUrl = get_permalink($huntId) . '#chasse-enigmes-wrapper';
-    }
+    $riddlesUrl = $huntId > 0 && get_post_status($huntId) === 'publish'
+        ? get_permalink($huntId) . '#chasse-enigmes-wrapper'
+        : $storyUrl;
 
     $canonicalItems = [
         'single-hunt-story-link' => [__('La chasse', 'chassesautresor-com'), $storyUrl],
@@ -160,7 +153,7 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
         return [
             'cta_html' => sprintf(
                 '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
-                esc_url(home_url('/#home-enigmes')),
+                esc_url(home_url('/#single-hunt-story-title')),
                 esc_html__('Découvrir l’aperçu', 'chassesautresor-com')
             ),
             'cta_message' => '',
