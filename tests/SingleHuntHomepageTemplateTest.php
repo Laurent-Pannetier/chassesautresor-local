@@ -160,15 +160,19 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_cartes.scss');
 
         self::assertStringContainsString(
-            '/* Mono-chasse : cartes poster (image dominante, titre en bas, sans CTA redondant). */',
+            '/* Mono-chasse : cartes poster homogènes (image dominante, titre en bas, sans CTA redondant). */',
             $styles
         );
-        self::assertStringContainsString('aspect-ratio: 4 / 5;', $styles);
+        self::assertStringContainsString('--carte-enigme-poster-max-width: 20rem;', $styles);
+        self::assertStringContainsString('aspect-ratio: 3 / 4;', $styles);
+        self::assertStringContainsString('max-width: var(--carte-enigme-poster-max-width);', $styles);
+        self::assertStringContainsString('min-width: 0;', $styles);
         self::assertStringContainsString('object-fit: cover;', $styles);
         self::assertStringContainsString('.carte-enigme-action {', $styles);
         self::assertStringContainsString('display: none !important;', $styles);
         self::assertStringContainsString('.carte-enigme-footer {', $styles);
         self::assertStringContainsString('display: none;', $styles);
+        self::assertStringContainsString('-webkit-line-clamp: 3;', $styles);
         self::assertStringContainsString(
             'rgba(6, 10, 31, 0.94)',
             $styles
