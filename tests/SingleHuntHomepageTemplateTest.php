@@ -155,6 +155,26 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('.titre-enigmes-wrapper {', $styles);
     }
 
+    public function testCompactHuntEnigmaCardsUsePosterLayout(): void
+    {
+        $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_cartes.scss');
+
+        self::assertStringContainsString(
+            '/* Mono-chasse : cartes poster (image dominante, titre en bas, sans CTA redondant). */',
+            $styles
+        );
+        self::assertStringContainsString('aspect-ratio: 4 / 5;', $styles);
+        self::assertStringContainsString('object-fit: cover;', $styles);
+        self::assertStringContainsString('.carte-enigme-action {', $styles);
+        self::assertStringContainsString('display: none !important;', $styles);
+        self::assertStringContainsString('.carte-enigme-footer {', $styles);
+        self::assertStringContainsString('display: none;', $styles);
+        self::assertStringContainsString(
+            'rgba(6, 10, 31, 0.94)',
+            $styles
+        );
+    }
+
     public function testSingleHuntSeoProtectsDemoModeAndProvidesStructuredData(): void
     {
         $seo = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-seo.php');
