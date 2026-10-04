@@ -222,4 +222,49 @@ class GenererCtaChasseTest extends TestCase
             $cta
         );
     }
+
+    public function test_organizer_in_creation_has_no_edition_cta(): void
+    {
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = true;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'revision',
+            'chasse_cache_statut_validation' => 'creation',
+        ];
+
+        $cta = generer_cta_chasse(123, 5);
+
+        $this->assertSame(
+            [
+                'cta_html'    => '',
+                'cta_message' => '',
+                'type'        => '',
+            ],
+            $cta
+        );
+        $this->assertStringNotContainsString('Continuer', $cta['cta_html']);
+    }
+
+    public function test_admin_in_correction_has_no_edition_cta(): void
+    {
+        $GLOBALS['force_admin_override']        = true;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = false;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'revision',
+            'chasse_cache_statut_validation' => 'correction',
+        ];
+
+        $cta = generer_cta_chasse(123, 5);
+
+        $this->assertSame(
+            [
+                'cta_html'    => '',
+                'cta_message' => '',
+                'type'        => '',
+            ],
+            $cta
+        );
+    }
 }
