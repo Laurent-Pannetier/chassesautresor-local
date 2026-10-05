@@ -31,7 +31,11 @@ final class RiddleStepManagementAjaxHandler {
             'title' => get_the_title($stepId),
             'content' => (string) get_field('etape_contenu', $stepId),
             'image_id' => $imageId,
-            'image_url' => $imageId > 0 ? (string) wp_get_attachment_image_url($imageId, 'medium') : '',
+            'image_url' => $imageId > 0
+                ? (function_exists('cta_voir_image_enigme_url')
+                    ? cta_voir_image_enigme_url($imageId, 'medium')
+                    : (string) wp_get_attachment_image_url($imageId, 'medium'))
+                : '',
             'widget' => (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'),
             'button_label' => (string) (get_field('etape_reponse_bouton', $stepId)
                 ?: __('Continuer', 'chassesautresor-com')),
@@ -161,6 +165,11 @@ final class RiddleStepManagementAjaxHandler {
             }
             $stepId = (int) $stepId;
             $created = true;
+        }
+
+        if ($imageId > 0) {
+            $imageId = (new \ChassesAuTresor\Core\Media\RiddleStepImageStorageService())
+                ->ensureProtected($imageId, $riddleId, $stepId);
         }
 
         $result = $contentService->save(
