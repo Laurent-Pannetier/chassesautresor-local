@@ -18,6 +18,20 @@ if (!in_array($taille, $sizes, true)) {
     exit(__('Taille d\'image invalide', 'chassesautresor-com'));
 }
 
+$signer = new ChassesAuTresor\Core\Media\ProtectedRiddleImageSignedUrlService();
+$exp = isset($_GET['exp']) && ctype_digit((string) $_GET['exp']) ? (int) $_GET['exp'] : 0;
+$uid = isset($_GET['uid']) && ctype_digit((string) $_GET['uid']) ? (int) $_GET['uid'] : -1;
+$sig = isset($_GET['sig']) ? (string) $_GET['sig'] : '';
+$current_user_id = get_current_user_id();
+
+if (
+    $uid !== $current_user_id
+    || !$signer->verify($image_id, $taille, $uid, $exp, $sig)
+) {
+    http_response_code(403);
+    exit(__('Lien image invalide ou expiré', 'chassesautresor-com'));
+}
+
 // 🧩 Récupération de l'énigme associée à cette image
 global $wpdb;
 $image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleImages($wpdb);
@@ -33,8 +47,8 @@ if (!$enigme_id && !$step_context) {
 
 // 🔐 Vérification d'accès
 $can_view = $enigme_id
-    ? $asset_service->canViewRiddle($enigme_id, get_current_user_id())
-    : $step_image_service->canView($image_id, get_current_user_id());
+    ? $asset_service->canViewRiddle($enigme_id, $current_user_id)
+    : $step_image_service->canView($image_id, $current_user_id);
 if (!$can_view) {
     http_response_code(403);
     exit(__('Accès refusé', 'chassesautresor-com'));

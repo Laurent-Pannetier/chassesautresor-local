@@ -12,6 +12,7 @@ final class RiddleStepProtectedImageTest extends TestCase {
         );
 
         self::assertStringContainsString("site_url('/voir-image-enigme')", $source);
+        self::assertStringContainsString('cta_voir_image_enigme_url', $source);
         self::assertStringNotContainsString('wp_get_attachment_image($imageId', $source);
     }
 
@@ -27,6 +28,8 @@ final class RiddleStepProtectedImageTest extends TestCase {
         );
         self::assertStringContainsString('http_response_code(304)', $source);
         self::assertStringContainsString('tryLiteSpeedSend', $source);
+        self::assertStringContainsString('ProtectedRiddleImageSignedUrlService', $source);
+        self::assertStringContainsString('Lien image invalide ou expiré', $source);
         self::assertStringNotContainsString('Cache-Control: public', $source);
         self::assertStringNotContainsString('no-store', $source);
     }
