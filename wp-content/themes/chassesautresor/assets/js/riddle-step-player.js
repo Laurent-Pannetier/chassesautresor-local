@@ -247,9 +247,15 @@ document.addEventListener('submit', async event => {
     });
   } catch (error) {
     feedback.setAttribute('role', 'alert');
-    feedback.textContent = error instanceof Error && error.message
+    const message = error instanceof Error && error.message
       ? error.message
       : RiddleStepPlayer.error;
+    feedback.textContent = '';
+    window.showRiddleEphemeralNotice?.(message, {
+      tone: 'wrong',
+      duration: 3800,
+      anchor: feedback
+    });
   } finally {
     if (form.isConnected) {
       form.setAttribute('aria-busy', 'false');

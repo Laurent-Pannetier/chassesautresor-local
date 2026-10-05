@@ -530,11 +530,15 @@ li.active .enigme-menu__edit {
   gap: var(--space-2xl);
   text-align: center;
   margin-top: var(--space-md);
-  --enigme-visuel-max-height: min(36vh, 18rem);
+  /* Grand viewer type fiche produit ; les vignettes restent petites. */
+  --enigme-hero-stage-height: min(62vh, 34rem);
+  --enigme-etape-max-height: min(44vh, 24rem);
+  --enigme-media-column: min(46rem, 100%);
 }
 
 .page-enigme--has-steps {
-  --enigme-visuel-max-height: min(32vh, 17rem);
+  --enigme-hero-stage-height: min(58vh, 32rem);
+  --enigme-etape-max-height: min(42vh, 22rem);
 }
 
 /* Expérience de jeu recentrée pour les sites Chasse unique et Démo. */
@@ -614,26 +618,22 @@ li.active .enigme-menu__edit {
   }
 
   .hero-visuel .galerie-enigme__stage {
-    max-height: var(--enigme-visuel-max-height);
+    height: var(--enigme-hero-stage-height);
+    max-height: var(--enigme-hero-stage-height);
   }
 
   .hero-visuel img {
     width: auto;
     max-width: 100%;
-    max-height: var(--enigme-visuel-max-height);
+    max-height: 100%;
     height: auto;
     object-fit: contain;
   }
 
   &.page-enigme--has-steps .hero-visuel {
     width: 100%;
-    max-width: 40rem;
+    max-width: var(--enigme-media-column);
     margin-inline: auto;
-  }
-
-  &.page-enigme--has-steps .hero-visuel .galerie-enigme__stage,
-  &.page-enigme--has-steps .hero-visuel img {
-    max-height: var(--enigme-visuel-max-height);
   }
 
   .enigme-texte {
@@ -643,7 +643,7 @@ li.active .enigme-menu__edit {
 
   .participation {
     width: 100%;
-    max-width: 40rem;
+    max-width: var(--enigme-media-column);
     margin-inline: auto;
     padding: var(--space-lg);
     text-align: left;
@@ -731,7 +731,7 @@ li.active .enigme-menu__edit {
   .riddle-player-step__image {
     width: auto;
     max-width: 100%;
-    max-height: var(--enigme-visuel-max-height);
+    max-height: var(--enigme-etape-max-height);
     height: auto;
     object-fit: contain;
   }
@@ -839,24 +839,28 @@ li.active .enigme-menu__edit {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-height: var(--enigme-visuel-max-height, min(36vh, 18rem));
+  width: 100%;
+  height: var(--enigme-hero-stage-height, min(62vh, 34rem));
+  max-height: var(--enigme-hero-stage-height, min(62vh, 34rem));
   overflow: hidden;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .page-enigme--has-steps .hero-visuel {
-  max-width: 40rem;
+  max-width: var(--enigme-media-column, min(46rem, 100%));
   margin-inline: auto;
 }
 
 .page-enigme--has-steps .galerie-enigme__stage {
-  max-height: var(--enigme-visuel-max-height);
+  height: var(--enigme-hero-stage-height);
+  max-height: var(--enigme-hero-stage-height);
 }
 
 .galerie-enigme__slide {
   margin: 0;
   width: 100%;
+  height: 100%;
   text-align: center;
 }
 
@@ -864,12 +868,20 @@ li.active .enigme-menu__edit {
   display: none !important;
 }
 
-.galerie-enigme__stage .enigme-media-zoom,
+.galerie-enigme__stage .enigme-media-zoom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
 .galerie-enigme__stage picture,
 .galerie-enigme__stage img {
   display: block;
   max-width: 100%;
-  max-height: var(--enigme-visuel-max-height, min(36vh, 18rem));
+  max-height: 100%;
   width: auto;
   height: auto;
   margin-inline: auto;
@@ -879,7 +891,7 @@ li.active .enigme-menu__edit {
 .page-enigme--has-steps .galerie-enigme__stage .enigme-media-zoom,
 .page-enigme--has-steps .galerie-enigme__stage picture,
 .page-enigme--has-steps .galerie-enigme__stage img {
-  max-height: var(--enigme-visuel-max-height);
+  max-height: 100%;
 }
 
 .galerie-enigme__thumbs {
@@ -904,8 +916,8 @@ li.active .enigme-menu__edit {
 
 .galerie-enigme__thumb img {
   display: block;
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   object-fit: cover;
 }
 
@@ -1408,7 +1420,7 @@ body.no-scroll {
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: var(--enigme-visuel-max-height, min(36vh, 18rem));
+  max-height: var(--enigme-etape-max-height, min(44vh, 24rem));
   height: auto;
   margin: 0 auto;
   object-fit: contain;
@@ -1416,8 +1428,10 @@ body.no-scroll {
 
 .riddle-player-step__zoom {
   position: relative;
-  display: block;
-  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   max-width: 100%;
   margin: 0 auto var(--space-md);
 }
