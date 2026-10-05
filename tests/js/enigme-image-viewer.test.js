@@ -30,10 +30,6 @@ describe('enigme image viewer', () => {
           <button type="button" class="galerie-enigme__thumb" data-gallery-goto="1" aria-selected="false">2</button>
         </div>
       </div>
-      <section class="riddle-steps-player" data-step-total="3" data-step-current="1">
-        <p class="riddle-steps-player__progress" data-template="Étape %1$d / %2$d">Étape 1 / 3</p>
-        <article class="riddle-player-step is-current" data-player-step-id="10"></article>
-      </section>
       <button
         type="button"
         class="riddle-player-step__zoom"
@@ -46,8 +42,7 @@ describe('enigme image viewer', () => {
     document.body.className = '';
     window.EnigmeImageViewer = {
       closeLabel: 'Fermer',
-      nativeSizeLabel: 'Image en taille originale',
-      stepProgressTemplate: 'Étape %1$d / %2$d'
+      nativeSizeLabel: 'Image en taille originale'
     };
     eval(source);
   });
@@ -83,20 +78,5 @@ describe('enigme image viewer', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
     expect(document.body.classList.contains('no-scroll')).toBe(false);
-  });
-
-  test('updates step progress after a completed step', () => {
-    const player = document.querySelector('.riddle-steps-player');
-    player.querySelector('.riddle-player-step').classList.remove('is-current');
-    player.querySelector('.riddle-player-step').classList.add('is-completed');
-    const next = document.createElement('article');
-    next.className = 'riddle-player-step is-current';
-    next.dataset.playerStepId = '11';
-    player.append(next);
-
-    window.EnigmeImageViewer.updateStepProgress(player);
-
-    expect(player.querySelector('.riddle-steps-player__progress').textContent).toBe('Étape 2 / 3');
-    expect(player.dataset.stepCurrent).toBe('2');
   });
 });

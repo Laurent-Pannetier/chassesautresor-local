@@ -7,50 +7,14 @@ $state = isset($args['state']) && is_array($args['state']) ? $args['state'] : []
 $visibleIds = array_map('intval', $state['visible_step_ids'] ?? []);
 $completedIds = array_map('intval', $state['completed_step_ids'] ?? []);
 $currentId = (int) ($state['current_step_id'] ?? 0);
-$orderedIds = isset($args['ordered_step_ids']) && is_array($args['ordered_step_ids'])
-    ? array_map('intval', $args['ordered_step_ids'])
-    : [];
-$totalSteps = isset($args['total_steps'])
-    ? (int) $args['total_steps']
-    : count($orderedIds);
 if ($riddleId <= 0 || $visibleIds === []) {
     return;
-}
-
-if ($orderedIds === []) {
-    $orderedIds = (new ChassesAuTresor\Core\Content\RiddleStepQueryService())->findOrderedIds($riddleId);
-}
-if ($totalSteps <= 0) {
-    $totalSteps = count($orderedIds);
-}
-
-$currentIndex = 0;
-if ($currentId > 0 && $orderedIds !== []) {
-    $position = array_search($currentId, $orderedIds, true);
-    $currentIndex = $position === false ? 0 : ((int) $position + 1);
 }
 ?>
 <section
   class="riddle-steps-player"
   aria-label="<?= esc_attr__('Étapes intermédiaires', 'chassesautresor-com'); ?>"
-  data-step-total="<?= esc_attr((string) $totalSteps); ?>"
-  data-step-current="<?= esc_attr((string) $currentIndex); ?>"
 >
-  <?php if ($totalSteps > 1 && $currentIndex > 0) : ?>
-    <p
-      class="riddle-steps-player__progress"
-      data-template="<?= esc_attr__('Étape %1$d / %2$d', 'chassesautresor-com'); ?>"
-    >
-      <?= esc_html(
-          sprintf(
-              /* translators: 1: current step number, 2: total steps */
-              __('Étape %1$d / %2$d', 'chassesautresor-com'),
-              $currentIndex,
-              $totalSteps
-          )
-      ); ?>
-    </p>
-  <?php endif; ?>
   <?php foreach ($visibleIds as $stepId) : ?>
     <?php
     $completed = in_array($stepId, $completedIds, true);

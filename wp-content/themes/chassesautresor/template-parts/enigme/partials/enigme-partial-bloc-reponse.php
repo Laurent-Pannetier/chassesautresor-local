@@ -54,8 +54,6 @@ if ($stepIds !== []) {
         [
             'riddle_id' => (int) $post_id,
             'state' => $stepState,
-            'ordered_step_ids' => $stepIds,
-            'total_steps' => count($stepIds),
         ]
     );
     if (!$stepState['final_answer_unlocked']) {

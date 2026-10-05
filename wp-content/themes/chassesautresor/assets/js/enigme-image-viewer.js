@@ -139,31 +139,4 @@
       closeLightbox();
     }
   });
-
-  window.EnigmeImageViewer = window.EnigmeImageViewer || {};
-  window.EnigmeImageViewer.updateStepProgress = (player) => {
-    if (!player) {
-      return;
-    }
-    const total = Number(player.dataset.stepTotal || 0);
-    const progress = player.querySelector('.riddle-steps-player__progress');
-    if (!progress || total <= 0) {
-      return;
-    }
-    const completed = player.querySelectorAll('.riddle-player-step.is-completed').length;
-    const hasCurrent = Boolean(player.querySelector('.riddle-player-step.is-current'));
-    if (!hasCurrent) {
-      progress.hidden = true;
-      return;
-    }
-    const current = Math.min(completed + 1, total);
-    const template =
-      progress.dataset.template ||
-      (window.EnigmeImageViewer.stepProgressTemplate || 'Étape %1$d / %2$d');
-    progress.hidden = false;
-    progress.textContent = template
-      .replace('%1$d', String(current))
-      .replace('%2$d', String(total));
-    player.dataset.stepCurrent = String(current);
-  };
 })();

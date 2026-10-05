@@ -7592,12 +7592,14 @@ li.active .enigme-menu__edit {
 }
 .page-enigme--compact .participation {
   width: 100%;
-  max-width: 44rem;
+  max-width: 40rem;
   margin-inline: auto;
   padding: var(--space-lg);
   text-align: left;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(8, 14, 28, 0.58);
+  backdrop-filter: blur(10px);
 }
 .page-enigme--compact .participation-header--empty {
   display: none;
@@ -7637,6 +7639,30 @@ li.active .enigme-menu__edit {
 .page-enigme--compact .riddle-player-step {
   width: 100%;
 }
+.page-enigme--compact .riddle-player-step {
+  padding: var(--space-md) 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+  box-shadow: none;
+}
+.page-enigme--compact .riddle-player-step + .riddle-player-step {
+  margin-top: var(--space-md);
+  padding-top: var(--space-lg);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.page-enigme--compact .riddle-player-step label,
+.page-enigme--compact .riddle-player-step__content,
+.page-enigme--compact .riddle-player-step__content p,
+.page-enigme--compact .riddle-numbers__title,
+.page-enigme--compact .riddle-directions__title,
+.page-enigme--compact .riddle-colors__title,
+.page-enigme--compact .riddle-safe__title,
+.page-enigme--compact .riddle-gps__title,
+.page-enigme--compact .riddle-piano__title {
+  color: var(--color-text-primary);
+}
 .page-enigme--compact .riddle-player-step__image {
   width: auto;
   max-width: 100%;
@@ -7646,7 +7672,10 @@ li.active .enigme-menu__edit {
      object-fit: contain;
 }
 .page-enigme--compact .riddle-player-step.is-widget-only {
-  padding: var(--space-sm);
+  padding-block: var(--space-sm);
+}
+.page-enigme--compact .riddle-player-step.is-completed {
+  opacity: 0.88;
 }
 @media (min-width: 768px) {
   .page-enigme--compact {
@@ -8243,24 +8272,12 @@ body.no-scroll {
   margin-bottom: var(--space-lg);
 }
 
-.riddle-steps-player__progress {
-  margin: 0;
-  color: var(--color-text-fond-clair);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.page-enigme--compact .riddle-steps-player__progress {
-  color: var(--color-text-primary);
-}
-
 .riddle-player-step {
   padding: var(--space-md);
-  border: 1px solid var(--color-editor-border);
-  border-radius: 8px;
-  background: var(--color-white);
-  color: var(--color-text-fond-clair);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(12, 18, 32, 0.72);
+  color: var(--color-text-primary);
 }
 
 .riddle-player-step.is-widget-only {
@@ -8274,7 +8291,7 @@ body.no-scroll {
 .riddle-player-step label,
 .riddle-player-step__content,
 .riddle-player-step__content p {
-  color: var(--color-text-fond-clair);
+  color: inherit;
 }
 
 .riddle-player-step__image {
