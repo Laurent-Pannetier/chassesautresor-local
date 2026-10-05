@@ -8,6 +8,11 @@ vérifie l’accès à l’énigme puis limite l’image aux étapes déjà visi
 `private` (jamais de cache partagé CDN/proxy), avec un TTL navigateur court et une revalidation `304` via
 `ETag` / `Last-Modified`, afin qu’un cache partagé ne puisse pas servir l’image à un autre joueur.
 
+Sur LiteSpeed (Hostinger), le contrôleur tente ensuite un envoi via `X-LiteSpeed-Location` pour éviter
+`readfile()` PHP, avec repli automatique sur `readfile` si le serveur n’est pas LiteSpeed. Les `.htaccess`
+des dossiers `_enigmes/` utilisent `%{ORG_REQ_URI}` pour refuser l’accès direct tout en autorisant cet
+envoi interne.
+
 Cette sécurisation empêche la page joueur de divulguer directement l’URL d’une étape future, mais elle ne protège pas
 encore le fichier physique si son ancienne URL est déjà connue. L’original et les tailles dérivées peuvent rester servis
 par le serveur web. Une page de pièce jointe ou l’API REST peut également exposer ses métadonnées selon la configuration

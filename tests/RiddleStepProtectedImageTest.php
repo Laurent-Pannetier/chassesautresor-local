@@ -26,6 +26,7 @@ final class RiddleStepProtectedImageTest extends TestCase {
             $source
         );
         self::assertStringContainsString('http_response_code(304)', $source);
+        self::assertStringContainsString('tryLiteSpeedSend', $source);
         self::assertStringNotContainsString('Cache-Control: public', $source);
         self::assertStringNotContainsString('no-store', $source);
     }

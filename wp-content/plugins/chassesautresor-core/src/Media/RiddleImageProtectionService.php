@@ -18,14 +18,19 @@ class RiddleImageProtectionService {
         if (!is_dir($directory) && !wp_mkdir_p($directory)) {
             return false;
         }
+
+        $expected = $this->rules($riddleId);
         if (!$force && file_exists($protected)) {
-            return true;
+            $current = @file_get_contents($protected);
+            if ($current === $expected) {
+                return true;
+            }
         }
         if (file_exists($temporary) && !@unlink($temporary)) {
             return false;
         }
 
-        return file_put_contents($protected, $this->rules($riddleId), LOCK_EX) !== false;
+        return file_put_contents($protected, $expected, LOCK_EX) !== false;
     }
 
     /** @return array{success:bool,message:string} */
@@ -85,6 +90,13 @@ class RiddleImageProtectionService {
             if ((int) get_transient($this->transientKey($riddleId)) <= time()) {
                 $this->restore($riddleId, false);
             }
+
+            [$protected, $temporary] = $this->paths($riddleId);
+            // Do not recreate .htaccess while a temporary media-library disable is active.
+            if (file_exists($temporary) || !file_exists($protected)) {
+                continue;
+            }
+            $this->protect($riddleId, false);
         }
     }
 
@@ -99,14 +111,24 @@ class RiddleImageProtectionService {
         return 'htaccess_timeout_enigme_' . $riddleId;
     }
 
-    private function rules(int $riddleId): string {
+    /**
+     * Block direct HTTP access while allowing LiteSpeed X-LiteSpeed-Location.
+     *
+     * LiteSpeed keeps %{ORG_REQ_URI} as the client-facing URI. A request that started
+     * as /voir-image-enigme can therefore internally fetch /_enigmes/... without matching
+     * the deny rule. Require all denied would also block that internal redirect.
+     */
+    public function rules(int $riddleId): string {
         return "# Protection des images de l'énigme {$riddleId}\n"
             . "<IfModule mod_rewrite.c>\nRewriteEngine On\n\n"
-            . "# Autorise uniquement l’accès depuis l’administration WordPress\n"
-            . "RewriteCond %{REQUEST_URI} ^/wp-admin/ [OR]\n"
-            . "RewriteCond %{HTTP_REFERER} ^(/wp-admin/|https?://[^/]+/wp-admin/) [NC]\n"
-            . "RewriteRule . - [L]\n\n# Blocage par défaut\n"
-            . "<FilesMatch \"\\.(jpg|jpeg|png|gif|webp)$\">\n"
-            . "  Require all denied\n</FilesMatch>\n</IfModule>";
+            . "# LiteSpeed: refuse les accès directs à /_enigmes/ (ORG_REQ_URI = URI d'origine)\n"
+            . "RewriteCond %{ORG_REQ_URI} /_enigmes/\n"
+            . "RewriteCond %{HTTP_REFERER} !^https?://[^/]+/wp-admin/ [NC]\n"
+            . "RewriteRule \\.(jpe?g|png|gif|webp)$ - [F,L]\n\n"
+            . "# Apache / Local: ORG_REQ_URI absent → refuse l'accès HTTP direct aux images\n"
+            . "RewriteCond %{ORG_REQ_URI} ^$\n"
+            . "RewriteCond %{HTTP_REFERER} !^https?://[^/]+/wp-admin/ [NC]\n"
+            . "RewriteRule \\.(jpe?g|png|gif|webp)$ - [F,L]\n"
+            . "</IfModule>\n";
     }
 }
