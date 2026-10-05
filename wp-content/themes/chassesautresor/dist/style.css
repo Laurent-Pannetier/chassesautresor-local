@@ -7592,7 +7592,7 @@ li.active .enigme-menu__edit {
 }
 .page-enigme--compact .participation {
   width: 100%;
-  max-width: none;
+  max-width: 44rem;
   margin-inline: auto;
   padding: var(--space-lg);
   text-align: left;
@@ -7640,7 +7640,7 @@ li.active .enigme-menu__edit {
 .page-enigme--compact .riddle-player-step__image {
   width: auto;
   max-width: 100%;
-  max-height: 220px;
+  max-height: 240px;
   height: auto;
   -o-object-fit: contain;
      object-fit: contain;
@@ -8281,7 +8281,7 @@ body.no-scroll {
   display: block;
   width: auto;
   max-width: 100%;
-  max-height: 220px;
+  max-height: 260px;
   height: auto;
   margin: 0 auto;
   -o-object-fit: contain;
@@ -8319,26 +8319,73 @@ body.no-scroll {
   width: 100%;
 }
 
+.riddle-step-numbers-form,
+.riddle-step-directions-form,
+.riddle-step-colors-form,
+.riddle-step-safe_dial-form,
+.riddle-step-click-form {
+  max-width: 18rem;
+  margin-inline: auto;
+}
+
+.riddle-step-colors-form {
+  max-width: 16.5rem;
+}
+
+.riddle-step-gps-form,
+.riddle-step-piano-form {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+.riddle-step-text-form.riddle-step-numbers-form,
+.riddle-step-text-form.riddle-step-directions-form,
+.riddle-step-text-form.riddle-step-colors-form,
+.riddle-step-text-form.riddle-step-safe_dial-form,
+.riddle-step-text-form.riddle-step-gps-form,
+.riddle-step-text-form.riddle-step-piano-form {
+  width: 100%;
+}
+
+.riddle-widget-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.riddle-widget-reset {
+  min-width: 2.4rem;
+  min-height: 2.4rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 1.35rem;
+  cursor: pointer;
+}
+
 .riddle-directions {
   --direction-key-bg: #1976d2;
   --direction-key-color: #fff;
   --direction-key-shadow: #0d47a1;
-  --direction-key-size: clamp(3.25rem, 18vw, 5.5rem);
-  --direction-arrow-stroke: 1.5px;
+  --direction-key-size: clamp(2.4rem, 10vw, 2.85rem);
+  --direction-arrow-stroke: 1.25px;
   display: grid;
   grid-template-columns: repeat(3, var(--direction-key-size));
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   justify-content: center;
 }
 
 .riddle-direction {
   aspect-ratio: 1;
   border: 0;
-  border-radius: 0.8rem;
+  border-radius: 0.55rem;
   background: var(--direction-key-bg);
   color: var(--direction-key-color);
-  box-shadow: 0 0.3rem 0 var(--direction-key-shadow);
-  font-size: 2.5rem;
+  box-shadow: 0 0.22rem 0 var(--direction-key-shadow);
+  font-size: 1.35rem;
   font-weight: 900;
   line-height: 1;
   -webkit-text-stroke: var(--direction-arrow-stroke) currentColor;
@@ -8377,15 +8424,15 @@ body.no-scroll {
 }
 
 .riddle-directions-reset {
-  width: 3rem;
-  height: 3rem;
+  width: 2.4rem;
+  height: 2.4rem;
   padding: 0;
   border: 2px solid var(--color-primary);
   border-radius: 50%;
   background: rgba(var(--color-white-rgb, 255, 255, 255), 0.9);
   color: var(--color-primary);
   box-shadow: 0 2px 5px rgba(var(--color-black-rgb, 0, 0, 0), 0.2);
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -8402,17 +8449,18 @@ body.no-scroll {
 
 .riddle-colors {
   display: grid;
-  grid-template-columns: repeat(3, minmax(4.5rem, 5.75rem));
-  gap: var(--space-sm);
+  grid-template-columns: repeat(3, minmax(4rem, 4.75rem));
+  gap: var(--space-xs);
   justify-content: center;
 }
 
 .riddle-color {
-  min-height: 3.4rem;
+  min-height: 2.5rem;
   border: 0;
-  border-radius: 0.8rem;
+  border-radius: 0.55rem;
   color: var(--color-white);
-  box-shadow: 0 0.28rem 0 color-mix(in srgb, currentColor 25%, #333);
+  box-shadow: 0 0.22rem 0 color-mix(in srgb, currentColor 25%, #333);
+  font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -8488,9 +8536,9 @@ body.no-scroll {
 }
 
 .riddle-colors-reset {
-  min-width: 3rem;
-  min-height: 3rem;
-  font-size: 1.75rem;
+  min-width: 2.4rem;
+  min-height: 2.4rem;
+  font-size: 1.35rem;
   color: var(--color-primary);
   background: transparent;
   border: 0;
@@ -8501,21 +8549,22 @@ body.no-scroll {
   --number-key-bg: #1976d2;
   --number-key-color: #fff;
   --number-key-shadow: #0d47a1;
-  --number-key-size: clamp(3.75rem, 20vw, 5.75rem);
+  --number-key-size: clamp(2.4rem, 10vw, 2.85rem);
   display: grid;
   grid-template-columns: repeat(3, var(--number-key-size));
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   justify-content: center;
 }
 
 .riddle-number {
   min-height: var(--number-key-size);
   border: 0;
-  border-radius: 0.8rem;
+  border-radius: 0.55rem;
   background: var(--number-key-bg);
   color: var(--number-key-color);
-  box-shadow: 0 0.3rem 0 var(--number-key-shadow);
-  font-size: 2.5rem;
+  box-shadow: 0 0.22rem 0 var(--number-key-shadow);
+  font-size: 1.25rem;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -8734,26 +8783,10 @@ body.no-scroll {
   text-align: center;
 }
 
-.riddle-widget-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.riddle-widget-reset {
-  min-width: 3rem;
-  min-height: 3rem;
-  border: 0;
-  background: transparent;
-  color: var(--color-primary);
-  font-size: 1.75rem;
-  cursor: pointer;
-}
-
 .riddle-safe {
   --safe-angle: 0deg;
-  --safe-size: min(82vw, 22rem);
-  --safe-ring-width: clamp(0.65rem, 3vw, 0.95rem);
+  --safe-size: min(68vw, 13.5rem);
+  --safe-ring-width: clamp(0.5rem, 2.4vw, 0.75rem);
   position: relative;
   width: var(--safe-size);
   height: var(--safe-size);
@@ -8857,7 +8890,8 @@ body.no-scroll {
 
 .riddle-gps__map {
   width: 100%;
-  height: 18rem;
+  height: min(34vh, 13.5rem);
+  max-height: 13.5rem;
   border: 1px solid var(--color-gris-3);
   border-radius: 6px;
   overflow: hidden;
@@ -8867,7 +8901,7 @@ body.no-scroll {
 
 .riddle-gps__fields {
   display: grid;
-  gap: var(--space-md);
+  gap: var(--space-sm);
 }
 
 .riddle-gps__fields label {
@@ -8881,13 +8915,14 @@ body.no-scroll {
 }
 
 .riddle-gps-reset {
-  min-width: 2.75rem;
-  font-size: 1.5rem;
+  min-width: 2.4rem;
+  font-size: 1.25rem;
 }
 
 @media (min-width: 768px) {
   .riddle-gps__map {
-    height: 28rem;
+    height: min(38vh, 15.5rem);
+    max-height: 15.5rem;
   }
   .riddle-gps__fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
