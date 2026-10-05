@@ -27,13 +27,7 @@ one-shot (`cta_migrate_riddle_step_images`) traite les pièces jointes déjà pr
 Les images d’étapes encore en médiathèque publique restent accessibles jusqu’à migration / resauvegarde
 de l’étape. La duplication évite de casser un média partagé avec un contenu public.
 
-## Stratégie recommandée
+## Points restants éventuels
 
-1. Refuser la sélection d’une image déjà rattachée à une cible publique ou partagée, ou la dupliquer lors de l’ajout.
-2. Déplacer les médias propres aux étapes dans un stockage protégé indépendant du serveur web.
-3. Servir chaque taille par un contrôleur qui vérifie l’accès à l’énigme et la position actuelle du joueur.
-4. Bloquer ou filtrer en parallèle les réponses REST et les pages de pièce jointe pour ces médias.
-5. Migrer les pièces jointes existantes par lots, avec une table de correspondance et une procédure de retour arrière.
-
-La migration du stockage physique reste un lot distinct. Le rendu joueur passe désormais par le contrôleur protégé,
-sans déplacer ni casser les pièces jointes existantes.
+- Filtrer les réponses REST et les pages de pièce jointe pour ces médias protégés.
+- Optionnel : secret dédié `CHASSES_IMAGE_SIGNING_SECRET` dans `wp-config.php`.
