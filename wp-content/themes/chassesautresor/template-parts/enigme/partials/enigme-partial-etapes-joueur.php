@@ -41,17 +41,31 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 ['id' => $imageId, 'taille' => 'large'],
                 site_url('/voir-image-enigme')
             );
+        $fullImageUrl = function_exists('cta_voir_image_enigme_url')
+            ? cta_voir_image_enigme_url($imageId, 'full')
+            : add_query_arg(
+                ['id' => $imageId, 'taille' => 'full'],
+                site_url('/voir-image-enigme')
+            );
         ?>
-        <img
-          class="riddle-player-step__image"
-          src="<?= esc_url($imageUrl); ?>"
-          alt="<?= esc_attr($imageAlt); ?>"
-          loading="lazy"
-          <?php if (is_array($imageSource)) : ?>
-            width="<?= esc_attr((string) $imageSource[1]); ?>"
-            height="<?= esc_attr((string) $imageSource[2]); ?>"
-          <?php endif; ?>
+        <button
+          type="button"
+          class="enigme-media-zoom riddle-player-step__zoom"
+          data-enigme-lightbox-src="<?= esc_url($fullImageUrl); ?>"
+          data-enigme-lightbox-alt="<?= esc_attr($imageAlt); ?>"
+          aria-label="<?= esc_attr__('Agrandir l’image', 'chassesautresor-com'); ?>"
         >
+          <img
+            class="riddle-player-step__image"
+            src="<?= esc_url($imageUrl); ?>"
+            alt="<?= esc_attr($imageAlt); ?>"
+            loading="lazy"
+            <?php if (is_array($imageSource)) : ?>
+              width="<?= esc_attr((string) $imageSource[1]); ?>"
+              height="<?= esc_attr((string) $imageSource[2]); ?>"
+            <?php endif; ?>
+          >
+        </button>
       <?php endif; ?>
       <?php if (trim($content) !== '') : ?>
         <div class="riddle-player-step__content"><?= wp_kses_post($content); ?></div>

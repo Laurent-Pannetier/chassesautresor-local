@@ -7556,20 +7556,32 @@ li.active .enigme-menu__edit {
 .page-enigme--compact .hero-visuel {
   width: 100%;
   max-width: none;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 10px;
 }
-.page-enigme--compact .hero-visuel .galerie-enigme-wrapper,
+.page-enigme--compact .hero-visuel .galerie-enigme-wrapper {
+  display: grid;
+  gap: var(--space-sm);
+  width: 100%;
+  margin: 0;
+}
+.page-enigme--compact .hero-visuel .galerie-enigme__stage,
 .page-enigme--compact .hero-visuel .image-principale,
 .page-enigme--compact .hero-visuel picture {
   display: block;
   width: 100%;
   margin: 0;
 }
+.page-enigme--compact .hero-visuel .galerie-enigme__stage {
+  max-height: 42vh;
+}
 .page-enigme--compact .hero-visuel img {
-  width: 100%;
-  max-height: none;
+  width: auto;
+  max-width: 100%;
+  max-height: 42vh;
   height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 .page-enigme--compact .enigme-texte {
   max-width: 72ch;
@@ -7623,9 +7635,12 @@ li.active .enigme-menu__edit {
   width: 100%;
 }
 .page-enigme--compact .riddle-player-step__image {
-  width: 100%;
-  max-width: none;
+  width: auto;
+  max-width: 100%;
+  max-height: 280px;
   height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 @media (min-width: 768px) {
   .page-enigme--compact {
@@ -7693,16 +7708,165 @@ li.active .enigme-menu__edit {
   }
 }
 .hero-visuel img {
-  /*width: 100%;*/
-  -o-object-fit: cover;
-     object-fit: cover;
-  /*max-height: 300px;*/
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 
 /* Ensure small images keep their natural width */
 .enigme-image--limited {
   width: auto;
   max-width: 100%;
+}
+
+.galerie-enigme-wrapper {
+  display: grid;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.galerie-enigme__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 48vh;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.galerie-enigme__slide {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.galerie-enigme__slide[hidden] {
+  display: none !important;
+}
+
+.galerie-enigme__stage .enigme-media-zoom,
+.galerie-enigme__stage picture,
+.galerie-enigme__stage img {
+  display: block;
+  max-width: 100%;
+  max-height: 48vh;
+  width: auto;
+  height: auto;
+  margin-inline: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.galerie-enigme__thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  justify-content: center;
+}
+
+.galerie-enigme__thumb {
+  display: block;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0.72;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.galerie-enigme__thumb img {
+  display: block;
+  width: 72px;
+  height: 72px;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.galerie-enigme__thumb.is-active,
+.galerie-enigme__thumb:hover,
+.galerie-enigme__thumb:focus-visible {
+  opacity: 1;
+  border-color: var(--color-accent, #c45c26);
+}
+
+.enigme-media-zoom {
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.enigme-media-zoom img,
+.enigme-media-zoom picture {
+  display: block;
+  transition: transform 0.25s ease;
+  transform-origin: center center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .enigme-media-zoom:hover img,
+  .enigme-media-zoom:focus-visible img {
+    transform: scale(1.04);
+  }
+}
+.enigme-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  background: rgba(12, 12, 12, 0.82);
+}
+
+.enigme-lightbox {
+  position: relative;
+  max-width: min(96vw, 1400px);
+  max-height: 92vh;
+}
+
+.enigme-lightbox__image {
+  display: block;
+  max-width: 96vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border-radius: 4px;
+}
+
+.enigme-lightbox__close {
+  position: absolute;
+  top: calc(-1 * var(--space-md));
+  right: calc(-1 * var(--space-md));
+  z-index: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.enigme-lightbox__close:hover,
+.enigme-lightbox__close:focus-visible {
+  background: #fff;
 }
 
 .participation {
@@ -8061,8 +8225,23 @@ body.no-scroll {
   display: block;
   width: auto;
   max-width: 100%;
+  max-height: 320px;
   height: auto;
+  margin: 0 auto;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.riddle-player-step__zoom {
+  display: block;
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 auto var(--space-md);
+}
+
+.riddle-player-step__zoom .riddle-player-step__image {
+  margin-bottom: 0;
 }
 
 .riddle-player-step__status {
