@@ -30,6 +30,18 @@ if (!function_exists('esc_attr__')) {
         return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
     }
 }
+if (!function_exists('esc_html__')) {
+    function esc_html__($text, $domain = null)
+    {
+        return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+    }
+}
+if (!function_exists('esc_html')) {
+    function esc_html($text)
+    {
+        return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+    }
+}
 if (!function_exists('site_url')) {
     function site_url($path = '')
     {
@@ -119,6 +131,7 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringContainsString('data-enigme-gallery', $html);
         $this->assertStringContainsString('data-enigme-lightbox-src=', $html);
         $this->assertStringContainsString('enigme-media-zoom', $html);
+        $this->assertStringContainsString('enigme-media-zoom__hint', $html);
         $this->assertStringContainsString('taille=full', $html);
         $this->assertStringNotContainsString('galerie-enigme__thumbs', $html);
         $this->assertSame(1, substr_count($html, 'galerie-enigme__slide'));

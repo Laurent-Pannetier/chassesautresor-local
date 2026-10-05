@@ -155,6 +155,7 @@ const unlockRiddleStepContent = (form, data) => {
     if (!nextArticle || player.querySelector(selector)) return null;
     player.append(nextArticle);
     initializeGpsWidgets(nextArticle);
+    window.EnigmeImageViewer?.updateStepProgress?.(player);
     return nextArticle;
   }
 
@@ -162,6 +163,7 @@ const unlockRiddleStepContent = (form, data) => {
   if (!finalForm) return emptyCompletedStep ? player : currentArticle;
   player.insertAdjacentElement('afterend', finalForm);
   initializeGpsWidgets(finalForm);
+  window.EnigmeImageViewer?.updateStepProgress?.(player);
   const manualFeedback = parsed.querySelector('.formulaire-reponse-manuelle + .reponse-feedback');
   if (manualFeedback) finalForm.insertAdjacentElement('afterend', manualFeedback);
   document.dispatchEvent(new CustomEvent('riddle-step-content-updated'));

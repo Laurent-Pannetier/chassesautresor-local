@@ -310,8 +310,10 @@ function afficher_visuels_enigme(int $enigme_id): void
         echo '<button type="button" class="enigme-media-zoom"'
             . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
             . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
-            . ' aria-label="' . esc_attr__('Agrandir l’image', 'chassesautresor-com') . '">';
+            . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">';
         echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
+        echo '<span class="enigme-media-zoom__hint" aria-hidden="true">'
+            . esc_html__('Agrandir', 'chassesautresor-com') . '</span>';
         echo '</button>';
         echo '</figure>';
     }
