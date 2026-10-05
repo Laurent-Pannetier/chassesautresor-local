@@ -99,11 +99,16 @@ function initFormulaireAutomatique() {
 
           if (res.data.resultat === 'variante') {
             if (res.data.message) {
-              feedback.textContent = res.data.message;
-              feedback.style.display = 'block';
+              feedback.className = 'reponse-feedback';
+              window.showRiddleEphemeralNotice?.(res.data.message, {
+                tone: 'hint',
+                duration: 4500,
+                anchor: feedback
+              });
             }
           } else if (res.data.resultat === 'bon') {
             document.dispatchEvent(new CustomEvent('cta:riddle-resolved'));
+            feedback.className = 'reponse-feedback';
             feedback.innerHTML = `<i class="fa-solid fa-circle-check" style="color:var(--color-success);"></i> ${__('Bonne réponse', 'chassesautresor-com')}`;
             feedback.style.display = 'block';
             const enigmeId = form.querySelector('input[name="enigme_id"]')?.value;
@@ -173,10 +178,16 @@ function initFormulaireAutomatique() {
               }
             });
           } else {
-            feedback.innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:var(--color-gris-3);"></i> ${__('Mauvaise réponse', 'chassesautresor-com')}`;
-            feedback.style.display = 'block';
+            feedback.className = 'reponse-feedback';
+            window.showRiddleEphemeralNotice?.(
+              __('Cette réponse n’est pas correcte.', 'chassesautresor-com'),
+              { tone: 'wrong', duration: 3800, anchor: feedback }
+            );
             resetInteractiveFinalAnswerWidget(form);
-            hideTimer = setTimeout(() => { feedback.style.display = 'none'; }, 5000);
+            hideTimer = setTimeout(() => {
+              feedback.replaceChildren();
+              feedback.style.display = 'none';
+            }, 4200);
           }
 
         } else {

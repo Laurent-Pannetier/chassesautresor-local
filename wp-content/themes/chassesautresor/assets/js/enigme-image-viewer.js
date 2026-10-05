@@ -139,4 +139,67 @@
       closeLightbox();
     }
   });
+
+  const noticeConfig = window.EnigmeImageViewer || {};
+  let noticeTimer = null;
+
+  window.showRiddleEphemeralNotice = (message, options = {}) => {
+    const text = String(message || '').trim();
+    if (!text) {
+      return;
+    }
+
+    const tone = options.tone === 'hint' ? 'hint' : 'wrong';
+    const duration = Number(options.duration) > 0 ? Number(options.duration) : 3800;
+    const anchor = options.anchor instanceof Element ? options.anchor : null;
+
+    document.querySelectorAll('.riddle-ephemeral-notice').forEach((node) => node.remove());
+    if (noticeTimer) {
+      window.clearTimeout(noticeTimer);
+      noticeTimer = null;
+    }
+
+    const notice = document.createElement('div');
+    notice.className = `riddle-ephemeral-notice riddle-ephemeral-notice--${tone}`;
+    notice.setAttribute('role', 'alert');
+    notice.setAttribute('aria-live', 'assertive');
+
+    const eyebrow = document.createElement('span');
+    eyebrow.className = 'riddle-ephemeral-notice__eyebrow';
+    eyebrow.textContent =
+      tone === 'hint'
+        ? noticeConfig.hintEyebrow || 'Indice'
+        : noticeConfig.wrongEyebrow || 'Accès refusé';
+
+    const body = document.createElement('span');
+    body.className = 'riddle-ephemeral-notice__message';
+    body.textContent = text;
+
+    notice.appendChild(eyebrow);
+    notice.appendChild(body);
+
+    if (anchor) {
+      anchor.replaceChildren();
+      if (anchor.classList?.contains('reponse-feedback')) {
+        anchor.style.display = 'block';
+      }
+      anchor.appendChild(notice);
+    } else {
+      const host =
+        document.querySelector('.riddle-player-step.is-current') ||
+        document.querySelector('.participation .zone-reponse') ||
+        document.querySelector('.participation');
+      if (host) {
+        host.appendChild(notice);
+      } else {
+        document.body.appendChild(notice);
+      }
+    }
+
+    noticeTimer = window.setTimeout(() => {
+      notice.classList.add('is-leaving');
+      window.setTimeout(() => notice.remove(), 280);
+      noticeTimer = null;
+    }, duration);
+  };
 })();

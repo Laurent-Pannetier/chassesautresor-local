@@ -498,6 +498,8 @@ add_action('wp_enqueue_scripts', function () {
         wp_localize_script('enigme-image-viewer', 'EnigmeImageViewer', [
             'closeLabel' => __('Fermer', 'chassesautresor-com'),
             'nativeSizeLabel' => __('Image en taille originale', 'chassesautresor-com'),
+            'wrongEyebrow' => __('Accès refusé', 'chassesautresor-com'),
+            'hintEyebrow' => __('Piste', 'chassesautresor-com'),
         ]);
     }
     $sidebar_dir = $theme_uri . '/assets/sidebar/';

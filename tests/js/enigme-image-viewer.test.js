@@ -79,4 +79,31 @@ describe('enigme image viewer', () => {
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
     expect(document.body.classList.contains('no-scroll')).toBe(false);
   });
+
+  test('shows an ephemeral escape-game wrong-answer notice', () => {
+    jest.useFakeTimers();
+    const host = document.createElement('p');
+    host.className = 'riddle-step-click-form__feedback';
+    document.body.appendChild(host);
+
+    window.showRiddleEphemeralNotice('Cette réponse n’est pas correcte.', {
+      tone: 'wrong',
+      duration: 1000,
+      anchor: host
+    });
+
+    const notice = host.querySelector('.riddle-ephemeral-notice');
+    expect(notice).not.toBeNull();
+    expect(notice.classList.contains('riddle-ephemeral-notice--wrong')).toBe(true);
+    expect(notice.querySelector('.riddle-ephemeral-notice__eyebrow').textContent).toBe(
+      'Accès refusé'
+    );
+    expect(notice.querySelector('.riddle-ephemeral-notice__message').textContent).toBe(
+      'Cette réponse n’est pas correcte.'
+    );
+
+    jest.advanceTimersByTime(1300);
+    expect(host.querySelector('.riddle-ephemeral-notice')).toBeNull();
+    jest.useRealTimers();
+  });
 });
