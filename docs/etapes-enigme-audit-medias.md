@@ -5,7 +5,8 @@
 Le champ `etape_image` conserve un identifiant de pièce jointe WordPress. Le rendu joueur appelle directement
 la route `/voir-image-enigme`, sans `srcset` pointant vers la médiathèque. Le contrôleur retrouve l’étape propriétaire,
 vérifie l’accès à l’énigme puis limite l’image aux étapes déjà visibles dans la progression du joueur. Ses réponses sont
-privées et non stockables afin qu’un cache partagé ne puisse pas servir l’image à un autre joueur.
+`private` (jamais de cache partagé CDN/proxy), avec un TTL navigateur court et une revalidation `304` via
+`ETag` / `Last-Modified`, afin qu’un cache partagé ne puisse pas servir l’image à un autre joueur.
 
 Cette sécurisation empêche la page joueur de divulguer directement l’URL d’une étape future, mais elle ne protège pas
 encore le fichier physique si son ancienne URL est déjà connue. L’original et les tailles dérivées peuvent rester servis
