@@ -66,11 +66,12 @@ remove_all_actions('template_redirect');
 do_action('litespeed_control_set_nocache');
 
 // ✅ Envoi du fichier
-// 📅 Cache (compatible CDN)
+// Cache navigateur privé court : jamais partagé (CDN/proxy), revalidation via ETag/Last-Modified.
+// TTL volontairement bas pour limiter la fenêtre si les droits d'accès changent.
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
 
-header('Cache-Control: private, no-store, max-age=0');
+header('Cache-Control: private, max-age=120, must-revalidate');
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
 header('ETag: ' . $etag);
 
@@ -80,10 +81,8 @@ $if_none_match_match     = $if_none_match && trim($if_none_match) === $etag;
 $if_modified_since_match = $if_modified_since && strtotime($if_modified_since) >= $mtime;
 
 if ($if_none_match_match || $if_modified_since_match) {
-    // Les lignes ci-dessous sont désactivées afin de toujours renvoyer le fichier avec un
-    // code 200 et confirmer que le bloc de cache est en cause.
-    // http_response_code(304);
-    // exit;
+    http_response_code(304);
+    exit;
 }
 
 header('Content-Type: ' . $mime);

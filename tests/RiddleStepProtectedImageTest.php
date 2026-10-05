@@ -21,7 +21,12 @@ final class RiddleStepProtectedImageTest extends TestCase {
         );
 
         self::assertStringContainsString('riddleStepImages($wpdb)', $source);
-        self::assertStringContainsString("header('Cache-Control: private, no-store, max-age=0')", $source);
+        self::assertStringContainsString(
+            "header('Cache-Control: private, max-age=120, must-revalidate')",
+            $source
+        );
+        self::assertStringContainsString('http_response_code(304)', $source);
         self::assertStringNotContainsString('Cache-Control: public', $source);
+        self::assertStringNotContainsString('no-store', $source);
     }
 }
