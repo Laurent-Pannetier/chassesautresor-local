@@ -106,4 +106,72 @@ describe('enigme image viewer', () => {
     expect(host.querySelector('.riddle-ephemeral-notice')).toBeNull();
     jest.useRealTimers();
   });
+
+  test('keeps variant hints soft, persistent and session-scoped', () => {
+    jest.useFakeTimers();
+    window.EnigmeImageViewer.hintEyebrow = 'Piste';
+    const host = document.createElement('div');
+    host.className = 'reponse-feedback';
+    document.body.appendChild(host);
+    const storageKey = 'riddle-hint:42:final';
+
+    window.showRiddleEphemeralNotice('Regarde https://www.youtube.com/watch?v=TEx7Pu-Ok5E&t=2s', {
+      tone: 'hint',
+      persistent: true,
+      storageKey,
+      anchor: host
+    });
+
+    const hint = host.querySelector('.riddle-ephemeral-notice--hint');
+    expect(hint).not.toBeNull();
+    expect(hint.classList.contains('riddle-session-hint')).toBe(true);
+    expect(hint.getAttribute('role')).toBe('status');
+    expect(hint.querySelector('.riddle-ephemeral-notice__eyebrow').textContent).toBe('Piste');
+    const link = hint.querySelector('a');
+    expect(link).not.toBeNull();
+    expect(link.getAttribute('href')).toBe('https://www.youtube.com/watch?v=TEx7Pu-Ok5E&t=2s');
+    expect(window.sessionStorage.getItem(storageKey)).toContain('youtube.com');
+
+    window.showRiddleEphemeralNotice('Cette réponse n’est pas correcte.', {
+      tone: 'wrong',
+      duration: 1000,
+      anchor: host
+    });
+
+    expect(host.querySelector('.riddle-ephemeral-notice--hint')).not.toBeNull();
+    expect(host.querySelector('.riddle-ephemeral-notice--wrong')).not.toBeNull();
+
+    jest.advanceTimersByTime(1300);
+    expect(host.querySelector('.riddle-ephemeral-notice--wrong')).toBeNull();
+    expect(host.querySelector('.riddle-ephemeral-notice--hint')).not.toBeNull();
+
+    host.replaceChildren();
+    window.restoreRiddleSessionHint(storageKey, host);
+    expect(host.querySelector('.riddle-ephemeral-notice--hint')).not.toBeNull();
+
+    window.clearRiddleSessionHint(storageKey);
+    expect(window.sessionStorage.getItem(storageKey)).toBeNull();
+    expect(host.querySelector('.riddle-ephemeral-notice--hint')).toBeNull();
+    jest.useRealTimers();
+  });
+
+  test('builds a stable session storage key from the answer form', () => {
+    document.body.innerHTML = `
+      <form class="formulaire-reponse-auto">
+        <input type="hidden" name="enigme_id" value="12">
+      </form>
+      <form class="riddle-step-text-form">
+        <input type="hidden" name="enigme_id" value="12">
+        <input type="hidden" name="etape_id" value="7">
+      </form>
+    `;
+    eval(source);
+
+    expect(window.buildRiddleHintStorageKey(document.querySelector('.formulaire-reponse-auto'))).toBe(
+      'riddle-hint:12:final'
+    );
+    expect(window.buildRiddleHintStorageKey(document.querySelector('.riddle-step-text-form'))).toBe(
+      'riddle-hint:12:step:7'
+    );
+  });
 });
