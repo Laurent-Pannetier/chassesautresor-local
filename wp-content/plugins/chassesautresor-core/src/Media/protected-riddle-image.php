@@ -86,6 +86,12 @@ if ($if_none_match_match || $if_modified_since_match) {
 }
 
 header('Content-Type: ' . $mime);
+
+$delivery = new ChassesAuTresor\Core\Media\ProtectedRiddleImageDeliveryService();
+if ($delivery->tryLiteSpeedSend($path, $mime)) {
+    exit;
+}
+
 header('Content-Length: ' . filesize($path));
 readfile($path);
 exit;
