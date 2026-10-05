@@ -28,8 +28,8 @@ final class RiddleStepImageStorageService
     }
 
     /**
-     * Ensure the attachment lives under the riddle protected folder.
-     * Duplicates the media when the source is still in a public uploads path.
+     * Ensure the attachment lives under this riddle's protected folder.
+     * Public uploads are moved in place; files from another protected folder are duplicated first.
      *
      * @return int attachment id to store on the step
      */
@@ -39,26 +39,27 @@ final class RiddleStepImageStorageService
             return $imageId;
         }
 
-        $relative = (string) get_post_meta($imageId, '_wp_attached_file', true);
+        $relative = ltrim(str_replace('\\', '/', (string) get_post_meta($imageId, '_wp_attached_file', true)), '/');
         if ($relative !== '' && $this->isProtectedPath($relative, $riddleId)) {
             $this->protection()->protect($riddleId, false);
             return $imageId;
         }
 
-        $sourceId = $imageId;
-        if ($relative === '' || !$this->isProtectedPath($relative, $riddleId)) {
-            $duplicated = $this->duplicateAttachment($imageId, $stepId > 0 ? $stepId : $riddleId);
-            if ($duplicated > 0) {
-                $sourceId = $duplicated;
+        $workingId = $imageId;
+        if ($relative !== '' && str_contains('/' . $relative, '/_enigmes/')) {
+            // Already protected for another riddle — duplicate then move.
+            $workingId = $this->duplicateAttachment($imageId, $stepId > 0 ? $stepId : $riddleId);
+            if ($workingId <= 0) {
+                return $imageId;
             }
         }
 
-        if (!$this->moveAttachment($sourceId, $riddleId)) {
+        if (!$this->moveAttachment($workingId, $riddleId)) {
             return $imageId;
         }
 
         $this->protection()->protect($riddleId, false);
-        return $sourceId;
+        return $workingId;
     }
 
     /** @return int[] migrated step ids */
