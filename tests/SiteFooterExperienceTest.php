@@ -23,50 +23,35 @@ final class SiteFooterExperienceTest extends TestCase
         self::assertStringNotContainsString('astra_footer();', $footer);
     }
 
-    public function testFooterMarkupHasNoNewsletterAndExposesExperienceMode(): void
+    public function testFooterIsCompactLegalBarWithoutRedundantNavOrNewsletter(): void
     {
         $template = (string) file_get_contents(
             self::THEME_PATH . '/template-parts/footer/site-footer.php'
         );
         $helpers = (string) file_get_contents(self::THEME_PATH . '/inc/footer-functions.php');
 
+        self::assertStringContainsString('cat-site-footer--compact', $template);
         self::assertStringContainsString('data-experience-mode', $template);
-        self::assertStringContainsString('cat-site-footer', $template);
+        self::assertStringContainsString('cat-site-footer__legal', $template);
+        self::assertStringContainsString('cat-site-footer__copyright', $template);
+        self::assertStringNotContainsString('cat-site-footer__nav', $template);
+        self::assertStringNotContainsString('cat-site-footer__brand', $template);
         self::assertStringNotContainsString('newsletter', $template);
         self::assertStringNotContainsString('mc4wp', $template);
+        self::assertStringNotContainsString('Devenir organisateur', $helpers);
+        self::assertStringNotContainsString('cta_get_footer_nav_columns', $helpers);
         self::assertStringNotContainsString('newsletter', $helpers);
-        self::assertStringNotContainsString('mc4wp', $helpers);
     }
 
-    public function testOrganizerApplicationLinkIsPlatformOnly(): void
-    {
-        $helpers = (string) file_get_contents(self::THEME_PATH . '/inc/footer-functions.php');
-
-        self::assertStringContainsString('cta_get_footer_platform_columns', $helpers);
-        self::assertStringContainsString('cta_get_footer_single_hunt_columns', $helpers);
-        self::assertStringContainsString('cat_are_organizer_applications_open', $helpers);
-        self::assertStringContainsString('Devenir organisateur', $helpers);
-
-        $platformFnStart = strpos($helpers, 'function cta_get_footer_platform_columns');
-        $singleFnStart = strpos($helpers, 'function cta_get_footer_single_hunt_columns');
-        self::assertNotFalse($platformFnStart);
-        self::assertNotFalse($singleFnStart);
-
-        $platformFn = substr($helpers, $platformFnStart, $singleFnStart - $platformFnStart);
-        $afterPlatform = substr($helpers, $singleFnStart);
-
-        self::assertStringContainsString('Devenir organisateur', $platformFn);
-        self::assertStringContainsString('cat_are_organizer_applications_open', $platformFn);
-        self::assertStringNotContainsString('Devenir organisateur', $afterPlatform);
-    }
-
-    public function testFooterStylesMatchSiteChromeAndDropLegacyNewsletterWidgetRules(): void
+    public function testFooterStylesStayCompactAndDropLegacyWidgetRules(): void
     {
         $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_layout.scss');
 
         self::assertStringContainsString('.cat-site-footer', $styles);
+        self::assertStringContainsString('.cat-site-footer__legal', $styles);
         self::assertStringContainsString('.cat-site-footer--demo', $styles);
-        self::assertStringContainsString('.cat-site-footer__link--accent', $styles);
+        self::assertStringNotContainsString('.cat-site-footer__nav', $styles);
+        self::assertStringNotContainsString('.cat-site-footer__brand', $styles);
         self::assertStringNotContainsString('.newsletter-group', $styles);
         self::assertStringNotContainsString('.lien-organisateur', $styles);
         self::assertStringNotContainsString('.mc4wp-form', $styles);
