@@ -52,7 +52,7 @@
   margin: 0 auto;
 }
 
-/* Mono-chasse : cartes poster homogènes (image dominante, titre en bas, sans CTA redondant).
+/* Mono-chasse : cartes poster homogènes (image dominante, titre en bas, états par différenciation visuelle).
    `.cards-grid--poster` sécurise le rendu même si un panneau d'édition casse le wrapper. */
 .page-chasse-wrapper--compact .cards-grid,
 .cards-grid--poster {
@@ -62,6 +62,7 @@
   max-width: calc(var(--carte-enigme-poster-max-width) * 2 + var(--space-xl));
   margin-inline: auto;
   justify-content: center;
+  /* Pastille statut déjà présente : éviter le double check à droite. */
 }
 @media (min-width: 768px) {
   .page-chasse-wrapper--compact .cards-grid,
@@ -92,10 +93,33 @@
   border-color: rgba(255, 215, 0, 0.38);
   box-shadow: 0 18px 40px rgba(var(--color-black-rgb), 0.4);
 }
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee,
+.cards-grid--poster .carte-enigme--statut-resolue,
+.cards-grid--poster .carte-enigme--statut-terminee {
+  border-color: var(--color-success);
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue:hover,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue:focus-within,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee:hover,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee:focus-within,
+.cards-grid--poster .carte-enigme--statut-resolue:hover,
+.cards-grid--poster .carte-enigme--statut-resolue:focus-within,
+.cards-grid--poster .carte-enigme--statut-terminee:hover,
+.cards-grid--poster .carte-enigme--statut-terminee:focus-within {
+  border-color: var(--color-success);
+  box-shadow: 0 18px 40px rgba(var(--color-black-rgb), 0.4), 0 0 0 1px rgba(34, 139, 34, 0.35);
+}
 .page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within,
 .cards-grid--poster .carte-enigme:focus-within {
   outline: 2px solid var(--color-primary);
   outline-offset: 3px;
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue:focus-within,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee:focus-within,
+.cards-grid--poster .carte-enigme--statut-resolue:focus-within,
+.cards-grid--poster .carte-enigme--statut-terminee:focus-within {
+  outline-color: var(--color-success);
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme-lien,
 .page-chasse-wrapper--compact .cards-grid .carte-enigme .carte-core,
@@ -107,12 +131,6 @@
   height: 100%;
   min-width: 0;
   min-height: 0;
-}
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-overlay,
-.page-chasse-wrapper--compact .cards-grid .carte-enigme-action,
-.cards-grid--poster .carte-enigme-overlay,
-.cards-grid--poster .carte-enigme-action {
-  display: none !important;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme-image,
 .cards-grid--poster .carte-enigme-image {
@@ -200,6 +218,12 @@
   border-radius: 50%;
   font-size: 1rem;
   box-shadow: 0 3px 12px rgba(var(--color-black-rgb), 0.38);
+}
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue .carte-icons .validation-icon,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee .carte-icons .validation-icon,
+.cards-grid--poster .carte-enigme--statut-resolue .carte-icons .validation-icon,
+.cards-grid--poster .carte-enigme--statut-terminee .carte-icons .validation-icon {
+  display: none;
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme h3,
 .cards-grid--poster .carte-enigme h3 {
@@ -322,8 +346,26 @@
   background: var(--color-gris-3);
 }
 
-.carte-enigme-action {
-  display: none;
+/* État joueur : énigme trouvée (resolue / terminee) — sans CTA, différenciation visuelle seule. */
+.carte-enigme.carte-enigme--statut-resolue,
+.carte-enigme.carte-enigme--statut-terminee {
+  border-color: var(--color-success);
+  border-width: 2px;
+}
+
+.carte-enigme--statut-resolue .carte-enigme-image::after,
+.carte-enigme--statut-terminee .carte-enigme-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(6, 10, 31, 0.42) 0%, rgba(34, 139, 34, 0.22) 48%, rgba(34, 139, 34, 0.1) 100%);
+}
+
+.carte-enigme--statut-resolue .carte-enigme-statut,
+.carte-enigme--statut-terminee .carte-enigme-statut {
+  z-index: 2;
 }
 
 /* ========== 🃏 Carte compacte ========== */
@@ -630,28 +672,13 @@
   position: relative;
   height: 100%;
   flex: 1;
+  cursor: pointer;
 }
 
-.carte-enigme-overlay {
-  position: absolute;
-  inset: 0;
-  display: none;
+.carte-enigme-lien--disabled {
+  cursor: default;
 }
 
-@media (min-width: 768px) {
-  .carte-enigme-overlay {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(to top, rgba(var(--color-black-rgb), 0.6), rgba(var(--color-black-rgb), 0));
-    opacity: 0;
-    transition: opacity var(--transition-medium);
-  }
-  .carte-enigme-lien:hover .carte-enigme-overlay,
-  .carte-enigme-lien:focus .carte-enigme-overlay {
-    opacity: 1;
-  }
-}
 .carte-ligne__image {
   width: 300px;
   height: auto;

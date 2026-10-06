@@ -168,8 +168,9 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('max-width: var(--carte-enigme-poster-max-width);', $styles);
         self::assertStringContainsString('min-width: 0;', $styles);
         self::assertStringContainsString('object-fit: cover;', $styles);
-        self::assertStringContainsString('.carte-enigme-action {', $styles);
-        self::assertStringContainsString('display: none !important;', $styles);
+        self::assertStringContainsString('.carte-enigme--statut-resolue,', $styles);
+        self::assertStringContainsString('border-color: var(--color-success);', $styles);
+        self::assertStringContainsString('.carte-enigme--statut-resolue .carte-enigme-image::after,', $styles);
         self::assertStringContainsString('.carte-enigme-footer {', $styles);
         self::assertStringContainsString('display: none;', $styles);
         self::assertStringContainsString('-webkit-line-clamp: 3;', $styles);
@@ -179,6 +180,9 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         );
         self::assertStringContainsString("cards-grid cards-grid--poster", $partial);
         self::assertStringContainsString('cat_is_single_hunt_mode()', $partial);
+        self::assertStringNotContainsString('carte-enigme-overlay', $partial);
+        self::assertStringNotContainsString('carte-enigme-action', $partial);
+        self::assertStringNotContainsString('carte-enigme-bouton', $partial);
     }
 
     public function testChasseEditionPanelHasBalancedDivMarkup(): void
