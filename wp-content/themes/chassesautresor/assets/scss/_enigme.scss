@@ -746,6 +746,9 @@ li.active .enigme-menu__edit {
   }
 
   .riddle-player-step.is-widget-only {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding-block: var(--space-sm);
   }
 
@@ -1431,11 +1434,16 @@ body.no-scroll {
 }
 
 .riddle-player-step.is-widget-only {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: var(--space-sm) var(--space-md);
 }
 
 .riddle-player-step.is-widget-only form {
-  margin: 0;
+  /* Keep vertical reset without killing horizontal centering via margin-inline: auto. */
+  margin-block: 0;
+  margin-inline: auto;
 }
 
 .riddle-player-step label,
@@ -1634,13 +1642,32 @@ body.no-scroll {
   margin-inline: auto;
 }
 
+/* Keep the shared step-submit class without stretching interactive widgets full-bleed. */
 .riddle-step-text-form.riddle-step-numbers-form,
 .riddle-step-text-form.riddle-step-directions-form,
 .riddle-step-text-form.riddle-step-colors-form,
-.riddle-step-text-form.riddle-step-safe_dial-form,
+.riddle-step-text-form.riddle-step-safe_dial-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 18rem);
+  max-width: 18rem;
+  margin-inline: auto;
+}
+
+.riddle-step-text-form.riddle-step-colors-form {
+  width: min(100%, 16.5rem);
+  max-width: 16.5rem;
+}
+
 .riddle-step-text-form.riddle-step-gps-form,
 .riddle-step-text-form.riddle-step-piano-form {
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 34rem);
+  max-width: 34rem;
+  margin-inline: auto;
 }
 
 .riddle-widget-actions {
