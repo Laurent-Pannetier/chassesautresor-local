@@ -86,6 +86,8 @@ class RiddleAttemptRepositoryTest extends TestCase
 
         $this->assertFalse($repository->hasSuccessfulAttempt(7, 10));
         $this->assertSame([7, 10], $wpdb->preparedArguments);
+        $this->assertStringContainsString('etape_id IS NULL', $wpdb->preparedQuery);
+        $this->assertStringContainsString("resultat = 'bon'", $wpdb->preparedQuery);
 
         $wpdb->status = '1';
         $this->assertTrue($repository->hasSuccessfulAttempt(7, 10));

@@ -136,8 +136,9 @@ $cards_grid_class = $poster_cards ? 'cards-grid cards-grid--poster' : 'cards-gri
       }
 
       $classes_carte = trim("carte carte-enigme $classe_completion $classe_cta");
-      if ($statut_utilisateur !== '') {
-        $classes_carte .= ' carte-enigme--statut-' . sanitize_html_class($statut_utilisateur);
+      $statut_visuel = $statut_utilisateur === 'echouee' ? 'en_cours' : $statut_utilisateur;
+      if ($statut_visuel !== '') {
+        $classes_carte .= ' carte-enigme--statut-' . sanitize_html_class($statut_visuel);
       }
       if (
         $est_joueur_engage
