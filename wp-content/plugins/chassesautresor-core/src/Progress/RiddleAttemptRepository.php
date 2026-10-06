@@ -122,7 +122,8 @@ class RiddleAttemptRepository
         $attemptId = $this->wpdb->get_var(
             $this->wpdb->prepare(
                 "SELECT 1 FROM {$table} "
-                    . "WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon' LIMIT 1",
+                    . "WHERE user_id = %d AND enigme_id = %d AND resultat = 'bon' "
+                    . "AND etape_id IS NULL LIMIT 1",
                 $userId,
                 $riddleId
             )
