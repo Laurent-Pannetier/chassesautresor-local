@@ -108,11 +108,29 @@ const initializeGpsWidgets = root => {
 };
 
 const hasMeaningfulStepContent = article => {
-  if (article.querySelector('.riddle-player-step__image')) return true;
+  // Les images d’étapes sont des pages de la galerie BD, pas du contenu
+  // affiché dans le bloc d’étape une fois celui-ci terminé.
   const content = article.querySelector('.riddle-player-step__content');
   if (!content) return false;
   if (content.querySelector('img, picture, video, audio, iframe, canvas, svg')) return true;
   return content.textContent.replace(/\u00a0/g, ' ').trim() !== '';
+};
+
+const syncStepPageToGallery = article => {
+  if (!article?.dataset?.stepPagePreview || !article?.dataset?.stepPageFull) {
+    return -1;
+  }
+  if (typeof window.EnigmeGallery?.appendPage !== 'function') {
+    return -1;
+  }
+  return window.EnigmeGallery.appendPage({
+    imageId: article.dataset.stepPageImageId || '',
+    stepId: article.dataset.playerStepId || '',
+    previewUrl: article.dataset.stepPagePreview,
+    fullUrl: article.dataset.stepPageFull,
+    thumbUrl: article.dataset.stepPageThumb || article.dataset.stepPagePreview,
+    alt: article.dataset.stepPageAlt || '',
+  });
 };
 
 const positionRiddleStepTarget = async target => {
@@ -155,6 +173,7 @@ const unlockRiddleStepContent = (form, data) => {
     if (!nextArticle || player.querySelector(selector)) return null;
     player.append(nextArticle);
     initializeGpsWidgets(nextArticle);
+    syncStepPageToGallery(nextArticle);
     return nextArticle;
   }
 
@@ -252,8 +271,12 @@ document.addEventListener('submit', async event => {
     const target = unlockRiddleStepContent(form, result.data);
     if (!target) throw new Error(RiddleStepPlayer.error);
     focusUnlockedContent(target);
-    target.scrollIntoView({
-      behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const gallery = window.EnigmeGallery?.getGallery?.();
+    const revealedPage = target.dataset?.stepPagePreview ? gallery : null;
+    const scrollTarget = revealedPage || target;
+    scrollTarget.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
       block: 'start'
     });
   } catch (error) {

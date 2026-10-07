@@ -99,8 +99,23 @@ if (!function_exists('get_field')) {
         if ($key === 'enigme_visuel_legende') {
             return 'Légende test';
         }
+        if ($key === 'etape_image') {
+            return $GLOBALS['test_step_images'][$id] ?? 0;
+        }
 
         return null;
+    }
+}
+if (!function_exists('get_current_user_id')) {
+    function get_current_user_id()
+    {
+        return (int) ($GLOBALS['test_user_id'] ?? 0);
+    }
+}
+if (!function_exists('utilisateur_peut_modifier_post')) {
+    function utilisateur_peut_modifier_post($post_id)
+    {
+        return !empty($GLOBALS['test_can_modify']);
     }
 }
 
@@ -114,7 +129,14 @@ class EnigmeGalleryViewerTest extends TestCase
 {
     protected function tearDown(): void
     {
-        unset($GLOBALS['test_enigme_gallery']);
+        unset(
+            $GLOBALS['test_enigme_gallery'],
+            $GLOBALS['test_step_images'],
+            $GLOBALS['test_user_id'],
+            $GLOBALS['test_can_modify'],
+            $GLOBALS['test_step_ordered_ids'],
+            $GLOBALS['test_step_visible_ids']
+        );
         parent::tearDown();
     }
 
@@ -134,6 +156,7 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringContainsString('enigme-media-zoom__hint', $html);
         $this->assertStringContainsString('taille=full', $html);
         $this->assertStringNotContainsString('galerie-enigme__thumbs', $html);
+        $this->assertStringNotContainsString('galerie-enigme__nav', $html);
         $this->assertSame(1, substr_count($html, 'galerie-enigme__slide'));
     }
 
@@ -149,9 +172,35 @@ class EnigmeGalleryViewerTest extends TestCase
         $html = ob_get_clean();
 
         $this->assertStringContainsString('galerie-enigme__thumbs', $html);
+        $this->assertStringContainsString('galerie-enigme__nav--prev', $html);
+        $this->assertStringContainsString('galerie-enigme__nav--next', $html);
+        $this->assertStringContainsString('Page 1 / 2', $html);
         $this->assertStringContainsString('data-gallery-goto="1"', $html);
+        $this->assertStringContainsString('Afficher la page 2', $html);
         $this->assertSame(2, substr_count($html, 'galerie-enigme__slide'));
         $this->assertStringContainsString(' hidden', $html);
         $this->assertStringContainsString('taille=thumbnail', $html);
+    }
+
+    public function test_unlocked_step_images_append_as_comic_pages(): void
+    {
+        $GLOBALS['test_enigme_gallery'] = [
+            ['ID' => 101],
+        ];
+
+        ob_start();
+        afficher_visuels_enigme(8, 9, [
+            ['image_id' => 303, 'step_id' => 11],
+        ]);
+        $html = ob_get_clean();
+
+        $this->assertSame(2, substr_count($html, 'data-gallery-index="'));
+        $this->assertStringContainsString('data-gallery-step-id="11"', $html);
+        $this->assertStringContainsString('Page 2 / 2', $html);
+        $this->assertStringContainsString('galerie-enigme__slide--step', $html);
+        $this->assertMatchesRegularExpression(
+            '/galerie-enigme__slide--step[^>]*is-active|is-active[^>]*galerie-enigme__slide--step/',
+            $html
+        );
     }
 }
