@@ -13,8 +13,8 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Nom interne | `post_title` | Repère obligatoire réservé à l’organisateur, jamais affiché au joueur. |
 | Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
 | Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
-| Image | `etape_image` | Illustration facultative, stockée sous forme d’identifiant de média. |
-| Affichage widget | `etape_widget_affichage` | `always` (défaut) ou `hotspot` (révélation au clic sur l’image). |
+| Image | `etape_image` | Page BD facultative (A4). Une fois débloquée, elle s’ajoute à la galerie de l’énigme. |
+| Affichage widget | `etape_widget_affichage` | `always` (défaut) ou `hotspot` (révélation au clic sur une zone de la page BD). |
 | Zone cliquable | `etape_hotspot_zone` | Pourcentages `x,y,largeur,hauteur` relatifs à l’image. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 

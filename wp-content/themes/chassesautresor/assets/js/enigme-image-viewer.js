@@ -1,7 +1,7 @@
 /**
- * Viewer d’images d’énigme : bascule par vignettes + lightbox au clic.
- * Couvre le hero (`[data-enigme-gallery]`) et les images d’étapes
- * (`[data-enigme-lightbox-src]`), y compris le HTML injecté en AJAX.
+ * Viewer d’images d’énigme : feuilletage BD (vignettes + prev/next) et lightbox.
+ * Couvre le hero (`[data-enigme-gallery]`). Les pages d’étapes débloquées
+ * s’ajoutent à cette galerie (y compris via AJAX).
  *
  * La lightbox charge l’URL full et l’affiche en taille native (1:1),
  * avec défilement si l’image dépasse le viewport — indispensable pour
@@ -13,12 +13,103 @@
   const nativeSizeLabel =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.nativeSizeLabel) ||
     'Taille originale';
+  const pageLabelTemplate =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.pageLabel) || 'Page %1$d / %2$d';
+  const prevPageLabel =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.prevPageLabel) || 'Page précédente';
+  const nextPageLabel =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.nextPageLabel) || 'Page suivante';
+  const pagesListLabel =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.pagesListLabel) ||
+    'Pages de l’énigme';
+  const showPageLabel =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.showPageLabel) ||
+    'Afficher la page %d';
+
+  const formatPageLabel = (current, total) =>
+    pageLabelTemplate
+      .replace('%1$d', String(current))
+      .replace('%2$d', String(total))
+      .replace('%d', String(current));
+
+  const formatShowPageLabel = (pageNumber) =>
+    showPageLabel.replace('%d', String(pageNumber));
+
+  const updateGalleryChrome = (gallery, activeIndex) => {
+    const slides = gallery.querySelectorAll('.galerie-enigme__slide');
+    const total = slides.length;
+    gallery.dataset.galleryPageCount = String(total);
+
+    const pager = gallery.querySelector('.galerie-enigme__page-label');
+    if (pager && total > 0) {
+      pager.textContent = formatPageLabel(activeIndex + 1, total);
+    }
+
+    const prev = gallery.querySelector('.galerie-enigme__nav--prev');
+    const next = gallery.querySelector('.galerie-enigme__nav--next');
+    if (prev) {
+      prev.disabled = activeIndex <= 0;
+    }
+    if (next) {
+      next.disabled = activeIndex >= total - 1;
+    }
+  };
+
+  const ensureGalleryControls = (gallery) => {
+    const stage = gallery.querySelector('.galerie-enigme__stage');
+    if (!stage) {
+      return;
+    }
+
+    if (!gallery.querySelector('.galerie-enigme__nav--prev')) {
+      const prev = document.createElement('button');
+      prev.type = 'button';
+      prev.className = 'galerie-enigme__nav galerie-enigme__nav--prev';
+      prev.dataset.galleryStep = '-1';
+      prev.setAttribute('aria-label', prevPageLabel);
+      prev.innerHTML = '<span aria-hidden="true">&lsaquo;</span>';
+      stage.insertBefore(prev, stage.firstChild);
+    }
+
+    if (!gallery.querySelector('.galerie-enigme__nav--next')) {
+      const next = document.createElement('button');
+      next.type = 'button';
+      next.className = 'galerie-enigme__nav galerie-enigme__nav--next';
+      next.dataset.galleryStep = '1';
+      next.setAttribute('aria-label', nextPageLabel);
+      next.innerHTML = '<span aria-hidden="true">&rsaquo;</span>';
+      stage.appendChild(next);
+    }
+
+    if (!gallery.querySelector('.galerie-enigme__pager')) {
+      const pager = document.createElement('div');
+      pager.className = 'galerie-enigme__pager';
+      pager.setAttribute('aria-live', 'polite');
+      const label = document.createElement('span');
+      label.className = 'galerie-enigme__page-label';
+      pager.appendChild(label);
+      const thumbs = gallery.querySelector('.galerie-enigme__thumbs');
+      if (thumbs) {
+        gallery.insertBefore(pager, thumbs);
+      } else {
+        gallery.appendChild(pager);
+      }
+    }
+
+    if (!gallery.querySelector('.galerie-enigme__thumbs')) {
+      const thumbs = document.createElement('div');
+      thumbs.className = 'galerie-enigme__thumbs';
+      thumbs.setAttribute('role', 'tablist');
+      thumbs.setAttribute('aria-label', pagesListLabel);
+      gallery.appendChild(thumbs);
+    }
+  };
 
   const selectGallerySlide = (gallery, index) => {
-    const slides = gallery.querySelectorAll('.galerie-enigme__slide');
+    const slides = [...gallery.querySelectorAll('.galerie-enigme__slide')];
     const thumbs = gallery.querySelectorAll('[data-gallery-goto]');
     if (!slides.length) {
-      return;
+      return -1;
     }
 
     const target = Math.max(0, Math.min(index, slides.length - 1));
@@ -27,6 +118,7 @@
       const isActive = slideIndex === target;
       slide.classList.toggle('is-active', isActive);
       slide.hidden = !isActive;
+      slide.dataset.galleryIndex = String(slideIndex);
       const img = slide.querySelector('img');
       if (img) {
         img.classList.toggle('image-active', isActive);
@@ -43,6 +135,150 @@
       thumb.classList.toggle('is-active', isActive);
       thumb.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
+
+    updateGalleryChrome(gallery, target);
+    return target;
+  };
+
+  const appendGalleryPage = (page) => {
+    const gallery = document.querySelector('[data-enigme-gallery]');
+    if (!gallery || !page || !page.previewUrl || !page.fullUrl) {
+      return -1;
+    }
+
+    const stepId = page.stepId ? String(page.stepId) : '';
+    if (stepId && gallery.querySelector(`[data-gallery-step-id="${stepId}"]`)) {
+      const existing = gallery.querySelector(
+        `.galerie-enigme__slide[data-gallery-step-id="${stepId}"]`
+      );
+      const index = existing
+        ? [...gallery.querySelectorAll('.galerie-enigme__slide')].indexOf(existing)
+        : -1;
+      return index >= 0 ? selectGallerySlide(gallery, index) : -1;
+    }
+
+    ensureGalleryControls(gallery);
+    const stage = gallery.querySelector('.galerie-enigme__stage');
+    const thumbs = gallery.querySelector('.galerie-enigme__thumbs');
+    const nextNav = gallery.querySelector('.galerie-enigme__nav--next');
+    const index = gallery.querySelectorAll('.galerie-enigme__slide').length;
+    const galleryId = gallery.id || 'galerie-enigme';
+    const slideId = `${galleryId}-slide-${index}`;
+    const alt = page.alt || '';
+
+    const figure = document.createElement('figure');
+    figure.className =
+      'image-principale galerie-enigme__slide galerie-enigme__slide--step';
+    figure.id = slideId;
+    figure.dataset.galleryIndex = String(index);
+    figure.dataset.galleryImageId = String(page.imageId || '');
+    if (stepId) {
+      figure.dataset.galleryStepId = stepId;
+    }
+    figure.hidden = true;
+
+    const img = document.createElement('img');
+    img.className = 'enigme-image--limited';
+    img.src = page.previewUrl;
+    img.alt = alt;
+    img.loading = 'lazy';
+    if (page.width) {
+      img.width = Number(page.width);
+    }
+    if (page.height) {
+      img.height = Number(page.height);
+    }
+
+    const hotspotZone = String(page.hotspotZone || '').trim();
+    if (hotspotZone && stepId) {
+      const parts = hotspotZone.split(/[\s,;]+/).map(Number);
+      const hostStage = document.createElement('div');
+      hostStage.className = 'galerie-enigme__hotspot-stage';
+      hostStage.dataset.riddleHotspotZone = hotspotZone;
+      hostStage.dataset.riddleHotspotStep = stepId;
+      hostStage.appendChild(img);
+
+      if (parts.length === 4 && parts.every(Number.isFinite)) {
+        const hotspot = document.createElement('button');
+        hotspot.type = 'button';
+        hotspot.className = 'riddle-gallery-hotspot';
+        hotspot.dataset.riddleOpenWidget = '';
+        hotspot.setAttribute(
+          'aria-label',
+          page.hotspotLabel || 'Zone interactive'
+        );
+        hotspot.style.left = `${parts[0]}%`;
+        hotspot.style.top = `${parts[1]}%`;
+        hotspot.style.width = `${parts[2]}%`;
+        hotspot.style.height = `${parts[3]}%`;
+        hostStage.appendChild(hotspot);
+      }
+
+      const zoom = document.createElement('button');
+      zoom.type = 'button';
+      zoom.className = 'enigme-media-zoom galerie-enigme__zoom-btn';
+      zoom.dataset.enigmeLightboxSrc = page.fullUrl;
+      zoom.dataset.enigmeLightboxAlt = alt;
+      zoom.setAttribute('aria-label', nativeSizeLabel);
+      const hint = document.createElement('span');
+      hint.className = 'enigme-media-zoom__hint';
+      hint.setAttribute('aria-hidden', 'true');
+      hint.textContent =
+        (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
+      zoom.appendChild(hint);
+      hostStage.appendChild(zoom);
+      figure.appendChild(hostStage);
+    } else {
+      const zoom = document.createElement('button');
+      zoom.type = 'button';
+      zoom.className = 'enigme-media-zoom';
+      zoom.dataset.enigmeLightboxSrc = page.fullUrl;
+      zoom.dataset.enigmeLightboxAlt = alt;
+      zoom.setAttribute('aria-label', nativeSizeLabel);
+      const hint = document.createElement('span');
+      hint.className = 'enigme-media-zoom__hint';
+      hint.setAttribute('aria-hidden', 'true');
+      hint.textContent =
+        (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
+      zoom.appendChild(img);
+      zoom.appendChild(hint);
+      figure.appendChild(zoom);
+    }
+    if (nextNav) {
+      stage.insertBefore(figure, nextNav);
+    } else {
+      stage.appendChild(figure);
+    }
+
+    const thumb = document.createElement('button');
+    thumb.type = 'button';
+    thumb.className = 'galerie-enigme__thumb galerie-enigme__thumb--step';
+    thumb.setAttribute('role', 'tab');
+    thumb.setAttribute('aria-selected', 'false');
+    thumb.setAttribute('aria-controls', slideId);
+    thumb.dataset.galleryGoto = String(index);
+    if (stepId) {
+      thumb.dataset.galleryStepId = stepId;
+    }
+    thumb.setAttribute('aria-label', formatShowPageLabel(index + 1));
+    if (page.thumbUrl) {
+      const thumbImg = document.createElement('img');
+      thumbImg.src = page.thumbUrl;
+      thumbImg.alt = '';
+      thumbImg.loading = 'lazy';
+      thumbImg.width = 72;
+      thumbImg.height = 72;
+      thumb.appendChild(thumbImg);
+    }
+    thumbs.appendChild(thumb);
+
+    return selectGallerySlide(gallery, index);
+  };
+
+  window.EnigmeGallery = {
+    selectSlide: (gallery, index) => selectGallerySlide(gallery, index),
+    appendPage: appendGalleryPage,
+    getGallery: () => document.querySelector('[data-enigme-gallery]'),
   };
 
   const closeLightbox = () => {
@@ -110,6 +346,20 @@
   };
 
   document.addEventListener('click', (event) => {
+    const stepButton = event.target.closest('[data-gallery-step]');
+    if (stepButton) {
+      const gallery = stepButton.closest('[data-enigme-gallery]');
+      if (!gallery) {
+        return;
+      }
+      event.preventDefault();
+      const current = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
+        (slide) => slide.classList.contains('is-active')
+      );
+      selectGallerySlide(gallery, current + Number(stepButton.dataset.galleryStep || 0));
+      return;
+    }
+
     const thumb = event.target.closest('[data-gallery-goto]');
     if (thumb) {
       const gallery = thumb.closest('[data-enigme-gallery]');
@@ -137,7 +387,39 @@
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeLightbox();
+      return;
     }
+
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
+      return;
+    }
+    if (document.querySelector('.enigme-lightbox-overlay')) {
+      return;
+    }
+
+    const gallery = event.target.closest?.('[data-enigme-gallery]') ||
+      document.querySelector('[data-enigme-gallery]');
+    if (!gallery || gallery.querySelectorAll('.galerie-enigme__slide').length < 2) {
+      return;
+    }
+
+    const tag = (event.target && event.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || event.target?.isContentEditable) {
+      return;
+    }
+
+    const current = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
+      (slide) => slide.classList.contains('is-active')
+    );
+    const delta = event.key === 'ArrowLeft' ? -1 : 1;
+    selectGallerySlide(gallery, current + delta);
+  });
+
+  document.querySelectorAll('[data-enigme-gallery]').forEach((gallery) => {
+    const active = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
+      (slide) => slide.classList.contains('is-active')
+    );
+    updateGalleryChrome(gallery, active >= 0 ? active : 0);
   });
 
   const noticeConfig = window.EnigmeImageViewer || {};

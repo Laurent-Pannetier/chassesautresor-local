@@ -118,7 +118,13 @@ describe('riddle step player positioning', () => {
 
   test('adds the unlocked step without reloading the page', async () => {
     window.sessionStorage.clear();
+    const appendPage = jest.fn().mockReturnValue(1);
+    window.EnigmeGallery = {
+      appendPage,
+      getGallery: () => document.querySelector('[data-enigme-gallery]'),
+    };
     document.body.innerHTML = `
+      <div class="galerie-enigme-wrapper" data-enigme-gallery></div>
       <section class="riddle-steps-player">
         <article class="riddle-player-step is-current" data-player-step-id="1">
           <div class="riddle-player-step__content"><p>&nbsp;</p></div>
@@ -139,7 +145,15 @@ describe('riddle step player positioning', () => {
           response_html: `
             <section class="riddle-steps-player">
               <article class="riddle-player-step is-completed" data-player-step-id="1"></article>
-              <article class="riddle-player-step is-current" data-player-step-id="2">Next</article>
+              <article
+                class="riddle-player-step is-current"
+                data-player-step-id="2"
+                data-step-page-image-id="99"
+                data-step-page-preview="preview.jpg"
+                data-step-page-full="full.jpg"
+                data-step-page-thumb="thumb.jpg"
+                data-step-page-alt="Page"
+              >Next</article>
             </section>
           `
         }
@@ -155,7 +169,20 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
     expect(document.activeElement).toBe(document.querySelector('[data-player-step-id="2"]'));
     expect(document.activeElement.getAttribute('tabindex')).toBe('-1');
+    expect(appendPage).toHaveBeenCalledWith({
+      imageId: '99',
+      stepId: '2',
+      previewUrl: 'preview.jpg',
+      fullUrl: 'full.jpg',
+      thumbUrl: 'thumb.jpg',
+      alt: 'Page',
+      hotspotZone: '',
+      hotspotLabel: '',
+    });
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(Element.prototype.scrollIntoView.mock.instances[0]).toBe(
+      document.querySelector('[data-enigme-gallery]')
+    );
   });
 
   test('adds and initializes the final answer after the last step', async () => {
@@ -244,22 +271,24 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[name="reponse"]').value).toBe('');
   });
 
-  test('opens and closes the immersive hotspot widget', () => {
+  test('opens and closes the immersive hotspot widget from the gallery', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
-      <article class="riddle-player-step is-current has-hotspot">
-        <div class="riddle-player-step__stage" data-riddle-hotspot-zone="40,40,20,20">
-          <img class="riddle-player-step__image" width="100" height="100">
-          <button type="button" class="riddle-player-step__hotspot" data-riddle-open-widget></button>
-        </div>
+      <div data-enigme-gallery>
+        <figure class="galerie-enigme__slide is-active" data-gallery-step-id="12">
+          <div class="galerie-enigme__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
+            <img width="100" height="100">
+            <button type="button" class="riddle-gallery-hotspot" data-riddle-open-widget></button>
+          </div>
+        </figure>
+      </div>
+      <article class="riddle-player-step is-current has-hotspot" data-player-step-id="12">
         <form class="riddle-step-directions-form is-hotspot-widget" hidden>
           <button type="button" data-riddle-close-widget>Close</button>
-          <div class="riddle-safe" tabindex="0"></div>
           <button type="submit">Validate</button>
         </form>
       </article>
     `;
-    global.RiddleStepPlayer = { closeWidgetLabel: 'Close' };
     eval(source);
 
     const form = document.querySelector('form.is-hotspot-widget');
@@ -269,8 +298,8 @@ describe('riddle step player positioning', () => {
       new MouseEvent('click', { bubbles: true, cancelable: true })
     );
     expect(form.hidden).toBe(false);
-    expect(form.hasAttribute('hidden')).toBe(false);
     expect(form.classList.contains('is-immersive-open')).toBe(true);
+    expect(form.parentElement).toBe(document.body);
     expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(true);
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).not.toBeNull();
 
@@ -278,26 +307,27 @@ describe('riddle step player positioning', () => {
       new MouseEvent('click', { bubbles: true, cancelable: true })
     );
     expect(form.hidden).toBe(true);
-    expect(form.hasAttribute('hidden')).toBe(true);
     expect(form.classList.contains('is-immersive-open')).toBe(false);
-    expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(false);
+    expect(form.closest('.riddle-player-step')).not.toBeNull();
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
   });
 
-  test('opens the widget when clicking inside the hotspot zone on the image', () => {
+  test('opens the widget when clicking inside the gallery hotspot zone', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
-      <article class="riddle-player-step is-current has-hotspot">
-        <div class="riddle-player-step__stage" data-riddle-hotspot-zone="40,40,20,20">
-          <img class="riddle-player-step__image" width="100" height="100">
+      <div data-enigme-gallery>
+        <div class="galerie-enigme__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
+          <img width="100" height="100">
         </div>
+      </div>
+      <article class="riddle-player-step is-current" data-player-step-id="12">
         <form class="riddle-step-directions-form is-hotspot-widget" hidden>
           <button type="submit">Validate</button>
         </form>
       </article>
     `;
     eval(source);
-    const image = document.querySelector('.riddle-player-step__image');
+    const image = document.querySelector('img');
     image.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 100 });
 
     image.dispatchEvent(new MouseEvent('click', {
@@ -309,6 +339,6 @@ describe('riddle step player positioning', () => {
 
     const form = document.querySelector('form.is-hotspot-widget');
     expect(form.classList.contains('is-immersive-open')).toBe(true);
-    expect(form.hasAttribute('hidden')).toBe(false);
+    expect(form.parentElement).toBe(document.body);
   });
 });

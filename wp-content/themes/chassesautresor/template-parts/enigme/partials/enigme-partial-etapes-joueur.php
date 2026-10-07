@@ -26,15 +26,17 @@ if ($riddleId <= 0 || $visibleIds === []) {
         '/<(?:img|picture|video|audio|iframe|canvas|svg)\b/i',
         $content
     ) === 1;
-    if ($completed && $imageId <= 0 && !$hasTextContent && !$hasEmbeddedContent) {
-        continue;
-    }
 
     $hasImage = $imageId > 0;
     $hasText = $hasTextContent || $hasEmbeddedContent;
-    $isWidgetOnly = !$completed && !$hasImage && !$hasText;
+    // Les images d’étapes vivent dans la galerie BD ; une étape terminée
+    // sans texte/média embarqué n’a plus rien à afficher ici.
+    if ($completed && !$hasText) {
+        continue;
+    }
     $hotspot = (new ChassesAuTresor\Core\Content\RiddleStepHotspotService())->forStep($stepId);
     $useHotspot = !$completed && $stepId === $currentId && !empty($hotspot['active']);
+    $isWidgetOnly = !$completed && !$hasText;
     $stepClasses = 'riddle-player-step';
     $stepClasses .= $completed ? ' is-completed' : ' is-current';
     if ($hasImage) {
@@ -49,97 +51,51 @@ if ($riddleId <= 0 || $visibleIds === []) {
     if ($useHotspot) {
         $stepClasses .= ' has-hotspot';
     }
-    ?>
-    <article
-      class="<?= esc_attr($stepClasses); ?>"
-      data-player-step-id="<?= esc_attr($stepId); ?>"
-    >
-      <?php if ($hasImage) : ?>
-        <?php
-        $imageSource = wp_get_attachment_image_src($imageId, 'large');
-        $imageAlt = trim((string) get_post_meta($imageId, '_wp_attachment_image_alt', true));
-        $imageUrl = function_exists('cta_voir_image_enigme_url')
+
+    $pagePreviewUrl = '';
+    $pageFullUrl = '';
+    $pageThumbUrl = '';
+    $pageAlt = '';
+    if ($hasImage) {
+        $pageAlt = trim((string) get_post_meta($imageId, '_wp_attachment_image_alt', true));
+        if ($pageAlt === '') {
+            $pageAlt = __('Page débloquée', 'chassesautresor-com');
+        }
+        $pagePreviewUrl = function_exists('cta_voir_image_enigme_url')
             ? cta_voir_image_enigme_url($imageId, 'large')
             : add_query_arg(
                 ['id' => $imageId, 'taille' => 'large'],
                 site_url('/voir-image-enigme')
             );
-        $fullImageUrl = function_exists('cta_voir_image_enigme_url')
+        $pageFullUrl = function_exists('cta_voir_image_enigme_url')
             ? cta_voir_image_enigme_url($imageId, 'full')
             : add_query_arg(
                 ['id' => $imageId, 'taille' => 'full'],
                 site_url('/voir-image-enigme')
             );
-        $hotspotLabel = (string) ($hotspot['label'] ?? __('Zone interactive', 'chassesautresor-com'));
-        $zone = is_array($hotspot['zone'] ?? null) ? $hotspot['zone'] : null;
-        $zoneRaw = (string) ($hotspot['zone_raw'] ?? '');
-        ?>
-        <?php if ($useHotspot && $zone !== null) : ?>
-          <figure class="riddle-player-step__media is-hotspot">
-            <div
-              class="riddle-player-step__stage"
-              data-riddle-hotspot-zone="<?= esc_attr($zoneRaw); ?>"
-            >
-              <img
-                class="riddle-player-step__image"
-                src="<?= esc_url($imageUrl); ?>"
-                alt="<?= esc_attr($imageAlt); ?>"
-                loading="lazy"
-                <?php if (is_array($imageSource)) : ?>
-                  width="<?= esc_attr((string) $imageSource[1]); ?>"
-                  height="<?= esc_attr((string) $imageSource[2]); ?>"
-                <?php endif; ?>
-              >
-              <button
-                type="button"
-                class="riddle-player-step__hotspot"
-                style="<?= esc_attr(sprintf(
-                    'left:%s%%;top:%s%%;width:%s%%;height:%s%%;',
-                    $zone['x'],
-                    $zone['y'],
-                    $zone['w'],
-                    $zone['h']
-                )); ?>"
-                data-riddle-open-widget
-                aria-label="<?= esc_attr($hotspotLabel); ?>"
-              ></button>
-              <button
-                type="button"
-                class="enigme-media-zoom riddle-player-step__zoom-btn"
-                data-enigme-lightbox-src="<?= esc_url($fullImageUrl); ?>"
-                data-enigme-lightbox-alt="<?= esc_attr($imageAlt); ?>"
-                aria-label="<?= esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com'); ?>"
-              >
-                <span class="enigme-media-zoom__hint" aria-hidden="true">
-                  <?= esc_html__('Agrandir', 'chassesautresor-com'); ?>
-                </span>
-              </button>
-            </div>
-          </figure>
-        <?php else : ?>
-          <button
-            type="button"
-            class="enigme-media-zoom riddle-player-step__zoom"
-            data-enigme-lightbox-src="<?= esc_url($fullImageUrl); ?>"
-            data-enigme-lightbox-alt="<?= esc_attr($imageAlt); ?>"
-            aria-label="<?= esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com'); ?>"
-          >
-            <img
-              class="riddle-player-step__image"
-              src="<?= esc_url($imageUrl); ?>"
-              alt="<?= esc_attr($imageAlt); ?>"
-              loading="lazy"
-              <?php if (is_array($imageSource)) : ?>
-                width="<?= esc_attr((string) $imageSource[1]); ?>"
-                height="<?= esc_attr((string) $imageSource[2]); ?>"
-              <?php endif; ?>
-            >
-            <span class="enigme-media-zoom__hint" aria-hidden="true">
-              <?= esc_html__('Agrandir', 'chassesautresor-com'); ?>
-            </span>
-          </button>
-        <?php endif; ?>
+        $pageThumbUrl = function_exists('cta_voir_image_enigme_url')
+            ? cta_voir_image_enigme_url($imageId, 'thumbnail')
+            : add_query_arg(
+                ['id' => $imageId, 'taille' => 'thumbnail'],
+                site_url('/voir-image-enigme')
+            );
+    }
+    ?>
+    <article
+      class="<?= esc_attr($stepClasses); ?>"
+      data-player-step-id="<?= esc_attr($stepId); ?>"
+      <?php if ($hasImage) : ?>
+        data-step-page-image-id="<?= esc_attr((string) $imageId); ?>"
+        data-step-page-preview="<?= esc_url($pagePreviewUrl); ?>"
+        data-step-page-full="<?= esc_url($pageFullUrl); ?>"
+        data-step-page-thumb="<?= esc_url($pageThumbUrl); ?>"
+        data-step-page-alt="<?= esc_attr($pageAlt); ?>"
       <?php endif; ?>
+      <?php if ($useHotspot) : ?>
+        data-riddle-hotspot-zone="<?= esc_attr((string) ($hotspot['zone_raw'] ?? '')); ?>"
+        data-riddle-hotspot-label="<?= esc_attr((string) ($hotspot['label'] ?? '')); ?>"
+      <?php endif; ?>
+    >
       <?php if (trim($content) !== '') : ?>
         <div class="riddle-player-step__content"><?= wp_kses_post($content); ?></div>
       <?php endif; ?>

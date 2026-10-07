@@ -113,11 +113,31 @@ const initializeGpsWidgets = root => {
 };
 
 const hasMeaningfulStepContent = article => {
-  if (article.querySelector('.riddle-player-step__image')) return true;
+  // Les images d’étapes sont des pages de la galerie BD, pas du contenu
+  // affiché dans le bloc d’étape une fois celui-ci terminé.
   const content = article.querySelector('.riddle-player-step__content');
   if (!content) return false;
   if (content.querySelector('img, picture, video, audio, iframe, canvas, svg')) return true;
   return content.textContent.replace(/\u00a0/g, ' ').trim() !== '';
+};
+
+const syncStepPageToGallery = article => {
+  if (!article?.dataset?.stepPagePreview || !article?.dataset?.stepPageFull) {
+    return -1;
+  }
+  if (typeof window.EnigmeGallery?.appendPage !== 'function') {
+    return -1;
+  }
+  return window.EnigmeGallery.appendPage({
+    imageId: article.dataset.stepPageImageId || '',
+    stepId: article.dataset.playerStepId || '',
+    previewUrl: article.dataset.stepPagePreview,
+    fullUrl: article.dataset.stepPageFull,
+    thumbUrl: article.dataset.stepPageThumb || article.dataset.stepPagePreview,
+    alt: article.dataset.stepPageAlt || '',
+    hotspotZone: article.dataset.riddleHotspotZone || '',
+    hotspotLabel: article.dataset.riddleHotspotLabel || ''
+  });
 };
 
 const positionRiddleStepTarget = async target => {
@@ -141,6 +161,9 @@ const positionRiddleStepTarget = async target => {
   window.requestAnimationFrame(() => window.requestAnimationFrame(() => position('auto')));
 };
 
+let immersiveIgnoreUntil = 0;
+const hotspotHomes = new WeakMap();
+
 const closeImmersiveWidget = form => {
   if (!form?.classList.contains('is-hotspot-widget')) return;
   form.hidden = true;
@@ -148,17 +171,40 @@ const closeImmersiveWidget = form => {
   form.classList.remove('is-immersive-open');
   document.body.classList.remove('riddle-widget-immersive-open');
   document.querySelector('.riddle-widget-immersive-backdrop')?.remove();
+  const home = hotspotHomes.get(form);
+  if (home?.parent?.isConnected) {
+    home.parent.insertBefore(form, home.nextSibling);
+  }
+  hotspotHomes.delete(form);
 };
 
 const openImmersiveWidget = form => {
   if (!form?.classList.contains('is-hotspot-widget')) return;
+  if (form.classList.contains('is-immersive-open')) return;
+
+  if (!hotspotHomes.has(form)) {
+    hotspotHomes.set(form, {
+      parent: form.parentElement,
+      nextSibling: form.nextSibling
+    });
+  }
+  document.body.appendChild(form);
+
   let backdrop = document.querySelector('.riddle-widget-immersive-backdrop');
   if (!backdrop) {
     backdrop = document.createElement('div');
     backdrop.className = 'riddle-widget-immersive-backdrop';
-    backdrop.addEventListener('click', () => closeImmersiveWidget(form));
     document.body.appendChild(backdrop);
+    // Ignore the opening click (and its bubble) so the modal does not instantly close.
+    immersiveIgnoreUntil = Date.now() + 400;
+    window.setTimeout(() => {
+      backdrop.addEventListener('click', event => {
+        if (Date.now() < immersiveIgnoreUntil) return;
+        if (event.target === backdrop) closeImmersiveWidget(form);
+      });
+    }, 0);
   }
+
   form.hidden = false;
   form.removeAttribute('hidden');
   form.classList.add('is-immersive-open');
@@ -179,7 +225,7 @@ const parseHotspotZone = raw => {
 };
 
 const pointInHotspotZone = (event, stage) => {
-  const image = stage.querySelector('.riddle-player-step__image');
+  const image = stage.querySelector('img');
   const zone = parseHotspotZone(stage.dataset.riddleHotspotZone || '');
   if (!image || !zone) return false;
   const rect = image.getBoundingClientRect();
@@ -187,6 +233,16 @@ const pointInHotspotZone = (event, stage) => {
   const x = ((event.clientX - rect.left) / rect.width) * 100;
   const y = ((event.clientY - rect.top) / rect.height) * 100;
   return x >= zone.x && x <= zone.x + zone.w && y >= zone.y && y <= zone.y + zone.h;
+};
+
+const findHotspotWidgetForm = (stepId = '') => {
+  if (stepId) {
+    const byStep = document.querySelector(
+      `.riddle-player-step[data-player-step-id="${stepId}"] form.is-hotspot-widget`
+    );
+    if (byStep) return byStep;
+  }
+  return document.querySelector('.riddle-player-step.is-current form.is-hotspot-widget');
 };
 
 const unlockRiddleStepContent = (form, data) => {
@@ -209,6 +265,7 @@ const unlockRiddleStepContent = (form, data) => {
     if (!nextArticle || player.querySelector(selector)) return null;
     player.append(nextArticle);
     initializeGpsWidgets(nextArticle);
+    syncStepPageToGallery(nextArticle);
     return nextArticle;
   }
 
@@ -245,6 +302,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.addEventListener('click', event => {
+  if (Date.now() < immersiveIgnoreUntil && event.target.closest('.riddle-widget-immersive-backdrop')) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
   const closeTrigger = event.target.closest('[data-riddle-close-widget]');
   if (closeTrigger) {
     event.preventDefault();
@@ -259,9 +322,17 @@ document.addEventListener('click', event => {
 
   const openTrigger = event.target.closest('[data-riddle-open-widget]');
   const stage = event.target.closest('[data-riddle-hotspot-zone]');
-  const article = (openTrigger || stage)?.closest('.riddle-player-step');
-  const form = article?.querySelector('form.is-hotspot-widget');
-  if (!form || !article) return;
+  if (!openTrigger && !stage) return;
+
+  const host = (openTrigger || stage)?.closest(
+    '[data-riddle-hotspot-step], [data-gallery-step-id]'
+  );
+  const stepId = host?.dataset?.riddleHotspotStep
+    || host?.dataset?.galleryStepId
+    || stage?.dataset?.riddleHotspotStep
+    || '';
+  const form = findHotspotWidgetForm(stepId);
+  if (!form) return;
 
   if (openTrigger) {
     event.preventDefault();
@@ -348,8 +419,12 @@ document.addEventListener('submit', async event => {
     const target = unlockRiddleStepContent(form, result.data);
     if (!target) throw new Error(RiddleStepPlayer.error);
     focusUnlockedContent(target);
-    target.scrollIntoView({
-      behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const gallery = window.EnigmeGallery?.getGallery?.();
+    const revealedPage = target.dataset?.stepPagePreview ? gallery : null;
+    const scrollTarget = revealedPage || target;
+    scrollTarget.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
       block: 'start'
     });
   } catch (error) {
