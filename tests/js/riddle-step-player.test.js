@@ -278,22 +278,28 @@ describe('riddle step player positioning', () => {
       getGallery: () => document.querySelector('[data-enigme-gallery]'),
     };
     document.body.innerHTML = `
-      <div class="enigme-lightbox-overlay"></div>
+      <div class="enigme-lightbox-overlay">
+        <div class="enigme-lightbox__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
+          <button type="button" class="riddle-gallery-hotspot" data-riddle-open-widget></button>
+        </div>
+      </div>
       <div class="galerie-enigme-wrapper" data-enigme-gallery></div>
       <section class="riddle-steps-player">
         <article class="riddle-player-step is-current has-hotspot" data-player-step-id="12">
-          <form class="riddle-step-directions-form is-hotspot-widget is-immersive-open">
+          <form
+            class="riddle-step-text-form riddle-step-directions-form is-hotspot-widget"
+            data-widget-action="soumettre_reponse_etape"
+            hidden
+          >
             <input name="enigme_id" value="42">
             <input name="etape_id" value="12">
+            <input name="reponse" value="N,E">
             <button type="submit">Validate</button>
             <p class="riddle-step-click-form__feedback"></p>
           </form>
         </article>
       </section>
     `;
-    const form = document.querySelector('form');
-    document.body.appendChild(form);
-    document.body.classList.add('riddle-widget-immersive-open', 'no-scroll');
     global.RiddleStepPlayer = { ajaxUrl: '/ajax', error: 'Error', wrong: 'Wrong' };
     global.fetch = jest.fn().mockResolvedValue({
       json: () => Promise.resolve({
@@ -317,6 +323,12 @@ describe('riddle step player positioning', () => {
     });
 
     eval(source);
+    document.querySelector('[data-riddle-open-widget]').dispatchEvent(
+      new MouseEvent('click', { bubbles: true, cancelable: true })
+    );
+    const form = document.querySelector('form.is-hotspot-widget');
+    expect(form.parentElement).toBe(document.body);
+
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     await new Promise(resolve => window.setTimeout(resolve, 0));
 

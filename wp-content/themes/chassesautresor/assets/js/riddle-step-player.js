@@ -276,28 +276,38 @@ const unlockRiddleStepContent = (form, data) => {
   const currentArticle = resolveStepArticleForForm(form);
   const player = currentArticle?.closest('.riddle-steps-player')
     || document.querySelector('.riddle-steps-player');
-  if (!currentArticle || !player) return null;
 
   closeImmersiveWidget(form);
   closeLightboxIfOpen();
-  form.remove();
-  currentArticle.classList.remove('is-current');
-  currentArticle.classList.add('is-completed');
-  const emptyCompletedStep = !hasMeaningfulStepContent(currentArticle);
-  if (emptyCompletedStep) currentArticle.remove();
+  if (form.isConnected) form.remove();
+
+  if (currentArticle?.isConnected) {
+    currentArticle.classList.remove('is-current');
+    currentArticle.classList.add('is-completed');
+    if (!hasMeaningfulStepContent(currentArticle)) currentArticle.remove();
+  }
+
+  if (!player) return null;
 
   if (data.current_step_id) {
     const selector = `[data-player-step-id="${data.current_step_id}"]`;
+    const existingNext = player.querySelector(selector);
+    if (existingNext) return existingNext;
     const nextArticle = parsed.querySelector(selector);
-    if (!nextArticle || player.querySelector(selector)) return null;
+    if (!nextArticle) return null;
     player.append(nextArticle);
     initializeGpsWidgets(nextArticle);
     syncStepPageToGallery(nextArticle);
     return nextArticle;
   }
 
+  const existingFinal = document.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle');
+  if (existingFinal) {
+    document.dispatchEvent(new CustomEvent('riddle-step-content-updated'));
+    return existingFinal;
+  }
   const finalForm = parsed.querySelector('.formulaire-reponse-auto, .formulaire-reponse-manuelle');
-  if (!finalForm) return emptyCompletedStep ? player : currentArticle;
+  if (!finalForm) return player;
   player.insertAdjacentElement('afterend', finalForm);
   initializeGpsWidgets(finalForm);
   const manualFeedback = parsed.querySelector('.formulaire-reponse-manuelle + .reponse-feedback');
@@ -388,6 +398,9 @@ document.addEventListener('submit', async event => {
   const form = event.target.closest('.riddle-step-click-form, .riddle-step-text-form');
   if (!form || typeof RiddleStepPlayer === 'undefined') return;
   event.preventDefault();
+  // Guard against stacked listeners (tests) and double-submit.
+  if (form.dataset.riddleSubmitLock === '1') return;
+  form.dataset.riddleSubmitLock = '1';
   const button = form.querySelector('button[type="submit"]');
   const feedback = form.querySelector('.riddle-step-click-form__feedback');
   const hintStorageKey = window.buildRiddleHintStorageKey?.(form) || '';
@@ -444,7 +457,12 @@ document.addEventListener('submit', async event => {
       window.clearRiddleSessionHint?.(hintStorageKey);
     }
     const target = unlockRiddleStepContent(form, result.data);
-    if (!target) throw new Error(RiddleStepPlayer.error);
+    if (!target) {
+      // Server already advanced; reload rather than leave the overlay stuck
+      // with a false "wrong answer" and a later "step unavailable".
+      window.location.reload();
+      return;
+    }
     focusUnlockedContent(target);
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const gallery = window.EnigmeGallery?.getGallery?.();
@@ -472,6 +490,7 @@ document.addEventListener('submit', async event => {
     if (form.isConnected) {
       form.setAttribute('aria-busy', 'false');
       button.disabled = keepDisabled;
+      delete form.dataset.riddleSubmitLock;
     }
   }
 });
