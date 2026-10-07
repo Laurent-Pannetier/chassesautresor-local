@@ -214,7 +214,7 @@ if ($riddleId > 0) {
         </select>
         <p class="txt-small">
           <?= esc_html__(
-              'Ce réglage ne change pas le type de widget (pavé, molette…). En point & click, le widget reste masqué jusqu’au clic sur la zone dessinée.',
+              'Ce réglage ne change pas le type de widget. En point & click, la page BD garde le zoom ; le joueur découvre la zone invisible dans l’image en taille originale.',
               'chassesautresor-com'
           ); ?>
         </p>

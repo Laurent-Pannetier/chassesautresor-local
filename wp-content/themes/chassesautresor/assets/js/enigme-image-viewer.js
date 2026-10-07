@@ -177,6 +177,19 @@
     }
     figure.hidden = true;
 
+    const zoom = document.createElement('button');
+    zoom.type = 'button';
+    zoom.className = 'enigme-media-zoom';
+    zoom.dataset.enigmeLightboxSrc = page.fullUrl;
+    zoom.dataset.enigmeLightboxAlt = alt;
+    zoom.setAttribute('aria-label', nativeSizeLabel);
+    const hotspotZone = String(page.hotspotZone || '').trim();
+    if (hotspotZone && stepId) {
+      zoom.dataset.riddleHotspotZone = hotspotZone;
+      zoom.dataset.riddleHotspotStep = stepId;
+      zoom.dataset.riddleHotspotLabel = page.hotspotLabel || '';
+    }
+
     const img = document.createElement('img');
     img.className = 'enigme-image--limited';
     img.src = page.previewUrl;
@@ -189,61 +202,15 @@
       img.height = Number(page.height);
     }
 
-    const hotspotZone = String(page.hotspotZone || '').trim();
-    if (hotspotZone && stepId) {
-      const parts = hotspotZone.split(/[\s,;]+/).map(Number);
-      const hostStage = document.createElement('div');
-      hostStage.className = 'galerie-enigme__hotspot-stage';
-      hostStage.dataset.riddleHotspotZone = hotspotZone;
-      hostStage.dataset.riddleHotspotStep = stepId;
-      hostStage.appendChild(img);
+    const hint = document.createElement('span');
+    hint.className = 'enigme-media-zoom__hint';
+    hint.setAttribute('aria-hidden', 'true');
+    hint.textContent =
+      (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
 
-      if (parts.length === 4 && parts.every(Number.isFinite)) {
-        const hotspot = document.createElement('button');
-        hotspot.type = 'button';
-        hotspot.className = 'riddle-gallery-hotspot';
-        hotspot.dataset.riddleOpenWidget = '';
-        hotspot.setAttribute(
-          'aria-label',
-          page.hotspotLabel || 'Zone interactive'
-        );
-        hotspot.style.left = `${parts[0]}%`;
-        hotspot.style.top = `${parts[1]}%`;
-        hotspot.style.width = `${parts[2]}%`;
-        hotspot.style.height = `${parts[3]}%`;
-        hostStage.appendChild(hotspot);
-      }
-
-      const zoom = document.createElement('button');
-      zoom.type = 'button';
-      zoom.className = 'enigme-media-zoom galerie-enigme__zoom-btn';
-      zoom.dataset.enigmeLightboxSrc = page.fullUrl;
-      zoom.dataset.enigmeLightboxAlt = alt;
-      zoom.setAttribute('aria-label', nativeSizeLabel);
-      const hint = document.createElement('span');
-      hint.className = 'enigme-media-zoom__hint';
-      hint.setAttribute('aria-hidden', 'true');
-      hint.textContent =
-        (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
-      zoom.appendChild(hint);
-      hostStage.appendChild(zoom);
-      figure.appendChild(hostStage);
-    } else {
-      const zoom = document.createElement('button');
-      zoom.type = 'button';
-      zoom.className = 'enigme-media-zoom';
-      zoom.dataset.enigmeLightboxSrc = page.fullUrl;
-      zoom.dataset.enigmeLightboxAlt = alt;
-      zoom.setAttribute('aria-label', nativeSizeLabel);
-      const hint = document.createElement('span');
-      hint.className = 'enigme-media-zoom__hint';
-      hint.setAttribute('aria-hidden', 'true');
-      hint.textContent =
-        (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
-      zoom.appendChild(img);
-      zoom.appendChild(hint);
-      figure.appendChild(zoom);
-    }
+    zoom.appendChild(img);
+    zoom.appendChild(hint);
+    figure.appendChild(zoom);
     if (nextNav) {
       stage.insertBefore(figure, nextNav);
     } else {
@@ -294,6 +261,41 @@
     }
   };
 
+  const mountLightboxHotspot = (dialog, image, trigger) => {
+    const zone = trigger?.getAttribute('data-riddle-hotspot-zone') || '';
+    const stepId = trigger?.getAttribute('data-riddle-hotspot-step') || '';
+    if (!zone || !stepId) {
+      return;
+    }
+
+    const parts = zone.split(/[\s,;]+/).map(Number);
+    if (parts.length !== 4 || parts.some((value) => !Number.isFinite(value))) {
+      return;
+    }
+
+    const stage = document.createElement('div');
+    stage.className = 'enigme-lightbox__hotspot-stage';
+    stage.dataset.riddleHotspotZone = zone;
+    stage.dataset.riddleHotspotStep = stepId;
+
+    image.replaceWith(stage);
+    stage.appendChild(image);
+
+    const hotspot = document.createElement('button');
+    hotspot.type = 'button';
+    hotspot.className = 'riddle-gallery-hotspot';
+    hotspot.dataset.riddleOpenWidget = '';
+    hotspot.setAttribute(
+      'aria-label',
+      trigger.getAttribute('data-riddle-hotspot-label') || 'Zone interactive'
+    );
+    hotspot.style.left = `${parts[0]}%`;
+    hotspot.style.top = `${parts[1]}%`;
+    hotspot.style.width = `${parts[2]}%`;
+    hotspot.style.height = `${parts[3]}%`;
+    stage.appendChild(hotspot);
+  };
+
   const openLightbox = (src, alt, trigger) => {
     if (!src) {
       return;
@@ -332,6 +334,7 @@
 
     dialog.appendChild(closeButton);
     dialog.appendChild(image);
+    mountLightboxHotspot(dialog, image, trigger);
     overlay.appendChild(dialog);
     document.body.appendChild(overlay);
     document.body.classList.add('no-scroll');
@@ -386,6 +389,9 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      if (document.querySelector('form.is-hotspot-widget.is-immersive-open')) {
+        return;
+      }
       closeLightbox();
       return;
     }

@@ -8515,18 +8515,16 @@ body.no-scroll {
   margin-bottom: 0;
 }
 
-/* Invisible hotspot on BD gallery pages — discovery only, no visible frame. */
-.galerie-enigme__hotspot-stage {
+/* Hotspot only inside lightbox (native size). Reading view keeps full-image zoom. */
+.enigme-lightbox__hotspot-stage {
   position: relative;
   display: inline-block;
-  max-width: 100%;
   line-height: 0;
+  max-width: none;
 }
 
-.galerie-enigme__hotspot-stage img,
-.galerie-enigme__hotspot-stage picture {
+.enigme-lightbox__hotspot-stage .enigme-lightbox__image {
   display: block;
-  max-width: 100%;
   pointer-events: none;
 }
 
@@ -8547,16 +8545,6 @@ body.no-scroll {
 .riddle-gallery-hotspot:focus-visible {
   outline: 2px solid rgba(232, 140, 90, 0.85);
   outline-offset: 2px;
-}
-
-.galerie-enigme__zoom-btn {
-  position: absolute;
-  right: var(--space-xs);
-  bottom: var(--space-xs);
-  z-index: 3;
-  width: auto;
-  margin: 0;
-  cursor: zoom-in;
 }
 
 /* Author display:flex on widget forms overrides the HTML hidden attribute. */

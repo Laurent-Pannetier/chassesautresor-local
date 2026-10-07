@@ -271,16 +271,16 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[name="reponse"]').value).toBe('');
   });
 
-  test('opens and closes the immersive hotspot widget from the gallery', () => {
+  test('opens and closes the immersive hotspot widget from the lightbox', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
-      <div data-enigme-gallery>
-        <figure class="galerie-enigme__slide is-active" data-gallery-step-id="12">
-          <div class="galerie-enigme__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
-            <img width="100" height="100">
+      <div class="enigme-lightbox-overlay">
+        <div class="enigme-lightbox">
+          <div class="enigme-lightbox__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
+            <img class="enigme-lightbox__image" width="100" height="100">
             <button type="button" class="riddle-gallery-hotspot" data-riddle-open-widget></button>
           </div>
-        </figure>
+        </div>
       </div>
       <article class="riddle-player-step is-current has-hotspot" data-player-step-id="12">
         <form class="riddle-step-directions-form is-hotspot-widget" hidden>
@@ -312,13 +312,11 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
   });
 
-  test('opens the widget when clicking inside the gallery hotspot zone', () => {
+  test('opens the widget when clicking inside the lightbox hotspot zone', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
-      <div data-enigme-gallery>
-        <div class="galerie-enigme__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
-          <img width="100" height="100">
-        </div>
+      <div class="enigme-lightbox__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
+        <img class="enigme-lightbox__image" width="100" height="100">
       </div>
       <article class="riddle-player-step is-current" data-player-step-id="12">
         <form class="riddle-step-directions-form is-hotspot-widget" hidden>
@@ -327,7 +325,7 @@ describe('riddle step player positioning', () => {
       </article>
     `;
     eval(source);
-    const image = document.querySelector('img');
+    const image = document.querySelector('.enigme-lightbox__image');
     image.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 100 });
 
     image.dispatchEvent(new MouseEvent('click', {

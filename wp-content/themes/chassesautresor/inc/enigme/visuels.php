@@ -232,17 +232,7 @@ function enigme_image_display_url(int $image_id, string $size = 'full'): string
 }
 
 /**
- * Collecte les pages BD débloquées issues des étapes intermédiaires.
- *
- * Les images d’étapes visibles (ou toutes les étapes pour un organisateur)
- * s’ajoutent aux pages de l’énigme dans la galerie principale.
- *
- * @param int $enigme_id ID de l’énigme.
- * @param int $user_id   Joueur ou organisateur courant.
- * @return array<int, array{image_id:int, step_id:int}>
- */
-/**
- * Étape courante éligible au point & click (widget masqué jusqu’au clic).
+ * Étape courante éligible au point & click (widget révélé depuis la lightbox).
  */
 function enigme_current_hotspot_step_id(int $enigme_id, int $user_id): int
 {
@@ -299,42 +289,15 @@ function enigme_step_hotspot_for_gallery(int $stepId): ?array
 }
 
 /**
- * @param array<string, mixed> $attrs
- * @param array{zone_raw: string, label: string, zone: array{x: float, y: float, w: float, h: float}} $hotspot
+ * Collecte les pages BD débloquées issues des étapes intermédiaires.
+ *
+ * Les images d’étapes visibles (ou toutes les étapes pour un organisateur)
+ * s’ajoutent aux pages de l’énigme dans la galerie principale.
+ *
+ * @param int $enigme_id ID de l’énigme.
+ * @param int $user_id   Joueur ou organisateur courant.
+ * @return array<int, array{image_id:int, step_id:int}>
  */
-function enigme_render_gallery_hotspot_slide(
-    int $image_id,
-    string $alt,
-    string $full_url,
-    array $attrs,
-    array $hotspot,
-    int $step_id
-): void {
-    $zone = $hotspot['zone'];
-    echo '<div class="galerie-enigme__hotspot-stage"'
-        . ' data-riddle-hotspot-zone="' . esc_attr($hotspot['zone_raw']) . '"'
-        . ' data-riddle-hotspot-step="' . esc_attr((string) $step_id) . '">';
-    echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
-    echo '<button type="button" class="riddle-gallery-hotspot"'
-        . ' style="' . esc_attr(sprintf(
-            'left:%s%%;top:%s%%;width:%s%%;height:%s%%;',
-            $zone['x'],
-            $zone['y'],
-            $zone['w'],
-            $zone['h']
-        )) . '"'
-        . ' data-riddle-open-widget'
-        . ' aria-label="' . esc_attr($hotspot['label']) . '"></button>';
-    echo '<button type="button" class="enigme-media-zoom galerie-enigme__zoom-btn"'
-        . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
-        . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
-        . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">'
-        . '<span class="enigme-media-zoom__hint" aria-hidden="true">'
-        . esc_html__('Agrandir', 'chassesautresor-com') . '</span>'
-        . '</button>';
-    echo '</div>';
-}
-
 function enigme_collect_step_comic_pages(int $enigme_id, int $user_id): array
 {
     if ($enigme_id <= 0 || $user_id <= 0) {
@@ -509,18 +472,20 @@ function afficher_visuels_enigme(
             . ' data-gallery-image-id="' . esc_attr((string) $image_id) . '"'
             . ($step_id > 0 ? ' data-gallery-step-id="' . esc_attr((string) $step_id) . '"' : '')
             . ($is_active ? '' : ' hidden') . '>';
-        if (is_array($hotspot)) {
-            enigme_render_gallery_hotspot_slide($image_id, $alt, $full_url, $attrs, $hotspot, $step_id);
-        } else {
-            echo '<button type="button" class="enigme-media-zoom"'
-                . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
-                . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
-                . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">';
-            echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
-            echo '<span class="enigme-media-zoom__hint" aria-hidden="true">'
-                . esc_html__('Agrandir', 'chassesautresor-com') . '</span>';
-            echo '</button>';
-        }
+        // Page BD : clic = zoom. Le hotspot n’existe que dans la lightbox 1:1.
+        echo '<button type="button" class="enigme-media-zoom"'
+            . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
+            . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
+            . (is_array($hotspot)
+                ? ' data-riddle-hotspot-zone="' . esc_attr($hotspot['zone_raw']) . '"'
+                    . ' data-riddle-hotspot-step="' . esc_attr((string) $step_id) . '"'
+                    . ' data-riddle-hotspot-label="' . esc_attr($hotspot['label']) . '"'
+                : '')
+            . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">';
+        echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
+        echo '<span class="enigme-media-zoom__hint" aria-hidden="true">'
+            . esc_html__('Agrandir', 'chassesautresor-com') . '</span>';
+        echo '</button>';
         echo '</figure>';
     }
 
