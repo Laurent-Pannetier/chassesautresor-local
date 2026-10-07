@@ -1,7 +1,6 @@
 /**
  * Viewer d’images d’énigme : feuilletage BD (vignettes + prev/next) et lightbox.
- * Sur grand écran, les pages s’affichent par planche (2 pages, comme un album).
- * Sur mobile, une seule page reste visible. Les pages d’étapes débloquées
+ * Couvre le hero (`[data-enigme-gallery]`). Les pages d’étapes débloquées
  * s’ajoutent à cette galerie (y compris via AJAX).
  *
  * La lightbox charge l’URL full et l’affiche en taille native (1:1),
@@ -16,26 +15,16 @@
     'Taille originale';
   const pageLabelTemplate =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.pageLabel) || 'Page %1$d / %2$d';
-  const spreadLabelTemplate =
-    (window.EnigmeImageViewer && window.EnigmeImageViewer.spreadLabel) ||
-    'Pages %1$d–%2$d / %3$d';
   const prevPageLabel =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.prevPageLabel) || 'Page précédente';
   const nextPageLabel =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.nextPageLabel) || 'Page suivante';
-  const prevSpreadLabel =
-    (window.EnigmeImageViewer && window.EnigmeImageViewer.prevSpreadLabel) ||
-    'Planche précédente';
-  const nextSpreadLabel =
-    (window.EnigmeImageViewer && window.EnigmeImageViewer.nextSpreadLabel) ||
-    'Planche suivante';
   const pagesListLabel =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.pagesListLabel) ||
     'Pages de l’énigme';
   const showPageLabel =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.showPageLabel) ||
     'Afficher la page %d';
-  const SPREAD_MEDIA_QUERY = '(min-width: 1024px)';
 
   const formatPageLabel = (current, total) =>
     pageLabelTemplate
@@ -43,61 +32,26 @@
       .replace('%2$d', String(total))
       .replace('%d', String(current));
 
-  const formatSpreadLabel = (left, right, total) =>
-    spreadLabelTemplate
-      .replace('%1$d', String(left))
-      .replace('%2$d', String(right))
-      .replace('%3$d', String(total));
-
   const formatShowPageLabel = (pageNumber) =>
     showPageLabel.replace('%d', String(pageNumber));
 
-  const getSpreadMediaQuery = () => window.matchMedia(SPREAD_MEDIA_QUERY);
-
-  const isSpreadViewport = () => getSpreadMediaQuery().matches;
-
-  const getSpreadStart = (index) => Math.floor(Math.max(0, index) / 2) * 2;
-
-  const getPrimaryIndex = (gallery) => {
-    const slides = [...gallery.querySelectorAll('.galerie-enigme__slide')];
-    const marked = slides.findIndex((slide) => slide.classList.contains('is-primary'));
-    if (marked >= 0) {
-      return marked;
-    }
-    return slides.findIndex((slide) => slide.classList.contains('is-active'));
-  };
-
-  const updateGalleryChrome = (gallery, activeIndex, spreadMode) => {
+  const updateGalleryChrome = (gallery, activeIndex) => {
     const slides = gallery.querySelectorAll('.galerie-enigme__slide');
     const total = slides.length;
     gallery.dataset.galleryPageCount = String(total);
-    gallery.classList.toggle('is-spread-mode', Boolean(spreadMode));
 
     const pager = gallery.querySelector('.galerie-enigme__page-label');
     if (pager && total > 0) {
-      if (spreadMode) {
-        const left = getSpreadStart(activeIndex) + 1;
-        const right = Math.min(getSpreadStart(activeIndex) + 2, total);
-        pager.textContent =
-          right > left ? formatSpreadLabel(left, right, total) : formatPageLabel(left, total);
-      } else {
-        pager.textContent = formatPageLabel(activeIndex + 1, total);
-      }
+      pager.textContent = formatPageLabel(activeIndex + 1, total);
     }
 
     const prev = gallery.querySelector('.galerie-enigme__nav--prev');
     const next = gallery.querySelector('.galerie-enigme__nav--next');
-    const spreadStart = getSpreadStart(activeIndex);
-    const lastSpreadStart = getSpreadStart(Math.max(total - 1, 0));
     if (prev) {
-      prev.disabled = spreadMode ? spreadStart <= 0 : activeIndex <= 0;
-      prev.setAttribute('aria-label', spreadMode ? prevSpreadLabel : prevPageLabel);
+      prev.disabled = activeIndex <= 0;
     }
     if (next) {
-      next.disabled = spreadMode
-        ? spreadStart >= lastSpreadStart
-        : activeIndex >= total - 1;
-      next.setAttribute('aria-label', spreadMode ? nextSpreadLabel : nextPageLabel);
+      next.disabled = activeIndex >= total - 1;
     }
   };
 
@@ -159,31 +113,16 @@
     }
 
     const target = Math.max(0, Math.min(index, slides.length - 1));
-    const spreadMode = isSpreadViewport() && slides.length > 1;
-    const spreadStart = getSpreadStart(target);
-    const spreadEnd = spreadStart + 1;
 
     slides.forEach((slide, slideIndex) => {
-      const inSpread =
-        spreadMode && (slideIndex === spreadStart || slideIndex === spreadEnd);
-      const isVisible = spreadMode ? inSpread : slideIndex === target;
-      const isPrimary = slideIndex === target;
-
-      slide.classList.toggle('is-active', isVisible);
-      slide.classList.toggle('is-primary', isPrimary);
-      slide.classList.toggle('is-spread-left', spreadMode && slideIndex === spreadStart);
-      slide.classList.toggle('is-spread-right', spreadMode && slideIndex === spreadEnd);
-      slide.classList.toggle(
-        'is-spread-solo',
-        spreadMode && isVisible && slideIndex === spreadStart && spreadEnd >= slides.length
-      );
-      slide.hidden = !isVisible;
+      const isActive = slideIndex === target;
+      slide.classList.toggle('is-active', isActive);
+      slide.hidden = !isActive;
       slide.dataset.galleryIndex = String(slideIndex);
-
       const img = slide.querySelector('img');
       if (img) {
-        img.classList.toggle('image-active', isPrimary);
-        if (isPrimary) {
+        img.classList.toggle('image-active', isActive);
+        if (isActive) {
           img.id = 'image-enigme-active';
         } else if (img.id === 'image-enigme-active') {
           img.removeAttribute('id');
@@ -192,34 +131,13 @@
     });
 
     thumbs.forEach((thumb) => {
-      const thumbIndex = Number(thumb.dataset.galleryGoto);
-      const inSpread =
-        spreadMode && (thumbIndex === spreadStart || thumbIndex === spreadEnd);
-      const isSelected = spreadMode ? inSpread : thumbIndex === target;
-      thumb.classList.toggle('is-active', isSelected);
-      thumb.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+      const isActive = Number(thumb.dataset.galleryGoto) === target;
+      thumb.classList.toggle('is-active', isActive);
+      thumb.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
-    updateGalleryChrome(gallery, target, spreadMode);
+    updateGalleryChrome(gallery, target);
     return target;
-  };
-
-  const stepGallery = (gallery, direction) => {
-    const slides = gallery.querySelectorAll('.galerie-enigme__slide');
-    if (!slides.length) {
-      return -1;
-    }
-    const spreadMode = isSpreadViewport() && slides.length > 1;
-    const current = getPrimaryIndex(gallery);
-    const base = current >= 0 ? current : 0;
-    const step = spreadMode ? 2 : 1;
-    const from = spreadMode ? getSpreadStart(base) : base;
-    return selectGallerySlide(gallery, from + direction * step);
-  };
-
-  const refreshGalleryLayout = (gallery) => {
-    const current = getPrimaryIndex(gallery);
-    selectGallerySlide(gallery, current >= 0 ? current : 0);
   };
 
   const appendGalleryPage = (page) => {
@@ -321,9 +239,6 @@
   window.EnigmeGallery = {
     selectSlide: (gallery, index) => selectGallerySlide(gallery, index),
     appendPage: appendGalleryPage,
-    step: stepGallery,
-    refreshLayout: refreshGalleryLayout,
-    isSpreadViewport,
     getGallery: () => document.querySelector('[data-enigme-gallery]'),
   };
 
@@ -399,8 +314,10 @@
         return;
       }
       event.preventDefault();
-      const direction = Number(stepButton.dataset.galleryStep || 0) < 0 ? -1 : 1;
-      stepGallery(gallery, direction);
+      const current = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
+        (slide) => slide.classList.contains('is-active')
+      );
+      selectGallerySlide(gallery, current + Number(stepButton.dataset.galleryStep || 0));
       return;
     }
 
@@ -452,24 +369,19 @@
       return;
     }
 
-    stepGallery(gallery, event.key === 'ArrowLeft' ? -1 : 1);
+    const current = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
+      (slide) => slide.classList.contains('is-active')
+    );
+    const delta = event.key === 'ArrowLeft' ? -1 : 1;
+    selectGallerySlide(gallery, current + delta);
   });
 
   document.querySelectorAll('[data-enigme-gallery]').forEach((gallery) => {
-    refreshGalleryLayout(gallery);
+    const active = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
+      (slide) => slide.classList.contains('is-active')
+    );
+    updateGalleryChrome(gallery, active >= 0 ? active : 0);
   });
-
-  const spreadMedia = getSpreadMediaQuery();
-  const onSpreadMediaChange = () => {
-    document.querySelectorAll('[data-enigme-gallery]').forEach((gallery) => {
-      refreshGalleryLayout(gallery);
-    });
-  };
-  if (typeof spreadMedia.addEventListener === 'function') {
-    spreadMedia.addEventListener('change', onSpreadMediaChange);
-  } else if (typeof spreadMedia.addListener === 'function') {
-    spreadMedia.addListener(onSpreadMediaChange);
-  }
 
   const noticeConfig = window.EnigmeImageViewer || {};
   let noticeTimer = null;
