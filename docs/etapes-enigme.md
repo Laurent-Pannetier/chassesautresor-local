@@ -13,7 +13,7 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Nom interne | `post_title` | Repère obligatoire réservé à l’organisateur, jamais affiché au joueur. |
 | Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
 | Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
-| Image | `etape_image` | Page BD facultative (A4), stockée sous forme d’identifiant de média. Une fois débloquée, elle s’ajoute à la galerie de l’énigme comme page supplémentaire, plutôt que d’apparaître sous les visuels. |
+| Image | `etape_image` | Page BD facultative (A4), stockée sous forme d’identifiant de média. Une fois débloquée, elle s’ajoute à la galerie de l’énigme comme page supplémentaire, plutôt que d’apparaître sous les visuels. Sur grand écran, la galerie feuillette par planche (deux pages), comme un album ; sur mobile, une seule page reste visible. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
 Une étape enregistrée exige toujours un nom interne. Simple clic et Réponse texte exigent également au moins un texte

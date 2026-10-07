@@ -10,12 +10,24 @@ const source = fs.readFileSync(
 );
 
 describe('enigme image viewer', () => {
+  let matchMediaMatches;
+
   beforeEach(() => {
+    matchMediaMatches = false;
+    window.matchMedia = jest.fn().mockImplementation((query) => ({
+      matches: matchMediaMatches && query.includes('1024px'),
+      media: query,
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+    }));
+
     document.body.innerHTML = `
       <div class="galerie-enigme-wrapper" data-enigme-gallery id="galerie-enigme-1" data-gallery-page-count="2">
         <div class="galerie-enigme__stage">
           <button type="button" class="galerie-enigme__nav galerie-enigme__nav--prev" data-gallery-step="-1">‹</button>
-          <figure class="galerie-enigme__slide is-active" data-gallery-index="0">
+          <figure class="galerie-enigme__slide is-active is-primary" data-gallery-index="0">
             <button type="button" data-enigme-lightbox-src="full-1.jpg" data-enigme-lightbox-alt="One">
               <img class="image-active" id="image-enigme-active" src="preview-1.jpg" alt="One">
             </button>
@@ -49,6 +61,9 @@ describe('enigme image viewer', () => {
       closeLabel: 'Fermer',
       nativeSizeLabel: 'Image en taille originale',
       pageLabel: 'Page %1$d / %2$d',
+      spreadLabel: 'Pages %1$d–%2$d / %3$d',
+      prevSpreadLabel: 'Planche précédente',
+      nextSpreadLabel: 'Planche suivante',
       zoomHint: 'Agrandir',
     };
     eval(source);
@@ -116,6 +131,55 @@ describe('enigme image viewer', () => {
     document.querySelector('.galerie-enigme__nav--prev').click();
     expect(document.querySelector('[data-gallery-index="0"]').classList.contains('is-active')).toBe(
       true
+    );
+  });
+
+  test('shows a two-page spread on wide viewports and steps by spread', () => {
+    matchMediaMatches = true;
+    document.body.innerHTML = `
+      <div class="galerie-enigme-wrapper" data-enigme-gallery id="galerie-enigme-spread">
+        <div class="galerie-enigme__stage">
+          <button type="button" class="galerie-enigme__nav galerie-enigme__nav--prev" data-gallery-step="-1">‹</button>
+          <figure class="galerie-enigme__slide is-active is-primary" data-gallery-index="0">
+            <img id="image-enigme-active" src="p1.jpg" alt="">
+          </figure>
+          <figure class="galerie-enigme__slide" data-gallery-index="1" hidden>
+            <img src="p2.jpg" alt="">
+          </figure>
+          <figure class="galerie-enigme__slide" data-gallery-index="2" hidden>
+            <img src="p3.jpg" alt="">
+          </figure>
+          <button type="button" class="galerie-enigme__nav galerie-enigme__nav--next" data-gallery-step="1">›</button>
+        </div>
+        <div class="galerie-enigme__pager"><span class="galerie-enigme__page-label"></span></div>
+        <div class="galerie-enigme__thumbs">
+          <button type="button" class="galerie-enigme__thumb" data-gallery-goto="0"></button>
+          <button type="button" class="galerie-enigme__thumb" data-gallery-goto="1"></button>
+          <button type="button" class="galerie-enigme__thumb" data-gallery-goto="2"></button>
+        </div>
+      </div>
+    `;
+    eval(source);
+
+    const gallery = document.querySelector('[data-enigme-gallery]');
+    const slides = [...gallery.querySelectorAll('.galerie-enigme__slide')];
+    expect(gallery.classList.contains('is-spread-mode')).toBe(true);
+    expect(slides[0].hidden).toBe(false);
+    expect(slides[1].hidden).toBe(false);
+    expect(slides[2].hidden).toBe(true);
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe(
+      'Pages 1–2 / 3'
+    );
+
+    document.querySelector('.galerie-enigme__nav--next').click();
+    expect(slides[0].hidden).toBe(true);
+    expect(slides[1].hidden).toBe(true);
+    expect(slides[2].hidden).toBe(false);
+    expect(slides[2].classList.contains('is-spread-solo')).toBe(true);
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 3 / 3');
+    expect(document.querySelector('.galerie-enigme__nav--next').disabled).toBe(true);
+    expect(document.querySelector('.galerie-enigme__nav--next').getAttribute('aria-label')).toBe(
+      'Planche suivante'
     );
   });
 

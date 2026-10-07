@@ -389,7 +389,8 @@ function afficher_visuels_enigme(
 
         $attrs = [
             'class' => $classes,
-            'sizes' => '(min-width:1025px) 920px, 100vw',
+            // Planche (2 pages) dès le desktop : chaque page ~50vw / ~640px.
+            'sizes' => '(min-width:1024px) 640px, 100vw',
         ];
 
         if ($is_active) {
