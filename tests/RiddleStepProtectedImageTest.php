@@ -13,6 +13,8 @@ final class RiddleStepProtectedImageTest extends TestCase {
 
         self::assertStringContainsString("site_url('/voir-image-enigme')", $source);
         self::assertStringContainsString('cta_voir_image_enigme_url', $source);
+        self::assertStringContainsString('data-step-page-preview', $source);
+        self::assertStringNotContainsString('riddle-player-step__image', $source);
         self::assertStringNotContainsString('wp_get_attachment_image($imageId', $source);
     }
 

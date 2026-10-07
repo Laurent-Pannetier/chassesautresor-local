@@ -118,7 +118,13 @@ describe('riddle step player positioning', () => {
 
   test('adds the unlocked step without reloading the page', async () => {
     window.sessionStorage.clear();
+    const appendPage = jest.fn().mockReturnValue(1);
+    window.EnigmeGallery = {
+      appendPage,
+      getGallery: () => document.querySelector('[data-enigme-gallery]'),
+    };
     document.body.innerHTML = `
+      <div class="galerie-enigme-wrapper" data-enigme-gallery></div>
       <section class="riddle-steps-player">
         <article class="riddle-player-step is-current" data-player-step-id="1">
           <div class="riddle-player-step__content"><p>&nbsp;</p></div>
@@ -139,7 +145,15 @@ describe('riddle step player positioning', () => {
           response_html: `
             <section class="riddle-steps-player">
               <article class="riddle-player-step is-completed" data-player-step-id="1"></article>
-              <article class="riddle-player-step is-current" data-player-step-id="2">Next</article>
+              <article
+                class="riddle-player-step is-current"
+                data-player-step-id="2"
+                data-step-page-image-id="99"
+                data-step-page-preview="preview.jpg"
+                data-step-page-full="full.jpg"
+                data-step-page-thumb="thumb.jpg"
+                data-step-page-alt="Page"
+              >Next</article>
             </section>
           `
         }
@@ -155,7 +169,18 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
     expect(document.activeElement).toBe(document.querySelector('[data-player-step-id="2"]'));
     expect(document.activeElement.getAttribute('tabindex')).toBe('-1');
+    expect(appendPage).toHaveBeenCalledWith({
+      imageId: '99',
+      stepId: '2',
+      previewUrl: 'preview.jpg',
+      fullUrl: 'full.jpg',
+      thumbUrl: 'thumb.jpg',
+      alt: 'Page',
+    });
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(Element.prototype.scrollIntoView.mock.instances[0]).toBe(
+      document.querySelector('[data-enigme-gallery]')
+    );
   });
 
   test('adds and initializes the final answer after the last step', async () => {

@@ -12,8 +12,9 @@ const source = fs.readFileSync(
 describe('enigme image viewer', () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <div class="galerie-enigme-wrapper" data-enigme-gallery>
+      <div class="galerie-enigme-wrapper" data-enigme-gallery id="galerie-enigme-1" data-gallery-page-count="2">
         <div class="galerie-enigme__stage">
+          <button type="button" class="galerie-enigme__nav galerie-enigme__nav--prev" data-gallery-step="-1">‹</button>
           <figure class="galerie-enigme__slide is-active" data-gallery-index="0">
             <button type="button" data-enigme-lightbox-src="full-1.jpg" data-enigme-lightbox-alt="One">
               <img class="image-active" id="image-enigme-active" src="preview-1.jpg" alt="One">
@@ -24,6 +25,10 @@ describe('enigme image viewer', () => {
               <img src="preview-2.jpg" alt="Two">
             </button>
           </figure>
+          <button type="button" class="galerie-enigme__nav galerie-enigme__nav--next" data-gallery-step="1">›</button>
+        </div>
+        <div class="galerie-enigme__pager" aria-live="polite">
+          <span class="galerie-enigme__page-label">Page 1 / 2</span>
         </div>
         <div class="galerie-enigme__thumbs" role="tablist">
           <button type="button" class="galerie-enigme__thumb is-active" data-gallery-goto="0" aria-selected="true">1</button>
@@ -42,7 +47,9 @@ describe('enigme image viewer', () => {
     document.body.className = '';
     window.EnigmeImageViewer = {
       closeLabel: 'Fermer',
-      nativeSizeLabel: 'Image en taille originale'
+      nativeSizeLabel: 'Image en taille originale',
+      pageLabel: 'Page %1$d / %2$d',
+      zoomHint: 'Agrandir',
     };
     eval(source);
   });
@@ -78,6 +85,38 @@ describe('enigme image viewer', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
     expect(document.body.classList.contains('no-scroll')).toBe(false);
+  });
+
+  test('appends an unlocked step page into the comic gallery and selects it', () => {
+    window.EnigmeImageViewer.pageLabel = 'Page %1$d / %2$d';
+    const index = window.EnigmeGallery.appendPage({
+      imageId: 99,
+      stepId: 7,
+      previewUrl: 'step-preview.jpg',
+      fullUrl: 'step-full.jpg',
+      thumbUrl: 'step-thumb.jpg',
+      alt: 'Nouvelle page',
+    });
+
+    expect(index).toBe(2);
+    const slides = document.querySelectorAll('.galerie-enigme__slide');
+    expect(slides).toHaveLength(3);
+    expect(slides[2].classList.contains('is-active')).toBe(true);
+    expect(slides[2].dataset.galleryStepId).toBe('7');
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 3 / 3');
+    expect(document.querySelector('.galerie-enigme__nav--next').disabled).toBe(true);
+  });
+
+  test('turns pages with previous/next controls', () => {
+    document.querySelector('[data-gallery-goto="1"]').click();
+    expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(
+      true
+    );
+
+    document.querySelector('.galerie-enigme__nav--prev').click();
+    expect(document.querySelector('[data-gallery-index="0"]').classList.contains('is-active')).toBe(
+      true
+    );
   });
 
   test('shows an ephemeral escape-game wrong-answer notice', () => {
