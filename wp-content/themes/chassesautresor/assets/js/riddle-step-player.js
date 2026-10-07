@@ -241,18 +241,45 @@ const findHotspotWidgetForm = (stepId = '') => {
       `.riddle-player-step[data-player-step-id="${stepId}"] form.is-hotspot-widget`
     );
     if (byStep) return byStep;
+    const portaled = [...document.querySelectorAll('form.is-hotspot-widget')].find(form => (
+      form.querySelector(`input[name="etape_id"][value="${stepId}"]`)
+    ));
+    if (portaled) return portaled;
   }
-  return document.querySelector('.riddle-player-step.is-current form.is-hotspot-widget');
+  return document.querySelector('.riddle-player-step.is-current form.is-hotspot-widget')
+    || document.querySelector('form.is-hotspot-widget.is-immersive-open');
+};
+
+const resolveStepArticleForForm = form => {
+  const nested = form.closest('.riddle-player-step');
+  if (nested) return nested;
+
+  const home = hotspotHomes.get(form);
+  if (home?.parent?.closest) {
+    const fromHome = home.parent.closest('.riddle-player-step');
+    if (fromHome) return fromHome;
+  }
+
+  const stepId = form.querySelector('input[name="etape_id"]')?.value || '';
+  if (!stepId) return null;
+  return document.querySelector(`.riddle-player-step[data-player-step-id="${stepId}"]`);
+};
+
+const closeLightboxIfOpen = () => {
+  document.querySelector('.enigme-lightbox-overlay')?.remove();
+  document.body.classList.remove('no-scroll');
 };
 
 const unlockRiddleStepContent = (form, data) => {
   if (!data.response_html) return null;
   const parsed = new DOMParser().parseFromString(data.response_html, 'text/html');
-  const currentArticle = form.closest('.riddle-player-step');
-  const player = currentArticle?.closest('.riddle-steps-player');
+  const currentArticle = resolveStepArticleForForm(form);
+  const player = currentArticle?.closest('.riddle-steps-player')
+    || document.querySelector('.riddle-steps-player');
   if (!currentArticle || !player) return null;
 
   closeImmersiveWidget(form);
+  closeLightboxIfOpen();
   form.remove();
   currentArticle.classList.remove('is-current');
   currentArticle.classList.add('is-completed');
