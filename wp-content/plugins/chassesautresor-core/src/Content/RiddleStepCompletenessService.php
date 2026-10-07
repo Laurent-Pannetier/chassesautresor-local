@@ -50,13 +50,24 @@ final class RiddleStepCompletenessService {
         }
 
         $requiresContent = in_array($widget, ['click', 'text'], true);
+        $imageId = (int) $getField('etape_image', $stepId);
         $content = (new RiddleStepContentService())->validate(
             (string) $getTitle($stepId),
             (string) $getField('etape_contenu', $stepId),
-            (int) $getField('etape_image', $stepId),
+            $imageId,
             $requiresContent
         );
+        if (is_wp_error($content)) {
+            return false;
+        }
 
-        return !is_wp_error($content);
+        $hotspot = (new RiddleStepHotspotService())->validate(
+            (string) ($getField('etape_widget_affichage', $stepId) ?: RiddleStepHotspotService::MODE_ALWAYS),
+            (string) ($getField('etape_hotspot_zone', $stepId) ?: ''),
+            (string) ($getField('etape_hotspot_label', $stepId) ?: ''),
+            $imageId
+        );
+
+        return !is_wp_error($hotspot);
     }
 }

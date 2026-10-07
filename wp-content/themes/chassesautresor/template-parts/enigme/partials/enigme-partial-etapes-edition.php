@@ -139,6 +139,48 @@ if ($riddleId > 0) {
           ); ?>
         </p>
       </div>
+      <fieldset class="riddle-step-form__field riddle-step-hotspot-editor">
+        <legend><?= esc_html__('Affichage du widget', 'chassesautresor-com'); ?></legend>
+        <label for="riddle-step-widget-affichage">
+          <?= esc_html__('Mode d’affichage', 'chassesautresor-com'); ?>
+        </label>
+        <select id="riddle-step-widget-affichage" name="widget_affichage">
+          <option value="always"><?= esc_html__('Toujours visible', 'chassesautresor-com'); ?></option>
+          <option value="hotspot"><?= esc_html__('Sur clic dans l’image', 'chassesautresor-com'); ?></option>
+        </select>
+        <p class="txt-small">
+          <?= esc_html__(
+              'En mode point & click, le joueur doit cliquer une zone de l’image pour ouvrir le widget.',
+              'chassesautresor-com'
+          ); ?>
+        </p>
+        <div class="riddle-step-hotspot-editor__canvas" hidden>
+          <p class="txt-small">
+            <?= esc_html__(
+                'Cliquez-glissez sur l’image pour dessiner la zone cliquable (molette, serrure, etc.).',
+                'chassesautresor-com'
+            ); ?>
+          </p>
+          <div class="riddle-step-hotspot-editor__stage">
+            <img class="riddle-step-hotspot-editor__image" alt="" hidden>
+            <div class="riddle-step-hotspot-editor__zone" hidden></div>
+          </div>
+          <input type="hidden" name="hotspot_zone" value="">
+          <label for="riddle-step-hotspot-label">
+            <?= esc_html__('Libellé d’accessibilité', 'chassesautresor-com'); ?>
+          </label>
+          <input
+            id="riddle-step-hotspot-label"
+            name="hotspot_label"
+            type="text"
+            maxlength="80"
+            value="<?= esc_attr__('Ouvrir le mécanisme', 'chassesautresor-com'); ?>"
+          >
+          <button type="button" class="bouton-texte riddle-step-hotspot-clear" hidden>
+            <?= esc_html__('Effacer la zone', 'chassesautresor-com'); ?>
+          </button>
+        </div>
+      </fieldset>
       <?php if (!$structureLocked) : ?>
         <?php $widgetDefinitions = (new ChassesAuTresor\Core\Progress\AnswerWidgetEditorViewService())->widgets(); ?>
         <fieldset class="riddle-step-form__field">

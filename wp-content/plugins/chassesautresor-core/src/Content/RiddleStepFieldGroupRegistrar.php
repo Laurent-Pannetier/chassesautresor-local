@@ -87,6 +87,47 @@ final class RiddleStepFieldGroupRegistrar {
                 'mime_types' => 'jpg,jpeg,png,webp,gif',
             ],
             [
+                'key' => 'field_etape_widget_affichage',
+                'label' => __('Affichage du widget', 'chassesautresor-com'),
+                'name' => 'etape_widget_affichage',
+                'type' => 'select',
+                'instructions' => __(
+                    'Toujours visible sous l’image, ou révélé après un clic sur une zone de l’image.',
+                    'chassesautresor-com'
+                ),
+                'required' => true,
+                'choices' => [
+                    'always' => __('Toujours visible', 'chassesautresor-com'),
+                    'hotspot' => __('Sur clic dans l’image', 'chassesautresor-com'),
+                ],
+                'default_value' => 'always',
+                'return_format' => 'value',
+            ],
+            [
+                'key' => 'field_etape_hotspot_zone',
+                'label' => __('Zone cliquable', 'chassesautresor-com'),
+                'name' => 'etape_hotspot_zone',
+                'type' => 'text',
+                'instructions' => __(
+                    'Coordonnées en pourcentage : x,y,largeur,hauteur (ex. 40,55,20,25).',
+                    'chassesautresor-com'
+                ),
+                'required' => false,
+            ],
+            [
+                'key' => 'field_etape_hotspot_label',
+                'label' => __('Libellé de la zone cliquable', 'chassesautresor-com'),
+                'name' => 'etape_hotspot_label',
+                'type' => 'text',
+                'instructions' => __(
+                    'Texte d’accessibilité et bouton de secours pour ouvrir le widget.',
+                    'chassesautresor-com'
+                ),
+                'required' => false,
+                'default_value' => __('Ouvrir le mécanisme', 'chassesautresor-com'),
+                'maxlength' => 80,
+            ],
+            [
                 'key' => 'field_etape_reponse_widget',
                 'label' => __('Mode de réponse', 'chassesautresor-com'),
                 'name' => 'etape_reponse_widget',

@@ -243,4 +243,33 @@ describe('riddle step player positioning', () => {
     document.querySelector('.riddle-directions-reset').click();
     expect(document.querySelector('[name="reponse"]').value).toBe('');
   });
+
+  test('opens and closes the immersive hotspot widget', () => {
+    window.sessionStorage.clear();
+    document.body.innerHTML = `
+      <article class="riddle-player-step is-current has-hotspot">
+        <button type="button" data-riddle-open-widget>Open</button>
+        <form class="riddle-step-safe_dial-form is-hotspot-widget" hidden>
+          <button type="button" data-riddle-close-widget>Close</button>
+          <div class="riddle-safe" tabindex="0"></div>
+          <button type="submit">Validate</button>
+        </form>
+      </article>
+    `;
+    global.RiddleStepPlayer = { closeWidgetLabel: 'Close' };
+    eval(source);
+
+    document.querySelector('[data-riddle-open-widget]').click();
+    const form = document.querySelector('form.is-hotspot-widget');
+    expect(form.hidden).toBe(false);
+    expect(form.classList.contains('is-immersive-open')).toBe(true);
+    expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(true);
+    expect(document.querySelector('.riddle-widget-immersive-backdrop')).not.toBeNull();
+
+    document.querySelector('[data-riddle-close-widget]').click();
+    expect(form.hidden).toBe(true);
+    expect(form.classList.contains('is-immersive-open')).toBe(false);
+    expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(false);
+    expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
+  });
 });

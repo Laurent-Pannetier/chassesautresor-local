@@ -41,6 +41,9 @@ final class RiddleStepFieldGroupRegistrarTest extends TestCase {
                 'etape_enigme_associee',
                 'etape_contenu',
                 'etape_image',
+                'etape_widget_affichage',
+                'etape_hotspot_zone',
+                'etape_hotspot_label',
                 'etape_reponse_widget',
                 'etape_gps_coordinates',
                 'etape_gps_tolerance',
@@ -55,6 +58,10 @@ final class RiddleStepFieldGroupRegistrarTest extends TestCase {
                 'etape_reponses_variantes',
             ],
             array_keys($fields)
+        );
+        self::assertSame(
+            ['always', 'hotspot'],
+            array_keys($fields['etape_widget_affichage']['choices'])
         );
         self::assertSame(
             ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'],

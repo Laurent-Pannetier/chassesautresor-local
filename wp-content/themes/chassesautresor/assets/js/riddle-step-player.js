@@ -55,10 +55,15 @@ const playPianoNote = (note, delay = 0, key = null) => {
 const initializeGpsWidgets = root => {
   if (typeof window.L === 'undefined' || !root) return;
   const forms = [];
-  if (root.matches?.('.riddle-step-gps-form:not([data-map-ready])')) {
+  const canInit = form => !(
+    form.classList.contains('is-hotspot-widget') && !form.classList.contains('is-immersive-open')
+  );
+  if (root.matches?.('.riddle-step-gps-form:not([data-map-ready])') && canInit(root)) {
     forms.push(root);
   }
-  root.querySelectorAll?.('.riddle-step-gps-form:not([data-map-ready])').forEach(form => forms.push(form));
+  root.querySelectorAll?.('.riddle-step-gps-form:not([data-map-ready])').forEach(form => {
+    if (canInit(form)) forms.push(form);
+  });
   forms.forEach(form => {
     const container = form.querySelector('.riddle-gps__map');
     const latitude = form.querySelector('.riddle-gps__latitude');
@@ -136,6 +141,34 @@ const positionRiddleStepTarget = async target => {
   window.requestAnimationFrame(() => window.requestAnimationFrame(() => position('auto')));
 };
 
+const closeImmersiveWidget = form => {
+  if (!form?.classList.contains('is-hotspot-widget')) return;
+  form.hidden = true;
+  form.classList.remove('is-immersive-open');
+  document.body.classList.remove('riddle-widget-immersive-open');
+  const backdrop = document.querySelector('.riddle-widget-immersive-backdrop');
+  backdrop?.remove();
+};
+
+const openImmersiveWidget = form => {
+  if (!form?.classList.contains('is-hotspot-widget')) return;
+  let backdrop = document.querySelector('.riddle-widget-immersive-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.className = 'riddle-widget-immersive-backdrop';
+    backdrop.addEventListener('click', () => closeImmersiveWidget(form));
+    document.body.appendChild(backdrop);
+  }
+  form.hidden = false;
+  form.classList.add('is-immersive-open');
+  document.body.classList.add('riddle-widget-immersive-open');
+  initializeGpsWidgets(form);
+  const focusTarget = form.querySelector(
+    '.riddle-safe, .riddle-direction, .riddle-color, .riddle-number, .riddle-piano__key, input:not([type="hidden"]), button[type="submit"]'
+  );
+  focusTarget?.focus?.({ preventScroll: true });
+};
+
 const unlockRiddleStepContent = (form, data) => {
   if (!data.response_html) return null;
   const parsed = new DOMParser().parseFromString(data.response_html, 'text/html');
@@ -143,6 +176,7 @@ const unlockRiddleStepContent = (form, data) => {
   const player = currentArticle?.closest('.riddle-steps-player');
   if (!currentArticle || !player) return null;
 
+  closeImmersiveWidget(form);
   form.remove();
   currentArticle.classList.remove('is-current');
   currentArticle.classList.add('is-completed');
@@ -188,6 +222,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.history.scrollRestoration = 'manual';
   window.sessionStorage.removeItem('riddleStepScrollTarget');
   await positionRiddleStepTarget(target);
+});
+
+document.addEventListener('click', event => {
+  const openTrigger = event.target.closest('[data-riddle-open-widget]');
+  if (openTrigger) {
+    event.preventDefault();
+    event.stopPropagation();
+    const article = openTrigger.closest('.riddle-player-step');
+    const form = article?.querySelector('form.is-hotspot-widget');
+    if (form) openImmersiveWidget(form);
+    return;
+  }
+
+  const closeTrigger = event.target.closest('[data-riddle-close-widget]');
+  if (closeTrigger) {
+    event.preventDefault();
+    const form = closeTrigger.closest('form.is-hotspot-widget');
+    if (form) closeImmersiveWidget(form);
+  }
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  const openForm = document.querySelector('form.is-hotspot-widget.is-immersive-open');
+  if (openForm) {
+    event.preventDefault();
+    closeImmersiveWidget(openForm);
+  }
 });
 
 document.addEventListener('submit', async event => {

@@ -4436,6 +4436,55 @@ a.addtoany_share span {
   border-radius: 6px;
 }
 
+.riddle-step-hotspot-editor__canvas {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.riddle-step-hotspot-editor__canvas[hidden] {
+  display: none;
+}
+
+.riddle-step-hotspot-editor__stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  touch-action: none;
+  cursor: crosshair;
+  border: 1px solid var(--color-editor-border);
+  border-radius: 6px;
+  overflow: hidden;
+  line-height: 0;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.riddle-step-hotspot-editor__image {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  max-height: 320px;
+  height: auto;
+}
+
+.riddle-step-hotspot-editor__image[hidden] {
+  display: none;
+}
+
+.riddle-step-hotspot-editor__zone {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid var(--color-primary);
+  border-radius: 4px;
+  background: rgba(232, 140, 90, 0.28);
+  pointer-events: none;
+}
+
+.riddle-step-hotspot-editor__zone[hidden] {
+  display: none;
+}
+
 .riddle-step-form__feedback {
   min-height: 1.5em;
   margin: 0;
@@ -8407,6 +8456,168 @@ body.no-scroll {
 
 .riddle-player-step__zoom .riddle-player-step__image {
   margin-bottom: 0;
+}
+
+.riddle-player-step__media {
+  display: grid;
+  gap: var(--space-xs);
+  justify-items: center;
+  margin: 0 0 var(--space-md);
+}
+
+.riddle-player-step__stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+}
+
+.riddle-player-step__stage .riddle-player-step__image {
+  margin: 0;
+}
+
+.riddle-player-step__hotspot {
+  position: absolute;
+  z-index: 2;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.riddle-player-step__hotspot::after {
+  content: "";
+  position: absolute;
+  inset: 18%;
+  border-radius: inherit;
+  border: 2px solid rgba(232, 140, 90, 0.75);
+  box-shadow: 0 0 0 0 rgba(232, 140, 90, 0.35);
+  animation: riddle-hotspot-pulse 2.2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .riddle-player-step__hotspot::after {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(232, 140, 90, 0.35);
+  }
+}
+@keyframes riddle-hotspot-pulse {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.95;
+    box-shadow: 0 0 0 0 rgba(232, 140, 90, 0.45);
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 0.35;
+    box-shadow: 0 0 0 12px rgba(232, 140, 90, 0);
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(232, 140, 90, 0);
+  }
+}
+.riddle-player-step__hotspot:hover,
+.riddle-player-step__hotspot:focus-visible {
+  border-color: rgba(232, 140, 90, 0.9);
+  background: rgba(232, 140, 90, 0.12);
+  outline: none;
+}
+
+.riddle-player-step__zoom-btn {
+  position: absolute;
+  right: var(--space-xs);
+  bottom: var(--space-xs);
+  z-index: 3;
+  width: auto;
+  margin: 0;
+  cursor: zoom-in;
+}
+
+.riddle-player-step__a11y-open {
+  margin: 0;
+}
+
+.riddle-widget-immersive-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10020;
+  background: rgba(8, 10, 16, 0.72);
+}
+
+body.riddle-widget-immersive-open {
+  overflow: hidden;
+}
+
+form.is-hotspot-widget.is-immersive-open {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10021;
+  display: grid;
+  gap: var(--space-sm);
+  width: min(100% - 2rem, 28rem);
+  max-height: min(90vh, 40rem);
+  overflow: auto;
+  padding: var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(28, 34, 48, 0.98), rgba(14, 18, 28, 0.96));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -50%);
+  animation: riddle-widget-rise 0.28s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  form.is-hotspot-widget.is-immersive-open {
+    animation: none;
+  }
+}
+@keyframes riddle-widget-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 12px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+.riddle-widget-immersive__chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.riddle-widget-immersive__title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.riddle-widget-immersive__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.riddle-widget-immersive__close:hover,
+.riddle-widget-immersive__close:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  outline: none;
 }
 
 .riddle-player-step__status {

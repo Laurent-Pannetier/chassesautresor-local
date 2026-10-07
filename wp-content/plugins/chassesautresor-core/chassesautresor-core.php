@@ -245,6 +245,7 @@ require_once __DIR__ . '/src/Content/RiddleFinalAnswerWidgetAjaxHandler.php';
 require_once __DIR__ . '/src/Content/RiddleStepQueryService.php';
 require_once __DIR__ . '/src/Content/RiddleStepCreationService.php';
 require_once __DIR__ . '/src/Content/RiddleStepContentService.php';
+require_once __DIR__ . '/src/Content/RiddleStepHotspotService.php';
 require_once __DIR__ . '/src/Content/RiddleStepCompletenessService.php';
 require_once __DIR__ . '/src/Content/RiddleStepStructureLockService.php';
 require_once __DIR__ . '/src/Content/RiddleStepOrderingService.php';

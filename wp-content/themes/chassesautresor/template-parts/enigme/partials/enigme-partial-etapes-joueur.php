@@ -33,6 +33,8 @@ if ($riddleId <= 0 || $visibleIds === []) {
     $hasImage = $imageId > 0;
     $hasText = $hasTextContent || $hasEmbeddedContent;
     $isWidgetOnly = !$completed && !$hasImage && !$hasText;
+    $hotspot = (new ChassesAuTresor\Core\Content\RiddleStepHotspotService())->forStep($stepId);
+    $useHotspot = !$completed && $stepId === $currentId && !empty($hotspot['active']);
     $stepClasses = 'riddle-player-step';
     $stepClasses .= $completed ? ' is-completed' : ' is-current';
     if ($hasImage) {
@@ -43,6 +45,9 @@ if ($riddleId <= 0 || $visibleIds === []) {
     }
     if ($isWidgetOnly) {
         $stepClasses .= ' is-widget-only';
+    }
+    if ($useHotspot) {
+        $stepClasses .= ' has-hotspot';
     }
     ?>
     <article
@@ -65,28 +70,78 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 ['id' => $imageId, 'taille' => 'full'],
                 site_url('/voir-image-enigme')
             );
+        $hotspotLabel = (string) ($hotspot['label'] ?? __('Ouvrir le mécanisme', 'chassesautresor-com'));
+        $zone = is_array($hotspot['zone'] ?? null) ? $hotspot['zone'] : null;
         ?>
-        <button
-          type="button"
-          class="enigme-media-zoom riddle-player-step__zoom"
-          data-enigme-lightbox-src="<?= esc_url($fullImageUrl); ?>"
-          data-enigme-lightbox-alt="<?= esc_attr($imageAlt); ?>"
-          aria-label="<?= esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com'); ?>"
-        >
-          <img
-            class="riddle-player-step__image"
-            src="<?= esc_url($imageUrl); ?>"
-            alt="<?= esc_attr($imageAlt); ?>"
-            loading="lazy"
-            <?php if (is_array($imageSource)) : ?>
-              width="<?= esc_attr((string) $imageSource[1]); ?>"
-              height="<?= esc_attr((string) $imageSource[2]); ?>"
-            <?php endif; ?>
+        <?php if ($useHotspot && $zone !== null) : ?>
+          <figure class="riddle-player-step__media is-hotspot">
+            <div class="riddle-player-step__stage">
+              <img
+                class="riddle-player-step__image"
+                src="<?= esc_url($imageUrl); ?>"
+                alt="<?= esc_attr($imageAlt); ?>"
+                loading="lazy"
+                <?php if (is_array($imageSource)) : ?>
+                  width="<?= esc_attr((string) $imageSource[1]); ?>"
+                  height="<?= esc_attr((string) $imageSource[2]); ?>"
+                <?php endif; ?>
+              >
+              <button
+                type="button"
+                class="riddle-player-step__hotspot"
+                style="<?= esc_attr(sprintf(
+                    'left:%s%%;top:%s%%;width:%s%%;height:%s%%;',
+                    $zone['x'],
+                    $zone['y'],
+                    $zone['w'],
+                    $zone['h']
+                )); ?>"
+                data-riddle-open-widget
+                aria-label="<?= esc_attr($hotspotLabel); ?>"
+              ></button>
+              <button
+                type="button"
+                class="enigme-media-zoom riddle-player-step__zoom-btn"
+                data-enigme-lightbox-src="<?= esc_url($fullImageUrl); ?>"
+                data-enigme-lightbox-alt="<?= esc_attr($imageAlt); ?>"
+                aria-label="<?= esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com'); ?>"
+              >
+                <span class="enigme-media-zoom__hint" aria-hidden="true">
+                  <?= esc_html__('Agrandir', 'chassesautresor-com'); ?>
+                </span>
+              </button>
+            </div>
+            <button
+              type="button"
+              class="bouton-texte riddle-player-step__a11y-open"
+              data-riddle-open-widget
+            >
+              <?= esc_html($hotspotLabel); ?>
+            </button>
+          </figure>
+        <?php else : ?>
+          <button
+            type="button"
+            class="enigme-media-zoom riddle-player-step__zoom"
+            data-enigme-lightbox-src="<?= esc_url($fullImageUrl); ?>"
+            data-enigme-lightbox-alt="<?= esc_attr($imageAlt); ?>"
+            aria-label="<?= esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com'); ?>"
           >
-          <span class="enigme-media-zoom__hint" aria-hidden="true">
-            <?= esc_html__('Agrandir', 'chassesautresor-com'); ?>
-          </span>
-        </button>
+            <img
+              class="riddle-player-step__image"
+              src="<?= esc_url($imageUrl); ?>"
+              alt="<?= esc_attr($imageAlt); ?>"
+              loading="lazy"
+              <?php if (is_array($imageSource)) : ?>
+                width="<?= esc_attr((string) $imageSource[1]); ?>"
+                height="<?= esc_attr((string) $imageSource[2]); ?>"
+              <?php endif; ?>
+            >
+            <span class="enigme-media-zoom__hint" aria-hidden="true">
+              <?= esc_html__('Agrandir', 'chassesautresor-com'); ?>
+            </span>
+          </button>
+        <?php endif; ?>
       <?php endif; ?>
       <?php if (trim($content) !== '') : ?>
         <div class="riddle-player-step__content"><?= wp_kses_post($content); ?></div>
@@ -108,11 +163,27 @@ if ($riddleId <= 0 || $visibleIds === []) {
         );
         ?>
         <form
-          class="<?= esc_attr($widgetView['form_class']); ?>"
+          class="<?= esc_attr($widgetView['form_class']); ?><?= $useHotspot ? ' is-hotspot-widget' : ''; ?>"
           data-widget-action="<?= esc_attr($widgetView['action']); ?>"
           data-retry-state="<?= esc_attr(wp_json_encode($retryState)); ?>"
           aria-busy="false"
+          <?= $useHotspot ? 'hidden' : ''; ?>
         >
+          <?php if ($useHotspot) : ?>
+            <div class="riddle-widget-immersive__chrome">
+              <p class="riddle-widget-immersive__title">
+                <?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?>
+              </p>
+              <button
+                type="button"
+                class="riddle-widget-immersive__close"
+                data-riddle-close-widget
+                aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>"
+              >
+                ×
+              </button>
+            </div>
+          <?php endif; ?>
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
           <input type="hidden" name="etape_id" value="<?= esc_attr($stepId); ?>">
           <input
