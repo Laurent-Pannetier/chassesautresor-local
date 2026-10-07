@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const hotspotImage = form?.querySelector('.riddle-step-hotspot-editor__image');
   const hotspotZoneEl = form?.querySelector('.riddle-step-hotspot-editor__zone');
   const hotspotZoneInput = form?.querySelector('[name="hotspot_zone"]');
-  const hotspotLabelInput = form?.querySelector('[name="hotspot_label"]');
   const hotspotClear = form?.querySelector('.riddle-step-hotspot-clear');
   const structureLocked = editor.dataset.structureLocked === '1';
+  const MIN_ZONE = 1.5;
   let dragged = null;
   let savedScroll = 0;
   let drawState = null;
@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const parts = String(raw || '').trim().split(/[\s,;]+/).filter(Boolean);
     if (parts.length !== 4 || parts.some(part => Number.isNaN(Number(part)))) return null;
     const [x, y, w, h] = parts.map(Number);
-    if (w < 5 || h < 5 || x < 0 || y < 0 || x + w > 100.01 || y + h > 100.01) return null;
+    if (w < MIN_ZONE || h < MIN_ZONE || x < 0 || y < 0 || x + w > 100.01 || y + h > 100.01) {
+      return null;
+    }
     return { x, y, w, h };
   };
 
@@ -119,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     formFeedback.textContent = '';
     setImage();
     applyZone(null);
-    hotspotLabelInput.value = RiddleStepsEdit.texts.defaultHotspotLabel || '';
     if (affichageSelect) affichageSelect.value = 'always';
     updateWidgetConfig();
     syncHotspotEditor();
@@ -131,14 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelector('[name="titre"]').value = step.title;
         contentEditor.innerHTML = step.content;
         setImage(step.image_id || '', step.image_url || '');
-        if (affichageSelect) {
-          affichageSelect.value = step.widget_affichage || 'always';
-        }
-        hotspotLabelInput.value = step.hotspot_label
-          || RiddleStepsEdit.texts.defaultHotspotLabel
-          || '';
-        applyZone(parseZone(step.hotspot_zone || ''));
-        syncHotspotEditor();
         if (!structureLocked) {
           form.querySelector('[name="widget"]').value = step.widget || 'click';
           form.querySelector('[name="button_label"]').value = step.button_label;
@@ -154,6 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
           form.querySelector('[name="gps_tolerance"]').value = step.gps_tolerance || '25';
           updateWidgetConfig();
         }
+        if (affichageSelect) {
+          affichageSelect.value = step.widget_affichage || 'always';
+        }
+        applyZone(parseZone(step.hotspot_zone || ''));
+        syncHotspotEditor();
       } catch (error) {
         feedback.textContent = error.message;
         return;
@@ -197,7 +195,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const relativePoint = event => {
-    const rect = hotspotStage.getBoundingClientRect();
+    const target = hotspotImage?.getAttribute('src') ? hotspotImage : hotspotStage;
+    const rect = target.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return { x: 0, y: 0 };
+    }
     const x = ((event.clientX - rect.left) / rect.width) * 100;
     const y = ((event.clientY - rect.top) / rect.height) * 100;
     return {
@@ -207,12 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   hotspotStage?.addEventListener('pointerdown', event => {
-    if (affichageSelect?.value !== 'hotspot' || !imageInput.value) return;
+    if (affichageSelect?.value !== 'hotspot' || !imageInput.value || hotspotImage.hidden) return;
     event.preventDefault();
     const point = relativePoint(event);
     drawState = { startX: point.x, startY: point.y };
     hotspotStage.setPointerCapture?.(event.pointerId);
-    applyZone({ x: point.x, y: point.y, w: 5, h: 5 });
+    applyZone({ x: point.x, y: point.y, w: MIN_ZONE, h: MIN_ZONE });
   });
 
   hotspotStage?.addEventListener('pointermove', event => {
@@ -220,8 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const point = relativePoint(event);
     const x = Math.min(drawState.startX, point.x);
     const y = Math.min(drawState.startY, point.y);
-    const w = Math.max(5, Math.abs(point.x - drawState.startX));
-    const h = Math.max(5, Math.abs(point.y - drawState.startY));
+    const w = Math.max(MIN_ZONE, Math.abs(point.x - drawState.startX));
+    const h = Math.max(MIN_ZONE, Math.abs(point.y - drawState.startY));
     applyZone({
       x,
       y,

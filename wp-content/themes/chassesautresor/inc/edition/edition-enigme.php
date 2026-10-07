@@ -89,7 +89,6 @@ function enqueue_script_enigme_edit()
       'delete' => __('Supprimer', 'chassesautresor-com'),
       'confirmDelete' => __('Supprimer définitivement cette étape ?', 'chassesautresor-com'),
       'error' => __('Une erreur est survenue. Rechargez la page et réessayez.', 'chassesautresor-com'),
-      'defaultHotspotLabel' => __('Ouvrir le mécanisme', 'chassesautresor-com'),
     ],
   ]);
 

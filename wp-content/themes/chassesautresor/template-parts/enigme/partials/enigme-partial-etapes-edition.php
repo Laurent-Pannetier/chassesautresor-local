@@ -139,48 +139,6 @@ if ($riddleId > 0) {
           ); ?>
         </p>
       </div>
-      <fieldset class="riddle-step-form__field riddle-step-hotspot-editor">
-        <legend><?= esc_html__('Affichage du widget', 'chassesautresor-com'); ?></legend>
-        <label for="riddle-step-widget-affichage">
-          <?= esc_html__('Mode d’affichage', 'chassesautresor-com'); ?>
-        </label>
-        <select id="riddle-step-widget-affichage" name="widget_affichage">
-          <option value="always"><?= esc_html__('Toujours visible', 'chassesautresor-com'); ?></option>
-          <option value="hotspot"><?= esc_html__('Sur clic dans l’image', 'chassesautresor-com'); ?></option>
-        </select>
-        <p class="txt-small">
-          <?= esc_html__(
-              'En mode point & click, le joueur doit cliquer une zone de l’image pour ouvrir le widget.',
-              'chassesautresor-com'
-          ); ?>
-        </p>
-        <div class="riddle-step-hotspot-editor__canvas" hidden>
-          <p class="txt-small">
-            <?= esc_html__(
-                'Cliquez-glissez sur l’image pour dessiner la zone cliquable (molette, serrure, etc.).',
-                'chassesautresor-com'
-            ); ?>
-          </p>
-          <div class="riddle-step-hotspot-editor__stage">
-            <img class="riddle-step-hotspot-editor__image" alt="" hidden>
-            <div class="riddle-step-hotspot-editor__zone" hidden></div>
-          </div>
-          <input type="hidden" name="hotspot_zone" value="">
-          <label for="riddle-step-hotspot-label">
-            <?= esc_html__('Libellé d’accessibilité', 'chassesautresor-com'); ?>
-          </label>
-          <input
-            id="riddle-step-hotspot-label"
-            name="hotspot_label"
-            type="text"
-            maxlength="80"
-            value="<?= esc_attr__('Ouvrir le mécanisme', 'chassesautresor-com'); ?>"
-          >
-          <button type="button" class="bouton-texte riddle-step-hotspot-clear" hidden>
-            <?= esc_html__('Effacer la zone', 'chassesautresor-com'); ?>
-          </button>
-        </div>
-      </fieldset>
       <?php if (!$structureLocked) : ?>
         <?php $widgetDefinitions = (new ChassesAuTresor\Core\Progress\AnswerWidgetEditorViewService())->widgets(); ?>
         <fieldset class="riddle-step-form__field">
@@ -232,6 +190,52 @@ if ($riddleId > 0) {
           <?php endforeach; ?>
         </fieldset>
       <?php endif; ?>
+      <fieldset class="riddle-step-form__field riddle-step-hotspot-editor">
+        <legend><?= esc_html__('Présentation interactive', 'chassesautresor-com'); ?></legend>
+        <?php if ($structureLocked) : ?>
+          <p class="txt-small">
+            <?= esc_html__(
+                'Le type de widget (pavé, molette…) est figé. Vous pouvez seulement changer sa présentation.',
+                'chassesautresor-com'
+            ); ?>
+          </p>
+        <?php endif; ?>
+        <label for="riddle-step-widget-affichage">
+          <?= esc_html__(
+              $structureLocked
+                  ? 'Affichage du widget'
+                  : 'Affichage du widget choisi ci-dessus',
+              'chassesautresor-com'
+          ); ?>
+        </label>
+        <select id="riddle-step-widget-affichage" name="widget_affichage">
+          <option value="always"><?= esc_html__('Toujours visible sous l’image', 'chassesautresor-com'); ?></option>
+          <option value="hotspot"><?= esc_html__('Point & click : clic sur une zone de l’image', 'chassesautresor-com'); ?></option>
+        </select>
+        <p class="txt-small">
+          <?= esc_html__(
+              'Ce réglage ne change pas le type de widget (pavé, molette…). En point & click, le widget reste masqué jusqu’au clic sur la zone dessinée.',
+              'chassesautresor-com'
+          ); ?>
+        </p>
+        <input type="hidden" name="hotspot_label" value="">
+        <div class="riddle-step-hotspot-editor__canvas" hidden>
+          <p class="txt-small">
+            <?= esc_html__(
+                'Cliquez-glissez sur le détail interactif (molette, clavier, serrure…) pour tracer une zone précise.',
+                'chassesautresor-com'
+            ); ?>
+          </p>
+          <div class="riddle-step-hotspot-editor__stage">
+            <img class="riddle-step-hotspot-editor__image" alt="" draggable="false" hidden>
+            <div class="riddle-step-hotspot-editor__zone" hidden></div>
+          </div>
+          <input type="hidden" name="hotspot_zone" value="">
+          <button type="button" class="bouton-texte riddle-step-hotspot-clear" hidden>
+            <?= esc_html__('Effacer la zone', 'chassesautresor-com'); ?>
+          </button>
+        </div>
+      </fieldset>
       <p class="riddle-step-form__feedback" role="alert" aria-live="assertive"></p>
       <div class="riddle-step-form__actions">
         <button type="button" class="bouton-secondaire riddle-step-cancel">

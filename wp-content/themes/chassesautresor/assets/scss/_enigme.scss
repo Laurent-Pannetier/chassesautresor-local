@@ -1478,7 +1478,6 @@ body.no-scroll {
 
 .riddle-player-step__media {
   display: grid;
-  gap: var(--space-xs);
   justify-items: center;
   margin: 0 0 var(--space-md);
 }
@@ -1488,64 +1487,52 @@ body.no-scroll {
   display: inline-block;
   max-width: 100%;
   line-height: 0;
+  cursor: default;
 }
 
 .riddle-player-step__stage .riddle-player-step__image {
   margin: 0;
+  pointer-events: none;
 }
 
 .riddle-player-step__hotspot {
   position: absolute;
   z-index: 2;
   padding: 0;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  background: transparent;
+  border: 2px solid rgba(232, 140, 90, 0.55);
+  border-radius: 10px;
+  background: rgba(232, 140, 90, 0.08);
   cursor: pointer;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
-}
-
-.riddle-player-step__hotspot::after {
-  content: '';
-  position: absolute;
-  inset: 18%;
-  border-radius: inherit;
-  border: 2px solid rgba(232, 140, 90, 0.75);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 0 0 0 rgba(232, 140, 90, 0.35);
   animation: riddle-hotspot-pulse 2.2s ease-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .riddle-player-step__hotspot::after {
+  .riddle-player-step__hotspot {
     animation: none;
-    box-shadow: 0 0 0 3px rgba(232, 140, 90, 0.35);
+    box-shadow: 0 0 0 3px rgba(232, 140, 90, 0.28);
   }
 }
 
 @keyframes riddle-hotspot-pulse {
   0% {
-    transform: scale(0.92);
-    opacity: 0.95;
     box-shadow: 0 0 0 0 rgba(232, 140, 90, 0.45);
   }
 
   70% {
-    transform: scale(1.08);
-    opacity: 0.35;
-    box-shadow: 0 0 0 12px rgba(232, 140, 90, 0);
+    box-shadow: 0 0 0 10px rgba(232, 140, 90, 0);
   }
 
   100% {
-    transform: scale(1.08);
-    opacity: 0;
     box-shadow: 0 0 0 0 rgba(232, 140, 90, 0);
   }
 }
 
 .riddle-player-step__hotspot:hover,
 .riddle-player-step__hotspot:focus-visible {
-  border-color: rgba(232, 140, 90, 0.9);
-  background: rgba(232, 140, 90, 0.12);
+  border-color: rgba(232, 140, 90, 0.95);
+  background: rgba(232, 140, 90, 0.18);
   outline: none;
 }
 
@@ -1559,8 +1546,10 @@ body.no-scroll {
   cursor: zoom-in;
 }
 
-.riddle-player-step__a11y-open {
-  margin: 0;
+/* Author display:flex on widget forms overrides the HTML hidden attribute. */
+.riddle-player-step form.is-hotspot-widget[hidden],
+.riddle-player-step form.is-hotspot-widget:not(.is-immersive-open) {
+  display: none !important;
 }
 
 .riddle-widget-immersive-backdrop {
@@ -1574,12 +1563,14 @@ body.riddle-widget-immersive-open {
   overflow: hidden;
 }
 
-form.is-hotspot-widget.is-immersive-open {
+.riddle-player-step form.is-hotspot-widget.is-immersive-open {
   position: fixed;
   top: 50%;
   left: 50%;
   z-index: 10021;
-  display: grid;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
   gap: var(--space-sm);
   width: min(100% - 2rem, 28rem);
   max-height: min(90vh, 40rem);
@@ -1595,7 +1586,7 @@ form.is-hotspot-widget.is-immersive-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  form.is-hotspot-widget.is-immersive-open {
+  .riddle-player-step form.is-hotspot-widget.is-immersive-open {
     animation: none;
   }
 }
@@ -1615,13 +1606,8 @@ form.is-hotspot-widget.is-immersive-open {
 .riddle-widget-immersive__chrome {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-}
-
-.riddle-widget-immersive__title {
-  margin: 0;
-  font-weight: 700;
+  justify-content: flex-end;
+  width: 100%;
 }
 
 .riddle-widget-immersive__close {

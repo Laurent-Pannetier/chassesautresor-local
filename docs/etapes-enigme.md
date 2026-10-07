@@ -16,7 +16,6 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Image | `etape_image` | Illustration facultative, stockée sous forme d’identifiant de média. |
 | Affichage widget | `etape_widget_affichage` | `always` (défaut) ou `hotspot` (révélation au clic sur l’image). |
 | Zone cliquable | `etape_hotspot_zone` | Pourcentages `x,y,largeur,hauteur` relatifs à l’image. |
-| Libellé hotspot | `etape_hotspot_label` | Texte d’accessibilité / bouton de secours. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
 Une étape enregistrée exige toujours un nom interne. Simple clic et Réponse texte exigent également au moins un texte
@@ -40,9 +39,9 @@ l’étape par AJAX, puis restaure la liste sans ouvrir ni recharger une page d�
 
 Le sélecteur d’image réutilise la médiathèque déjà autorisée aux organisateurs. Les opérations AJAX vérifient le nonce,
 le droit de modifier l’énigme, l’appartenance de l’étape et la validité du média.
-En mode `hotspot`, l’organisateur dessine une zone cliquable sur l’image de l’étape ; le widget reste masqué pour le
-joueur jusqu’au clic (ou via le libellé d’accessibilité). Sans image ou sans zone valide, le mode hotspot est refusé
-à l’enregistrement et bloque la complétude. Le mode `always` conserve l’affichage classique du widget sous le contenu.
+Après le choix du type de widget, la présentation peut rester classique (`always`) ou passer en point & click
+(`hotspot`) : l’organisateur dessine alors une zone précise sur l’image, et le widget reste masqué jusqu’au clic sur
+cette zone. Sans image ou sans zone valide, le mode hotspot est refusé à l’enregistrement et bloque la complétude.
 Le serveur valide le contenu et toute la configuration du widget avant de créer ou modifier l’étape. Les codes
 directionnels, de couleurs, numériques et de coffre-fort contenant un symbole inconnu sont refusés au lieu d’être
 corrigés silencieusement. Une erreur de configuration ne peut donc pas laisser une étape publiée partiellement.

@@ -70,12 +70,16 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 ['id' => $imageId, 'taille' => 'full'],
                 site_url('/voir-image-enigme')
             );
-        $hotspotLabel = (string) ($hotspot['label'] ?? __('Ouvrir le mécanisme', 'chassesautresor-com'));
+        $hotspotLabel = (string) ($hotspot['label'] ?? __('Zone interactive', 'chassesautresor-com'));
         $zone = is_array($hotspot['zone'] ?? null) ? $hotspot['zone'] : null;
+        $zoneRaw = (string) ($hotspot['zone_raw'] ?? '');
         ?>
         <?php if ($useHotspot && $zone !== null) : ?>
           <figure class="riddle-player-step__media is-hotspot">
-            <div class="riddle-player-step__stage">
+            <div
+              class="riddle-player-step__stage"
+              data-riddle-hotspot-zone="<?= esc_attr($zoneRaw); ?>"
+            >
               <img
                 class="riddle-player-step__image"
                 src="<?= esc_url($imageUrl); ?>"
@@ -111,13 +115,6 @@ if ($riddleId <= 0 || $visibleIds === []) {
                 </span>
               </button>
             </div>
-            <button
-              type="button"
-              class="bouton-texte riddle-player-step__a11y-open"
-              data-riddle-open-widget
-            >
-              <?= esc_html($hotspotLabel); ?>
-            </button>
           </figure>
         <?php else : ?>
           <button
@@ -167,13 +164,12 @@ if ($riddleId <= 0 || $visibleIds === []) {
           data-widget-action="<?= esc_attr($widgetView['action']); ?>"
           data-retry-state="<?= esc_attr(wp_json_encode($retryState)); ?>"
           aria-busy="false"
-          <?= $useHotspot ? 'hidden' : ''; ?>
+          <?php if ($useHotspot) : ?>
+            hidden
+          <?php endif; ?>
         >
           <?php if ($useHotspot) : ?>
             <div class="riddle-widget-immersive__chrome">
-              <p class="riddle-widget-immersive__title">
-                <?= esc_html__('Code de déverrouillage', 'chassesautresor-com'); ?>
-              </p>
               <button
                 type="button"
                 class="riddle-widget-immersive__close"

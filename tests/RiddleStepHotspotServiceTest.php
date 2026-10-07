@@ -25,8 +25,9 @@ final class RiddleStepHotspotServiceTest extends TestCase {
             'w' => 20.0,
             'h' => 25.0,
         ]));
-        self::assertNull($service->parseZone('10,10,2,20'));
+        self::assertNull($service->parseZone('10,10,1,20'));
         self::assertNull($service->parseZone('90,10,20,20'));
+        self::assertNotNull($service->parseZone('10,10,2,3'));
     }
 
     public function testHotspotModeRequiresImageAndZone(): void {
@@ -40,7 +41,7 @@ final class RiddleStepHotspotServiceTest extends TestCase {
         self::assertInstanceOf(WP_Error::class, $missingZone);
         self::assertIsArray($valid);
         self::assertTrue($valid['active']);
-        self::assertSame('Ouvrir le mécanisme', $valid['label']);
+        self::assertSame('Zone interactive', $valid['label']);
     }
 
     public function testAlwaysModeKeepsOptionalZoneAndIsInactive(): void {

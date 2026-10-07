@@ -144,10 +144,10 @@ const positionRiddleStepTarget = async target => {
 const closeImmersiveWidget = form => {
   if (!form?.classList.contains('is-hotspot-widget')) return;
   form.hidden = true;
+  form.setAttribute('hidden', '');
   form.classList.remove('is-immersive-open');
   document.body.classList.remove('riddle-widget-immersive-open');
-  const backdrop = document.querySelector('.riddle-widget-immersive-backdrop');
-  backdrop?.remove();
+  document.querySelector('.riddle-widget-immersive-backdrop')?.remove();
 };
 
 const openImmersiveWidget = form => {
@@ -160,6 +160,7 @@ const openImmersiveWidget = form => {
     document.body.appendChild(backdrop);
   }
   form.hidden = false;
+  form.removeAttribute('hidden');
   form.classList.add('is-immersive-open');
   document.body.classList.add('riddle-widget-immersive-open');
   initializeGpsWidgets(form);
@@ -167,6 +168,25 @@ const openImmersiveWidget = form => {
     '.riddle-safe, .riddle-direction, .riddle-color, .riddle-number, .riddle-piano__key, input:not([type="hidden"]), button[type="submit"]'
   );
   focusTarget?.focus?.({ preventScroll: true });
+};
+
+const parseHotspotZone = raw => {
+  const parts = String(raw || '').trim().split(/[\s,;]+/).filter(Boolean).map(Number);
+  if (parts.length !== 4 || parts.some(value => !Number.isFinite(value))) return null;
+  const [x, y, w, h] = parts;
+  if (w <= 0 || h <= 0) return null;
+  return { x, y, w, h };
+};
+
+const pointInHotspotZone = (event, stage) => {
+  const image = stage.querySelector('.riddle-player-step__image');
+  const zone = parseHotspotZone(stage.dataset.riddleHotspotZone || '');
+  if (!image || !zone) return false;
+  const rect = image.getBoundingClientRect();
+  if (!rect.width || !rect.height) return false;
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+  return x >= zone.x && x <= zone.x + zone.w && y >= zone.y && y <= zone.y + zone.h;
 };
 
 const unlockRiddleStepContent = (form, data) => {
@@ -225,23 +245,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.addEventListener('click', event => {
-  const openTrigger = event.target.closest('[data-riddle-open-widget]');
-  if (openTrigger) {
-    event.preventDefault();
-    event.stopPropagation();
-    const article = openTrigger.closest('.riddle-player-step');
-    const form = article?.querySelector('form.is-hotspot-widget');
-    if (form) openImmersiveWidget(form);
-    return;
-  }
-
   const closeTrigger = event.target.closest('[data-riddle-close-widget]');
   if (closeTrigger) {
     event.preventDefault();
     const form = closeTrigger.closest('form.is-hotspot-widget');
     if (form) closeImmersiveWidget(form);
+    return;
   }
-});
+
+  if (event.target.closest('[data-enigme-lightbox-src]')) {
+    return;
+  }
+
+  const openTrigger = event.target.closest('[data-riddle-open-widget]');
+  const stage = event.target.closest('[data-riddle-hotspot-zone]');
+  const article = (openTrigger || stage)?.closest('.riddle-player-step');
+  const form = article?.querySelector('form.is-hotspot-widget');
+  if (!form || !article) return;
+
+  if (openTrigger) {
+    event.preventDefault();
+    event.stopPropagation();
+    openImmersiveWidget(form);
+    return;
+  }
+
+  if (stage && pointInHotspotZone(event, stage)) {
+    event.preventDefault();
+    event.stopPropagation();
+    openImmersiveWidget(form);
+  }
+}, true);
 
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;

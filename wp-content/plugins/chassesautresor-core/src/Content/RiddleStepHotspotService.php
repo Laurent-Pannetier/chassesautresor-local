@@ -9,7 +9,7 @@ final class RiddleStepHotspotService {
     public const MODE_ALWAYS = 'always';
     public const MODE_HOTSPOT = 'hotspot';
 
-    private const MIN_SIZE = 5.0;
+    private const MIN_SIZE = 1.5;
     private const MAX_PERCENT = 100.0;
 
     /**
@@ -138,7 +138,7 @@ final class RiddleStepHotspotService {
     public function normalizeLabel(string $label): string {
         $label = trim($label);
         if ($label === '') {
-            return __('Ouvrir le mécanisme', 'chassesautresor-com');
+            return __('Zone interactive', 'chassesautresor-com');
         }
 
         return function_exists('mb_substr') ? mb_substr($label, 0, 80) : substr($label, 0, 80);
