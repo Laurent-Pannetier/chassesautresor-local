@@ -333,10 +333,21 @@ function enigme_collect_step_comic_pages(int $enigme_id, int $user_id): array
     }
 
     $pages = [];
+    $storage = class_exists(\ChassesAuTresor\Core\Media\RiddleStepImageStorageService::class)
+        ? new \ChassesAuTresor\Core\Media\RiddleStepImageStorageService()
+        : null;
     foreach ($visibleStepIds as $stepId) {
         $imageId = (int) get_field('etape_image', $stepId);
         if ($imageId <= 0 || $imageId === ID_IMAGE_PLACEHOLDER_ENIGME) {
             continue;
+        }
+        // Lazily move legacy public uploads into protected storage (same as save).
+        if ($storage !== null) {
+            $securedId = $storage->ensureProtected($imageId, $enigme_id, (int) $stepId);
+            if ($securedId > 0 && $securedId !== $imageId) {
+                update_field('etape_image', $securedId, $stepId);
+                $imageId = $securedId;
+            }
         }
         $pages[] = [
             'image_id' => $imageId,
@@ -405,8 +416,8 @@ function afficher_visuels_enigme(
     $caption = (string) get_field('enigme_visuel_legende', $enigme_id);
     $pageCount = count($pages);
     $has_multiple = $pageCount > 1;
-    // Reprise lecture BD : ouvrir sur la dernière page débloquée.
-    $activeIndex = $stepPages !== [] ? $pageCount - 1 : 0;
+    // Toujours ouvrir sur la première page (visuel d’énigme), pas sur la dernière étape.
+    $activeIndex = 0;
     $gallery_id = 'galerie-enigme-' . $enigme_id;
     $currentHotspotStepId = enigme_current_hotspot_step_id($enigme_id, $resolvedUserId);
 

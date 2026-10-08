@@ -32,23 +32,29 @@ if (
     exit(__('Lien image invalide ou expiré', 'chassesautresor-com'));
 }
 
-// 🧩 Récupération de l'énigme associée à cette image
+// 🧩 Récupération de l'énigme / étape associée à cette image
 global $wpdb;
 $image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleImages($wpdb);
 $asset_service = new ChassesAuTresor\Core\Media\ProtectedRiddleAssetService();
-$enigme_id = $image_service->findRiddleId($image_id);
 $step_image_service = ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStepImages($wpdb);
-$step_context = $enigme_id ? null : $step_image_service->findContext($image_id);
+$enigme_id = $image_service->findRiddleId($image_id);
+$step_context = $step_image_service->findContext($image_id);
 
 if (!$enigme_id && !$step_context) {
     http_response_code(403);
     exit(__('Image non autorisée', 'chassesautresor-com'));
 }
 
-// 🔐 Vérification d'accès
-$can_view = $enigme_id
-    ? $asset_service->canViewRiddle($enigme_id, $current_user_id)
-    : $step_image_service->canView($image_id, $current_user_id);
+// 🔐 Vérification d'accès — une image peut être liée à une énigme ET/OU une étape ;
+// on autorise dès qu’un des deux chemins est valide (évite un faux positif
+// enigme_visuel_image qui bloquerait une image d’étape pourtant débloquée).
+$can_view = false;
+if ($enigme_id) {
+    $can_view = $asset_service->canViewRiddle($enigme_id, $current_user_id);
+}
+if (!$can_view && $step_context) {
+    $can_view = $step_image_service->canView($image_id, $current_user_id);
+}
 if (!$can_view) {
     http_response_code(403);
     exit(__('Accès refusé', 'chassesautresor-com'));
