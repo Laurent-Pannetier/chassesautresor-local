@@ -72,8 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const updateWidgetConfig = () => {
-    if (structureLocked) return;
-    const widget = form.querySelector('[name="widget"]').value;
+    const widgetSelect = form?.querySelector('[name="widget"]');
+    if (!widgetSelect) return;
+    const widget = widgetSelect.value;
     form.querySelectorAll('.riddle-step-widget-config').forEach(config => {
       config.hidden = config.dataset.widget !== widget;
     });
@@ -132,11 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelector('[name="titre"]').value = step.title;
         contentEditor.innerHTML = step.content;
         setImage(step.image_id || '', step.image_url || '');
-        if (!structureLocked) {
-          form.querySelector('[name="widget"]').value = step.widget || 'click';
-          form.querySelector('[name="button_label"]').value = step.button_label;
+        const widgetSelect = form.querySelector('[name="widget"]');
+        if (widgetSelect) {
+          widgetSelect.value = step.widget || 'click';
+          form.querySelector('[name="button_label"]').value = step.button_label || '';
           form.querySelector('[name="accepted_answers"]').value = step.accepted_answers || '';
-          form.querySelector('[name="case_sensitive"]').checked = Boolean(step.case_sensitive);
+          const caseSensitive = form.querySelector('[name="case_sensitive"]');
+          if (caseSensitive) caseSensitive.checked = Boolean(step.case_sensitive);
           form.querySelector('[name="variants"]').value = step.variants || '';
           form.querySelector('[name="direction_sequences"]').value = step.direction_sequences || '';
           form.querySelector('[name="color_sequences"]').value = step.color_sequences || '';
