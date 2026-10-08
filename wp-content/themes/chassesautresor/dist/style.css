@@ -7776,6 +7776,9 @@ li.active .enigme-menu__edit {
   align-items: center;
   padding-block: var(--space-sm);
 }
+.page-enigme--compact .riddle-player-step.has-hotspot.is-widget-only {
+  display: none;
+}
 .page-enigme--compact .riddle-player-step.is-completed {
   opacity: 0.88;
 }
@@ -8484,6 +8487,16 @@ body.no-scroll {
   margin-inline: auto;
 }
 
+/* Hotspot host with no visible content: form lives in the lightbox overlay. */
+.riddle-player-step.has-hotspot.is-widget-only {
+  display: none;
+}
+
+.riddle-steps-player:not(:has(.riddle-player-step:not(.has-hotspot.is-widget-only))) {
+  display: none;
+  margin: 0;
+}
+
 .riddle-player-step label,
 .riddle-player-step__content,
 .riddle-player-step__content p {
@@ -8574,8 +8587,10 @@ form.is-hotspot-widget.is-immersive-open {
   align-items: center;
   gap: var(--space-sm);
   width: min(100vw - 2rem, 28rem);
+  max-width: min(100vw - 2rem, 28rem);
   max-height: min(90vh, 40rem);
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   margin: 0;
   padding: var(--space-md);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -8585,6 +8600,15 @@ form.is-hotspot-widget.is-immersive-open {
   box-shadow: 0 22px 56px rgba(0, 0, 0, 0.55);
   transform: translate(-50%, -50%);
   animation: riddle-widget-rise 0.28s ease-out;
+}
+
+form.is-hotspot-widget.is-immersive-open:focus {
+  outline: none;
+}
+
+form.is-hotspot-widget.is-immersive-open:focus-visible {
+  outline: 2px solid rgba(232, 140, 90, 0.75);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -8911,6 +8935,8 @@ form.is-hotspot-widget.is-immersive-open {
 
 .riddle-directions__sequence {
   min-height: 1.5em;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   font-weight: 700;
 }
 
@@ -9003,10 +9029,12 @@ form.is-hotspot-widget.is-immersive-open {
 .riddle-colors__title,
 .riddle-colors__sequence {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 0.35rem;
   min-height: 1.5rem;
   width: 100%;
+  max-width: 100%;
 }
 
 .riddle-color-dot {
@@ -9235,7 +9263,6 @@ form.is-hotspot-widget.is-immersive-open {
 }
 
 .riddle-numbers__title,
-.riddle-numbers__sequence,
 .riddle-safe__title,
 .riddle-safe__sequence {
   display: block;
@@ -9246,17 +9273,30 @@ form.is-hotspot-widget.is-immersive-open {
 
 .riddle-numbers__sequence {
   display: flex;
-  gap: 0.35rem;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  gap: 0.3rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: 1.5em;
+  padding-inline: 0.15rem;
+  overflow-wrap: anywhere;
   font-weight: 700;
+  text-align: center;
 }
 
 .riddle-numbers__sequence span {
-  min-width: 2rem;
-  padding: 0.25rem 0.4rem;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  min-width: 1.35rem;
+  padding: 0.2rem 0.3rem;
   border-radius: 0.25rem;
   background: #171717;
   color: #fff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
   text-align: center;
 }
 

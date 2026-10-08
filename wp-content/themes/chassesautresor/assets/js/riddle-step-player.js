@@ -210,10 +210,9 @@ const openImmersiveWidget = form => {
   form.classList.add('is-immersive-open');
   document.body.classList.add('riddle-widget-immersive-open');
   initializeGpsWidgets(form);
-  const focusTarget = form.querySelector(
-    '.riddle-safe, .riddle-direction, .riddle-color, .riddle-number, .riddle-piano__key, input:not([type="hidden"]), button[type="submit"]'
-  );
-  focusTarget?.focus?.({ preventScroll: true });
+  // Focus the shell, not the first keypad key (avoids a pre-selected "1" / NW).
+  if (!form.hasAttribute('tabindex')) form.setAttribute('tabindex', '-1');
+  form.focus({ preventScroll: true });
 };
 
 const parseHotspotZone = raw => {

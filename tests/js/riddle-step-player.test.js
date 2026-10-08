@@ -370,6 +370,8 @@ describe('riddle step player positioning', () => {
     expect(form.parentElement).toBe(document.body);
     expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(true);
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).not.toBeNull();
+    expect(document.activeElement).toBe(form);
+    expect(form.getAttribute('tabindex')).toBe('-1');
 
     document.querySelector('[data-riddle-close-widget]').dispatchEvent(
       new MouseEvent('click', { bubbles: true, cancelable: true })
