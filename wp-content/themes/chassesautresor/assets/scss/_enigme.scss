@@ -752,7 +752,16 @@ li.active .enigme-menu__edit {
     padding-block: var(--space-sm);
   }
 
-  .riddle-player-step.has-hotspot.is-widget-only {
+  .riddle-player-step.has-hotspot.is-widget-only,
+  .riddle-player-step.is-hotspot-host[hidden] {
+    display: none !important;
+  }
+
+  .participation:has(.riddle-steps-player):not(:has(.riddle-player-step:not([hidden]))):not(
+      :has(.zone-indices)
+    ):not(:has(.formulaire-reponse-auto)):not(:has(.formulaire-reponse-manuelle)):not(
+      :has(.message-joueur-statut)
+    ) {
     display: none;
   }
 
@@ -1505,13 +1514,26 @@ body.no-scroll {
 }
 
 /* Hotspot host with no visible content: form lives in the lightbox overlay. */
-.riddle-player-step.has-hotspot.is-widget-only {
-  display: none;
+.riddle-player-step.has-hotspot.is-widget-only,
+.riddle-player-step.is-hotspot-host[hidden] {
+  display: none !important;
 }
 
-.riddle-steps-player:not(:has(.riddle-player-step:not(.has-hotspot.is-widget-only))) {
+.riddle-steps-player:not(:has(.riddle-player-step:not([hidden]))) {
   display: none;
   margin: 0;
+}
+
+/*
+ * Collapse the participation chrome when it only hosts a hidden hotspot form.
+ * :has() re-evaluates after AJAX unlock appends a visible next step.
+ */
+.participation:has(.riddle-steps-player):not(:has(.riddle-player-step:not([hidden]))):not(
+    :has(.zone-indices)
+  ):not(:has(.formulaire-reponse-auto)):not(:has(.formulaire-reponse-manuelle)):not(
+    :has(.message-joueur-statut)
+  ) {
+  display: none;
 }
 
 .riddle-player-step label,

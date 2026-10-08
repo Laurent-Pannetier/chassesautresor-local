@@ -37,6 +37,9 @@ if ($riddleId <= 0 || $visibleIds === []) {
     $hotspot = (new ChassesAuTresor\Core\Content\RiddleStepHotspotService())->forStep($stepId);
     $useHotspot = !$completed && $stepId === $currentId && !empty($hotspot['active']);
     $isWidgetOnly = !$completed && !$hasText;
+    // Image pages live in the BD gallery: a hotspot step without text has no
+    // visible chrome here — keep the form in the DOM but hide the host article.
+    $hideHostArticle = $useHotspot && $isWidgetOnly;
     $stepClasses = 'riddle-player-step';
     $stepClasses .= $completed ? ' is-completed' : ' is-current';
     if ($hasImage) {
@@ -50,6 +53,9 @@ if ($riddleId <= 0 || $visibleIds === []) {
     }
     if ($useHotspot) {
         $stepClasses .= ' has-hotspot';
+    }
+    if ($hideHostArticle) {
+        $stepClasses .= ' is-hotspot-host';
     }
 
     $pagePreviewUrl = '';
@@ -84,6 +90,9 @@ if ($riddleId <= 0 || $visibleIds === []) {
     <article
       class="<?= esc_attr($stepClasses); ?>"
       data-player-step-id="<?= esc_attr($stepId); ?>"
+      <?php if ($hideHostArticle) : ?>
+        hidden
+      <?php endif; ?>
       <?php if ($hasImage) : ?>
         data-step-page-image-id="<?= esc_attr((string) $imageId); ?>"
         data-step-page-preview="<?= esc_url($pagePreviewUrl); ?>"
