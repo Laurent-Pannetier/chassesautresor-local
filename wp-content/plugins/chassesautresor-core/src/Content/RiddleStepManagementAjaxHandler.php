@@ -26,6 +26,7 @@ final class RiddleStepManagementAjaxHandler {
         }
 
         $imageId = (int) get_field('etape_image', $stepId);
+        $hotspot = (new RiddleStepHotspotService())->forStep($stepId);
         wp_send_json_success([
             'step_id' => $stepId,
             'title' => get_the_title($stepId),
@@ -36,6 +37,9 @@ final class RiddleStepManagementAjaxHandler {
                     ? cta_voir_image_enigme_url($imageId, 'medium')
                     : (string) wp_get_attachment_image_url($imageId, 'medium'))
                 : '',
+            'widget_affichage' => $hotspot['mode'],
+            'hotspot_zone' => $hotspot['zone_raw'],
+            'hotspot_label' => $hotspot['label'],
             'widget' => (string) (get_field('etape_reponse_widget', $stepId) ?: 'click'),
             'button_label' => (string) (get_field('etape_reponse_bouton', $stepId)
                 ?: __('Continuer', 'chassesautresor-com')),
@@ -95,8 +99,27 @@ final class RiddleStepManagementAjaxHandler {
         $gpsTolerance = isset($_POST['gps_tolerance'])
             ? sanitize_text_field(wp_unslash((string) $_POST['gps_tolerance']))
             : '';
+        $widgetAffichage = isset($_POST['widget_affichage'])
+            ? sanitize_key(wp_unslash((string) $_POST['widget_affichage']))
+            : RiddleStepHotspotService::MODE_ALWAYS;
+        $hotspotZone = isset($_POST['hotspot_zone'])
+            ? sanitize_text_field(wp_unslash((string) $_POST['hotspot_zone']))
+            : '';
+        $hotspotLabel = isset($_POST['hotspot_label'])
+            ? sanitize_text_field(wp_unslash((string) $_POST['hotspot_label']))
+            : '';
         if ($imageId > 0 && get_post_type($imageId) !== 'attachment') {
             wp_send_json_error(['message' => __('Image invalide.', 'chassesautresor-com')]);
+        }
+
+        $hotspotConfiguration = (new RiddleStepHotspotService())->validate(
+            $widgetAffichage,
+            $hotspotZone,
+            $hotspotLabel,
+            $imageId
+        );
+        if (is_wp_error($hotspotConfiguration)) {
+            wp_send_json_error(['message' => $hotspotConfiguration->get_error_message()]);
         }
 
         $created = false;
@@ -200,6 +223,7 @@ final class RiddleStepManagementAjaxHandler {
             update_field('etape_gps_coordinates', $widgetConfiguration['gps_coordinates'], $stepId);
             update_field('etape_gps_tolerance', $widgetConfiguration['gps_tolerance'], $stepId);
         }
+        (new RiddleStepHotspotService())->persist($stepId, $hotspotConfiguration);
         do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
 
         wp_send_json_success([

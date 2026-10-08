@@ -44,6 +44,12 @@ final class RiddleStepCompletenessServiceTest extends TestCase {
             'etape_reponse_widget' => 'directions',
             'etape_directions_sequences' => 'N,INCONNU,E',
         ]);
+        $hotspot = array_merge($this->baseFields(), [
+            'etape_reponse_widget' => 'safe_dial',
+            'etape_safe_dial_sequences' => 'H11 A51',
+            'etape_widget_affichage' => 'hotspot',
+            'etape_image' => 0,
+        ]);
 
         self::assertFalse($service->areStepsComplete(
             [12],
@@ -54,6 +60,29 @@ final class RiddleStepCompletenessServiceTest extends TestCase {
             [13],
             static fn (int $stepId): string => 'Étape mal configurée',
             static fn (string $field, int $stepId) => $directions[$field] ?? ''
+        ));
+        self::assertFalse($service->areStepsComplete(
+            [14],
+            static fn (int $stepId): string => 'Étape hotspot invalide',
+            static fn (string $field, int $stepId) => $hotspot[$field] ?? ''
+        ));
+    }
+
+    public function testAcceptsHotspotModeWithImageAndZone(): void {
+        $service = new RiddleStepCompletenessService();
+        $fields = array_merge($this->baseFields(), [
+            'etape_reponse_widget' => 'safe_dial',
+            'etape_safe_dial_sequences' => 'H11 A51',
+            'etape_widget_affichage' => 'hotspot',
+            'etape_image' => 18,
+            'etape_hotspot_zone' => '40,55,20,25',
+            'etape_hotspot_label' => 'Molette',
+        ]);
+
+        self::assertTrue($service->areStepsComplete(
+            [12],
+            static fn (int $stepId): string => 'Porte',
+            static fn (string $field, int $stepId) => $fields[$field] ?? ''
         ));
     }
 
@@ -90,6 +119,9 @@ final class RiddleStepCompletenessServiceTest extends TestCase {
             'etape_gps_tolerance' => '',
             'etape_contenu' => '',
             'etape_image' => 0,
+            'etape_widget_affichage' => 'always',
+            'etape_hotspot_zone' => '',
+            'etape_hotspot_label' => '',
         ];
     }
 }

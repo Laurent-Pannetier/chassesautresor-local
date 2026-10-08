@@ -183,6 +183,12 @@
     zoom.dataset.enigmeLightboxSrc = page.fullUrl;
     zoom.dataset.enigmeLightboxAlt = alt;
     zoom.setAttribute('aria-label', nativeSizeLabel);
+    const hotspotZone = String(page.hotspotZone || '').trim();
+    if (hotspotZone && stepId) {
+      zoom.dataset.riddleHotspotZone = hotspotZone;
+      zoom.dataset.riddleHotspotStep = stepId;
+      zoom.dataset.riddleHotspotLabel = page.hotspotLabel || '';
+    }
 
     const img = document.createElement('img');
     img.className = 'enigme-image--limited';
@@ -255,6 +261,41 @@
     }
   };
 
+  const mountLightboxHotspot = (dialog, image, trigger) => {
+    const zone = trigger?.getAttribute('data-riddle-hotspot-zone') || '';
+    const stepId = trigger?.getAttribute('data-riddle-hotspot-step') || '';
+    if (!zone || !stepId) {
+      return;
+    }
+
+    const parts = zone.split(/[\s,;]+/).map(Number);
+    if (parts.length !== 4 || parts.some((value) => !Number.isFinite(value))) {
+      return;
+    }
+
+    const stage = document.createElement('div');
+    stage.className = 'enigme-lightbox__hotspot-stage';
+    stage.dataset.riddleHotspotZone = zone;
+    stage.dataset.riddleHotspotStep = stepId;
+
+    image.replaceWith(stage);
+    stage.appendChild(image);
+
+    const hotspot = document.createElement('button');
+    hotspot.type = 'button';
+    hotspot.className = 'riddle-gallery-hotspot';
+    hotspot.dataset.riddleOpenWidget = '';
+    hotspot.setAttribute(
+      'aria-label',
+      trigger.getAttribute('data-riddle-hotspot-label') || 'Zone interactive'
+    );
+    hotspot.style.left = `${parts[0]}%`;
+    hotspot.style.top = `${parts[1]}%`;
+    hotspot.style.width = `${parts[2]}%`;
+    hotspot.style.height = `${parts[3]}%`;
+    stage.appendChild(hotspot);
+  };
+
   const openLightbox = (src, alt, trigger) => {
     if (!src) {
       return;
@@ -293,6 +334,7 @@
 
     dialog.appendChild(closeButton);
     dialog.appendChild(image);
+    mountLightboxHotspot(dialog, image, trigger);
     overlay.appendChild(dialog);
     document.body.appendChild(overlay);
     document.body.classList.add('no-scroll');
@@ -347,6 +389,9 @@
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
+      if (document.querySelector('form.is-hotspot-widget.is-immersive-open')) {
+        return;
+      }
       closeLightbox();
       return;
     }

@@ -61,23 +61,42 @@ final class ProtectedRiddleAssetService
     {
         $source = wp_get_attachment_image_src($imageId, $size === 'full' ? 'full' : $size);
         $url = is_array($source) ? ($source[0] ?? '') : '';
-        if ($url === '') {
-            return null;
+        $uploads = wp_get_upload_dir();
+        $path = '';
+        if (is_string($url) && $url !== '') {
+            $path = str_replace((string) $uploads['baseurl'], (string) $uploads['basedir'], $url);
         }
 
-        $uploads = wp_get_upload_dir();
-        $path = str_replace((string) $uploads['baseurl'], (string) $uploads['basedir'], $url);
+        // Metadata URL can drift after a protected-folder move; fall back to the attached file.
+        if ($path === '' || !is_file($path)) {
+            $attached = get_attached_file($imageId);
+            if (is_string($attached) && $attached !== '' && is_file($attached)) {
+                if ($size === 'full') {
+                    $path = $attached;
+                } else {
+                    $meta = wp_get_attachment_metadata($imageId);
+                    $sizeFile = is_array($meta) && isset($meta['sizes'][$size]['file'])
+                        ? (string) $meta['sizes'][$size]['file']
+                        : '';
+                    $candidate = $sizeFile !== ''
+                        ? trailingslashit(dirname($attached)) . basename($sizeFile)
+                        : '';
+                    $path = ($candidate !== '' && is_file($candidate)) ? $candidate : $attached;
+                }
+            }
+        }
+
+        if ($path === '' || !is_file($path)) {
+            return $size === 'full' ? null : $this->findImage($imageId);
+        }
+
         $webpPath = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
         if (is_string($webpPath) && $webpPath !== $path && is_file($webpPath)) {
             return ['path' => $webpPath, 'mime' => 'image/webp'];
         }
 
-        if (is_file($path)) {
-            $mime = wp_check_filetype($path)['type'] ?? 'application/octet-stream';
-            return ['path' => $path, 'mime' => $mime];
-        }
-
-        return $size === 'full' ? null : $this->findImage($imageId);
+        $mime = wp_check_filetype($path)['type'] ?? 'application/octet-stream';
+        return ['path' => $path, 'mime' => $mime];
     }
 
     private function isAssociatedOrganizer(int $userId, int $huntId): bool

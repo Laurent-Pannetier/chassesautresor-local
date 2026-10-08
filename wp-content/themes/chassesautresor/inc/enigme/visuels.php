@@ -232,6 +232,63 @@ function enigme_image_display_url(int $image_id, string $size = 'full'): string
 }
 
 /**
+ * Étape courante éligible au point & click (widget révélé depuis la lightbox).
+ */
+function enigme_current_hotspot_step_id(int $enigme_id, int $user_id): int
+{
+    if (
+        $enigme_id <= 0
+        || $user_id <= 0
+        || !class_exists(\ChassesAuTresor\Core\Content\RiddleStepQueryService::class)
+        || !class_exists(\ChassesAuTresor\Core\Support\CoreServiceFactory::class)
+        || !isset($GLOBALS['wpdb'])
+    ) {
+        return 0;
+    }
+
+    $orderedStepIds = (new \ChassesAuTresor\Core\Content\RiddleStepQueryService())
+        ->findOrderedIds($enigme_id);
+    if ($orderedStepIds === []) {
+        return 0;
+    }
+
+    global $wpdb;
+    $state = \ChassesAuTresor\Core\Support\CoreServiceFactory::riddleStepProgress($wpdb)
+        ->getState($user_id, $enigme_id, $orderedStepIds);
+    $currentId = (int) ($state['current_step_id'] ?? 0);
+    if ($currentId <= 0) {
+        return 0;
+    }
+
+    $hotspot = enigme_step_hotspot_for_gallery($currentId);
+    return is_array($hotspot) ? $currentId : 0;
+}
+
+/**
+ * @return array{zone_raw: string, label: string, zone: array{x: float, y: float, w: float, h: float}}|null
+ */
+function enigme_step_hotspot_for_gallery(int $stepId): ?array
+{
+    if (
+        $stepId <= 0
+        || !class_exists(\ChassesAuTresor\Core\Content\RiddleStepHotspotService::class)
+    ) {
+        return null;
+    }
+
+    $hotspot = (new \ChassesAuTresor\Core\Content\RiddleStepHotspotService())->forStep($stepId);
+    if (empty($hotspot['active']) || empty($hotspot['zone']) || ($hotspot['zone_raw'] ?? '') === '') {
+        return null;
+    }
+
+    return [
+        'zone_raw' => (string) $hotspot['zone_raw'],
+        'label' => (string) ($hotspot['label'] ?? __('Zone interactive', 'chassesautresor-com')),
+        'zone' => $hotspot['zone'],
+    ];
+}
+
+/**
  * Collecte les pages BD débloquées issues des étapes intermédiaires.
  *
  * Les images d’étapes visibles (ou toutes les étapes pour un organisateur)
@@ -276,10 +333,21 @@ function enigme_collect_step_comic_pages(int $enigme_id, int $user_id): array
     }
 
     $pages = [];
+    $storage = class_exists(\ChassesAuTresor\Core\Media\RiddleStepImageStorageService::class)
+        ? new \ChassesAuTresor\Core\Media\RiddleStepImageStorageService()
+        : null;
     foreach ($visibleStepIds as $stepId) {
         $imageId = (int) get_field('etape_image', $stepId);
         if ($imageId <= 0 || $imageId === ID_IMAGE_PLACEHOLDER_ENIGME) {
             continue;
+        }
+        // Lazily move legacy public uploads into protected storage (same as save).
+        if ($storage !== null) {
+            $securedId = $storage->ensureProtected($imageId, $enigme_id, (int) $stepId);
+            if ($securedId > 0 && $securedId !== $imageId) {
+                update_field('etape_image', $securedId, $stepId);
+                $imageId = $securedId;
+            }
         }
         $pages[] = [
             'image_id' => $imageId,
@@ -348,9 +416,10 @@ function afficher_visuels_enigme(
     $caption = (string) get_field('enigme_visuel_legende', $enigme_id);
     $pageCount = count($pages);
     $has_multiple = $pageCount > 1;
-    // Reprise lecture BD : ouvrir sur la dernière page débloquée.
-    $activeIndex = $stepPages !== [] ? $pageCount - 1 : 0;
+    // Toujours ouvrir sur la première page (visuel d’énigme), pas sur la dernière étape.
+    $activeIndex = 0;
     $gallery_id = 'galerie-enigme-' . $enigme_id;
+    $currentHotspotStepId = enigme_current_hotspot_step_id($enigme_id, $resolvedUserId);
 
     echo '<div class="galerie-enigme-wrapper" data-enigme-gallery'
         . ' id="' . esc_attr($gallery_id) . '"'
@@ -404,15 +473,25 @@ function afficher_visuels_enigme(
             $figure_classes .= ' galerie-enigme__slide--step';
         }
 
+        $hotspot = ($step_id > 0 && $step_id === $currentHotspotStepId)
+            ? enigme_step_hotspot_for_gallery($step_id)
+            : null;
+
         echo '<figure class="' . esc_attr($figure_classes) . '"'
             . ' id="' . esc_attr($slide_id) . '"'
             . ' data-gallery-index="' . esc_attr((string) $index) . '"'
             . ' data-gallery-image-id="' . esc_attr((string) $image_id) . '"'
             . ($step_id > 0 ? ' data-gallery-step-id="' . esc_attr((string) $step_id) . '"' : '')
             . ($is_active ? '' : ' hidden') . '>';
+        // Page BD : clic = zoom. Le hotspot n’existe que dans la lightbox 1:1.
         echo '<button type="button" class="enigme-media-zoom"'
             . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
             . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
+            . (is_array($hotspot)
+                ? ' data-riddle-hotspot-zone="' . esc_attr($hotspot['zone_raw']) . '"'
+                    . ' data-riddle-hotspot-step="' . esc_attr((string) $step_id) . '"'
+                    . ' data-riddle-hotspot-label="' . esc_attr($hotspot['label']) . '"'
+                : '')
             . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">';
         echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
         echo '<span class="enigme-media-zoom__hint" aria-hidden="true">'

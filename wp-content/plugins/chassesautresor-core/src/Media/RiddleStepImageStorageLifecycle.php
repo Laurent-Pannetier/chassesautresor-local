@@ -9,7 +9,7 @@ namespace ChassesAuTresor\Core\Media;
  */
 final class RiddleStepImageStorageLifecycle
 {
-    public const OPTION_FLAG = 'cta_riddle_step_images_migrated_v1';
+    public const OPTION_FLAG = 'cta_riddle_step_images_migrated_v2';
     public const CRON_HOOK = 'cta_migrate_riddle_step_images';
 
     public static function register(callable $addAction): void

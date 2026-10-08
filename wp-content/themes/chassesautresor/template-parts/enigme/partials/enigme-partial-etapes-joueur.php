@@ -34,7 +34,12 @@ if ($riddleId <= 0 || $visibleIds === []) {
     if ($completed && !$hasText) {
         continue;
     }
+    $hotspot = (new ChassesAuTresor\Core\Content\RiddleStepHotspotService())->forStep($stepId);
+    $useHotspot = !$completed && $stepId === $currentId && !empty($hotspot['active']);
     $isWidgetOnly = !$completed && !$hasText;
+    // Image pages live in the BD gallery: a hotspot step without text has no
+    // visible chrome here — keep the form in the DOM but hide the host article.
+    $hideHostArticle = $useHotspot && $isWidgetOnly;
     $stepClasses = 'riddle-player-step';
     $stepClasses .= $completed ? ' is-completed' : ' is-current';
     if ($hasImage) {
@@ -45,6 +50,12 @@ if ($riddleId <= 0 || $visibleIds === []) {
     }
     if ($isWidgetOnly) {
         $stepClasses .= ' is-widget-only';
+    }
+    if ($useHotspot) {
+        $stepClasses .= ' has-hotspot';
+    }
+    if ($hideHostArticle) {
+        $stepClasses .= ' is-hotspot-host';
     }
 
     $pagePreviewUrl = '';
@@ -79,12 +90,19 @@ if ($riddleId <= 0 || $visibleIds === []) {
     <article
       class="<?= esc_attr($stepClasses); ?>"
       data-player-step-id="<?= esc_attr($stepId); ?>"
+      <?php if ($hideHostArticle) : ?>
+        hidden
+      <?php endif; ?>
       <?php if ($hasImage) : ?>
         data-step-page-image-id="<?= esc_attr((string) $imageId); ?>"
         data-step-page-preview="<?= esc_url($pagePreviewUrl); ?>"
         data-step-page-full="<?= esc_url($pageFullUrl); ?>"
         data-step-page-thumb="<?= esc_url($pageThumbUrl); ?>"
         data-step-page-alt="<?= esc_attr($pageAlt); ?>"
+      <?php endif; ?>
+      <?php if ($useHotspot) : ?>
+        data-riddle-hotspot-zone="<?= esc_attr((string) ($hotspot['zone_raw'] ?? '')); ?>"
+        data-riddle-hotspot-label="<?= esc_attr((string) ($hotspot['label'] ?? '')); ?>"
       <?php endif; ?>
     >
       <?php if (trim($content) !== '') : ?>
@@ -107,11 +125,26 @@ if ($riddleId <= 0 || $visibleIds === []) {
         );
         ?>
         <form
-          class="<?= esc_attr($widgetView['form_class']); ?>"
+          class="<?= esc_attr($widgetView['form_class']); ?><?= $useHotspot ? ' is-hotspot-widget' : ''; ?>"
           data-widget-action="<?= esc_attr($widgetView['action']); ?>"
           data-retry-state="<?= esc_attr(wp_json_encode($retryState)); ?>"
           aria-busy="false"
+          <?php if ($useHotspot) : ?>
+            hidden
+          <?php endif; ?>
         >
+          <?php if ($useHotspot) : ?>
+            <div class="riddle-widget-immersive__chrome">
+              <button
+                type="button"
+                class="riddle-widget-immersive__close"
+                data-riddle-close-widget
+                aria-label="<?= esc_attr__('Fermer', 'chassesautresor-com'); ?>"
+              >
+                ×
+              </button>
+            </div>
+          <?php endif; ?>
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
           <input type="hidden" name="etape_id" value="<?= esc_attr($stepId); ?>">
           <input

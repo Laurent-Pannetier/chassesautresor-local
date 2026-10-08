@@ -32,7 +32,20 @@ final class RiddleStepProtectedImageTest extends TestCase {
         self::assertStringContainsString('tryLiteSpeedSend', $source);
         self::assertStringContainsString('ProtectedRiddleImageSignedUrlService', $source);
         self::assertStringContainsString('Lien image invalide ou expiré', $source);
+        self::assertStringContainsString('findContext($image_id)', $source);
+        self::assertStringContainsString('canView($image_id, $current_user_id)', $source);
+        self::assertStringNotContainsString('$enigme_id ? null : $step_image_service->findContext', $source);
         self::assertStringNotContainsString('Cache-Control: public', $source);
         self::assertStringNotContainsString('no-store', $source);
+    }
+
+    public function testGalleryOpensOnFirstPageAndSecuresStepImages(): void {
+        $source = file_get_contents(
+            __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/visuels.php'
+        );
+
+        self::assertStringContainsString('$activeIndex = 0;', $source);
+        self::assertStringNotContainsString('$pageCount - 1', $source);
+        self::assertStringContainsString('ensureProtected', $source);
     }
 }
