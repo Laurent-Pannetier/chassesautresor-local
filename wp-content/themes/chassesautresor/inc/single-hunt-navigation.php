@@ -11,6 +11,44 @@ function cta_is_single_hunt_topbar_nav_enabled(): bool
 }
 
 /**
+ * Public or preview URL of a hunt page.
+ */
+function cta_get_hunt_page_url(int $huntId): string
+{
+    if ($huntId <= 0) {
+        return home_url('/');
+    }
+
+    $status = (string) get_post_status($huntId);
+    if ($status === 'publish') {
+        $permalink = get_permalink($huntId);
+
+        return $permalink ? (string) $permalink : home_url('/');
+    }
+
+    $preview = get_preview_post_link($huntId);
+
+    return $preview ? (string) $preview : home_url('/');
+}
+
+/**
+ * Whether the visitor is an administrator or the organizer linked to the hunt.
+ */
+function cta_is_primary_hunt_staff(int $huntId, int $userId): bool
+{
+    if ($userId <= 0 || $huntId <= 0) {
+        return false;
+    }
+
+    if (function_exists('user_can') && user_can($userId, 'administrator')) {
+        return true;
+    }
+
+    return function_exists('utilisateur_est_organisateur_associe_a_chasse')
+        && utilisateur_est_organisateur_associe_a_chasse($userId, $huntId);
+}
+
+/**
  * Returns the chasse page URL used by the unique "Énigmes" top-bar link.
  */
 function cta_get_single_hunt_enigmes_nav_url(): string
@@ -20,20 +58,15 @@ function cta_get_single_hunt_enigmes_nav_url(): string
         return home_url('/');
     }
 
-    $status = (string) get_post_status($huntId);
-    if ($status === 'publish') {
+    if ((string) get_post_status($huntId) === 'publish') {
         if (class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
             return \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::enigmasUrl($huntId);
         }
 
-        $permalink = get_permalink($huntId);
-
-        return $permalink ? (string) $permalink : home_url('/');
+        return cta_get_hunt_page_url($huntId) . '#chasse-enigmes-wrapper';
     }
 
-    $preview = get_preview_post_link($huntId);
-
-    return $preview ? (string) $preview : home_url('/');
+    return cta_get_hunt_page_url($huntId);
 }
 
 /**
@@ -246,6 +279,18 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
         : ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     $singleHunt = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
     $destination = $singleHunt ? cta_primary_enigmas_destination($huntId, $userId) : 'allow';
+
+    if ($singleHunt && cta_is_primary_hunt_staff($huntId, $userId)) {
+        return [
+            'cta_html' => sprintf(
+                '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
+                esc_url(cta_get_hunt_page_url($huntId)),
+                esc_html__('Voir', 'chassesautresor-com')
+            ),
+            'cta_message' => '',
+            'type' => 'voir',
+        ];
+    }
 
     if ($singleHunt && $destination === 'login' && ($cta['type'] ?? '') === 'connexion') {
         $loginUrl = class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)

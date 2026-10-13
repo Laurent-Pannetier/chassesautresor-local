@@ -114,6 +114,9 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('#chasse-enigmes-wrapper', $navigation);
         self::assertStringContainsString('Rejoindre la chasse', $navigation);
         self::assertStringContainsString('Reprendre ma progression', $navigation);
+        self::assertStringContainsString('cta_is_primary_hunt_staff', $navigation);
+        self::assertStringContainsString("esc_html__('Voir'", $navigation);
+        self::assertStringContainsString('cta_get_hunt_page_url', $navigation);
         self::assertStringContainsString("esc_html__('Énigmes'", $navigation);
         self::assertStringContainsString('joinLoginUrl', $navigation);
         self::assertStringContainsString('home_url(\'/\')', $this->getSingleHuntTemplate());
