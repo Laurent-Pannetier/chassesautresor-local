@@ -2545,8 +2545,10 @@ body .wp-block-file .wp-block-file__button:focus,
 }
 
 .bouton-cta--color {
-  background-color: var(--color-background-button);
-  color: var(--color-text-primary);
+  background-color: var(--color-signal);
+  color: var(--color-white);
+  border: 0;
+  border-radius: 999px;
 }
 
 .bouton-cta--color:hover {
@@ -2588,8 +2590,8 @@ body .wp-block-file .wp-block-file__button:focus,
 .badge-cout {
   display: inline-block;
   padding: var(--space-xxs) var(--space-xs);
-  background: var(--color-secondary);
-  color: var(--color-text-primary);
+  background: var(--color-brass);
+  color: var(--color-white);
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -2635,9 +2637,9 @@ body .wp-block-file .wp-block-file__button:focus,
 }
 /* ========== ⭐ BOUTON PRIMAIRE ========== */
 .bouton-primaire {
-  background: var(--color-primary);
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-primary);
+  background: var(--color-signal);
+  color: var(--color-white);
+  border: 1px solid var(--color-signal);
   transition: background 0.3s ease, transform 0.2s ease;
   padding: 10px 15px;
   border-radius: 3px;
@@ -2648,8 +2650,10 @@ body .wp-block-file .wp-block-file__button:focus,
 }
 
 .bouton-primaire:hover {
-  background: var(--color-secondary);
-  transform: scale(1.05);
+  background: var(--color-signal-hover);
+  border-color: var(--color-signal-hover);
+  color: var(--color-white);
+  transform: none;
 }
 
 .bouton-primaire:disabled {
@@ -2665,9 +2669,10 @@ body .wp-block-file .wp-block-file__button:focus,
 
 /* ========== 🎯 BOUTON SECONDAIRE ========== */
 .bouton-secondaire {
-  background: var(--color-secondary); /* Orange doré */
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-trail);
+  border: 1px solid var(--color-trail);
+  border-radius: 999px;
   transition: background 0.3s ease, transform 0.2s ease;
   padding: 10px 15px;
   border-radius: 3px;
@@ -2678,9 +2683,9 @@ body .wp-block-file .wp-block-file__button:focus,
 }
 
 .bouton-secondaire:hover {
-  background: var(--color-primary);
-  color: var(--color-text-primary);
-  transform: scale(1.05);
+  background: var(--color-trail);
+  color: var(--color-white);
+  transform: none;
 }
 
 .bouton-secondaire.no-click {
@@ -9703,7 +9708,7 @@ form.is-hotspot-widget.is-immersive-open:focus-visible {
   align-items: center;
   gap: 8px;
   background-color: transparent;
-  color: white;
+  color: var(--color-ink);
   padding: 1px 12px 1px 0;
   border-radius: 24px;
   font-weight: 600;
@@ -9723,8 +9728,8 @@ form.is-hotspot-widget.is-immersive-open:focus-visible {
 /* ========== 🧩 POINTS MANQUANTS CTA ========== */
 .points-link.points-manquants,
 .bouton-cta.points-manquants {
-  background-color: var(--color-background-button);
-  color: var(--color-text-primary);
+  background-color: var(--color-signal);
+  color: var(--color-white);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -9748,12 +9753,17 @@ form.is-hotspot-widget.is-immersive-open:focus-visible {
 
 /* ========== 🧭 POINTS – TOP BAR ========== */
 header .points-link {
-  background-color: var(--color-background-button);
+  background-color: var(--color-brass-soft);
+  color: var(--color-ink);
+  border: 1px solid var(--color-brass);
+  border-radius: 999px;
+  padding: 0.15rem 0.75rem;
 }
 
 header .points-plus-circle {
-  background: white;
-  color: var(--color-background-button); /* Rouge */
+  display: none;
+  background: var(--color-brass);
+  color: var(--color-white);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -9766,8 +9776,9 @@ header .points-plus-circle {
 }
 
 header .points-link:hover {
-  background-color: var(--color-background-button-hover);
-  transform: scale(1.05);
+  background-color: var(--color-brass-soft);
+  color: var(--color-trail);
+  transform: none;
 }
 
 /* ========== ➕ POINTS – BOUTIQUE ICON ========== */
@@ -10072,20 +10083,20 @@ header .points-link:hover {
 /* ========== 🔤 POLICE DE CARACTÈRES ========== */
 /* ========== 🔠 H1 – TITRE PRINCIPAL ========== */
 .page header.entry-header .entry-title, h1 {
-  font-family: "Cinzel", serif;
-  font-weight: 700;
-  line-height: 1.3;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--color-primary);
-  font-size: 42px;
+  font-family: var(--font-display);
+  font-weight: 650;
+  line-height: 1.15;
+  text-transform: none;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+  font-size: 2.5rem;
 }
 
-h1.h1-diff { /* variation couleur bronze, plus petite, centrée */
-  font-size: 36px;
+h1.h1-diff {
+  font-size: 2.15rem;
   text-align: center;
-  letter-spacing: 1px;
-  color: var(--color-accent);
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
 }
 
 @media not all and (min-width: 1024px) {
@@ -10106,13 +10117,13 @@ h1.h1-diff { /* variation couleur bronze, plus petite, centrée */
 }
 /* ========== 🔡 H2 – SOUS-TITRE DE SECTION ========== */
 h2, .entry-content h2 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 600;
-  color: var(--color-titre-enigme); /* or vieilli */
-  line-height: 1.4;
+  font-family: var(--font-display);
+  font-weight: 560;
+  color: var(--color-ink);
+  line-height: 1.2;
   margin-top: var(--space-3xl);
   margin-bottom: var(--space-md);
-  font-size: 32px;
+  font-size: 2rem;
 }
 
 @media not all and (min-width: 1024px) {
@@ -10127,11 +10138,11 @@ h2, .entry-content h2 {
 }
 /* ========== 🔤 H3 – INTERTITRE / BLOCS ========== */
 h3, .entry-content h3 {
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-  color: var(--color-accent); /* bronze */
-  line-height: 1.4;
-  font-size: 24px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  color: var(--color-ink);
+  line-height: 1.35;
+  font-size: 1.25rem;
   margin-top: var(--space-2xl);
   margin-bottom: var(--space-sm);
 }
@@ -10154,23 +10165,19 @@ h3, .entry-content h3 {
 }
 /* ========== 🎨 ÉLÉMENTS HTML NATIFS ========== */
 body {
-  font-family: "Poppins", sans-serif;
-  color: var(--color-text-primary);
-  background-color: var(--color-background); /* Bleu nuit (fond global) */
+  font-family: var(--font-main);
+  color: var(--color-ink);
+  background-color: var(--color-paper);
 }
 
-/* 🟦 Fond global avec motif typographique */
 body,
 body.ast-plain-container,
 body.ast-page-builder-template,
 body.ast-separate-container,
 body.ast-theme-transparent-header,
 body.custom-background {
-  background-color: var(--color-background);
-  background-image: url("../assets/svg/pattern-typographique.svg");
-  background-position: center;
-  background-repeat: repeat;
-  background-size: 600px 600px;
+  background-color: var(--color-paper);
+  background-image: none;
 }
 
 p {
@@ -10883,11 +10890,11 @@ body.accueil-fullscreen {
 }
 
 .home.has-hero .hero-overlay {
-  height: 500px;
+  height: min(42vh, 22rem);
 }
 
 .home.has-hero #content {
-  padding-top: 500px;
+  padding-top: min(42vh, 22rem);
 }
 
 .home-hunts__toolbar {
@@ -10919,24 +10926,25 @@ body.accueil-fullscreen {
   height: 2.75rem;
   padding: 0;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-white);
+  border: 1px solid var(--color-rule);
+  background: var(--color-card);
+  color: var(--color-ink);
   cursor: pointer;
   transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .home-hunts__toolbar-toggle:hover,
 .home-hunts__toolbar-toggle:focus-visible {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
+  background: var(--color-brass-soft);
+  border-color: var(--color-brass);
+  transform: none;
   outline: none;
 }
 
 .home-hunts__toolbar-toggle[aria-expanded=true] {
-  background: rgba(255, 255, 255, 0.24);
-  border-color: rgba(255, 255, 255, 0.45);
+  background: var(--color-brass-soft);
+  border-color: var(--color-trail);
+  color: var(--color-trail);
 }
 
 .home-hunts__toolbar-toggle-icon {
@@ -10961,11 +10969,11 @@ body.accueil-fullscreen {
   flex-direction: column;
   gap: var(--space-lg);
   padding: var(--space-lg);
-  background-color: rgba(var(--color-black-rgb), 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 18px;
-  box-shadow: 0 18px 36px rgba(var(--color-black-rgb), 0.35);
-  color: var(--color-white);
+  background-color: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: 16px;
+  box-shadow: none;
+  color: var(--color-ink);
   grid-column: 1/-1;
   transition: box-shadow var(--transition-medium), transform var(--transition-medium);
   flex: 1 1 280px;
@@ -11002,8 +11010,9 @@ body.accueil-fullscreen {
 .home-hunts-filters:focus-within,
 .home-hunts__filters:focus-within,
 .home-hunts__search:focus-within {
-  box-shadow: 0 22px 40px rgba(var(--color-black-rgb), 0.45);
-  transform: translateY(-2px);
+  box-shadow: none;
+  border-color: var(--color-trail);
+  transform: none;
 }
 
 .home-hunts__filters-form {
@@ -11033,7 +11042,7 @@ body.accueil-fullscreen {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-white);
+  color: var(--color-ink-soft);
 }
 
 .home-hunts__filters-group {
@@ -11059,9 +11068,9 @@ body.accueil-fullscreen {
   min-height: 48px;
   padding: 0.65rem 0.85rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background-color: rgba(var(--color-black-rgb), 0.65);
-  color: var(--color-white);
+  border: 1px solid var(--color-rule);
+  background-color: var(--color-paper);
+  color: var(--color-ink);
   font-size: 1rem;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -11100,17 +11109,17 @@ body.accueil-fullscreen {
   height: 2.75rem;
   padding: 0;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--color-white);
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  color: var(--color-ink);
   transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .home-hunts__filters-reset:hover,
 .home-hunts__filters-reset:focus-visible {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.35);
-  transform: translateY(-1px);
+  background: var(--color-brass-soft);
+  border-color: var(--color-brass);
+  transform: none;
   outline: none;
 }
 
@@ -11143,11 +11152,11 @@ body.accueil-fullscreen {
   min-height: 40px;
   padding: 0.35rem 1rem;
   border-radius: 999px;
-  background: rgba(var(--color-black-rgb), 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--color-brass-soft);
+  border: 1px solid var(--color-brass);
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: var(--color-white);
+  color: var(--color-ink);
   white-space: nowrap;
 }
 
@@ -11180,7 +11189,7 @@ body.accueil-fullscreen {
   margin-top: var(--space-lg);
   min-height: 1.5rem;
   font-size: 0.95rem;
-  color: var(--color-white);
+  color: var(--color-ink-soft);
 }
 
 .home-hunts__feedback--error {
@@ -11209,8 +11218,8 @@ body.accueil-fullscreen {
 
 /* Homepage dedicated to the configured primary hunt. */
 .single-hunt-home {
-  background: radial-gradient(circle at 15% 15%, rgba(255, 215, 0, 0.08), transparent 28rem), var(--color-background);
-  color: var(--color-text-primary);
+  background: var(--color-paper);
+  color: var(--color-ink);
 }
 
 .single-hunt-home section {
@@ -11224,7 +11233,7 @@ body.accueil-fullscreen {
 }
 
 .single-hunt-home h2 {
-  color: var(--color-white);
+  color: var(--color-ink);
   font-size: clamp(1.75rem, 7vw, 3rem);
   line-height: 1.12;
 }
@@ -11249,14 +11258,14 @@ body.accueil-fullscreen {
 
 .single-hunt-home__demo-notice,
 .single-hunt-home__join-notice {
-  border-block: 1px solid rgba(255, 215, 0, 0.3);
-  background: rgba(255, 215, 0, 0.1);
-  color: var(--color-primary);
+  border-block: 1px solid var(--color-rule);
+  background: var(--color-brass-soft);
+  color: var(--color-ink);
 }
 
 .single-hunt-home__access-error {
-  background: rgba(180, 40, 40, 0.2);
-  color: var(--color-white);
+  background: #FDE8E4;
+  color: var(--color-ink);
 }
 
 .single-hunt-home__facts {
@@ -11274,9 +11283,9 @@ body.accueil-fullscreen {
   gap: var(--space-xl);
   align-items: center;
   padding: var(--space-xl);
-  border: 1px solid rgba(255, 215, 0, 0.22);
+  border: 1px solid var(--color-rule);
   border-radius: 1.25rem;
-  background: linear-gradient(120deg, rgba(255, 215, 0, 0.08), transparent 55%), rgba(255, 255, 255, 0.04);
+  background: var(--color-card);
 }
 
 .single-hunt-journey h2 {
@@ -11286,7 +11295,7 @@ body.accueil-fullscreen {
 
 .single-hunt-journey__content > p:last-of-type {
   margin-bottom: 0;
-  color: var(--color-grey-medium);
+  color: var(--color-ink-soft);
 }
 
 .single-hunt-journey__actions {
@@ -11309,7 +11318,7 @@ body.accueil-fullscreen {
   justify-content: space-between;
   gap: var(--space-md);
   margin-bottom: var(--space-xs);
-  color: var(--color-white);
+  color: var(--color-ink);
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -11321,12 +11330,12 @@ body.accueil-fullscreen {
   overflow: hidden;
   border: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--color-rule);
 }
 
 .single-hunt-progress progress::-webkit-progress-bar {
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--color-rule);
 }
 
 .single-hunt-progress progress::-webkit-progress-value {
@@ -11349,14 +11358,14 @@ body.accueil-fullscreen {
 .single-hunt-fact {
   min-width: 0;
   padding: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--color-rule);
   border-radius: 0.9rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-card);
 }
 
 .single-hunt-fact dt {
   margin-bottom: var(--space-xs);
-  color: var(--color-grey-medium);
+  color: var(--color-ink-soft);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -11365,14 +11374,14 @@ body.accueil-fullscreen {
 
 .single-hunt-fact dd {
   margin: 0;
-  color: var(--color-white);
+  color: var(--color-ink);
   font-size: 0.95rem;
   font-weight: 700;
   overflow-wrap: anywhere;
 }
 
 .single-hunt-home__story {
-  background: rgba(0, 0, 0, 0.18);
+  background: transparent;
 }
 
 .single-hunt-home__story-grid {
@@ -11397,9 +11406,9 @@ body.accueil-fullscreen {
   gap: var(--space-sm);
   margin-top: var(--space-lg);
   padding: var(--space-sm) var(--space-md);
-  border-left: 3px solid var(--color-primary);
-  background: rgba(255, 215, 0, 0.08);
-  color: var(--color-white);
+  border-left: 3px solid var(--color-brass);
+  background: var(--color-brass-soft);
+  color: var(--color-ink);
   font-weight: 700;
 }
 
@@ -11445,9 +11454,9 @@ body.accueil-fullscreen {
   gap: var(--space-md);
   align-items: start;
   padding: var(--space-lg);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--color-rule);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-card);
 }
 
 .single-hunt-steps li > span {
@@ -11463,19 +11472,19 @@ body.accueil-fullscreen {
 
 .single-hunt-steps h3 {
   margin-bottom: var(--space-xs);
-  color: var(--color-white);
+  color: var(--color-ink);
   font-size: 1rem;
 }
 
 .single-hunt-steps p {
   margin-bottom: 0;
-  color: var(--color-grey-medium);
+  color: var(--color-ink-soft);
   font-size: 0.9rem;
   line-height: 1.55;
 }
 
 .single-hunt-home__editorial {
-  border-block: 1px solid rgba(255, 255, 255, 0.08);
+  border-block: 1px solid var(--color-rule);
 }
 
 .single-hunt-home__section-heading {
@@ -11494,9 +11503,9 @@ body.accueil-fullscreen {
   gap: var(--space-lg);
   align-items: center;
   padding: var(--space-xl);
-  border: 1px solid rgba(255, 215, 0, 0.24);
+  border: 1px solid var(--color-rule);
   border-radius: 1.25rem;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent 55%), rgba(255, 255, 255, 0.04);
+  background: var(--color-card);
 }
 
 .single-hunt-home__riddles-count {
@@ -11504,7 +11513,7 @@ body.accueil-fullscreen {
   width: 5rem;
   height: 5rem;
   place-items: center;
-  border: 1px solid rgba(255, 215, 0, 0.5);
+  border: 1px solid var(--color-trail);
   border-radius: 50%;
   color: var(--color-primary);
   font-size: 2rem;
@@ -11513,12 +11522,12 @@ body.accueil-fullscreen {
 
 .single-hunt-home__riddles-teaser h3 {
   margin-bottom: var(--space-xs);
-  color: var(--color-white);
+  color: var(--color-ink);
 }
 
 .single-hunt-home__riddles-teaser p {
   margin-bottom: 0;
-  color: var(--color-grey-medium);
+  color: var(--color-ink-soft);
 }
 
 .single-hunt-home__final-cta,
@@ -11527,7 +11536,8 @@ body.accueil-fullscreen {
 }
 
 .single-hunt-home__final-cta {
-  background: linear-gradient(rgba(6, 10, 31, 0.82), rgba(6, 10, 31, 0.92)), url("../assets/svg/pattern-topography.svg") center/cover;
+  background: var(--color-card);
+  border-top: 1px solid var(--color-rule);
 }
 
 .single-hunt-home__actions--centered {
@@ -11560,9 +11570,9 @@ body.accueil-fullscreen {
   gap: var(--space-xs);
   min-height: 2.75rem;
   padding: var(--space-sm) var(--space-md);
-  border: 1px solid rgba(255, 215, 0, 0.55);
+  border: 1px solid var(--color-rule);
   border-radius: 999px;
-  background: rgba(6, 10, 31, 0.94);
+  background: var(--color-card);
   box-shadow: 0 0.75rem 2rem rgba(0, 0, 0, 0.35);
   color: var(--color-primary);
   font-size: 0.78rem;
@@ -11574,8 +11584,8 @@ body.accueil-fullscreen {
 .demo-reset-stats__button:hover,
 .demo-reset-stats__button:focus-visible {
   border-color: var(--color-primary);
-  background: var(--color-background-dark);
-  color: var(--color-white);
+  background: var(--color-paper);
+  color: var(--color-ink);
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
@@ -11613,14 +11623,14 @@ body.accueil-fullscreen {
   .single-hunt-facts {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     padding: var(--space-md);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--color-rule);
     border-radius: 1.25rem;
-    background: rgba(6, 10, 31, 0.92);
-    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.28);
+    background: var(--color-card);
+    box-shadow: none;
   }
   .single-hunt-fact {
     border: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 1px solid var(--color-rule);
     border-radius: 0;
     background: transparent;
   }
@@ -11711,7 +11721,7 @@ header.site-header {
   display: inline-flex;
   align-items: center;
   padding: 0.4rem 0.2rem;
-  color: #fff;
+  color: var(--color-ink);
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.03em;
@@ -11723,12 +11733,12 @@ header.site-header {
 
 .cta-topbar-enigmes__link:hover,
 .cta-topbar-enigmes__link:focus-visible {
-  color: var(--color-primary, #ffd700);
+  color: var(--color-trail);
   outline: none;
 }
 
 .cta-topbar-enigmes.is-current .cta-topbar-enigmes__link {
-  color: var(--color-primary, #ffd700);
+  color: var(--color-trail);
 }
 
 /* The unique top-bar link replaces Astra's primary/mobile menus. */
@@ -11833,13 +11843,14 @@ header.site-header {
 }
 
 .hero-title {
+  font-family: var(--font-display);
   font-size: 1.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  letter-spacing: 1px;
+  font-weight: 650;
+  text-transform: none;
+  color: var(--color-white);
+  letter-spacing: -0.02em;
   margin-bottom: var(--space-md);
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
 }
 
 .hero-title__line1,
@@ -11860,7 +11871,7 @@ header.site-header {
 
 .hero-subtitle {
   font-size: 1rem;
-  color: var(--color-text-primary);
+  color: var(--color-white);
   opacity: 0.95;
   margin-bottom: var(--space-xs);
   max-width: 700px;
@@ -12192,26 +12203,26 @@ body #primary {
 }
 
 .message-erreur {
-  background: var(--color-text-primary, #fff4d4);
-  color: var(--color-text, var(--color-grey-dark));
+  background: #FDE8E4;
+  color: var(--color-ink);
   border-left: 4px solid var(--color-error);
 }
 
 .message-succes {
-  background: var(--color-text-primary, #fff4d4);
-  color: var(--color-text, var(--color-grey-dark));
-  border-left: 4px solid var(--color-success);
+  background: #E5F0EA;
+  color: var(--color-ink);
+  border-left: 4px solid var(--color-trail);
 }
 
 /* ==================================================
    🦶 FOOTER – BARRE LÉGALE COMPACTE
    ================================================== */
 .cat-site-footer {
-  --cat-footer-border: rgba(245, 245, 220, 0.12);
-  --cat-footer-muted: rgba(245, 245, 220, 0.72);
+  --cat-footer-border: var(--color-rule);
+  --cat-footer-muted: var(--color-ink-soft);
   margin-top: var(--space-xl, 2rem);
-  color: var(--color-text-primary);
-  background: var(--color-background-dark, #060A1F);
+  color: var(--color-ink-soft);
+  background: var(--color-paper);
   border-top: 1px solid var(--cat-footer-border);
 }
 
@@ -14952,7 +14963,8 @@ a.bouton-edition-attention {
 /* Legacy aliases */
 :root {
   /* Typographie et breakpoints */
-  --font-main: "Poppins", sans-serif; /* Police principale */
+  --font-display: "Fraunces", "Iowan Old Style", Palatino, serif;
+  --font-main: "Outfit", "Avenir Next", sans-serif;
   --bp-xs: 374px;
   --bp-small: 480px;
   --bp-mobile: 600px;
@@ -14970,43 +14982,55 @@ a.bouton-edition-attention {
   --bp-921: var(--bp-desktop);
   --bp-922: var(--bp-desktop);
   --bp-xl: var(--bp-wide);
-  /* Couleurs globales */
-  --color-primary: #FFD700; /* 🟡 Couleur principale : jaune or */
-  --color-secondary: #E1A95F; /* 🟠 Couleur secondaire : lien */
-  --color-accent: #CD7F32; /* 🟤 Accent : bronze */
-  --color-text-primary: #F5F5DC; /* 📜 Texte principal : beige clair */
-  --color-text-secondary: #555555; /* 🎨 Texte secondaire : gris foncé */
-  --color-titre-enigme: #E5C07B; /* 🏆 Titre des énigmes : or vieilli */
-  --color-background: #0B132B; /* 🎭 Fond général */
-  --color-background-button: #880000; /* 🔘 Fond des boutons : rouge profond */
-  --color-background-button-hover: #a00000; /* 🔘 Survol des boutons : rouge foncé */
-  --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
-  --color-success: #228B22; /* ✅ Barre de progression */
-  --color-filter-accent: #1F3E63; /* 🔵 Mise en avant discrète des filtres */
-  --color-filter-accent-glow: rgba(31, 62, 99, 0.45); /* 🔵 Halo léger pour les interactions des filtres */
+  /* Carnet d'expédition */
+  --color-paper: #F6F1E8;
+  --color-card: #FFFCF7;
+  --color-ink: #1C1915;
+  --color-ink-soft: #5C564C;
+  --color-trail: #1F4D3A;
+  --color-trail-deep: #16382A;
+  --color-brass: #8C6A32;
+  --color-brass-soft: #F3EAD7;
+  --color-signal: #C2410C;
+  --color-signal-hover: #9A3412;
+  --color-rule: #E4DCCF;
+  /* Couleurs globales — alias du carnet, pour les composants existants */
+  --color-primary: var(--color-trail);
+  --color-secondary: var(--color-brass);
+  --color-accent: var(--color-brass);
+  --color-text-primary: var(--color-ink);
+  --color-text-secondary: var(--color-ink-soft);
+  --color-titre-enigme: var(--color-ink);
+  --color-background: var(--color-paper);
+  --color-background-button: var(--color-signal);
+  --color-background-button-hover: var(--color-signal-hover);
+  --color-background-button-inactive: #A9A9A9;
+  --color-success: var(--color-trail);
+  --color-filter-accent: var(--color-trail);
+  --color-filter-accent-glow: rgba(31, 77, 58, 0.28);
   --color-error: #D93025; /* ⚠️ Messages d'erreur */
   --color-white: #FFFFFF; /* ⚪ Blanc */
   --color-black: #000000; /* ⚫ Noir */
   --color-black-rgb: 0, 0, 0; /* ⚫ Noir en RGB */
   --color-grey-light: #EEEEEE; /* 🌫️ Gris clair */
-  --color-grey-medium: #CCCCCC; /* 🌫️ Gris moyen */
+  --color-grey-medium: #8A8175;
   --color-grey-dark: #333333; /* 🌫️ Gris foncé */
-  --input-placeholder-color: #8A8876; /* ✏️ Texte de placeholder lisible sur fonds clairs ou foncés */
-  --color-primary-dark: #B8860B; /* 🟡 Or sombre (dégradé) */
-  --color-background-dark: #060A1F; /* 🎭 Fond sombre profond */
+  --input-placeholder-color: #8A8175;
+  --color-primary-dark: var(--color-trail-deep);
+  --color-background-dark: #EFE6D6;
   --color-gris-3: #adadad; /* ⚪ Gris neutre n°3 */
   --color-text-fond-clair: #1c1c1c; /* noir clair */
   --color-text-fond-clair-rgb: 28, 28, 28; /* noir clair en RGB */
-  --color-gris-carte: #c2c2c2; /* 🧩 Fond de carte énigme : gris bleuté doux */
+  --color-gris-carte: #E7E0D4;
   --color-blue-grey-light: #C9D1E0; /* 💠 Bleu-gris clair */
   /* Groupe d'état : etat-enigme-menu */
   --etat-enigme-menu-en-cours: currentColor; /* état par défaut */
-  --etat-enigme-menu-bloquee: var(--color-grey-medium);
-  --etat-enigme-menu-en-attente: var(--color-grey-medium); /* tentative manuelle en cours */
+  --etat-enigme-menu-bloquee: #8A8175;
+  --etat-enigme-menu-en-attente: #9A6B2F; /* tentative manuelle en cours */
   --etat-enigme-menu-succes: var(--color-success);
   --etat-enigme-menu-non-engagee: transparent;
   --etat-enigme-menu-incomplete: var(--color-error);
-  --etat-enigme-menu-eligible: var(--color-primary); /* chasse éligible à validation */
+  --etat-enigme-menu-eligible: var(--color-brass);
   /* Asides */
   --aside-bg-rgb: 238, 238, 238; /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */
   --aside-border-color: var(--color-grey-medium); /* 🖊 Couleur de bordure des asides */
@@ -15146,4 +15170,135 @@ a.bouton-edition-attention {
   --chart-3: var(--editor-error-hsl);
   --chart-4: var(--editor-button-hover-hsl);
   --chart-5: var(--editor-text-muted-hsl);
+}
+
+/* Carnet d'expédition — chrome public, cartes et lecture d'énigme. */
+.ast-above-header-bar,
+.ast-primary-header-bar,
+.main-header-bar,
+.site-header,
+.site-above-header-wrap {
+  background-color: rgba(246, 241, 232, 0.94);
+  color: var(--color-ink);
+}
+
+.main-header-bar,
+.ast-primary-header-bar {
+  border-bottom: 1px solid var(--color-rule);
+  backdrop-filter: blur(12px);
+}
+
+.ast-builder-menu .menu-link,
+.ast-header-account-link,
+.ast-site-header-cart a,
+.site-header .ast-header-account-wrap,
+.site-header .menu-link {
+  color: var(--color-ink);
+}
+
+.ast-builder-menu .menu-link:hover,
+.ast-builder-menu .menu-link:focus-visible,
+.ast-builder-menu .current-menu-item > .menu-link {
+  color: var(--color-trail);
+}
+
+a:where(:not(.bouton-cta):not(.bouton-primaire):not(.bouton-secondaire):not(.button)) {
+  color: var(--color-trail);
+}
+
+.carte {
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.carte:hover {
+  border-color: var(--color-trail);
+  box-shadow: none;
+}
+
+.cards-grid--poster .carte-enigme,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme {
+  border-color: var(--color-rule);
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.cards-grid--poster .carte-enigme:hover,
+.cards-grid--poster .carte-enigme:focus-within,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:hover,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within {
+  border-color: var(--color-trail);
+  box-shadow: none;
+}
+
+.page-enigme .enigme-texte {
+  max-width: 65ch;
+  color: var(--color-ink);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.page-enigme .enigme-header {
+  border-bottom-color: var(--color-rule);
+}
+
+.page-enigme .participation {
+  background: var(--color-card);
+  border: 1px solid var(--color-rule);
+  border-radius: 16px;
+  color: var(--color-ink);
+}
+
+.page-enigme .zone-indices {
+  background: var(--color-paper);
+  border-radius: 12px;
+}
+
+.page-enigme .message-joueur-statut {
+  margin: 0;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 12px;
+  background: #E5F0EA;
+  color: var(--color-trail);
+  font-weight: 600;
+}
+
+@media not all and (min-width: 1024px) {
+  body:not([class*=edition-active]) .page-enigme .participation {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    border-radius: 16px 16px 0 0;
+  }
+}
+@media (min-width: 1024px) {
+  body:not([class*=edition-active]) .page-enigme {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(17rem, 22rem);
+    -moz-column-gap: var(--space-2xl);
+         column-gap: var(--space-2xl);
+    align-items: start;
+    max-width: 70rem;
+    margin-inline: auto;
+    text-align: left;
+  }
+  body:not([class*=edition-active]) .page-enigme .enigme-hunt-context,
+  body:not([class*=edition-active]) .page-enigme .enigme-header,
+  body:not([class*=edition-active]) .page-enigme .hero-visuel,
+  body:not([class*=edition-active]) .page-enigme .contenu-principal,
+  body:not([class*=edition-active]) .page-enigme .solution {
+    grid-column: 1;
+  }
+  body:not([class*=edition-active]) .page-enigme .participation {
+    grid-column: 2;
+    grid-row: 1/span 8;
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
 }

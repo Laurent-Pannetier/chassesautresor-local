@@ -246,7 +246,7 @@
   align-items: center;
   gap: 8px;
   background-color: transparent;
-  color: white;
+  color: var(--color-ink);
   padding: 1px 12px 1px 0;
   border-radius: 24px;
   font-weight: 600;
@@ -265,8 +265,8 @@
 /* ========== 🧩 POINTS MANQUANTS CTA ========== */
 .points-link.points-manquants,
 .bouton-cta.points-manquants {
-  background-color: var(--color-background-button);
-  color: var(--color-text-primary);
+  background-color: var(--color-signal);
+  color: var(--color-white);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -290,11 +290,16 @@
 /* ========== 🧭 POINTS – TOP BAR ========== */
 
 header .points-link {
-    background-color: var(--color-background-button);
+    background-color: var(--color-brass-soft);
+    color: var(--color-ink);
+    border: 1px solid var(--color-brass);
+    border-radius: 999px;
+    padding: 0.15rem 0.75rem;
 }
 header .points-plus-circle {
-  background: white;
-  color: var(--color-background-button); /* Rouge */
+  display: none;
+  background: var(--color-brass);
+  color: var(--color-white);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -306,8 +311,9 @@ header .points-plus-circle {
   line-height: 1;
 }
 header .points-link:hover {
-  background-color: var(--color-background-button-hover);
-  transform: scale(1.05);
+  background-color: var(--color-brass-soft);
+  color: var(--color-trail);
+  transform: none;
 }
 
 /* ========== ➕ POINTS – BOUTIQUE ICON ========== */

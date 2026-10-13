@@ -1,13 +1,22 @@
 /* Styles personnalisés pour l'interface de connexion */
 :root {
-    --color-background: #0B132B;
-    --color-background-dark: #060A1F;
-    --color-primary: #FFD700;
-    --color-secondary: #E1A95F;
-    --color-text-primary: #F5F5DC;
-    --color-background-button: #880000;
-    --color-background-button-hover: #a00000;
-    --font-main: 'Poppins', sans-serif;
+    --color-paper: #F6F1E8;
+    --color-card: #FFFCF7;
+    --color-ink: #1C1915;
+    --color-trail: #1F4D3A;
+    --color-brass: #8C6A32;
+    --color-rule: #E4DCCF;
+    --color-signal: #C2410C;
+    --color-signal-hover: #9A3412;
+    --color-background: var(--color-paper);
+    --color-background-dark: var(--color-card);
+    --color-primary: var(--color-trail);
+    --color-secondary: var(--color-brass);
+    --color-text-primary: var(--color-ink);
+    --color-background-button: var(--color-signal);
+    --color-background-button-hover: var(--color-signal-hover);
+    --font-display: 'Fraunces', 'Iowan Old Style', Palatino, serif;
+    --font-main: 'Outfit', 'Avenir Next', sans-serif;
 }
 
 body.login {
@@ -48,8 +57,10 @@ body.login .wp-login-logo img {
 }
 
 body.login .login-title {
+    font-family: var(--font-display);
     text-align: center;
     margin-bottom: 1rem;
+    color: var(--color-ink);
 }
 
 body.login #loginform,
@@ -57,7 +68,7 @@ body.login #registerform,
 body.login #lostpasswordform,
 body.login #resetpassform {
     background-color: var(--color-background-dark);
-    border: 1px solid var(--color-primary);
+    border: 1px solid var(--color-rule);
 }
 
 body.login label {
@@ -92,7 +103,7 @@ body.login a:focus {
 body.login #wp-submit {
     background-color: var(--color-background-button);
     border: 1px solid transparent;
-    color: var(--color-text-primary);
+    color: #ffffff;
     width: 100%;
     padding: 0.5rem;
 }
