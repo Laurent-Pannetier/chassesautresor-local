@@ -93,9 +93,12 @@ if ($illimitee) {
 // Edition
 $edition_active = utilisateur_peut_modifier_post($chasse_id);
 
-// Organisateur
+// Organisateur : nom et logo d'en-tête réservés au mode plateforme.
 $organisateur_id = get_organisateur_from_chasse($chasse_id);
 $organisateur_nom = $organisateur_id ? get_the_title($organisateur_id) : get_the_author();
+$afficher_organisateur_entete = $organisateur_id
+    && function_exists('cat_is_platform_mode')
+    && cat_is_platform_mode();
 
 
 if (current_user_can('administrator')) {
@@ -301,7 +304,7 @@ if ($edition_active && !$est_complet) {
         <?php endif; ?>
       </div>
 
-        <?php if ($organisateur_id) :
+        <?php if ($afficher_organisateur_entete) :
             $logo_id = get_field('logo_organisateur', $organisateur_id, false);
             $logo    = wp_get_attachment_image_src($logo_id, 'thumbnail');
             $logo_url = $logo ? $logo[0] : wp_get_attachment_image_src(3927, 'thumbnail')[0];
