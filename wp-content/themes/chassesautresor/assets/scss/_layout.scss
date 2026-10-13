@@ -74,7 +74,7 @@ header.site-header {
     display: inline-flex;
     align-items: center;
     padding: 0.4rem 0.2rem;
-    color: #fff;
+    color: var(--color-ink);
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.03em;
@@ -86,12 +86,12 @@ header.site-header {
 
 .cta-topbar-enigmes__link:hover,
 .cta-topbar-enigmes__link:focus-visible {
-    color: var(--color-primary, #ffd700);
+    color: var(--color-trail);
     outline: none;
 }
 
 .cta-topbar-enigmes.is-current .cta-topbar-enigmes__link {
-    color: var(--color-primary, #ffd700);
+    color: var(--color-trail);
 }
 
 /* The unique top-bar link replaces Astra's primary/mobile menus. */
@@ -194,13 +194,14 @@ header.site-header {
   margin-bottom: var(--space-sm);
 }
 .hero-title {
+  font-family: var(--font-display);
   font-size: 1.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  letter-spacing: 1px;
+  font-weight: 650;
+  text-transform: none;
+  color: var(--color-white);
+  letter-spacing: -0.02em;
   margin-bottom: var(--space-md);
-  text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
 }
 
 .hero-title__line1,
@@ -220,7 +221,7 @@ header.site-header {
 }
 .hero-subtitle {
   font-size: 1rem;
-  color: var(--color-text-primary);
+  color: var(--color-white);
   opacity: 0.95;
   margin-bottom: var(--space-xs);
   max-width: 700px;
@@ -574,15 +575,15 @@ body #primary {
 }
 
 .message-erreur {
-  background: var(--color-text-primary, #fff4d4);
-  color: var(--color-text, var(--color-grey-dark));
+  background: #FDE8E4;
+  color: var(--color-ink);
   border-left: 4px solid var(--color-error);
 }
 
 .message-succes {
-  background: var(--color-text-primary, #fff4d4);
-  color: var(--color-text, var(--color-grey-dark));
-  border-left: 4px solid var(--color-success);
+  background: #E5F0EA;
+  color: var(--color-ink);
+  border-left: 4px solid var(--color-trail);
 }
 
 
@@ -594,11 +595,11 @@ body #primary {
    ================================================== */
 
 .cat-site-footer {
-  --cat-footer-border: rgba(245, 245, 220, 0.12);
-  --cat-footer-muted: rgba(245, 245, 220, 0.72);
+  --cat-footer-border: var(--color-rule);
+  --cat-footer-muted: var(--color-ink-soft);
   margin-top: var(--space-xl, 2rem);
-  color: var(--color-text-primary);
-  background: var(--color-background-dark, #060A1F);
+  color: var(--color-ink-soft);
+  background: var(--color-paper);
   border-top: 1px solid var(--cat-footer-border);
 }
 
