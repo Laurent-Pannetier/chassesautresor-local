@@ -22,6 +22,10 @@ function cta_get_single_hunt_enigmes_nav_url(): string
 
     $status = (string) get_post_status($huntId);
     if ($status === 'publish') {
+        if (class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
+            return \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::enigmasUrl($huntId);
+        }
+
         $permalink = get_permalink($huntId);
 
         return $permalink ? (string) $permalink : home_url('/');
@@ -156,6 +160,10 @@ function cta_render_single_hunt_enigmes_topbar_link(string $row, string $column)
         return;
     }
 
+    if (!cta_single_hunt_enigmas_menu_visible()) {
+        return;
+    }
+
     static $rendered = [
         'desktop' => false,
         'mobile'  => false,
@@ -189,6 +197,43 @@ add_action('astra_render_header_column', 'cta_render_single_hunt_enigmes_topbar_
 add_action('astra_render_mobile_header_column', 'cta_render_single_hunt_enigmes_topbar_link', 5, 2);
 
 /**
+ * Whether the unique "Énigmes" top-bar item is part of the current visitor's path.
+ */
+function cta_single_hunt_enigmas_menu_visible(): bool
+{
+    if (!class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
+        return true;
+    }
+
+    $huntId = function_exists('cat_get_primary_hunt_id') ? cat_get_primary_hunt_id() : 0;
+
+    return \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::menuVisible(
+        $huntId,
+        (int) get_current_user_id()
+    );
+}
+
+/**
+ * Destination of the primary-hunt enigmas gate for the given visitor.
+ */
+function cta_primary_enigmas_destination(int $huntId, int $userId): string
+{
+    if (!class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
+        return 'allow';
+    }
+
+    return \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::destination($huntId, $userId);
+}
+
+/**
+ * Whether the homepage should explain that enigmas require joining the hunt.
+ */
+function cta_should_prompt_hunt_join(int $huntId, int $userId): bool
+{
+    return cta_primary_enigmas_destination($huntId, $userId) === 'home';
+}
+
+/**
  * Builds the context-aware primary-hunt CTA used on the homepage.
  *
  * @return array{cta_html:string,cta_message:string,type:string}
@@ -199,13 +244,52 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
     $cta = function_exists('generer_cta_chasse')
         ? generer_cta_chasse($huntId, $userId)
         : ['cta_html' => '', 'cta_message' => '', 'type' => ''];
+    $singleHunt = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
+    $destination = $singleHunt ? cta_primary_enigmas_destination($huntId, $userId) : 'allow';
+
+    if ($singleHunt && $destination === 'login' && ($cta['type'] ?? '') === 'connexion') {
+        $loginUrl = class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)
+            ? \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::joinLoginUrl()
+            : wp_login_url(home_url('/'));
+
+        return [
+            'cta_html' => sprintf(
+                '<a href="%s" class="bouton-cta bouton-cta--color cta-chasse-action">%s</a>',
+                esc_url($loginUrl),
+                esc_html__('Rejoindre la chasse', 'chassesautresor-com')
+            ),
+            'cta_message' => '',
+            'type' => 'rejoindre',
+        ];
+    }
+
+    if ($singleHunt && $destination === 'home' && ($cta['type'] ?? '') === 'engager') {
+        $html = str_replace(
+            esc_html__('Participer', 'chassesautresor-com'),
+            esc_html__('Rejoindre la chasse', 'chassesautresor-com'),
+            (string) ($cta['cta_html'] ?? '')
+        );
+
+        return [
+            'cta_html' => $html,
+            'cta_message' => (string) ($cta['cta_message'] ?? ''),
+            'type' => 'rejoindre',
+        ];
+    }
 
     if (($cta['type'] ?? '') === 'engage') {
+        $label = $singleHunt
+            ? __('Énigmes', 'chassesautresor-com')
+            : __('Reprendre ma progression', 'chassesautresor-com');
+        $url = class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)
+            ? \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::enigmasUrl($huntId)
+            : get_permalink($huntId) . '#chasse-enigmes-wrapper';
+
         return [
             'cta_html' => sprintf(
                 '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
-                esc_url(get_permalink($huntId) . '#chasse-enigmes-wrapper'),
-                esc_html__('Reprendre ma progression', 'chassesautresor-com')
+                esc_url($url),
+                esc_html($label)
             ),
             'cta_message' => '',
             'type' => 'engage',

@@ -18,6 +18,8 @@ require_once __DIR__ . '/src/Site/SiteExperienceService.php';
 require_once __DIR__ . '/src/Site/site-experience-functions.php';
 require_once __DIR__ . '/src/Site/SiteExperienceSettingsPage.php';
 require_once __DIR__ . '/src/Site/SingleHuntPublicAccessHandler.php';
+require_once __DIR__ . '/src/Site/PlayerEnigmasAccessPolicy.php';
+require_once __DIR__ . '/src/Site/PlayerEnigmasAccessHandler.php';
 require_once __DIR__ . '/src/Users/UserProfileCompletionService.php';
 require_once __DIR__ . '/src/Users/profile-functions.php';
 require_once __DIR__ . '/src/Users/AccountOrdersRenderer.php';
@@ -431,6 +433,7 @@ if (!class_exists('PointsRepository', false)) {
 ChassesAuTresor\Core\Admin\AdminAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Site\SiteExperienceSettingsPage::register('add_action');
 ChassesAuTresor\Core\Site\SingleHuntPublicAccessHandler::register('add_action');
+ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::register('add_action', 'add_filter');
 
 if (!class_exists('UserMessageRepository', false)) {
     class_alias(ChassesAuTresor\Core\Messages\UserMessageRepository::class, 'UserMessageRepository');

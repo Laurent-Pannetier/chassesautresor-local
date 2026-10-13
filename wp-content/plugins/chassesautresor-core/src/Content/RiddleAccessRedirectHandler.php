@@ -32,6 +32,12 @@ final class RiddleAccessRedirectHandler {
         $huntId = (int) $relationships->normalizeId(get_field('enigme_chasse_associee', $riddleId));
 
         if (!is_user_logged_in()) {
+            $gated = self::gatedEntryUrl($huntId, 0);
+            if ($gated !== '') {
+                wp_safe_redirect($gated);
+                exit;
+            }
+
             $url = $huntId > 0 ? get_permalink($huntId) : home_url('/');
             wp_redirect($url);
             exit;
@@ -64,6 +70,12 @@ final class RiddleAccessRedirectHandler {
         }
 
         if (!self::isVisible($userId, $riddleId, $huntId)) {
+            $gated = self::gatedEntryUrl($huntId, $userId);
+            if ($gated !== '') {
+                wp_safe_redirect($gated);
+                exit;
+            }
+
             $fallback_url = $huntId > 0 ? get_permalink($huntId) : home_url('/');
             wp_redirect($fallback_url);
             exit;
@@ -126,6 +138,15 @@ final class RiddleAccessRedirectHandler {
             );
             exit;
         }
+    }
+
+    private static function gatedEntryUrl(int $huntId, int $userId): string
+    {
+        if (!class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
+            return '';
+        }
+
+        return \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::entryRedirectUrl($huntId, $userId);
     }
 
     private static function prerequisitesMet(int $userId, int $riddleId): bool

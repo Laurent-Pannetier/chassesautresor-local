@@ -3337,3 +3337,31 @@ msgstr "No hunts found"
 #: inc/user-functions.php:1444
 msgid "Unable to load attempts. Please try again."
 msgstr "Unable to load attempts. Please try again."
+
+#: inc/single-hunt-navigation.php
+msgid "Rejoindre la chasse"
+msgstr "Join the hunt"
+
+#: template-parts/home/single-hunt.php
+msgid "Vos énigmes."
+msgstr "Your riddles."
+
+#: template-parts/home/single-hunt.php
+msgid "Rejoignez la chasse pour accéder aux énigmes."
+msgstr "Join the hunt to access the riddles."
+
+#: template-parts/home/single-hunt.php
+msgid "Vous n’avez pas assez de points pour rejoindre cette chasse."
+msgstr "You do not have enough points to join this hunt."
+
+#: template-parts/home/single-hunt.php
+msgid "L’engagement n’a pas pu être enregistré."
+msgstr "The enrollment could not be saved."
+
+#: src/Site/PlayerEnigmasAccessHandler.php
+msgid "Connectez-vous pour accéder aux énigmes de %s."
+msgstr "Log in to access the riddles of %s."
+
+#: src/Site/PlayerEnigmasAccessHandler.php
+msgid "Connectez-vous pour accéder aux énigmes."
+msgstr "Log in to access the riddles."

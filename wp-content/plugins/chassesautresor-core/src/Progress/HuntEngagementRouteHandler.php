@@ -56,6 +56,14 @@ final class HuntEngagementRouteHandler
         } elseif ($result['status'] !== 'success') {
             $url = add_query_arg('erreur', 'engagement', $url);
         }
+        if (class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
+            $url = \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::engagementRedirectUrl(
+                $huntId,
+                $userId,
+                $result['status'],
+                (string) $url
+            );
+        }
         wp_safe_redirect($url);
         exit;
     }

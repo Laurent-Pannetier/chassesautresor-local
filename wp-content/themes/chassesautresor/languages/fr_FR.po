@@ -3299,3 +3299,31 @@ msgstr "Aucune chasse trouvée"
 #: inc/user-functions.php:1444
 msgid "Unable to load attempts. Please try again."
 msgstr "Impossible de charger les tentatives. Veuillez réessayer."
+
+#: inc/single-hunt-navigation.php
+msgid "Rejoindre la chasse"
+msgstr "Rejoindre la chasse"
+
+#: template-parts/home/single-hunt.php
+msgid "Vos énigmes."
+msgstr "Vos énigmes."
+
+#: template-parts/home/single-hunt.php
+msgid "Rejoignez la chasse pour accéder aux énigmes."
+msgstr "Rejoignez la chasse pour accéder aux énigmes."
+
+#: template-parts/home/single-hunt.php
+msgid "Vous n’avez pas assez de points pour rejoindre cette chasse."
+msgstr "Vous n’avez pas assez de points pour rejoindre cette chasse."
+
+#: template-parts/home/single-hunt.php
+msgid "L’engagement n’a pas pu être enregistré."
+msgstr "L’engagement n’a pas pu être enregistré."
+
+#: src/Site/PlayerEnigmasAccessHandler.php
+msgid "Connectez-vous pour accéder aux énigmes de %s."
+msgstr "Connectez-vous pour accéder aux énigmes de %s."
+
+#: src/Site/PlayerEnigmasAccessHandler.php
+msgid "Connectez-vous pour accéder aux énigmes."
+msgstr "Connectez-vous pour accéder aux énigmes."

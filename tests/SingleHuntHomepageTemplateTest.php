@@ -51,7 +51,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('$single_hunt ? \'false\' : \'true\'', $template);
     }
 
-    public function testSingleHuntNavigationExposesAUniqueAlwaysVisibleEnigmesLink(): void
+    public function testSingleHuntNavigationKeepsASingleEnigmesLinkForPlayersWhoMayEnter(): void
     {
         $navigation = (string) file_get_contents(
             self::THEME_PATH . '/inc/single-hunt-navigation.php'
@@ -66,6 +66,8 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('astra_render_mobile_header_column', $navigation);
         self::assertStringContainsString("['above', 'primary']", $navigation);
         self::assertStringContainsString('Énigmes', $navigation);
+        self::assertStringContainsString('cta_single_hunt_enigmas_menu_visible', $navigation);
+        self::assertStringContainsString('PlayerEnigmasAccessHandler::menuVisible', $navigation);
         self::assertStringContainsString('cta_get_single_hunt_enigmes_nav_url', $navigation);
         self::assertStringContainsString('cat-single-hunt', $navigation);
         self::assertStringContainsString('cta_get_primary_hunt_cta', $navigation);
@@ -87,7 +89,9 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('$isEngaged', $template);
         self::assertStringContainsString('single-hunt-progress', $template);
         self::assertStringContainsString('<progress', $template);
-        self::assertStringContainsString('Reprenez là où vous vous êtes arrêté.', $template);
+        self::assertStringContainsString('Vos énigmes.', $template);
+        self::assertStringContainsString('Rejoignez la chasse pour accéder aux énigmes.', $template);
+        self::assertStringContainsString('cta_should_prompt_hunt_join', $template);
         self::assertStringNotContainsString('Prochaine étape', $template);
         self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);
         self::assertStringNotContainsString('Modifiez la chasse ou consultez son activité.', $template);
@@ -108,8 +112,15 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('chasse-partial-boucle-enigmes', $template);
         self::assertStringNotContainsString('/#home-enigmes', $navigation);
         self::assertStringContainsString('#chasse-enigmes-wrapper', $navigation);
-        self::assertStringContainsString('cta_get_single_hunt_enigmes_nav_url', $navigation);
-        self::assertStringContainsString("get_permalink(\$huntId)", $navigation);
+        self::assertStringContainsString('Rejoindre la chasse', $navigation);
+        self::assertStringContainsString('Reprendre ma progression', $navigation);
+        self::assertStringContainsString("esc_html__('Énigmes'", $navigation);
+        self::assertStringContainsString('joinLoginUrl', $navigation);
+        self::assertStringContainsString('home_url(\'/\')', $this->getSingleHuntTemplate());
+        self::assertStringNotContainsString(
+            "add_query_arg(\n    'redirect_to',\n    \$huntUrl,",
+            $this->getSingleHuntTemplate()
+        );
     }
 
     public function testDemoModeProvidesAnAuthenticatedStatisticsResetShortcut(): void

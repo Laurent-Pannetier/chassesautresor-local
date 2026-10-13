@@ -82,9 +82,14 @@ $progressPercent = $progressTotal > 0
     : 0;
 $registrationUrl = add_query_arg(
     'redirect_to',
-    $huntUrl,
+    home_url('/'),
     wp_registration_url()
 );
+$promptHuntJoin = function_exists('cta_should_prompt_hunt_join')
+    && cta_should_prompt_hunt_join($huntId, (int) $userId);
+$engagementError = isset($_GET['erreur'])
+    ? sanitize_text_field(wp_unslash((string) $_GET['erreur']))
+    : '';
 $frontPage = get_queried_object();
 $editorialContent = $frontPage instanceof WP_Post
     ? trim((string) apply_filters('the_content', $frontPage->post_content))
@@ -98,6 +103,41 @@ $editorialContent = $frontPage instanceof WP_Post
                 <?php
                 esc_html_e(
                     'Mode démo : cette chasse est présentée sur l’accueil avant sa publication officielle.',
+                    'chassesautresor-com'
+                );
+                ?>
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php if ($promptHuntJoin) : ?>
+        <div class="single-hunt-home__join-notice" role="status">
+            <div class="conteneur">
+                <?php
+                esc_html_e(
+                    'Rejoignez la chasse pour accéder aux énigmes.',
+                    'chassesautresor-com'
+                );
+                ?>
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php if ($engagementError === 'points_insuffisants') : ?>
+        <div class="single-hunt-home__access-error" role="alert">
+            <div class="conteneur">
+                <?php
+                esc_html_e(
+                    'Vous n’avez pas assez de points pour rejoindre cette chasse.',
+                    'chassesautresor-com'
+                );
+                ?>
+            </div>
+        </div>
+    <?php elseif ($engagementError === 'engagement') : ?>
+        <div class="single-hunt-home__access-error" role="alert">
+            <div class="conteneur">
+                <?php
+                esc_html_e(
+                    'L’engagement n’a pas pu être enregistré.',
                     'chassesautresor-com'
                 );
                 ?>
@@ -173,7 +213,7 @@ $editorialContent = $frontPage instanceof WP_Post
                             <?php esc_html_e('Votre progression', 'chassesautresor-com'); ?>
                         </p>
                         <h2 id="single-hunt-journey-title">
-                            <?php esc_html_e('Reprenez là où vous vous êtes arrêté.', 'chassesautresor-com'); ?>
+                            <?php esc_html_e('Vos énigmes.', 'chassesautresor-com'); ?>
                         </h2>
                         <p>
                             <?php
