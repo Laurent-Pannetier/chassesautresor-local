@@ -64,29 +64,22 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
         return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     }
 
+    // L'en-tête ne propose pas « Statistiques » à l'organisateur : le panneau
+    // (engrenage) reste l'accès. On sort avant le bouton « Participer ».
     if (
         $is_orga
         && in_array($statut, ['en_cours', 'payante'], true)
         && in_array($validation, ['valide', 'active'], true)
     ) {
-        $stats_url = function_exists('add_query_arg')
-            ? add_query_arg(['edition' => 'open', 'tab' => 'stats'], $permalink)
-            : $permalink . '?edition=open&tab=stats';
-
-        return [
-            'cta_html'    => sprintf(
-                '<a href="%s" class="cta-chasse-link cta-chasse-link--stats">'
-                . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
-                . '<span>%s</span></a>',
-                esc_url($stats_url),
-                esc_html__('Statistiques', 'chassesautresor-com')
-            ),
-            'cta_message' => '',
-            'type'        => 'statistiques',
-        ];
+        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     }
 
-    if ($is_admin || $is_orga) {
+    // « Participer » n'a pas de sens pour un administrateur.
+    if ($is_admin) {
+        return ['cta_html' => '', 'cta_message' => '', 'type' => ''];
+    }
+
+    if ($is_orga) {
         return [
             'cta_html'    => sprintf(
                 '<button class="bouton-cta" disabled>%s</button>',

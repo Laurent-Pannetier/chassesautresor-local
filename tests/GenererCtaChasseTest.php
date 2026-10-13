@@ -100,12 +100,37 @@ require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functio
  */
 class GenererCtaChasseTest extends TestCase
 {
-    public function test_admin_or_organizer_gets_disabled_button(): void
+    public function test_admin_has_no_participate_button(): void
     {
         $GLOBALS['force_admin_override']        = true;
         $GLOBALS['force_engage_override']       = false;
         $GLOBALS['force_organisateur_override'] = false;
-        $GLOBALS['get_field_values']            = [];
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'en_cours',
+            'chasse_cache_statut_validation' => 'valide',
+        ];
+        $cta                                    = generer_cta_chasse(123, 5);
+
+        $this->assertSame(
+            [
+                'cta_html'    => '',
+                'cta_message' => '',
+                'type'        => '',
+            ],
+            $cta
+        );
+        $this->assertStringNotContainsString('Participer', $cta['cta_html']);
+    }
+
+    public function test_organizer_outside_active_hunt_keeps_disabled_participate(): void
+    {
+        $GLOBALS['force_admin_override']        = false;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = true;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'a_venir',
+            'chasse_cache_statut_validation' => 'valide',
+        ];
         $cta                                    = generer_cta_chasse(123, 5);
 
         $this->assertSame(
@@ -154,7 +179,7 @@ class GenererCtaChasseTest extends TestCase
         );
     }
 
-    public function test_organizer_in_progress_shows_statistics_link(): void
+    public function test_organizer_in_progress_has_no_statistics_link(): void
     {
         $GLOBALS['force_admin_override']        = false;
         $GLOBALS['force_engage_override']       = false;
@@ -164,22 +189,21 @@ class GenererCtaChasseTest extends TestCase
             'chasse_cache_statut_validation' => 'valide',
         ];
 
-        $cta          = generer_cta_chasse(123, 5);
-        $expected_url = 'https://example.com/chasse/123?edition=open&tab=stats';
+        $cta = generer_cta_chasse(123, 5);
 
         $this->assertSame(
             [
-                'cta_html'    => '<a href="' . $expected_url . '" class="cta-chasse-link cta-chasse-link--stats">'
-                    . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
-                    . '<span>Statistiques</span></a>',
+                'cta_html'    => '',
                 'cta_message' => '',
-                'type'        => 'statistiques',
+                'type'        => '',
             ],
             $cta
         );
+        $this->assertStringNotContainsString('Statistiques', $cta['cta_html']);
+        $this->assertStringNotContainsString('Participer', $cta['cta_html']);
     }
 
-    public function test_organizer_with_active_validation_shows_statistics_link(): void
+    public function test_organizer_with_active_validation_has_no_statistics_link(): void
     {
         $GLOBALS['force_admin_override']        = false;
         $GLOBALS['force_engage_override']       = false;
@@ -189,22 +213,13 @@ class GenererCtaChasseTest extends TestCase
             'chasse_cache_statut_validation' => 'active',
         ];
 
-        $cta          = generer_cta_chasse(456, 7);
-        $expected_url = 'https://example.com/chasse/456?edition=open&tab=stats';
+        $cta = generer_cta_chasse(456, 7);
 
-        $this->assertSame(
-            [
-                'cta_html'    => '<a href="' . $expected_url . '" class="cta-chasse-link cta-chasse-link--stats">'
-                    . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
-                    . '<span>Statistiques</span></a>',
-                'cta_message' => '',
-                'type'        => 'statistiques',
-            ],
-            $cta
-        );
+        $this->assertSame(['cta_html' => '', 'cta_message' => '', 'type' => ''], $cta);
+        $this->assertStringNotContainsString('Statistiques', $cta['cta_html']);
     }
 
-    public function test_organizer_with_paid_status_shows_statistics_link(): void
+    public function test_organizer_with_paid_status_has_no_statistics_link(): void
     {
         $GLOBALS['force_admin_override']        = false;
         $GLOBALS['force_engage_override']       = false;
@@ -214,19 +229,27 @@ class GenererCtaChasseTest extends TestCase
             'chasse_cache_statut_validation' => 'valide',
         ];
 
-        $cta          = generer_cta_chasse(789, 11);
-        $expected_url = 'https://example.com/chasse/789?edition=open&tab=stats';
+        $cta = generer_cta_chasse(789, 11);
 
-        $this->assertSame(
-            [
-                'cta_html'    => '<a href="' . $expected_url . '" class="cta-chasse-link cta-chasse-link--stats">'
-                    . '<i class="fa-solid fa-chart-column" aria-hidden="true"></i>'
-                    . '<span>Statistiques</span></a>',
-                'cta_message' => '',
-                'type'        => 'statistiques',
-            ],
-            $cta
-        );
+        $this->assertSame(['cta_html' => '', 'cta_message' => '', 'type' => ''], $cta);
+        $this->assertStringNotContainsString('Statistiques', $cta['cta_html']);
+    }
+
+    public function test_admin_organizer_of_active_hunt_has_neither_cta(): void
+    {
+        $GLOBALS['force_admin_override']        = true;
+        $GLOBALS['force_engage_override']       = false;
+        $GLOBALS['force_organisateur_override'] = true;
+        $GLOBALS['get_field_values']            = [
+            'chasse_cache_statut'            => 'en_cours',
+            'chasse_cache_statut_validation' => 'valide',
+        ];
+
+        $cta = generer_cta_chasse(123, 5);
+
+        $this->assertSame(['cta_html' => '', 'cta_message' => '', 'type' => ''], $cta);
+        $this->assertStringNotContainsString('Statistiques', $cta['cta_html']);
+        $this->assertStringNotContainsString('Participer', $cta['cta_html']);
     }
 
     public function test_organizer_in_creation_has_no_edition_cta(): void
