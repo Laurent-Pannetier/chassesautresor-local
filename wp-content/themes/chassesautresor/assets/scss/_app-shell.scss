@@ -16,7 +16,7 @@ html {
   --shell-accent-soft: rgba(46, 200, 230, 0.2);
   --shell-track: #0c1218;
   --shell-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-  --shell-topbar-height: 4rem;
+  --shell-topbar-height: 4.25rem;
   --shell-sidebar-width: 16.5rem;
   --shell-icon-home: #3ee0f0;
   --shell-icon-progression: #f5b942;
@@ -90,9 +90,9 @@ body.app-shell-active #masthead {
   z-index: 40;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   height: var(--shell-topbar-height);
-  padding: 0 0.75rem;
+  padding: 0 0.7rem;
   background: var(--shell-topbar);
   border-bottom: 1px solid var(--shell-border);
   backdrop-filter: blur(10px);
@@ -150,8 +150,8 @@ body.app-shell-active #masthead {
 .app-topbar__brand .custom-logo {
   display: block;
   width: auto;
-  max-width: 7.25rem;
-  height: 1.65rem;
+  max-width: 6.75rem;
+  height: 1.7rem;
   object-fit: contain;
   object-position: left center;
   filter: none;
@@ -177,9 +177,21 @@ body.app-shell-active #masthead {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.45rem;
+  gap: 0.4rem;
   min-width: 0;
   margin-left: auto;
+}
+
+.app-topbar__team,
+.app-topbar__player,
+.app-topbar__trophies {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.app-topbar__profile,
+.app-topbar__logout {
+  flex-shrink: 0;
 }
 
 .app-topbar__team,
@@ -188,8 +200,8 @@ body.app-shell-active #masthead {
 .app-topbar__logout,
 .app-topbar__login {
   font-family: var(--font-main);
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
 }
@@ -198,14 +210,27 @@ body.app-shell-active #masthead {
 .app-topbar__trophies {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  max-width: 6.25rem;
-  min-height: 2.15rem;
-  padding: 0.3rem 0.65rem;
   border: 1px solid var(--shell-border);
-  border-radius: 999px;
   background: var(--shell-surface);
   color: var(--shell-text);
+}
+
+.app-topbar__team {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.05rem;
+  max-width: 6.5rem;
+  min-height: 2.35rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.85rem;
+}
+
+.app-topbar__trophies {
+  gap: 0.3rem;
+  min-height: 2.2rem;
+  padding: 0 0.6rem;
+  border-radius: 999px;
 }
 
 .app-topbar__team-label,
@@ -217,22 +242,36 @@ body.app-shell-active #masthead {
   white-space: nowrap;
 }
 
-.app-topbar__team-label,
-.app-topbar__trophy-count {
+.app-topbar__team-label {
   color: var(--shell-muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.app-topbar__team-value,
+.app-topbar__trophy-count {
+  color: var(--shell-text);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .app-topbar__player {
   display: none;
-  max-width: 8rem;
+  max-width: 6.5rem;
   color: var(--shell-text);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .app-topbar__trophy-icon,
 .app-topbar__logout span[aria-hidden="true"] {
   display: inline-flex;
-  width: 1.05rem;
-  height: 1.05rem;
+  flex: 0 0 auto;
+  width: 1.1rem;
+  height: 1.1rem;
   color: var(--shell-icon-trophy);
 }
 
@@ -283,10 +322,11 @@ body.app-shell-active #masthead {
   display: inline-flex;
   align-items: center;
   min-height: 2.15rem;
-  padding: 0.35rem 0.85rem;
+  padding: 0.3rem 0.8rem;
   border-radius: 999px;
   background: var(--shell-accent);
   color: var(--shell-accent-text);
+  font-size: 0.9rem;
 }
 
 .app-frame {
@@ -688,6 +728,10 @@ body.app-shell-active #masthead {
 }
 
 @media (--bp-tablet) {
+  html {
+    --shell-topbar-height: 5rem;
+  }
+
   .app-nav-toggle {
     display: none;
   }
@@ -721,13 +765,71 @@ body.app-shell-active #masthead {
   }
 
   .app-topbar {
-    padding: 0 1.25rem;
+    gap: 1.1rem;
+    padding: 0 1.5rem;
   }
 
   .app-topbar__brand img,
   .app-topbar__brand .custom-logo {
-    max-width: 13.5rem;
-    height: 2.25rem;
+    max-width: 16rem;
+    height: 2.6rem;
+  }
+
+  .app-topbar__meta {
+    gap: 1.15rem;
+  }
+
+  .app-topbar__team,
+  .app-topbar__trophies,
+  .app-topbar__player,
+  .app-topbar__logout,
+  .app-topbar__login {
+    font-size: 1.15rem;
+  }
+
+  .app-topbar__team {
+    max-width: 14rem;
+    min-height: 3.25rem;
+    padding: 0.4rem 1rem;
+    border-radius: 1rem;
+  }
+
+  .app-topbar__team-label {
+    font-size: 0.72rem;
+  }
+
+  .app-topbar__trophies {
+    gap: 0.55rem;
+    min-height: 3rem;
+    padding: 0 1.05rem;
+  }
+
+  .app-topbar__team-value,
+  .app-topbar__trophy-count,
+  .app-topbar__player {
+    font-size: 1.2rem;
+  }
+
+  .app-topbar__player {
+    max-width: 14rem;
+  }
+
+  .app-topbar__trophy-icon,
+  .app-topbar__logout span[aria-hidden="true"] {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .app-topbar__profile,
+  .app-topbar__logout {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .app-topbar__login {
+    min-height: 3rem;
+    padding: 0.5rem 1.2rem;
+    font-size: 1.15rem;
   }
 
   .team-stats__grid {
@@ -745,16 +847,15 @@ body.app-shell-active #masthead {
   }
 
   .app-topbar__meta {
-    gap: 0.75rem;
+    gap: 1.35rem;
   }
 
-  .app-topbar__team,
-  .app-topbar__trophies {
-    max-width: none;
+  .app-topbar__team {
+    max-width: 18rem;
   }
 
   .app-topbar__player {
-    max-width: 14rem;
+    max-width: 16rem;
   }
 }
 
