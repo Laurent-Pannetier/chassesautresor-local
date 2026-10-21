@@ -31,11 +31,15 @@ $orders_output = function_exists('afficher_commandes_utilisateur')
 $orders_url = function_exists('wc_get_account_endpoint_url')
     ? wc_get_account_endpoint_url('orders')
     : home_url('/mon-compte/orders/');
+$custom_avatar = function_exists('get_user_meta')
+    ? (string) get_user_meta((int) $user->ID, 'user_avatar', true)
+    : '';
+$has_custom_avatar = $custom_avatar !== '';
 ?>
 
 <div class="account-profile">
     <p class="account-profile__intro">
-        <?php esc_html_e('Nom, e-mail et mot de passe de votre compte.', 'chassesautresor-com'); ?>
+        <?php esc_html_e('Nom, photo, e-mail et mot de passe de votre compte.', 'chassesautresor-com'); ?>
     </p>
     <div class="account-profile__grid">
         <form
@@ -50,6 +54,74 @@ $orders_url = function_exists('wc_get_account_endpoint_url')
                 <h2 id="account-identity-title" class="account-panel__title">
                     <?php esc_html_e('Identité', 'chassesautresor-com'); ?>
                 </h2>
+                <div class="account-avatar">
+                    <div class="profile-avatar-container">
+                        <div class="profile-avatar">
+                            <?php
+                            if (function_exists('get_avatar')) {
+                                echo get_avatar(
+                                    (int) $user->ID,
+                                    96,
+                                    '',
+                                    (string) $user->display_name
+                                ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                            }
+                            ?>
+                        </div>
+                    </div>
+                    <div class="account-avatar__body">
+                        <p class="account-avatar__title">
+                            <?php esc_html_e('Photo de profil', 'chassesautresor-com'); ?>
+                        </p>
+                        <p id="account-avatar-hint" class="account-field__hint">
+                            <?php esc_html_e(
+                                'JPG, PNG, GIF ou WEBP, 2 Mo maximum. La photo est enregistrée immédiatement.',
+                                'chassesautresor-com'
+                            ); ?>
+                        </p>
+                        <div class="account-avatar__actions">
+                            <button
+                                type="button"
+                                class="account-button account-button--ghost upload-avatar-btn"
+                                id="upload-avatar-trigger"
+                                aria-describedby="account-avatar-hint"
+                            >
+                                <?php esc_html_e('Changer la photo', 'chassesautresor-com'); ?>
+                            </button>
+                            <button
+                                type="button"
+                                class="account-button account-button--ghost account-avatar__remove"
+                                id="remove-avatar"
+                                <?php echo $has_custom_avatar ? '' : 'hidden'; ?>
+                            >
+                                <?php esc_html_e('Retirer', 'chassesautresor-com'); ?>
+                            </button>
+                        </div>
+                        <p class="message-size-file-avatar">
+                            <?php esc_html_e('Taille dépassée : 2 Mo max.', 'chassesautresor-com'); ?>
+                        </p>
+                        <p class="message-format-file-avatar">
+                            <?php esc_html_e(
+                                'Format non autorisé. Formats autorisés : JPG, PNG, GIF, WEBP.',
+                                'chassesautresor-com'
+                            ); ?>
+                        </p>
+                        <p
+                            id="avatar-upload-message"
+                            class="account-avatar__status"
+                            role="status"
+                            aria-live="polite"
+                        ></p>
+                    </div>
+                    <input
+                        type="file"
+                        id="upload-avatar"
+                        class="account-avatar__file"
+                        accept="image/jpeg,image/png,image/gif,image/webp"
+                        tabindex="-1"
+                        aria-hidden="true"
+                    />
+                </div>
                 <div class="account-fields">
                     <p class="account-field__hint">
                         <?php esc_html_e(

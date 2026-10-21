@@ -38,8 +38,17 @@ final class AjaxCsrfSecurityTest extends TestCase
         $script = $this->theme('assets/js/avatar-upload.js');
 
         $this->assertStringContainsString("check_ajax_referer('upload_user_avatar', 'nonce');", $handler);
+        $this->assertStringContainsString("check_ajax_referer('remove_user_avatar', 'nonce');", $handler);
         $this->assertStringContainsString("wp_create_nonce('upload_user_avatar')", $theme);
-        $this->assertStringContainsString('formData.append("nonce", (window.avatarUpload && avatarUpload.nonce) || "");', $script);
+        $this->assertStringContainsString("wp_create_nonce('remove_user_avatar')", $theme);
+        $this->assertStringContainsString(
+            'formData.append("nonce", (window.avatarUpload && avatarUpload.nonce) || "");',
+            $script
+        );
+        $this->assertStringContainsString(
+            'formData.append("nonce", config.removeNonce || "");',
+            $script
+        );
     }
 
     public function testUserAttemptsRequiresNonce(): void

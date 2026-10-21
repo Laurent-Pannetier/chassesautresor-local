@@ -24,6 +24,7 @@ final class RemainingPriorityAjaxHandlerRegistrationTest extends TestCase {
                 'handle',
             ],
             'wp_ajax_upload_user_avatar' => [UserAvatarUploadAjaxHandler::class, 'handle'],
+            'wp_ajax_remove_user_avatar' => [UserAvatarUploadAjaxHandler::class, 'remove'],
         ], $hooks);
     }
 }
