@@ -1,5 +1,8 @@
 (function() {
   function init() {
+    if (document.body.classList.contains('single-enigme')) {
+      return;
+    }
     const aside = document.querySelector('.menu-lateral');
     if (!aside) return;
     const bp = getComputedStyle(document.documentElement)
