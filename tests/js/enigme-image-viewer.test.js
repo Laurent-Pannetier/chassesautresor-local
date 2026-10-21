@@ -87,20 +87,15 @@ describe('enigme image viewer', () => {
     expect(document.body.classList.contains('no-scroll')).toBe(false);
   });
 
-  test('mounts an invisible hotspot inside the lightbox for point-and-click steps', () => {
+  test('keeps the lightbox on the picture when older hotspot data is present', () => {
     const trigger = document.querySelector('[data-enigme-lightbox-src="full-2.jpg"]');
     trigger.dataset.riddleHotspotZone = '40,40,20,20';
     trigger.dataset.riddleHotspotStep = '12';
     trigger.dataset.riddleHotspotLabel = 'Zone';
     trigger.click();
 
-    const stage = document.querySelector('.enigme-lightbox__hotspot-stage');
-    const hotspot = document.querySelector('.riddle-gallery-hotspot');
-    expect(stage).not.toBeNull();
-    expect(stage.dataset.riddleHotspotStep).toBe('12');
-    expect(hotspot).not.toBeNull();
-    expect(hotspot.style.left).toBe('40%');
-    expect(hotspot.getAttribute('aria-label')).toBe('Zone');
+    expect(document.querySelector('.enigme-lightbox__hotspot-stage')).toBeNull();
+    expect(document.querySelector('.riddle-gallery-hotspot')).toBeNull();
     expect(document.querySelector('.enigme-lightbox__image').getAttribute('src')).toBe('full-2.jpg');
   });
 

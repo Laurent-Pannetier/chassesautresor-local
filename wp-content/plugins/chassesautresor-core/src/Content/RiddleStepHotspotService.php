@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
-/** Validate and resolve optional image hotspots that reveal step answer widgets. */
+/**
+ * Percent zones from the retired point-and-click display.
+ * Answer widgets now open only from the Répondre button.
+ */
 final class RiddleStepHotspotService {
     public const MODE_ALWAYS = 'always';
     public const MODE_HOTSPOT = 'hotspot';
