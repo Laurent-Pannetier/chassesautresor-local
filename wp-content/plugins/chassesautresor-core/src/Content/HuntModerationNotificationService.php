@@ -12,15 +12,18 @@ final class HuntModerationNotificationService
     private AccountMessageService $messages;
     private Closure $sendEmail;
     private Closure $recipientResolver;
+    private Closure $allowEmail;
 
     public function __construct(
         AccountMessageService $messages,
         ?callable $sendEmail = null,
-        ?callable $recipientResolver = null
+        ?callable $recipientResolver = null,
+        ?callable $allowEmail = null
     ) {
         $this->messages = $messages;
         $this->sendEmail = Closure::fromCallable($sendEmail ?? 'wp_mail');
         $this->recipientResolver = Closure::fromCallable($recipientResolver ?? [$this, 'resolveRecipients']);
+        $this->allowEmail = Closure::fromCallable($allowEmail ?? [$this, 'isPlatformExperience']);
     }
 
     /** @param int[] $userIds */
@@ -33,13 +36,23 @@ final class HuntModerationNotificationService
         string $huntUrl,
         string $administratorMessage = ''
     ): void {
+        $sendCopy = ($this->allowEmail)();
         if ($action === 'correction') {
-            $this->addCorrectionMessages($huntId, $userIds, $huntTitle, $huntUrl, $administratorMessage);
+            $this->addCorrectionMessages(
+                $huntId,
+                $userIds,
+                $huntTitle,
+                $huntUrl,
+                $administratorMessage,
+                $sendCopy
+            );
         } else {
             $this->addFlashMessages($action, $userIds, $huntTitle);
         }
 
-        $this->sendEmail($action, $organizerId, $huntTitle, $huntUrl, $administratorMessage);
+        if ($sendCopy) {
+            $this->sendEmail($action, $organizerId, $huntTitle, $huntUrl, $administratorMessage);
+        }
     }
 
     /** @param int[] $userIds */
@@ -73,7 +86,8 @@ final class HuntModerationNotificationService
         array $userIds,
         string $huntTitle,
         string $huntUrl,
-        string $administratorMessage
+        string $administratorMessage,
+        bool $emailSent
     ): void {
         $text = sprintf(
             __('Votre demande de validation pour la chasse « %s » nécessite des corrections.', 'chassesautresor-com'),
@@ -85,7 +99,9 @@ final class HuntModerationNotificationService
                 nl2br(esc_html($administratorMessage))
             );
         }
-        $text .= '<br>' . __('Une copie de ce message vous a été envoyée par email.', 'chassesautresor-com');
+        if ($emailSent) {
+            $text .= '<br>' . __('Une copie de ce message vous a été envoyée par email.', 'chassesautresor-com');
+        }
 
         foreach ($userIds as $userId) {
             $userId = (int) $userId;
@@ -155,6 +171,11 @@ final class HuntModerationNotificationService
     private static function normalizeRecipients($recipients): array
     {
         return array_values(array_filter(array_map('strval', (array) $recipients)));
+    }
+
+    private function isPlatformExperience(): bool
+    {
+        return function_exists('cat_is_platform_mode') && cat_is_platform_mode();
     }
 
     private function adminEmail(): string
