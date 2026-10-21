@@ -7,10 +7,10 @@
 import {
   AmbientLight,
   DirectionalLight,
-  Group,
   Mesh,
   MeshStandardMaterial,
   PerspectiveCamera,
+  Quaternion,
   Scene,
   SphereGeometry,
   SRGBColorSpace,
@@ -19,6 +19,33 @@ import {
 } from 'three';
 
 var reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+var turnSpeed = 0.0034;
+
+function randomQuaternion() {
+  var u1 = Math.random();
+  var u2 = Math.random();
+  var u3 = Math.random();
+  var twoPi = Math.PI * 2;
+
+  return new Quaternion(
+    Math.sqrt(1 - u1) * Math.sin(twoPi * u2),
+    Math.sqrt(1 - u1) * Math.cos(twoPi * u2),
+    Math.sqrt(u1) * Math.sin(twoPi * u3),
+    Math.sqrt(u1) * Math.cos(twoPi * u3)
+  );
+}
+
+function pickTurn(from) {
+  var next = new Quaternion();
+  var attempt = 0;
+
+  do {
+    next.copy(randomQuaternion());
+    attempt += 1;
+  } while (from.angleTo(next) < 1.15 && attempt < 8);
+
+  return next;
+}
 
 function mount(root) {
   var url = root.getAttribute('data-image') || '';
@@ -65,10 +92,8 @@ function mount(root) {
     metalness: 0.02,
   });
   var mesh = new Mesh(new SphereGeometry(1, 64, 48), material);
-  var axis = new Group();
-  axis.rotation.z = 0.42;
-  axis.add(mesh);
-  scene.add(axis);
+  scene.add(mesh);
+  var turnTarget = pickTurn(mesh.quaternion);
 
   var running = true;
   var frameId = 0;
@@ -97,7 +122,13 @@ function mount(root) {
       return;
     }
     if (!reduceMotionQuery.matches) {
-      mesh.rotation.y += 0.0042;
+      var remaining = mesh.quaternion.angleTo(turnTarget);
+      if (remaining <= turnSpeed) {
+        mesh.quaternion.copy(turnTarget);
+        turnTarget = pickTurn(mesh.quaternion);
+      } else {
+        mesh.quaternion.slerp(turnTarget, turnSpeed / remaining);
+      }
     }
     renderer.render(scene, camera);
     frameId = window.requestAnimationFrame(frame);

@@ -87,6 +87,9 @@ class AppShellPresentationTest extends TestCase
         $source = (string) file_get_contents($theme . '/assets/js/src/hunt-banner-sphere.js');
         $this->assertStringContainsString('SphereGeometry', $source);
         $this->assertStringContainsString('prefers-reduced-motion', $source);
+        $this->assertStringContainsString('quaternion.slerp', $source);
+        $this->assertStringContainsString('turnSpeed = 0.0034', $source);
+        $this->assertStringNotContainsString('rotation.y += 0.0042', $source);
         $bundle = (string) file_get_contents($theme . '/assets/js/hunt-banner-sphere.js');
         $this->assertGreaterThan(50000, strlen($bundle));
     }
