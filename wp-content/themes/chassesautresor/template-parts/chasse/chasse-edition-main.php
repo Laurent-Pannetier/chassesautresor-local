@@ -83,11 +83,11 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
 
     <div class="edition-panel-header">
         <div class="edition-panel-header-top">
-            <h2>
+            <h1>
                 <i class="fa-solid fa-gear"></i>
                 <?= esc_html__('Édition chasse', 'chassesautresor-com'); ?> :
                 <span class="titre-objet" data-cpt="chasse"><?= esc_html($titre); ?></span>
-            </h2>
+            </h1>
         </div>
         <div class="edition-tabs">
           <button class="edition-tab active" data-target="chasse-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>

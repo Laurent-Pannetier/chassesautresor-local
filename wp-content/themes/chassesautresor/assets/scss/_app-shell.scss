@@ -57,6 +57,8 @@ body.app-shell-active #masthead {
 }
 
 .app-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--shell-bg);
@@ -396,6 +398,9 @@ img.avatar-pirate {
 }
 
 .app-frame {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -549,6 +554,9 @@ img.avatar-pirate {
 }
 
 .app-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -559,6 +567,16 @@ img.avatar-pirate {
   max-width: none;
   width: 100%;
   background: transparent;
+}
+
+.app-shell #page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.app-shell #content.site-content {
+  flex: 1 1 auto;
 }
 
 .app-shell .site-content .ast-container,
@@ -875,6 +893,7 @@ html[data-theme="day"] .home-enigmas-preserve {
 
   .app-frame {
     display: flex;
+    flex-direction: row;
     align-items: stretch;
     min-height: calc(100dvh - var(--shell-topbar-height));
   }
@@ -882,6 +901,7 @@ html[data-theme="day"] .home-enigmas-preserve {
   .app-sidebar {
     position: sticky;
     top: var(--shell-topbar-height);
+    align-self: flex-start;
     flex: 0 0 var(--shell-sidebar-width);
     width: var(--shell-sidebar-width);
     height: calc(100dvh - var(--shell-topbar-height));
@@ -1033,9 +1053,25 @@ body.admin-bar .app-topbar {
   top: 32px;
 }
 
+body.shell-edition {
+  --shell-savebar-offset: 4.75rem;
+}
+
+body.shell-edition .app-main {
+  padding-bottom: var(--shell-savebar-offset);
+}
+
+body.shell-edition .app-sidebar {
+  bottom: var(--shell-savebar-offset);
+}
+
 body.admin-bar .app-sidebar {
   top: calc(var(--shell-topbar-height) + 32px);
   height: calc(100dvh - var(--shell-topbar-height) - 32px);
+}
+
+body.admin-bar.shell-edition .app-sidebar {
+  height: calc(100dvh - var(--shell-topbar-height) - 32px - var(--shell-savebar-offset));
 }
 
 @media (max-width: 782px) {
@@ -1046,6 +1082,16 @@ body.admin-bar .app-sidebar {
   body.admin-bar .app-sidebar {
     top: calc(var(--shell-topbar-height) + 46px);
     height: calc(100dvh - var(--shell-topbar-height) - 46px);
+  }
+
+  body.admin-bar.shell-edition .app-sidebar {
+    height: calc(100dvh - var(--shell-topbar-height) - 46px - var(--shell-savebar-offset));
+  }
+}
+
+@media (--bp-tablet) {
+  body.shell-edition .app-sidebar {
+    height: calc(100dvh - var(--shell-topbar-height) - var(--shell-savebar-offset));
   }
 }
 

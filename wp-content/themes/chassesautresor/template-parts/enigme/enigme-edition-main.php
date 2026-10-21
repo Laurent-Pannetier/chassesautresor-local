@@ -75,11 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
 
       <div class="edition-panel-header">
         <div class="edition-panel-header-top">
-          <h2>
+          <h1>
             <i class="fa-solid fa-gear"></i>
             <?= esc_html__('Édition énigme', 'chassesautresor-com'); ?> :
             <span class="titre-objet" data-cpt="enigme"><?= esc_html($titre); ?></span>
-          </h2>
+          </h1>
         </div>
       <div class="edition-tabs">
         <button class="edition-tab active" data-target="enigme-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
