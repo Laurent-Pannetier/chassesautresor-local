@@ -14,8 +14,11 @@ $infos_chasse = $args['infos_chasse'] ?? preparer_infos_affichage_chasse($chasse
 
 $utilisateur_id = get_current_user_id();
 
-// 🔒 Vérification d'accès à la chasse
-if (!chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) return;
+// L'accueil mono-chasse a déjà limité l'audience. La fiche publique reste filtrée.
+$skip_public_visibility = !empty($args['skip_public_visibility']);
+if (!$skip_public_visibility && !chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id)) {
+    return;
+}
 
 $est_orga_associe = $args['est_orga_associe'] ?? utilisateur_est_organisateur_associe_a_chasse($utilisateur_id, $chasse_id);
 $show_help_icon  = $args['show_help_icon'] ?? false;

@@ -111,6 +111,19 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
             self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
         ));
+        $home = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-home.php');
+        $loop = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/enigme/chasse-partial-boucle-enigmes.php'
+        );
+        self::assertStringContainsString("'skip_public_visibility' => true", $home);
+        self::assertStringContainsString('$skip_public_visibility = !empty($args[\'skip_public_visibility\']);', $loop);
+        self::assertStringContainsString(
+            'if (!$skip_public_visibility && !chasse_est_visible_pour_utilisateur($chasse_id, $utilisateur_id))',
+            $loop
+        );
+        self::assertStringNotContainsString('skip_public_visibility', (string) file_get_contents(
+            self::THEME_PATH . '/single-chasse.php'
+        ));
         self::assertStringNotContainsString('cta_should_prompt_hunt_join', $template);
         self::assertStringNotContainsString('Prochaine étape', $template);
         self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);

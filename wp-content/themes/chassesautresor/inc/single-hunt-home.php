@@ -156,6 +156,8 @@ function cat_render_single_hunt_home_enigmas(): void
             'est_orga_associe' => $isOrganizer,
             'infos_chasse' => $infos,
             'show_help_icon' => $showHelp,
+            // Cockpit audience is already admin, linked organizer, or engaged player.
+            'skip_public_visibility' => true,
         ]
     );
     echo '</div>';
