@@ -160,18 +160,14 @@ final class SingleHuntHomepageTemplateTest extends TestCase
 
     public function testDemoModeProvidesAnAuthenticatedStatisticsResetShortcut(): void
     {
-        $dashboard = (string) file_get_contents(
-            self::THEME_PATH . '/template-parts/myaccount/dashboard-organisateur.php'
-        );
-        $adminDashboard = (string) file_get_contents(
-            self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
+        $outils = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/shell/outils.php'
         );
         $theme = (string) file_get_contents(self::THEME_PATH . '/inc/admin-functions.php');
         $script = (string) file_get_contents(self::THEME_PATH . '/assets/js/reset-stats-card.js');
 
-        self::assertStringContainsString('data-reset-stats', $dashboard);
-        self::assertStringContainsString('data-reset-stats', $adminDashboard);
-        self::assertStringContainsString('cat_is_demo_mode', $dashboard);
+        self::assertStringContainsString('data-reset-stats', $outils);
+        self::assertStringContainsString('cat_is_demo_mode', $outils);
         self::assertStringContainsString('cta_render_demo_reset_stats_button', $theme);
         self::assertStringNotContainsString("add_action('wp_footer', 'cta_render_demo_reset_stats_button'", $theme);
         self::assertStringContainsString("querySelectorAll('[data-reset-stats]')", $script);

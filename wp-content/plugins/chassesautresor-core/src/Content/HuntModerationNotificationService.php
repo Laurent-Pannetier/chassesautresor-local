@@ -37,6 +37,10 @@ final class HuntModerationNotificationService
         string $administratorMessage = ''
     ): void {
         $sendCopy = ($this->allowEmail)();
+        if (!$sendCopy) {
+            return;
+        }
+
         if ($action === 'correction') {
             $this->addCorrectionMessages(
                 $huntId,

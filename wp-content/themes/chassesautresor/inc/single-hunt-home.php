@@ -143,6 +143,8 @@ function cat_render_single_hunt_home_enigmas(): void
         && function_exists('chasse_has_validatable_enigme')
         && !chasse_has_validatable_enigme($huntId);
 
+    // Keeps the existing enigmas loop on its previous canvas, away from the shell palette.
+    echo '<div class="home-enigmas-preserve">';
     echo '<section id="enigmes" class="home-enigmas" aria-labelledby="home-enigmas-title">';
     echo '<h2 id="home-enigmas-title" class="screen-reader-text">';
     echo esc_html__('Les énigmes', 'chassesautresor-com');
@@ -163,23 +165,7 @@ function cat_render_single_hunt_home_enigmas(): void
         render_chasse_solutions($huntId, $userId);
     }
     echo '</section>';
-}
-
-/**
- * Short demo line on cockpits. The presentation page keeps its own banner.
- */
-function cat_render_cockpit_demo_notice(): void
-{
-    if (!function_exists('cat_is_demo_mode') || !cat_is_demo_mode()) {
-        return;
-    }
-
-    echo '<p class="myaccount-demo-notice" role="status">';
-    esc_html_e(
-        'Mode démo : cette chasse est présentée avant sa publication officielle.',
-        'chassesautresor-com'
-    );
-    echo '</p>';
+    echo '</div>';
 }
 
 /**

@@ -135,7 +135,7 @@ function cta_redirect_account_page_for_guests() {
 add_action( 'init', 'cta_redirect_account_page_for_guests' );
 
 /**
- * Renders the language switcher in the header.
+ * Language selector removed from the shell. Locale handling stays in cta_handle_language().
  *
  * @param string $row    Header builder row.
  * @param string $column Header builder column.
@@ -143,73 +143,7 @@ add_action( 'init', 'cta_redirect_account_page_for_guests' );
  * @return void
  */
 function cta_render_lang_switcher( $row, $column ) {
-    if ( 'above' !== $row || 'right' !== $column ) {
-        return;
-    }
-
-    $active_locale = '';
-
-    if ( isset( $_GET['lang'] ) ) {
-        $lang         = sanitize_text_field( wp_unslash( $_GET['lang'] ) );
-        $active_locale = 'fr' === $lang ? 'fr_FR' : ( 'en' === $lang ? 'en_US' : '' );
-    }
-
-    if ( ! $active_locale ) {
-        $active_locale = cta_get_locale_from_cookie();
-    }
-
-    if ( ! $active_locale ) {
-        $active_locale = get_locale();
-    }
-
-    $available_langs = [
-        'fr_FR' => [
-            'code'  => 'fr',
-            'label' => __( 'Français', 'chassesautresor-com' ),
-            'flag'  => '🇫🇷',
-        ],
-        'en_US' => [
-            'code'  => 'en',
-            'label' => __( 'English', 'chassesautresor-com' ),
-            'flag'  => '🇬🇧',
-        ],
-    ];
-
-    $current_url = home_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) );
-    $current_url = remove_query_arg( 'lang', $current_url );
-    ?>
-    <div class="lang-switcher ast-builder-layout-element site-header-focus-item">
-        <button
-            class="lang-switcher__toggle"
-            aria-haspopup="true"
-            aria-expanded="false"
-            aria-label="<?php esc_attr_e( 'Change language', 'chassesautresor-com' ); ?>"
-        >
-            <span class="lang-switcher__flag">
-                <?php echo esc_html( $available_langs[ $active_locale ]['flag'] ?? '🇫🇷' ); ?>
-            </span>
-            <span class="lang-switcher__icon">▼</span>
-        </button>
-        <ul class="lang-switcher__options">
-            <?php foreach ( $available_langs as $locale => $data ) : ?>
-                <?php $url = add_query_arg( 'lang', $data['code'], $current_url ); ?>
-                <li class="<?php echo $locale === $active_locale ? 'active' : ''; ?>">
-                    <?php if ( $locale === $active_locale ) : ?>
-                        <span>
-                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
-                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
-                        </span>
-                    <?php else : ?>
-                        <a href="<?php echo esc_url( $url ); ?>">
-                            <span class="lang-switcher__flag"><?php echo esc_html( $data['flag'] ); ?></span>
-                            <span class="lang-switcher__label"><?php echo esc_html( $data['label'] ); ?></span>
-                        </a>
-                    <?php endif; ?>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-    <?php
+    unset( $row, $column );
 }
 add_action( 'astra_render_header_column', 'cta_render_lang_switcher', 999, 2 );
 
@@ -681,6 +615,7 @@ require_once $inc_path . 'single-hunt-navigation.php';
 require_once $inc_path . 'single-hunt-home.php';
 require_once $inc_path . 'single-hunt-seo.php';
 require_once $inc_path . 'footer-functions.php';
+require_once $inc_path . 'app-shell.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';

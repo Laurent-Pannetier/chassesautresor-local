@@ -72,11 +72,8 @@ final class HuntModerationNotificationServiceTest extends TestCase
         $service->notify('correction', 5, 10, [7], 'La chasse', 'https://example.test/chasse', 'À revoir');
 
         self::assertSame([], $emails);
-        self::assertSame('success', $messages->flash[0][1]['type']);
-        self::assertStringNotContainsString(
-            'envoyée par email',
-            (string) $messages->persistent[0][2]['text']
-        );
+        self::assertSame([], $messages->flash);
+        self::assertSame([], $messages->persistent);
     }
 
     public function testCorrectionCreatesScopedPersistentMessages(): void
@@ -85,7 +82,8 @@ final class HuntModerationNotificationServiceTest extends TestCase
         $service = new HuntModerationNotificationService(
             $messages,
             static function (): void {},
-            static fn(int $organizerId): array => ['organizer@example.test']
+            static fn(int $organizerId): array => ['organizer@example.test'],
+            static fn(): bool => true
         );
 
         $service->notify('correction', 5, 10, [7], 'La chasse', 'https://example.test/chasse', 'À revoir');
