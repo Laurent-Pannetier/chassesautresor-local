@@ -11,29 +11,9 @@ defined('ABSPATH') || exit;
 
 $content_template      = $GLOBALS['myaccount_content_template'] ?? null;
 $current_user          = wp_get_current_user();
-$last_active_formatted = '';
-
-if ($current_user->ID) {
-    $last_active_raw = get_user_meta($current_user->ID, 'wc_last_active', true);
-    if ($last_active_raw) {
-        if (is_numeric($last_active_raw)) {
-            $last_active_timestamp = absint($last_active_raw);
-        } else {
-            $last_active_timestamp = strtotime($last_active_raw);
-        }
-
-        if (!empty($last_active_timestamp)) {
-            $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
-            $date_format = strpos($locale, 'fr_') === 0 ? 'd/m/Y' : 'n/j/Y';
-
-            if (function_exists('wp_date')) {
-                $last_active_formatted = wp_date($date_format, $last_active_timestamp);
-            } else {
-                $last_active_formatted = date_i18n($date_format, $last_active_timestamp);
-            }
-        }
-    }
-}
+$last_active_formatted = function_exists('myaccount_format_last_active')
+    ? myaccount_format_last_active((int) $current_user->ID)
+    : '';
 
 get_header();
 ?>
@@ -57,17 +37,19 @@ get_header();
                 && empty($_GET['section'])
                 && !$is_profile_root
             );
-        if (
-            $is_profile_root
+        $is_account_settings = $is_profile_root
             || is_wc_endpoint_url('edit-account')
             || is_wc_endpoint_url('orders')
-            || is_wc_endpoint_url('edit-address')
-        ) {
+            || is_wc_endpoint_url('edit-address');
+        if ($is_profile_root || is_wc_endpoint_url('edit-account') || is_wc_endpoint_url('edit-address')) {
             $page_title = __('Profil', 'chassesautresor-com');
+        } elseif (is_wc_endpoint_url('orders')) {
+            $page_title = __('Commandes', 'chassesautresor-com');
         } elseif (is_wc_endpoint_url('tentatives')) {
             $page_title = __('Tentatives', 'chassesautresor-com');
         }
-        if (!$is_home_screen && ($page_title || $last_active_formatted)) :
+        $show_last_active = $last_active_formatted !== '' && !$is_account_settings;
+        if (!$is_home_screen && ($page_title || $show_last_active)) :
             ?>
             <header class="myaccount-header">
                 <?php if ($page_title) : ?>
@@ -75,7 +57,7 @@ get_header();
                         <span class="myaccount-title-text"><?php echo esc_html($page_title); ?></span>
                     </h1>
                 <?php endif; ?>
-                <?php if ($last_active_formatted) : ?>
+                <?php if ($show_last_active) : ?>
                     <p class="myaccount-last-active">
                         <span class="meta-label">
                             <?php esc_html_e('Dernière connexion :', 'chassesautresor-com'); ?>

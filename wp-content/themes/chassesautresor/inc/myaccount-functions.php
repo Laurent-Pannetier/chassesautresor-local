@@ -333,6 +333,58 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
 }
 
 /**
+ * Plain single-line address, so billing and shipping can be compared.
+ */
+function myaccount_plain_address(string $address): string
+{
+    $text = preg_replace('/<br\s*\/?>/i', ' ', $address);
+    $text = function_exists('wp_strip_all_tags') ? wp_strip_all_tags((string) $text) : strip_tags((string) $text);
+    $text = html_entity_decode((string) $text, ENT_QUOTES, 'UTF-8');
+    $text = preg_replace('/\s+/u', ' ', (string) $text);
+
+    return trim((string) $text);
+}
+
+/**
+ * True when both formatted addresses describe the same place, including both empty.
+ */
+function myaccount_addresses_match(string $billing, string $shipping): bool
+{
+    return myaccount_plain_address($billing) === myaccount_plain_address($shipping);
+}
+
+/**
+ * Last WooCommerce activity date for the account caption, or an empty string.
+ */
+function myaccount_format_last_active(int $user_id): string
+{
+    if ($user_id <= 0 || !function_exists('get_user_meta')) {
+        return '';
+    }
+
+    $last_active_raw = get_user_meta($user_id, 'wc_last_active', true);
+    if (!$last_active_raw) {
+        return '';
+    }
+
+    $last_active_timestamp = is_numeric($last_active_raw)
+        ? absint($last_active_raw)
+        : strtotime((string) $last_active_raw);
+    if (empty($last_active_timestamp)) {
+        return '';
+    }
+
+    $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+    $date_format = strpos((string) $locale, 'fr_') === 0 ? 'd/m/Y' : 'n/j/Y';
+
+    if (function_exists('wp_date')) {
+        return (string) wp_date($date_format, $last_active_timestamp);
+    }
+
+    return (string) date_i18n($date_format, $last_active_timestamp);
+}
+
+/**
  * Render a dashboard section shell.
  *
  * @param string $title   Section title.
