@@ -96,10 +96,7 @@ $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
         <div class="app-topbar__meta">
             <span class="app-topbar__team">
                 <span class="app-topbar__team-label"><?php esc_html_e('Équipe', 'chassesautresor-com'); ?></span>
-                <span class="app-topbar__team-value" aria-hidden="true">—</span>
-                <span class="screen-reader-text">
-                    <?php esc_html_e('Nom de l’équipe non défini', 'chassesautresor-com'); ?>
-                </span>
+                <span class="app-topbar__team-value"><?php esc_html_e('solo', 'chassesautresor-com'); ?></span>
             </span>
             <?php if ($display_name !== '') : ?>
                 <span class="app-topbar__player"><?php echo esc_html($display_name); ?></span>
@@ -111,10 +108,7 @@ $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
                     echo cta_shell_icon('trophy');
                     ?>
                 </span>
-                <span class="app-topbar__trophy-count" aria-hidden="true">—</span>
-                <span class="screen-reader-text">
-                    <?php esc_html_e('Nombre de trophées non défini', 'chassesautresor-com'); ?>
-                </span>
+                <span class="app-topbar__trophy-count">0</span>
             </a>
             <?php if ($profile_url !== '') : ?>
                 <a class="app-topbar__profile" href="<?php echo esc_url($profile_url); ?>">
