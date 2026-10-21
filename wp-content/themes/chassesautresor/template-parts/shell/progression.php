@@ -1,6 +1,6 @@
 <?php
 /**
- * Statistics moved off the home pages.
+ * Progression page: statistics moved off the home pages.
  *
  * Players keep the team slots. Organizers and administrators keep the
  * per-riddle indicators. The figures stay in the Core renderer.
@@ -13,7 +13,7 @@ defined('ABSPATH') || exit;
 $logged_in = function_exists('is_user_logged_in') && is_user_logged_in();
 if (!$logged_in) {
     echo '<p class="app-placeholder__note">';
-    esc_html_e('Connectez-vous pour consulter les statistiques.', 'chassesautresor-com');
+    esc_html_e('Connectez-vous pour consulter votre progression.', 'chassesautresor-com');
     echo '</p>';
     return;
 }

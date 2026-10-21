@@ -1491,7 +1491,7 @@ final class ThemeCoreBoundaryTest extends TestCase
             self::THEME_PATH . '/template-parts/myaccount/dashboard-organisateur.php'
         );
         $statsPage = (string) file_get_contents(
-            self::THEME_PATH . '/template-parts/shell/statistiques.php'
+            self::THEME_PATH . '/template-parts/shell/progression.php'
         );
         $renderer = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountHuntRiddleStatisticsRenderer.php'

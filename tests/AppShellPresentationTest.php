@@ -127,7 +127,7 @@ class AppShellPresentationTest extends TestCase
         $dashboard = (string) file_get_contents(
             $theme . '/template-parts/myaccount/dashboard-joueur.php'
         );
-        $statsPage = (string) file_get_contents($theme . '/template-parts/shell/statistiques.php');
+        $statsPage = (string) file_get_contents($theme . '/template-parts/shell/progression.php');
         $loop = (string) file_get_contents(
             $theme . '/template-parts/enigme/chasse-partial-boucle-enigmes.php'
         );
@@ -138,8 +138,13 @@ class AppShellPresentationTest extends TestCase
         $this->assertNotFalse($banner);
         $this->assertNotFalse($enigmas);
         $this->assertLessThan($enigmas, $banner);
+        $placeholder = (string) file_get_contents($theme . '/templates/shell-placeholder.php');
+        $navigation = (string) file_get_contents($theme . '/inc/myaccount-functions.php');
+
         $this->assertStringNotContainsString('cta_shell_render_team_stats', $dashboard);
         $this->assertStringContainsString('cta_shell_render_team_stats', $statsPage);
+        $this->assertStringContainsString("get_template_part('template-parts/shell/progression')", $placeholder);
+        $this->assertStringNotContainsString("'statistiques'", $navigation);
         $this->assertStringContainsString('class="bloc-enigmes-chasse"', $loop);
         $this->assertStringNotContainsString('team-stat', $loop);
         $this->assertStringNotContainsString('app-shell', $loop);

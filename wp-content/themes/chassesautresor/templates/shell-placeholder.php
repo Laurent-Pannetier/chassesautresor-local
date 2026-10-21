@@ -1,6 +1,6 @@
 <?php
 /**
- * Shell destination: real content for Outils and Statistiques, placeholder otherwise.
+ * Shell destination: real content for Outils and Progression, placeholder otherwise.
  *
  * @package chassesautresor
  */
@@ -25,11 +25,11 @@ if ($show_outils) :
     get_footer();
     return;
 endif;
-if ($slug === 'statistiques') :
+if ($slug === 'progression') :
     ?>
-    <main class="app-statistiques" id="app-statistiques">
+    <main class="app-progression" id="app-progression">
         <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
-        <?php get_template_part('template-parts/shell/statistiques'); ?>
+        <?php get_template_part('template-parts/shell/progression'); ?>
     </main>
     <?php
     get_footer();
