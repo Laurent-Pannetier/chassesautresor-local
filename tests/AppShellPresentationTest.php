@@ -80,7 +80,10 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringNotContainsString('Accès rapide édition', $organizer);
         $this->assertStringNotContainsString('Accès rapide édition', $admin);
         $this->assertStringNotContainsString('cat_render_hunt_quick_edit_card', $outils);
-        $this->assertStringContainsString('Pilotage de la chasse', $outils);
+        $this->assertStringNotContainsString('Pilotage de la chasse', $outils);
+        $this->assertStringNotContainsString('Éditez vos entités', $outils);
+        $this->assertStringContainsString('myaccount-main', $outils);
+        $this->assertStringContainsString('dashboard-grid', $outils);
         $this->assertStringContainsString('renderProtectionCard', $outils);
         $this->assertStringContainsString('Taux de conversion', $outils);
     }

@@ -18,63 +18,56 @@ $can_reset = $is_admin || (
     && is_user_logged_in()
 );
 
-if (!$is_admin) {
-    myaccount_render_dashboard_section(
-        __('Pilotage de la chasse', 'chassesautresor-com'),
-        __('Éditez vos entités et pilotez le cycle de vie depuis cet accueil.', 'chassesautresor-com')
-    );
-}
-?>
-<div class="dashboard-grid">
-    <?php
-    if (function_exists('cat_render_hunt_lifecycle_switch')) {
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-        echo cat_render_hunt_lifecycle_switch($hunt_id);
-    }
-    if ($can_reset) :
-        ?>
-        <div class="dashboard-card">
-            <div class="dashboard-card-header">
-                <i class="fas fa-undo" aria-hidden="true"></i>
-                <h3><?php esc_html_e('Reset stats', 'chassesautresor-com'); ?></h3>
-            </div>
-            <div class="dashboard-card-content">
-                <button type="button" class="btn-danger" data-reset-stats>
-                    <?php esc_html_e('Effacer', 'chassesautresor-com'); ?>
-                </button>
-            </div>
-        </div>
-    <?php endif; ?>
-</div>
-<?php
-if (!$is_admin) {
-    return;
-}
-
 $protection = '';
-if (class_exists(ChassesAuTresor\Core\Messages\AccountToolsRenderer::class)) {
+if ($is_admin && class_exists(ChassesAuTresor\Core\Messages\AccountToolsRenderer::class)) {
     $tools_renderer = new ChassesAuTresor\Core\Messages\AccountToolsRenderer();
     $protection = $tools_renderer->renderProtectionCard();
 }
-if ($protection !== '') :
-    ?>
-    <div class="dashboard-grid">
-        <?php echo $protection; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+?>
+<div class="myaccount-layout">
+    <div class="myaccount-main">
+        <div class="dashboard-grid">
+            <?php
+            if (function_exists('cat_render_hunt_lifecycle_switch')) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo cat_render_hunt_lifecycle_switch($hunt_id);
+            }
+            if ($can_reset) :
+                ?>
+                <div class="dashboard-card">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-undo" aria-hidden="true"></i>
+                        <h3><?php esc_html_e('Reset stats', 'chassesautresor-com'); ?></h3>
+                    </div>
+                    <div class="dashboard-card-content">
+                        <button type="button" class="btn-danger" data-reset-stats>
+                            <?php esc_html_e('Effacer', 'chassesautresor-com'); ?>
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <?php if ($protection !== '') : ?>
+                <?php echo $protection; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+            <?php endif; ?>
+            <?php
+            if ($is_admin) {
+                myaccount_render_dashboard_placeholder(
+                    __('Points', 'chassesautresor-com'),
+                    __(
+                        'Inactif pour le moment. Réactivable plus tard via Expérience du site.',
+                        'chassesautresor-com'
+                    )
+                );
+                myaccount_render_dashboard_placeholder(
+                    __('Taux de conversion', 'chassesautresor-com'),
+                    __('Inactif pour le moment.', 'chassesautresor-com')
+                );
+                myaccount_render_dashboard_placeholder(
+                    __('ACF', 'chassesautresor-com'),
+                    __('Inactif pour le moment.', 'chassesautresor-com')
+                );
+            }
+            ?>
+        </div>
     </div>
-<?php endif; ?>
-<div class="dashboard-grid dashboard-grid--inactive" aria-disabled="true">
-    <?php
-    myaccount_render_dashboard_placeholder(
-        __('Points', 'chassesautresor-com'),
-        __('Inactif pour le moment. Réactivable plus tard via Expérience du site.', 'chassesautresor-com')
-    );
-    myaccount_render_dashboard_placeholder(
-        __('Taux de conversion', 'chassesautresor-com'),
-        __('Inactif pour le moment.', 'chassesautresor-com')
-    );
-    myaccount_render_dashboard_placeholder(
-        __('ACF', 'chassesautresor-com'),
-        __('Inactif pour le moment.', 'chassesautresor-com')
-    );
-    ?>
 </div>
