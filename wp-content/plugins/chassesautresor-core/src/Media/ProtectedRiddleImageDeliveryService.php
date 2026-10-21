@@ -37,6 +37,32 @@ final class ProtectedRiddleImageDeliveryService
     }
 
     /**
+     * Resolve a file and refuse anything that is not a real file inside uploads.
+     */
+    public function confineToUploads(string $absolutePath, ?string $uploadsBasedir = null): ?string
+    {
+        $basedir = $uploadsBasedir ?? (string) (wp_get_upload_dir()['basedir'] ?? '');
+        $basedir = rtrim(str_replace('\\', '/', $basedir), '/');
+        if ($basedir === '') {
+            return null;
+        }
+
+        $realBase = realpath($basedir);
+        $realPath = realpath($absolutePath);
+        if ($realBase === false || $realPath === false || !is_file($realPath)) {
+            return null;
+        }
+
+        $realBase = rtrim(str_replace('\\', '/', $realBase), '/');
+        $realPath = str_replace('\\', '/', $realPath);
+        if ($realPath !== $realBase && !str_starts_with($realPath, $realBase . '/')) {
+            return null;
+        }
+
+        return $realPath;
+    }
+
+    /**
      * Attempt LiteSpeed internal redirect. Returns true when the response should end.
      */
     public function tryLiteSpeedSend(string $absolutePath, string $mime, ?string $serverSoftware = null): bool

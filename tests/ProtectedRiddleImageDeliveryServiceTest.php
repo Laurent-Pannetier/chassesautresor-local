@@ -60,6 +60,48 @@ final class ProtectedRiddleImageDeliveryServiceTest extends TestCase
         self::assertStringContainsString('[F,L]', $rules);
         self::assertStringNotContainsString('Require all denied', $rules);
         self::assertStringContainsString("énigme 42", $rules);
+        self::assertStringNotContainsString('HTTP_REFERER', $rules);
+        self::assertStringNotContainsString('wp-admin', $rules);
+        self::assertStringContainsString('RewriteRule ^ - [F,L]', $rules);
+    }
+
+    public function testConfinesReadableFilesToTheUploadsDirectory(): void
+    {
+        $root = sys_get_temp_dir() . '/cta-uploads-' . uniqid('', true);
+        mkdir($root . '/_enigmes', 0777, true);
+        $inside = $root . '/_enigmes/photo.jpg';
+        file_put_contents($inside, 'img');
+        $outside = sys_get_temp_dir() . '/cta-secret-' . uniqid('', true);
+        file_put_contents($outside, 'secret');
+
+        $service = new ProtectedRiddleImageDeliveryService();
+        $confined = $service->confineToUploads($inside, $root);
+
+        self::assertSame(str_replace('\\', '/', (string) realpath($inside)), $confined);
+        self::assertNull($service->confineToUploads($outside, $root));
+        self::assertNull($service->confineToUploads($root . '/_enigmes/missing.jpg', $root));
+
+        @unlink($inside);
+        @unlink($outside);
+        @rmdir($root . '/_enigmes');
+        @rmdir($root);
+    }
+
+    public function testControllerHardensFormatPathAndResponseHeaders(): void
+    {
+        $source = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
+        );
+
+        self::assertStringContainsString('confineToUploads', $source);
+        self::assertStringContainsString("'fmt'", $source);
+        self::assertStringContainsString('X-Content-Type-Options: nosniff', $source);
+        self::assertStringContainsString('Referrer-Policy: no-referrer', $source);
+        self::assertStringContainsString('image/webp', $source);
+        self::assertLessThan(
+            strpos($source, 'readfile($path)'),
+            strpos($source, 'confineToUploads')
+        );
     }
 
     public function testProtectedControllerPrefersLiteSpeedLocationBeforeReadfile(): void
@@ -77,5 +119,32 @@ final class ProtectedRiddleImageDeliveryServiceTest extends TestCase
             strpos($source, 'readfile($path)'),
             strpos($source, 'tryLiteSpeedSend')
         );
+    }
+
+    public function testOriginalBytesAreKeptUnlessWebpWasRequested(): void
+    {
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedImagePathService.php';
+
+        $directory = sys_get_temp_dir() . '/cta-fmt-' . uniqid('', true);
+        mkdir($directory, 0777, true);
+        $jpeg = $directory . '/photo.jpg';
+        $webp = $directory . '/photo.webp';
+        file_put_contents($jpeg, 'jpg');
+        file_put_contents($webp, 'webp');
+
+        $service = new \ChassesAuTresor\Core\Media\ProtectedImagePathService();
+        $original = $service->applyFormat($jpeg, '');
+        $requested = $service->applyFormat($jpeg, 'webp');
+
+        self::assertSame('image/jpeg', $original['mime']);
+        self::assertSame($jpeg, $original['path']);
+        self::assertSame('image/webp', $requested['mime']);
+        self::assertSame($webp, $requested['path']);
+        self::assertSame('image/jpeg', $service->applyFormat($jpeg, 'avif')['mime']);
+
+        @unlink($jpeg);
+        @unlink($webp);
+        @rmdir($directory);
     }
 }

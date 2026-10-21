@@ -60,4 +60,15 @@ class EnigmeImageDimensionsTest extends TestCase
         $this->assertStringContainsString('taille=thumbnail', $html);
         $this->assertSame(1, substr_count($html, '<source'));
     }
+
+    public function test_hero_floor_skips_thumbnail_on_small_screens(): void
+    {
+        $html = build_picture_enigme(42, 'Planche', ['large', 'full'], ['sizes' => '100vw'], 'large');
+
+        $this->assertStringNotContainsString('taille=thumbnail', $html);
+        $this->assertStringNotContainsString('taille=medium', $html);
+        $this->assertStringContainsString('taille=large', $html);
+        $this->assertStringContainsString('taille=full', $html);
+        $this->assertStringContainsString('sizes="100vw"', $html);
+    }
 }

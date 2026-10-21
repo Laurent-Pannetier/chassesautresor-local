@@ -43,14 +43,20 @@ function get_enigme_picture_breakpoints(): array
 /**
  * Génère le HTML d'un bloc <picture> pour un ID d'image donné.
  *
- * @param int   $image_id     ID de l'image.
- * @param string $alt         Texte alternatif.
- * @param array $sizes        Tailles WordPress à utiliser (la plus grande en dernier).
- * @param array $img_attrs    Attributs supplémentaires pour la balise <img> finale.
+ * @param int    $image_id  ID de l'image.
+ * @param string $alt       Texte alternatif.
+ * @param array  $sizes     Tailles WordPress à utiliser (la plus grande en dernier).
+ * @param array  $img_attrs Attributs supplémentaires pour la balise <img> finale.
+ * @param string $floor     Plus petite taille à inclure. Vide = vignette (comportement historique).
  * @return string
  */
-function build_picture_enigme(int $image_id, string $alt, array $sizes, array $img_attrs = []): string
-{
+function build_picture_enigme(
+    int $image_id,
+    string $alt,
+    array $sizes,
+    array $img_attrs = [],
+    string $floor = ''
+): string {
     $breakpoints = get_enigme_picture_breakpoints();
     $order = ['thumbnail', 'medium', 'large', 'full'];
 
@@ -64,11 +70,25 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         $sizes = ['full'];
     }
 
+    $floor_index = 0;
+    if ($floor !== '' && in_array($floor, $order, true)) {
+        $floor_index = (int) array_search($floor, $order, true);
+    }
+
     $largest_index = max(array_map(
         static fn (string $size): int => (int) array_search($size, $order, true),
         $sizes
     ));
-    $sizes = array_values(array_intersect(array_slice($order, 0, $largest_index + 1), $valid_sizes));
+    if ($largest_index < $floor_index) {
+        $largest_index = $floor_index;
+    }
+    $sizes = array_values(array_intersect(
+        array_slice($order, $floor_index, $largest_index - $floor_index + 1),
+        $valid_sizes
+    ));
+    if (!$sizes) {
+        $sizes = ['full'];
+    }
 
     usort(
         $sizes,
@@ -111,16 +131,20 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
             return file_exists($webp_path) ? esc_url($webp_url) : '';
         };
     } else {
-        $url_builder = static function (int $id, string $size): string {
+        $url_builder = static function (int $id, string $size, string $format = ''): string {
             if (function_exists('cta_voir_image_enigme_url')) {
-                return esc_url(cta_voir_image_enigme_url($id, $size));
+                return esc_url(cta_voir_image_enigme_url($id, $size, null, $format));
             }
-            return esc_url(add_query_arg([
+            $args = [
                 'id'     => $id,
                 'taille' => $size,
-            ], site_url('/voir-image-enigme')));
+            ];
+            if ($format === 'webp') {
+                $args['fmt'] = 'webp';
+            }
+            return esc_url(add_query_arg($args, site_url('/voir-image-enigme')));
         };
-        // WebP is served by the proxy when a sibling .webp exists: never expose uploads/ URLs.
+        // WebP is a distinct signed URL. Clients that cannot decode it keep the original source.
         $webp_builder = static function (int $id, string $size) use ($can_webp, $url_builder): string {
             if (!$can_webp) {
                 return '';
@@ -136,7 +160,7 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
             if (!is_string($webp_path) || $webp_path === $path || !file_exists($webp_path)) {
                 return '';
             }
-            return $url_builder($id, $size);
+            return $url_builder($id, $size, 'webp');
         };
     }
 
@@ -181,7 +205,13 @@ function build_picture_enigme(int $image_id, string $alt, array $sizes, array $i
         $img_attrs['height'] = $dimensions[2];
     }
 
-    $img_attrs['loading'] = 'lazy';
+    $img_attrs['loading'] = ($img_attrs['loading'] ?? '') === 'eager' ? 'eager' : 'lazy';
+    if (!isset($img_attrs['decoding'])) {
+        $img_attrs['decoding'] = 'async';
+    }
+    if (!isset($img_attrs['referrerpolicy'])) {
+        $img_attrs['referrerpolicy'] = 'no-referrer';
+    }
     if (!isset($img_attrs['sizes'])) {
         $img_attrs['sizes'] = '(min-width:1025px) 400px, (min-width:769px) 300px, (min-width:481px) 200px, 100vw';
     }
@@ -402,10 +432,14 @@ function afficher_visuels_enigme(
         $attrs = [
             'class' => $classes,
             'sizes' => '100vw',
+            'decoding' => 'async',
+            'referrerpolicy' => 'no-referrer',
         ];
 
         if ($is_active) {
             $attrs['id'] = 'image-enigme-active';
+            $attrs['loading'] = 'eager';
+            $attrs['fetchpriority'] = 'high';
         }
 
         $figure_classes = 'image-principale galerie-enigme__slide';
@@ -426,7 +460,7 @@ function afficher_visuels_enigme(
             . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
             . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
             . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">';
-        echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs);
+        echo build_picture_enigme($image_id, $alt, ['large', 'full'], $attrs, 'large');
         echo '<span class="enigme-media-zoom__hint" aria-hidden="true">'
             . esc_html__('Agrandir', 'chassesautresor-com') . '</span>';
         echo '</button>';
@@ -486,7 +520,8 @@ function afficher_visuels_enigme(
                     )
                 ) . '">';
             if ($thumb_url !== '') {
-                echo '<img src="' . esc_url($thumb_url) . '" alt="" loading="lazy" width="72" height="72">';
+                echo '<img src="' . esc_url($thumb_url) . '" alt="" loading="lazy" decoding="async"'
+                    . ' referrerpolicy="no-referrer" width="72" height="72">';
             }
             echo '</button>';
         }

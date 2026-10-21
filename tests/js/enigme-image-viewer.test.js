@@ -351,6 +351,22 @@ describe('comic reader', () => {
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
   });
 
+  test('turns a comic page with a short slide instead of a hard cut', () => {
+    document.querySelector('.galerie-enigme__nav--next').click();
+
+    const slides = document.querySelectorAll('.galerie-enigme__slide');
+    expect(slides[1].classList.contains('is-active')).toBe(true);
+    expect(slides[1].classList.contains('is-incoming')).toBe(true);
+    expect(slides[1].hidden).toBe(false);
+    expect(slides[0].classList.contains('is-leaving')).toBe(true);
+    expect(slides[0].hidden).toBe(false);
+
+    jest.advanceTimersByTime(400);
+    expect(slides[0].hidden).toBe(true);
+    expect(slides[0].classList.contains('is-leaving')).toBe(false);
+    expect(slides[1].classList.contains('is-incoming')).toBe(false);
+  });
+
   test('swipe left turns to the next page and does not wrap past the end', () => {
     jest.advanceTimersByTime(2900);
 

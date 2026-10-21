@@ -57,8 +57,10 @@ final class ProtectedRiddleAssetService
     }
 
     /** @return array{path:string,mime:string}|null */
-    public function findImage(int $imageId, string $size = 'full'): ?array
+    public function findImage(int $imageId, string $size = 'full', string $format = ''): ?array
     {
+        $formats = new ProtectedImagePathService();
+        $format = $formats->normalizeFormat($format);
         $source = wp_get_attachment_image_src($imageId, $size === 'full' ? 'full' : $size);
         $url = is_array($source) ? ($source[0] ?? '') : '';
         $uploads = wp_get_upload_dir();
@@ -87,16 +89,15 @@ final class ProtectedRiddleAssetService
         }
 
         if ($path === '' || !is_file($path)) {
-            return $size === 'full' ? null : $this->findImage($imageId);
+            return $size === 'full' ? null : $this->findImage($imageId, 'full', $format);
         }
 
-        $webpPath = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
-        if (is_string($webpPath) && $webpPath !== $path && is_file($webpPath)) {
-            return ['path' => $webpPath, 'mime' => 'image/webp'];
+        $formatted = $formats->applyFormat($path, $format);
+        if ($format === 'webp' && $formatted['mime'] !== 'image/webp') {
+            return $size === 'full' ? null : $this->findImage($imageId, 'full', $format);
         }
 
-        $mime = wp_check_filetype($path)['type'] ?? 'application/octet-stream';
-        return ['path' => $path, 'mime' => $mime];
+        return $formatted;
     }
 
     private function isAssociatedOrganizer(int $userId, int $huntId): bool
