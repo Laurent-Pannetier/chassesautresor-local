@@ -420,8 +420,20 @@ ul.resume-infos > li.edition-optional-fold {
   opacity: 0.8;
 }
 
-.edition-optional-fold:has(.champ-rempli) .edition-optional__marker {
+.edition-optional-fold:has(.champ-rempli) .edition-optional__marker,
+.edition-optional-fold.is-filled .edition-optional__marker {
   background: var(--shell-muted, var(--color-editor-text-muted));
+}
+
+.edition-optional-fold.is-filled .edition-optional__hint {
+  color: var(--shell-text, var(--color-editor-text));
+  font-size: 0.85rem;
+}
+
+.edition-optional-fold.is-filled .edition-optional__hint::before {
+  content: '·';
+  margin-right: 0.4rem;
+  color: var(--shell-muted, var(--color-editor-text-muted));
 }
 
 .edition-optional__title {
@@ -1445,6 +1457,80 @@ body.shell-edition .edition-panel .riddle-final-answer-edit:focus {
   background: var(--shell-accent-strong);
   color: var(--shell-accent-text);
   opacity: 1;
+}
+
+body.shell-edition .edition-panel-section {
+  border: 0;
+  margin-bottom: 0;
+  padding: 0;
+  background: transparent;
+}
+
+body.shell-edition .edition-panel-body {
+  min-height: 0;
+  padding: 0.25rem 0 0;
+}
+
+body.shell-edition .edition-format-hint {
+  margin: 0.4rem 0 0;
+  max-width: 36rem;
+  color: var(--shell-muted);
+}
+
+@media (min-width: 768px) {
+  body.shell-edition .edition-panel-body input.champ-texte-edit {
+    width: min(100%, 36rem);
+  }
+}
+
+body.shell-edition .edition-panel .champ-ajouter,
+body.shell-edition .edition-panel .champ-modifier.ouvrir-panneau-description,
+body.shell-edition .edition-panel .ouvrir-panneau-images {
+  color: var(--shell-accent);
+  opacity: 1;
+  background: transparent;
+  font-weight: 600;
+}
+
+body.shell-edition .edition-panel .champ-ajouter:hover,
+body.shell-edition .edition-panel .champ-ajouter:focus,
+body.shell-edition .edition-panel .champ-modifier.ouvrir-panneau-description:hover,
+body.shell-edition .edition-panel .champ-modifier.ouvrir-panneau-description:focus {
+  color: var(--shell-accent-strong);
+  background: transparent;
+  opacity: 1;
+}
+
+body.shell-edition .edition-panel .champ-img .champ-ajout-image {
+  color: var(--shell-accent);
+  font-weight: 600;
+}
+
+body.shell-edition .champ-mode-options .switch-slider {
+  background: var(--shell-track);
+}
+
+body.shell-edition .champ-mode-options .switch-slider::before {
+  background: var(--shell-text);
+}
+
+body.shell-edition .champ-mode-options .switch-control input:checked + .switch-slider {
+  background: var(--shell-accent);
+}
+
+body.shell-edition .champ-mode-options .switch-control input:checked + .switch-slider::before {
+  background: var(--shell-accent-text);
+}
+
+body.shell-edition .champ-cout-points .toggle-option {
+  color: var(--shell-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+body.shell-edition .champ-cout-points:not(:has(#enigme-cout-toggle:checked)) .toggle-option:first-of-type,
+body.shell-edition .champ-cout-points:has(#enigme-cout-toggle:checked) .toggle-option:nth-of-type(2) {
+  color: var(--shell-text);
 }
 
 body.shell-edition .edition-panel-enigme,

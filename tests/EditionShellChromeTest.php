@@ -90,6 +90,22 @@ final class EditionShellChromeTest extends TestCase
         $this->assertStringContainsString('color: var(--shell-text, #152033);', $aside);
     }
 
+    public function testEnigmaEditionKeepsOptionalCopyVisibleAndReadable(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $riddle = (string) file_get_contents($theme . '/template-parts/enigme/enigme-edition-main.php');
+        $styles = (string) file_get_contents($theme . '/assets/scss/_edition.scss');
+        $script = (string) file_get_contents($theme . '/assets/js/enigme-edit.js');
+
+        $this->assertStringContainsString('edition-format-hint', $riddle);
+        $this->assertStringContainsString('data-empty-label', $riddle);
+        $this->assertStringContainsString("esc_html__('Gratuit'", $riddle);
+        $this->assertStringNotContainsString("esc_html__('Free'", $riddle);
+        $this->assertStringContainsString('body.shell-edition .edition-format-hint', $styles);
+        $this->assertStringContainsString('width: min(100%, 36rem);', $styles);
+        $this->assertStringContainsString('function refreshOptionalCopySummary()', $script);
+    }
+
     public function testFooterReachesTheBottomOfTheDashboardMenu(): void
     {
         $styles = (string) file_get_contents(

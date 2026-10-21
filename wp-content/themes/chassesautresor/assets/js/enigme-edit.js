@@ -1364,6 +1364,45 @@ function mettreAJourCartesStats() {
   }
 }
 
+function refreshOptionalCopySummary() {
+  const fold = document.querySelector('.edition-optional-fold');
+  const hint = fold?.querySelector('.edition-optional__hint');
+  if (!fold || !hint) return;
+
+  const subtitle = document.getElementById('champ-soustitre-enigme')?.value.trim() || '';
+  const text = document.querySelector('[data-champ="enigme_visuel_texte"] .champ-texte-contenu')?.textContent.trim() || '';
+  const excerpt = (subtitle || text).replace(/\s+/g, ' ');
+  const emptyLabel = hint.dataset.emptyLabel || 'optionnel';
+  const next = excerpt
+    ? (excerpt.length > 60 ? `${excerpt.slice(0, 59)}…` : excerpt)
+    : emptyLabel;
+  const filled = excerpt !== '';
+
+  if (hint.textContent !== next) {
+    hint.textContent = next;
+  }
+  if (filled !== fold.classList.contains('is-filled')) {
+    fold.classList.toggle('is-filled', filled);
+  }
+}
+
+function initOptionalCopySummary() {
+  const fold = document.querySelector('.edition-optional-fold');
+  if (!fold) return;
+
+  document.getElementById('champ-soustitre-enigme')?.addEventListener('input', refreshOptionalCopySummary);
+  new MutationObserver(refreshOptionalCopySummary).observe(fold, {
+    subtree: true,
+    childList: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+  refreshOptionalCopySummary();
+}
+
+document.addEventListener('DOMContentLoaded', initOptionalCopySummary);
+
 function initPagerTentatives() {
   const wrapper = document.querySelector('#enigme-tab-soumission .liste-tentatives');
   const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;

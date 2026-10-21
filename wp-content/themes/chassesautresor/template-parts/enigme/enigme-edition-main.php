@@ -151,10 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           'label' => function () {
                               ?>
                               <label><?= esc_html__('Illustrations', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
-                              <p class="edition-format-hint"><?= esc_html__(
-                                  'Format BD : 1920 × 1080 px (16:9), une image par page.',
-                                  'chassesautresor-com'
-                              ); ?></p>
                               <?php
                           },
                           'content' => function () use ($has_images_utiles, $images_ids, $peut_editer, $enigme_id) {
@@ -207,6 +203,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                   <?php endif; ?>
                                 <?php endif; ?>
                               </div>
+                              <p class="edition-format-hint"><?= esc_html__(
+                                  'Format BD : 1920 × 1080 px (16:9), une image par page.',
+                                  'chassesautresor-com'
+                              ); ?></p>
                               <?php if ($inlineImages) : ?>
                                 <div class="champ-images-editeur" hidden>
                                   <?php
@@ -238,15 +238,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   );
                   ?>
 
-                  <li class="edition-optional-fold">
+                  <?php
+                  $texte_brut = trim(wp_strip_all_tags($texte_enigme));
+                  $legende_brut = trim($legende);
+                  $apercu_optionnel = $legende_brut !== '' ? $legende_brut : $texte_brut;
+                  if ($apercu_optionnel !== '') {
+                      $apercu_optionnel = wp_html_excerpt($apercu_optionnel, 60, '…');
+                  }
+                  ?>
+                  <li class="edition-optional-fold<?= $apercu_optionnel !== '' ? ' is-filled' : ''; ?>">
                     <details class="edition-optional">
                       <summary class="edition-optional__summary">
                         <span class="edition-optional__marker" aria-hidden="true"></span>
                         <span class="edition-optional__title">
                           <?= esc_html__('Texte et sous-titre', 'chassesautresor-com'); ?>
                         </span>
-                        <span class="edition-optional__hint">
-                          <?= esc_html__('optionnel', 'chassesautresor-com'); ?>
+                        <span
+                          class="edition-optional__hint"
+                          data-empty-label="<?= esc_attr__('optionnel', 'chassesautresor-com'); ?>"
+                        >
+                          <?= esc_html($apercu_optionnel !== '' ? $apercu_optionnel : __('optionnel', 'chassesautresor-com')); ?>
                         </span>
                       </summary>
                       <ul class="resume-infos edition-optional__fields">
@@ -684,7 +695,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                     'content' => function () use ($cout, $peut_editer, $is_payant, $enigme_id) {
                         ?>
                         <div class="champ-mode-options">
-                            <span class="toggle-option"><?= esc_html__('Free', 'chassesautresor-com'); ?></span>
+                            <span class="toggle-option"><?= esc_html__('Gratuit', 'chassesautresor-com'); ?></span>
                             <label class="switch-control">
                                 <input type="checkbox" id="enigme-cout-toggle" <?= $is_payant ? 'checked' : ''; ?> <?= $peut_editer ? '' : 'disabled'; ?>>
                                 <span class="switch-slider"></span>
