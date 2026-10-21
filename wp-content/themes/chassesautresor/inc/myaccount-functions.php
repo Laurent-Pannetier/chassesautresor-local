@@ -189,11 +189,36 @@ function myaccount_render_dashboard_placeholder(string $title, string $message):
 }
 
 /**
+ * The Edit / Activate switch lives on the account home, and on the front page
+ * once a single-hunt organizer or administrator cockpit is shown there.
+ */
+function myaccount_hunt_lifecycle_switch_is_needed(): bool
+{
+    if (!is_user_logged_in()) {
+        return false;
+    }
+
+    if (function_exists('is_account_page') && is_account_page()) {
+        return true;
+    }
+
+    if (!function_exists('is_front_page') || !is_front_page()) {
+        return false;
+    }
+
+    if (!function_exists('cat_single_hunt_home_audience')) {
+        return false;
+    }
+
+    return in_array(cat_single_hunt_home_audience(), ['organisateur', 'admin'], true);
+}
+
+/**
  * Enqueue account-home lifecycle switch assets.
  */
 function myaccount_enqueue_hunt_lifecycle_switch(): void
 {
-    if (!is_account_page() || !is_user_logged_in()) {
+    if (!myaccount_hunt_lifecycle_switch_is_needed()) {
         return;
     }
 

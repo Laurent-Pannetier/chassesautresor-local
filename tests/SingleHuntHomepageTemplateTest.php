@@ -111,6 +111,10 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
             self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
         ));
+        $account = (string) file_get_contents(self::THEME_PATH . '/inc/myaccount-functions.php');
+        self::assertStringContainsString('function myaccount_hunt_lifecycle_switch_is_needed', $account);
+        self::assertStringContainsString("['organisateur', 'admin']", $account);
+        self::assertStringContainsString('cat_single_hunt_home_audience()', $account);
         self::assertStringNotContainsString('cta_should_prompt_hunt_join', $template);
         self::assertStringNotContainsString('Prochaine étape', $template);
         self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);
