@@ -55,6 +55,24 @@ final class ShellEditionSaveWiringTest extends TestCase {
         $this->assertStringContainsString('enigme_visuel_image', $mutation);
         $this->assertStringContainsString('protectAfterSave', $riddleHandler);
         $this->assertStringNotContainsString('sleep(', $this->batchMethod($huntHandler));
+        $this->assertStringContainsString('Édition énigme', $template);
+        $this->assertStringNotContainsString('panneau-fermer', $template);
+        $this->assertStringContainsString('Édition chasse', $huntTemplate);
+        $this->assertStringNotContainsString('panneau-fermer', $huntTemplate);
+        $this->assertStringContainsString('shell-edition-save__cancel', $queue);
+        $this->assertStringContainsString('function restore()', $queue);
+        $this->assertStringContainsString('registerExtra', $queue);
+        $steps = (string) file_get_contents(
+            $root . '/wp-content/themes/chassesautresor/assets/js/riddle-steps-edit.js'
+        );
+        $answer = (string) file_get_contents(
+            $root . '/wp-content/themes/chassesautresor/assets/js/enigme-final-answer-edit.js'
+        );
+        $this->assertStringContainsString("setExtra('etape'", $steps);
+        $this->assertStringContainsString('supprimer_etape_enigme', $steps);
+        $this->assertStringContainsString('reordonner_etapes_enigme', $steps);
+        $this->assertStringContainsString("setExtra('reponse-finale'", $answer);
+        $this->assertStringContainsString('enregistrer_reponse_finale_enigme', $answer);
     }
 
     private function batchMethod(string $source): string {

@@ -5397,23 +5397,48 @@ body.shell-edition {
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.shell-edition-save__button {
+.shell-edition-save__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.shell-edition-save__button,
+.shell-edition-save__cancel {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
-  margin-left: auto;
   min-height: 2.25rem;
   padding: 0.35rem 0.9rem;
-  border: 0;
   border-radius: 999px;
-  background: var(--shell-accent, #14b4cc);
-  color: var(--shell-accent-text, #042229);
   font: inherit;
-  font-weight: 700;
   cursor: pointer;
 }
 
-.shell-edition-save__button:disabled {
+.shell-edition-save__button {
+  border: 0;
+  background: var(--shell-accent, #14b4cc);
+  color: var(--shell-accent-text, #042229);
+  font-weight: 700;
+}
+
+.shell-edition-save__cancel {
+  border: 1px solid var(--shell-border, var(--color-editor-border));
+  background: transparent;
+  color: var(--shell-text, var(--color-editor-text));
+  font-weight: 600;
+}
+
+.shell-edition-save__button:hover:not(:disabled),
+.shell-edition-save__cancel:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+.shell-edition-save__button:disabled,
+.shell-edition-save__cancel:disabled {
   opacity: 0.45;
   cursor: default;
 }

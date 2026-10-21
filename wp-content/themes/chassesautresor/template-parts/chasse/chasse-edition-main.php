@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Template Part: Panneau d'édition frontale d'une chasse
+ * Template Part: Édition d'une chasse dans le dashboard
  * Requiert : $args['chasse_id']
  */
 
@@ -85,10 +85,9 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
         <div class="edition-panel-header-top">
             <h2>
                 <i class="fa-solid fa-gear"></i>
-                <?= esc_html__('Panneau d\'édition chasse', 'chassesautresor-com'); ?> :
+                <?= esc_html__('Édition chasse', 'chassesautresor-com'); ?> :
                 <span class="titre-objet" data-cpt="chasse"><?= esc_html($titre); ?></span>
             </h2>
-            <button type="button" class="panneau-fermer" aria-label="Fermer les paramètres">✖</button>
         </div>
         <div class="edition-tabs">
           <button class="edition-tab active" data-target="chasse-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>

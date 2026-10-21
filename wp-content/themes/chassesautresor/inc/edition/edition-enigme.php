@@ -91,6 +91,10 @@ function enqueue_script_enigme_edit()
       'edit' => __('Modifier', 'chassesautresor-com'),
       'delete' => __('Supprimer', 'chassesautresor-com'),
       'confirmDelete' => __('Supprimer définitivement cette étape ?', 'chassesautresor-com'),
+      'abandon' => __(
+        'Des modifications de cette étape ne sont pas enregistrées. Les abandonner ?',
+        'chassesautresor-com'
+      ),
       'error' => __('Une erreur est survenue. Rechargez la page et réessayez.', 'chassesautresor-com'),
     ],
   ]);

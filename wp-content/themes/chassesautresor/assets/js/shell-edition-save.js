@@ -1,5 +1,5 @@
 // File d'attente des champs simples sur la page d'édition du dashboard.
-// Les tiroirs, images, suppression et clôture de chasse restent immédiats.
+// Les tiroirs, la suppression, le réordonnancement et la clôture de chasse restent immédiats.
 
 (function () {
   const closureFields = [
@@ -11,11 +11,16 @@
   let dates = null;
   let dateBaseline = null;
   const baselines = new Map();
+  const blocState = new Map();
+  const galleryMarkup = new Map();
+  const extras = new Map();
   let saving = false;
+  let restoring = false;
   let allowUnload = false;
   let state = 'idle';
   let errorMessage = '';
   let button = null;
+  let cancelButton = null;
   let statusNode = null;
   let savedTimer = 0;
   let imageAccessOpen = false;
@@ -65,11 +70,50 @@
     };
   }
 
+  function storeBloc(bloc) {
+    const champ = bloc?.dataset.champ;
+    if (!champ) return;
+    const display = bloc.querySelector(
+      '.champ-affichage .champ-valeur, .champ-affichage h1, .champ-affichage h2, .champ-affichage p'
+    );
+    blocState.set(champ, {
+      vide: bloc.classList.contains('champ-vide'),
+      rempli: bloc.classList.contains('champ-rempli'),
+      dataRempli: bloc.hasAttribute('data-rempli') ? (bloc.dataset.rempli || '') : null,
+      displayText: display ? display.textContent : null,
+    });
+  }
+
+  function applyBlocStates() {
+    blocState.forEach((saved, champ) => {
+      const bloc = document.querySelector(`.shell-edition [data-champ="${champ}"]`);
+      if (!bloc) return;
+      bloc.classList.toggle('champ-vide', saved.vide);
+      bloc.classList.toggle('champ-rempli', saved.rempli);
+      if (saved.dataRempli !== null) {
+        bloc.dataset.rempli = saved.dataRempli;
+      }
+      if (saved.displayText === null) return;
+      const display = bloc.querySelector(
+        '.champ-affichage .champ-valeur, .champ-affichage h1, .champ-affichage h2, .champ-affichage p'
+      );
+      if (display) display.textContent = saved.displayText;
+    });
+  }
+
+  function storeGallery(champ, gallery) {
+    const attachments = gallery.querySelector('.acf-gallery-attachments');
+    galleryMarkup.set(champ, attachments ? attachments.innerHTML : '');
+  }
+
   function captureBaselines() {
     baselines.clear();
+    blocState.clear();
+    galleryMarkup.clear();
     document.querySelectorAll('.shell-edition [data-champ]').forEach((bloc) => {
       const champ = bloc.dataset.champ;
       if (!champ || baselines.has(champ)) return;
+      storeBloc(bloc);
 
       const rich = bloc.querySelector('.champ-texte-editeur textarea.wp-editor-area');
       if (rich) {
@@ -82,6 +126,7 @@
       const gallery = bloc.querySelector('.champ-images-editeur');
       if (gallery) {
         baselines.set(champ, normalize(galleryIds(gallery)));
+        storeGallery(champ, gallery);
         return;
       }
 
@@ -94,6 +139,12 @@
       const links = bloc.querySelector('.champ-liens-editeur');
       if (links) {
         baselines.set(champ, linksValue(links));
+        return;
+      }
+
+      const cost = bloc.querySelector('.champ-cout');
+      if (cost) {
+        baselines.set(champ, cost.value);
         return;
       }
 
@@ -133,8 +184,16 @@
     render();
   }
 
+  function extraDirty() {
+    let dirty = false;
+    extras.forEach((extra) => {
+      if (extra.dirty) dirty = true;
+    });
+    return dirty;
+  }
+
   function isDirty() {
-    return fields.size > 0 || dates !== null;
+    return fields.size > 0 || dates !== null || extraDirty();
   }
 
   function shouldQueue(cpt, champ, valeur) {
@@ -146,6 +205,7 @@
   }
 
   function queue(champ, valeur) {
+    if (restoring) return;
     const name = String(champ || '');
     if (name === '') return;
     if (baselines.has(name) && baselines.get(name) === normalize(valeur)) {
@@ -161,7 +221,7 @@
   }
 
   function queueDates(payload) {
-    if (!payload) return;
+    if (restoring || !payload) return;
     dates = sameDates(payload, dateBaseline) ? null : { ...payload };
     if (state !== 'saving') {
       errorMessage = '';
@@ -242,6 +302,16 @@
       }
       if (typeof window.onChampSimpleMisAJour === 'function') {
         window.onChampSimpleMisAJour(key, postId(), value, cpt(), null);
+      }
+      const savedBloc = document.querySelector(`.shell-edition [data-champ="${key}"]`);
+      if (savedBloc) {
+        storeBloc(savedBloc);
+        const gallery = savedBloc.querySelector('.champ-images-editeur');
+        if (gallery) storeGallery(key, gallery);
+      }
+      if (key.indexOf('chasse_infos_recompense_') === 0) {
+        const row = document.querySelector('.shell-edition .champ-recompense-editeur')?.closest('[data-champ]');
+        if (row) storeBloc(row);
       }
     });
     if (cpt() !== 'chasse') return;
@@ -374,6 +444,15 @@
     refreshImageAccess();
   }
 
+  function snapshotImageBloc(keys) {
+    if (!Array.isArray(keys) || !keys.includes('enigme_visuel_image')) return;
+    const imageBloc = document.querySelector('.shell-edition [data-champ="enigme_visuel_image"]');
+    if (!imageBloc) return;
+    storeBloc(imageBloc);
+    const gallery = imageBloc.querySelector('.champ-images-editeur');
+    if (gallery) storeGallery('enigme_visuel_image', gallery);
+  }
+
   function updateTexteExcerpt(champ, value) {
     const bloc = document.querySelector(`.shell-edition [data-champ="${champ}"]`);
     if (!bloc) return;
@@ -429,22 +508,14 @@
       : '';
   }
 
-  function save() {
-    syncRichText();
-    syncGallery();
-    syncReward();
-    syncLinks();
-    if (saving || !isDirty()) return Promise.resolve(false);
+  function saveFields() {
+    if (fields.size === 0 && dates === null) return Promise.resolve(true);
     const currentCpt = cpt();
     const currentId = postId();
     if ((currentCpt !== 'enigme' && currentCpt !== 'chasse') || !currentId) {
+      errorMessage = __('Erreur lors de l’enregistrement.');
       return Promise.resolve(false);
     }
-
-    saving = true;
-    state = 'saving';
-    errorMessage = '';
-    render();
 
     const params = new URLSearchParams();
     params.set(
@@ -470,22 +541,74 @@
     })
       .then((response) => response.json())
       .then((res) => {
-        saving = false;
         if (!res || !res.success) {
           const saved = Array.isArray(res?.data?.enregistres) ? res.data.enregistres : [];
           rememberSaved(saved);
           applyImageResult(res?.data);
+          snapshotImageBloc(saved);
           errorMessage = errorText(res?.data);
+          return false;
+        }
+
+        const savedKeys = Array.isArray(res.data?.enregistres) ? res.data.enregistres : [];
+        rememberSaved(savedKeys);
+        applyImageResult(res.data);
+        snapshotImageBloc(savedKeys);
+        fields.clear();
+        dates = null;
+        captureBaselines();
+        return true;
+      })
+      .catch(() => {
+        errorMessage = __('Erreur lors de l’enregistrement.');
+        return false;
+      });
+  }
+
+  function saveExtras() {
+    const pending = [...extras.entries()].filter(([, extra]) => extra.dirty);
+    return pending.reduce((chain, [, extra]) => chain.then((ok) => {
+      if (!ok) return false;
+      return Promise.resolve()
+        .then(() => extra.save())
+        .then((saved) => {
+          if (saved) {
+            extra.dirty = false;
+            return true;
+          }
+          if (!errorMessage) errorMessage = __('Erreur lors de l’enregistrement.');
+          return false;
+        })
+        .catch((error) => {
+          errorMessage = error instanceof Error && error.message
+            ? error.message
+            : __('Erreur lors de l’enregistrement.');
+          return false;
+        });
+    }), Promise.resolve(true));
+  }
+
+  function save() {
+    syncRichText();
+    syncGallery();
+    syncReward();
+    syncLinks();
+    if (saving || !isDirty()) return Promise.resolve(false);
+
+    saving = true;
+    state = 'saving';
+    errorMessage = '';
+    render();
+
+    return saveFields()
+      .then((fieldsOk) => (fieldsOk ? saveExtras() : false))
+      .then((ok) => {
+        saving = false;
+        if (!ok) {
           state = 'error';
           render();
           return false;
         }
-
-        rememberSaved(Array.isArray(res.data?.enregistres) ? res.data.enregistres : []);
-        applyImageResult(res.data);
-        fields.clear();
-        dates = null;
-        captureBaselines();
         state = 'saved';
         errorMessage = '';
         render();
@@ -497,19 +620,255 @@
           }
         }, 2500);
         return true;
-      })
-      .catch(() => {
-        saving = false;
-        errorMessage = __('Erreur lors de l’enregistrement.');
-        state = 'error';
-        render();
-        return false;
       });
   }
 
+  function writeLinks(box, raw) {
+    let rows = [];
+    try {
+      rows = JSON.parse(raw);
+    } catch (error) {
+      rows = [];
+    }
+    const byType = new Map();
+    rows.forEach((row) => {
+      if (row && row.type_de_lien) byType.set(row.type_de_lien, row.url_lien || '');
+    });
+    box.querySelectorAll('.champ-url-lien').forEach((input) => {
+      const type = input.closest('[data-type]')?.dataset.type;
+      input.value = type && byType.has(type) ? byType.get(type) : '';
+      input.classList.remove('champ-erreur');
+    });
+  }
+
+  function writeCost(bloc, input, value) {
+    input.value = value;
+    const paid = Number(value) > 0;
+    const toggle = bloc.querySelector('input[type="checkbox"]');
+    if (toggle) toggle.checked = paid;
+    input.disabled = !paid;
+    const actions = input.closest('.cout-points-actions');
+    if (actions) actions.style.display = paid ? '' : 'none';
+  }
+
+  function writeDates() {
+    if (!dateBaseline) return;
+    const start = document.getElementById('chasse-date-debut');
+    const end = document.getElementById('chasse-date-fin');
+    const toggleEnd = document.getElementById('date-fin-limitee');
+    const toggleStart = document.getElementById('date-debut-differee');
+    if (toggleEnd) toggleEnd.checked = String(dateBaseline.illimitee) === '0';
+    if (toggleStart) toggleStart.checked = String(dateBaseline.debut_differee) === '1';
+    if (start) {
+      start.value = dateBaseline.date_debut;
+      start.dataset.previous = dateBaseline.date_debut;
+    }
+    if (end) {
+      end.value = dateBaseline.date_fin;
+      end.dataset.previous = dateBaseline.date_fin;
+    }
+    const startActions = start?.closest('.date-debut-actions');
+    if (start && toggleStart && startActions) {
+      const deferred = toggleStart.checked;
+      startActions.style.display = deferred ? '' : 'none';
+      start.disabled = !deferred;
+    }
+    const endActions = end?.closest('.date-fin-actions');
+    if (end && toggleEnd && endActions) {
+      const limited = toggleEnd.checked;
+      endActions.style.display = limited ? '' : 'none';
+      end.disabled = !limited;
+    }
+    if (typeof window.mettreAJourAffichageDateFin === 'function') {
+      window.mettreAJourAffichageDateFin();
+    }
+    if (typeof window.mettreAJourCaracteristiqueDate === 'function') {
+      window.mettreAJourCaracteristiqueDate();
+    }
+    if (typeof window.mettreAJourMessageDate === 'function') {
+      window.mettreAJourMessageDate();
+    }
+    if (start && typeof window.onDateFieldUpdated === 'function') {
+      window.onDateFieldUpdated(start, start.value.trim());
+    }
+    if (end && typeof window.onDateFieldUpdated === 'function') {
+      window.onDateFieldUpdated(end, end.value.trim());
+    }
+  }
+
+  function writeBaselines() {
+    document.querySelectorAll('.shell-edition [data-champ]').forEach((bloc) => {
+      const champ = bloc.dataset.champ;
+      if (!champ) return;
+      if (bloc.querySelector('#chasse-date-debut, #chasse-date-fin')) return;
+
+      const rich = bloc.querySelector('.champ-texte-editeur textarea.wp-editor-area');
+      if (rich && baselines.has(champ)) {
+        const value = baselines.get(champ);
+        rich.value = value;
+        const editor = window.tinymce?.get(rich.id);
+        const live = editor && typeof editor.isHidden === 'function' && !editor.isHidden();
+        if (live && typeof editor.setContent === 'function') {
+          editor.setContent(value);
+        }
+        return;
+      }
+
+      const gallery = bloc.querySelector('.champ-images-editeur');
+      if (gallery) {
+        if (galleryMarkup.has(champ)) {
+          const attachments = gallery.querySelector('.acf-gallery-attachments');
+          if (attachments) attachments.innerHTML = galleryMarkup.get(champ) || '';
+        }
+        return;
+      }
+
+      const reward = bloc.querySelector('.champ-recompense-editeur');
+      if (reward) {
+        const titre = reward.querySelector('#champ-recompense-titre');
+        const texte = reward.querySelector('#champ-recompense-texte');
+        const valeur = reward.querySelector('#champ-recompense-valeur');
+        if (titre) titre.value = baselines.get('chasse_infos_recompense_titre') ?? '';
+        if (texte) texte.value = baselines.get('chasse_infos_recompense_texte') ?? '';
+        if (valeur) valeur.value = baselines.get('chasse_infos_recompense_valeur') ?? '';
+        return;
+      }
+
+      const links = bloc.querySelector('.champ-liens-editeur');
+      if (links && baselines.has(champ)) {
+        writeLinks(links, baselines.get(champ));
+        return;
+      }
+
+      const cost = bloc.querySelector('.champ-cout');
+      if (cost && baselines.has(champ)) {
+        writeCost(bloc, cost, baselines.get(champ));
+        return;
+      }
+
+      const radios = [...bloc.querySelectorAll('input[type="radio"]')];
+      if (radios.length && baselines.has(champ)) {
+        const value = baselines.get(champ);
+        radios.forEach((radio) => {
+          radio.checked = radio.value === value;
+        });
+        radios.find((radio) => radio.checked)?.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+      }
+
+      const boxes = [...bloc.querySelectorAll('input[type="checkbox"]')];
+      if (boxes.length > 1 && baselines.has(champ)) {
+        let selected = [];
+        try {
+          selected = JSON.parse(baselines.get(champ));
+        } catch (error) {
+          selected = [];
+        }
+        boxes.forEach((box) => {
+          box.checked = selected.includes(String(box.value));
+        });
+        return;
+      }
+
+      const input = bloc.querySelector('input, textarea, select');
+      if (!input || !baselines.has(champ)) return;
+      if (input.type === 'checkbox') {
+        input.checked = baselines.get(champ) === '1';
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+      }
+      input.value = baselines.get(champ);
+      if (input.tagName === 'SELECT') {
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if (champ === 'enigme_visuel_legende' && typeof window.mettreAJourLegendeEnigme === 'function') {
+        window.mettreAJourLegendeEnigme(baselines.get(champ));
+      }
+    });
+    writeDates();
+    applyBlocStates();
+  }
+
+  function finishRestore() {
+    fields.clear();
+    dates = null;
+    extras.forEach((extra) => {
+      extra.dirty = false;
+    });
+    errorMessage = '';
+    state = 'idle';
+    render();
+  }
+
+  function restore() {
+    if (saving || !isDirty()) return;
+    restoring = true;
+    writeBaselines();
+    extras.forEach((extra) => {
+      if (typeof extra.restore !== 'function') return;
+      try {
+        extra.restore();
+      } catch (error) {
+        errorMessage = '';
+      }
+    });
+    finishRestore();
+    window.requestAnimationFrame(() => {
+      finishRestore();
+      restoring = false;
+      state = isDirty() ? 'dirty' : 'idle';
+      render();
+    });
+  }
+
+  function registerExtra(key, handlers) {
+    if (!key || !handlers || typeof handlers.save !== 'function') return;
+    extras.set(key, {
+      dirty: false,
+      save: handlers.save,
+      restore: typeof handlers.restore === 'function' ? handlers.restore : () => {},
+    });
+  }
+
+  function setExtra(key, dirty) {
+    if (restoring) return;
+    const extra = extras.get(key);
+    if (!extra) return;
+    extra.dirty = !!dirty;
+    if (state !== 'saving') {
+      errorMessage = '';
+      state = isDirty() ? 'dirty' : 'idle';
+    }
+    render();
+  }
+
+  function hasExtra(key) {
+    return !!extras.get(key)?.dirty;
+  }
+
+  function restoreExtra(key) {
+    const extra = extras.get(key);
+    if (!extra) return;
+    restoring = true;
+    try {
+      extra.restore();
+    } catch (error) {
+      errorMessage = '';
+    }
+    extra.dirty = false;
+    restoring = false;
+    if (state !== 'saving') {
+      errorMessage = '';
+      state = isDirty() ? 'dirty' : 'idle';
+    }
+    render();
+  }
+
   function render() {
-    if (!button || !statusNode) return;
-    button.disabled = saving || !isDirty();
+    if (!button || !cancelButton || !statusNode) return;
+    const dirty = isDirty();
+    button.disabled = saving || !dirty;
+    cancelButton.disabled = saving || !dirty;
     button.textContent = saving ? __('Enregistrement…') : __('Enregistrer');
     statusNode.classList.toggle('is-error', state === 'error');
     if (state === 'error') {
@@ -566,10 +925,6 @@
       return;
     }
 
-    const closer = event.target.closest('[data-shell-edition-leave]');
-    if (closer) {
-      confirmLeave(event);
-    }
   }
 
   function mount() {
@@ -584,19 +939,24 @@
     statusNode.className = 'shell-edition-save__status';
     statusNode.setAttribute('role', 'status');
     statusNode.setAttribute('aria-live', 'polite');
+    const actions = document.createElement('div');
+    actions.className = 'shell-edition-save__actions';
+    cancelButton = document.createElement('button');
+    cancelButton.type = 'button';
+    cancelButton.className = 'shell-edition-save__cancel';
+    cancelButton.textContent = __('Annuler');
+    cancelButton.addEventListener('click', () => {
+      restore();
+    });
     button = document.createElement('button');
     button.type = 'button';
     button.className = 'shell-edition-save__button';
     button.addEventListener('click', () => {
       save();
     });
-    bar.append(statusNode, button);
+    actions.append(cancelButton, button);
+    bar.append(statusNode, actions);
     document.body.append(bar);
-
-    const closer = editionPanel.querySelector('.edition-panel-header-top .panneau-fermer');
-    if (closer) {
-      closer.dataset.shellEditionLeave = '1';
-    }
 
     editionPanel.dataset.saveReady = '1';
     captureBaselines();
@@ -776,6 +1136,11 @@
     hasField,
     isDirty,
     save,
+    restore,
+    registerExtra,
+    setExtra,
+    hasExtra,
+    restoreExtra,
     rebase() {
       fields.clear();
       dates = null;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Template Part: Panneau d'édition frontale d'une énigme
+ * Template Part: Édition d'une énigme dans le dashboard
  * Requiert : $args['enigme_id']
  */
 
@@ -77,12 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         <div class="edition-panel-header-top">
           <h2>
             <i class="fa-solid fa-gear"></i>
-            <?= esc_html__('Panneau d\'édition énigme', 'chassesautresor-com'); ?> :
+            <?= esc_html__('Édition énigme', 'chassesautresor-com'); ?> :
             <span class="titre-objet" data-cpt="enigme"><?= esc_html($titre); ?></span>
           </h2>
-
-        <button type="button" class="panneau-fermer" aria-label="<?= esc_attr__('Fermer les paramètres', 'chassesautresor-com'); ?>">✖</button>
-      </div>
+        </div>
       <div class="edition-tabs">
         <button class="edition-tab active" data-target="enigme-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
         <button class="edition-tab" data-target="enigme-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
