@@ -14,6 +14,10 @@ class AccountProfilePresentationTest extends TestCase
 
         $this->assertStringContainsString('account-profile__grid', $form);
         $this->assertStringContainsString('Identité', $form);
+        $this->assertStringContainsString('Photo de profil', $form);
+        $this->assertStringContainsString('id="upload-avatar"', $form);
+        $this->assertStringContainsString('id="remove-avatar"', $form);
+        $this->assertStringContainsString('class="profile-avatar"', $form);
         $this->assertStringContainsString('name="account_first_name"', $form);
         $this->assertStringContainsString('name="account_email"', $form);
         $this->assertStringContainsString('name="password_current"', $form);
@@ -82,6 +86,12 @@ class AccountProfilePresentationTest extends TestCase
 
         $this->assertStringContainsString('color: var(--shell-muted);', $scss);
         $this->assertStringContainsString('background: var(--shell-accent);', $scss);
+        $this->assertStringContainsString('.account-avatar', $scss);
+        $this->assertStringContainsString('.account-avatar .profile-avatar img.avatar-pirate', $scss);
+        $this->assertStringContainsString(
+            '.account-button.account-avatar__remove[hidden]',
+            $scss
+        );
         $this->assertStringContainsString('var(--shell-surface)', $scss);
         $this->assertStringContainsString('.app-shell h2.dashboard-section-title', $shell);
         $this->assertStringContainsString('color: var(--shell-text);', $shell);

@@ -56,7 +56,7 @@ final class UserAvatarHookHandler
         );
     }
 
-    private static function defaultAvatarUrl(): string
+    public static function defaultAvatarUrl(): string
     {
         return get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg';
     }

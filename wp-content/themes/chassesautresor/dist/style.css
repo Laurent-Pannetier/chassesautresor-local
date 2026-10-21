@@ -15320,6 +15320,113 @@ h2.account-panel__title {
   transform: translateY(0.1rem) rotate(225deg);
 }
 
+.account-avatar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.account-avatar.is-busy {
+  opacity: 0.72;
+}
+
+.account-avatar .profile-avatar-container,
+.account-avatar .profile-avatar {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.account-avatar .profile-avatar {
+  width: 4.75rem;
+  height: 4.75rem;
+  overflow: hidden;
+  border: 2px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface-2);
+}
+
+.account-avatar .profile-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 999px;
+}
+
+.account-avatar .profile-avatar img.avatar-pirate {
+  box-sizing: border-box;
+  padding: 0.7rem;
+  -o-object-fit: contain;
+     object-fit: contain;
+  background: #152033;
+}
+
+.account-avatar__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.account-avatar__title {
+  margin: 0;
+  color: var(--shell-text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.account-avatar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.15rem;
+}
+
+.account-avatar__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.account-avatar__remove[hidden] {
+  display: none;
+}
+
+.account-avatar .message-size-file-avatar,
+.account-avatar .message-format-file-avatar {
+  display: none;
+}
+
+.account-avatar__status {
+  margin: 0;
+  min-height: 1.1rem;
+  color: var(--shell-muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.account-avatar__status:empty {
+  display: none;
+}
+
+.account-avatar__status.is-error {
+  color: #d4534e;
+}
+
+.account-avatar__status.is-success {
+  color: var(--shell-accent-strong);
+}
+
 .account-fields__pair {
   display: grid;
   gap: 0.85rem;
@@ -15461,6 +15568,10 @@ html:not([data-theme=day]) .woocommerce-page .account-profile .show-password-inp
   background: var(--shell-surface);
   color: var(--shell-text);
   border-color: var(--shell-border);
+}
+
+.woocommerce-page .account-profile .account-button.account-avatar__remove[hidden] {
+  display: none;
 }
 
 .account-address__lines {
