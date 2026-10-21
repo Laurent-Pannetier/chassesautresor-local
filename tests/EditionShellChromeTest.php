@@ -90,6 +90,23 @@ final class EditionShellChromeTest extends TestCase
         $this->assertStringContainsString('color: var(--shell-text, #152033);', $aside);
     }
 
+    public function testNightEditionDateInputsUseADarkColorScheme(): void
+    {
+        $styles = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/assets/scss/_edition.scss'
+        );
+        $start = strpos($styles, 'body.shell-edition .edition-panel input[type="datetime-local"]');
+        $this->assertNotFalse($start);
+        $chunk = substr($styles, $start, 1400);
+
+        $this->assertStringContainsString('color-scheme: dark;', $chunk);
+        $this->assertStringContainsString('::-webkit-calendar-picker-indicator', $chunk);
+        $this->assertStringContainsString('filter: invert(1);', $chunk);
+        $this->assertStringContainsString('html[data-theme="day"]', $chunk);
+        $this->assertStringContainsString('color-scheme: light;', $chunk);
+        $this->assertStringContainsString('filter: none;', $chunk);
+    }
+
     public function testEnigmaEditionKeepsOptionalCopyVisibleAndReadable(): void
     {
         $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
