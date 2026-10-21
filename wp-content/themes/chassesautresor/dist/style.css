@@ -62,7 +62,6 @@
   max-width: calc(var(--carte-enigme-poster-max-width) * 2 + var(--space-xl));
   margin-inline: auto;
   justify-content: center;
-  /* Pastille statut déjà présente : éviter le double check à droite. */
 }
 @media (min-width: 768px) {
   .page-chasse-wrapper--compact .cards-grid,
@@ -218,6 +217,10 @@
   border-radius: 50%;
   font-size: 1rem;
   box-shadow: 0 3px 12px rgba(var(--color-black-rgb), 0.38);
+}
+.page-chasse-wrapper--compact .cards-grid,
+.cards-grid--poster {
+  /* Pastille statut déjà présente : éviter le double check à droite. */
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue .carte-icons .validation-icon,
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee .carte-icons .validation-icon,
@@ -16251,7 +16254,7 @@ a.bouton-edition-attention {
 /* Legacy aliases */
 :root {
   /* Typographie et breakpoints */
-  --font-main: "Poppins", sans-serif; /* Police principale */
+  --font-main: 'Poppins', sans-serif; /* Police principale */
   --bp-xs: 374px;
   --bp-small: 480px;
   --bp-mobile: 600px;
@@ -17133,14 +17136,70 @@ img.avatar-pirate {
   background: var(--shell-surface);
 }
 
-.hunt-banner img {
+.hunt-banner__sphere {
+  position: relative;
+  height: 12.5rem;
+  background: radial-gradient(circle at 50% 46%, var(--shell-accent-soft), transparent 28rem), var(--shell-bg);
+}
+
+.hunt-banner__sphere::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: 7%;
+  width: 22%;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transform: translateX(-50%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.hunt-banner__canvas {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   display: block;
   width: 100%;
-  height: 12.5rem;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hunt-banner__fallback {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
 }
 
+.hunt-banner__sphere.is-ready .hunt-banner__canvas,
+.hunt-banner__sphere.is-ready::after {
+  opacity: 1;
+}
+
+.hunt-banner__sphere.is-pending .hunt-banner__fallback,
+.hunt-banner__sphere.is-ready .hunt-banner__fallback {
+  visibility: hidden;
+}
+
+.hunt-banner__sphere.is-fallback .hunt-banner__canvas {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hunt-banner__canvas,
+  .hunt-banner__sphere::after {
+    transition: opacity 0.35s ease;
+  }
+}
 .hunt-banner__empty {
   display: flex;
   align-items: center;
@@ -17563,7 +17622,7 @@ html[data-theme=day] .home-enigmas-preserve {
   .app-topbar__player {
     display: inline;
   }
-  .hunt-banner img {
+  .hunt-banner__sphere {
     height: 15rem;
   }
 }
@@ -17688,7 +17747,7 @@ html[data-theme=day] .home-enigmas-preserve {
     justify-content: space-between;
     gap: 0.75rem;
   }
-  .hunt-banner img {
+  .hunt-banner__sphere {
     height: 18rem;
   }
 }
@@ -17713,7 +17772,7 @@ html[data-theme=day] .home-enigmas-preserve {
   .progression-organizer .team-stats__grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
-  .hunt-banner img {
+  .hunt-banner__sphere {
     height: 22rem;
   }
 }
