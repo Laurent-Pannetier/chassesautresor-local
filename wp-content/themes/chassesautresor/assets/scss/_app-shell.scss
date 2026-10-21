@@ -359,6 +359,14 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   object-fit: cover;
 }
 
+.app-topbar__profile img.avatar-pirate,
+img.avatar-pirate {
+  box-sizing: border-box;
+  padding: 8%;
+  background: #152033;
+  object-fit: contain;
+}
+
 .app-topbar__logout {
   display: inline-flex;
   align-items: center;

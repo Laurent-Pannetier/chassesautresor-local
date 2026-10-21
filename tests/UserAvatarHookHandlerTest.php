@@ -22,6 +22,11 @@ namespace ChassesAuTresor\Core\Media {
     {
         return htmlspecialchars($value, ENT_QUOTES);
     }
+
+    function get_stylesheet_directory_uri(): string
+    {
+        return 'https://example.test/theme';
+    }
 }
 
 namespace {
@@ -76,6 +81,39 @@ namespace {
 
             self::assertStringContainsString('https://example.test/avatar.webp', $avatar);
             self::assertStringContainsString("class='avatar avatar-96 photo'", $avatar);
+            self::assertStringNotContainsString('avatar-pirate', $avatar);
+            self::assertStringNotContainsString('pirate-skull.svg', $avatar);
+        }
+
+        public function testUsesPirateSkullWhenUserHasNoAvatar(): void
+        {
+            $avatar = UserAvatarHookHandler::replaceAvatar(
+                '<img src="gravatar">',
+                7,
+                64,
+                '',
+                'Player'
+            );
+
+            self::assertStringContainsString(
+                'https://example.test/theme/assets/svg/pirate-skull.svg',
+                $avatar
+            );
+            self::assertStringContainsString("class='avatar avatar-64 photo avatar-pirate'", $avatar);
+            self::assertStringNotContainsString('gravatar', $avatar);
+        }
+
+        public function testKeepsOriginalAvatarWhenUserCannotBeResolved(): void
+        {
+            $avatar = UserAvatarHookHandler::replaceAvatar(
+                '<img src="gravatar">',
+                'unknown@example.test',
+                64,
+                '',
+                'Guest'
+            );
+
+            self::assertSame('<img src="gravatar">', $avatar);
         }
     }
 }

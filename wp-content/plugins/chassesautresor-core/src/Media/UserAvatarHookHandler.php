@@ -34,18 +34,31 @@ final class UserAvatarHookHandler
         }
 
         $avatarUrl = (string) get_user_meta($userId, 'user_avatar', true);
+        $isDefault = $avatarUrl === '';
+        if ($isDefault) {
+            $avatarUrl = self::defaultAvatarUrl();
+        }
         if ($avatarUrl === '') {
             return $avatar;
         }
 
+        $class = $isDefault
+            ? sprintf('avatar avatar-%d photo avatar-pirate', $size)
+            : sprintf('avatar avatar-%d photo', $size);
+
         return sprintf(
-            "<img src='%s' alt='%s' width='%d' height='%d' class='avatar avatar-%d photo' />",
+            "<img src='%s' alt='%s' width='%d' height='%d' class='%s' />",
             esc_url($avatarUrl),
             esc_attr($alt),
             $size,
             $size,
-            $size
+            $class
         );
+    }
+
+    private static function defaultAvatarUrl(): string
+    {
+        return get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg';
     }
 
     private static function resolveUserId($idOrEmail): int
