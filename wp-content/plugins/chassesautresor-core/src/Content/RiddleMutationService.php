@@ -117,6 +117,27 @@ class RiddleMutationService {
             ];
         }
 
+        if ($field === 'enigme_visuel_image') {
+            $raw = is_array($value) ? $value : explode(',', (string) wp_unslash($value));
+            $ids = [];
+            foreach ($raw as $item) {
+                $id = (int) $item;
+                if ($id > 0 && !in_array($id, $ids, true)) {
+                    $ids[] = $id;
+                }
+            }
+            $updated = update_field($field, $ids, $riddleId);
+            $stored = get_field($field, $riddleId, false);
+            $storedIds = array_map('intval', is_array($stored) ? $stored : []);
+            $valid = $updated || $storedIds === $ids;
+
+            return [
+                'error' => $valid ? null : 'echec_mise_a_jour_final',
+                'terminal' => false,
+                'refresh_state' => false,
+            ];
+        }
+
         if (!$valid) {
             $cleanValue = is_numeric($value) ? (int) $value : sanitize_text_field($value);
             $updated = update_field($field, $cleanValue, $riddleId);

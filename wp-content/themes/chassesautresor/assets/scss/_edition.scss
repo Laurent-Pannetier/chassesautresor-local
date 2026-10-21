@@ -1280,6 +1280,19 @@ body.shell-edition .champ-texte-editeur .acf-hide-label > .acf-label {
   display: none;
 }
 
+body.shell-edition .edition-row.champ-img {
+  align-items: flex-start;
+}
+
+body.shell-edition .champ-images-editeur {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+body.shell-edition .champ-images-editeur .acf-hide-label > .acf-label {
+  display: none;
+}
+
 
 .edition-panel > .edition-panel-header {
   padding: var(--space-xs) 0;

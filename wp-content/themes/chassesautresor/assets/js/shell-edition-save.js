@@ -18,6 +18,8 @@
   let button = null;
   let statusNode = null;
   let savedTimer = 0;
+  let imageAccessOpen = false;
+  let imageTogglePending = false;
 
   function __(text) {
     if (window.wp && window.wp.i18n && typeof window.wp.i18n.__ === 'function') {
@@ -74,6 +76,12 @@
         const editor = window.tinymce?.get(rich.id);
         const live = editor && typeof editor.isHidden === 'function' && !editor.isHidden();
         baselines.set(champ, normalize(live ? editor.getContent() : rich.value));
+        return;
+      }
+
+      const gallery = bloc.querySelector('.champ-images-editeur');
+      if (gallery) {
+        baselines.set(champ, normalize(galleryIds(gallery)));
         return;
       }
 
@@ -232,6 +240,85 @@
     });
   }
 
+  function galleryIds(box) {
+    return [...box.querySelectorAll('.acf-gallery-attachment input[type="hidden"]')]
+      .map((input) => input.value)
+      .filter((value) => value !== '');
+  }
+
+  function syncGallery() {
+    document.querySelectorAll('.shell-edition .champ-images-editeur').forEach((box) => {
+      queue('enigme_visuel_image', galleryIds(box));
+    });
+  }
+
+  function updateImageSummary(urls) {
+    const bloc = document.querySelector('.shell-edition .edition-row[data-champ="enigme_visuel_image"]');
+    const button = bloc?.querySelector('.ouvrir-panneau-images');
+    if (!bloc || !button) return;
+    button.replaceChildren();
+    if (!urls.length) {
+      const span = document.createElement('span');
+      span.className = 'champ-ajout-image';
+      span.textContent = __('ajouter');
+      button.append(span);
+      bloc.classList.add('champ-vide');
+      bloc.classList.remove('champ-rempli');
+      bloc.dataset.rempli = '0';
+      return;
+    }
+    urls.forEach((url) => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = '';
+      img.className = 'vignette-enigme';
+      button.append(img);
+    });
+    bloc.classList.add('champ-rempli');
+    bloc.classList.remove('champ-vide');
+    bloc.dataset.rempli = '1';
+  }
+
+  function imageProtection(action) {
+    const id = postId();
+    if (!id) return Promise.resolve(false);
+    const params = new URLSearchParams();
+    params.set('action', action);
+    params.set('nonce', window.CHP_ENIGME_DEFAUT?.nonce || '');
+    params.set('post_id', id);
+    return fetch(ajaxurl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params,
+      keepalive: true,
+    })
+      .then((response) => response.json())
+      .then((data) => !!(data && data.success))
+      .catch(() => false);
+  }
+
+  function refreshImageAccess() {
+    const box = document.querySelector('.shell-edition .champ-images-editeur');
+    if (!box || box.hidden) {
+      imageAccessOpen = false;
+      return;
+    }
+    imageProtection('desactiver_htaccess_enigme').then((ok) => {
+      const current = document.querySelector('.shell-edition .champ-images-editeur');
+      const stillOpen = !!(current && !current.hidden);
+      imageAccessOpen = ok && stillOpen;
+      if (ok && !stillOpen) {
+        imageProtection('reactiver_htaccess_immediat_enigme');
+      }
+    });
+  }
+
+  function applyImageResult(data) {
+    if (!Array.isArray(data?.vignettes)) return;
+    updateImageSummary(data.vignettes);
+    refreshImageAccess();
+  }
+
   function updateTexteExcerpt(value) {
     const bloc = document.querySelector('.shell-edition [data-champ="enigme_visuel_texte"]');
     if (!bloc) return;
@@ -271,6 +358,7 @@
 
   function save() {
     syncRichText();
+    syncGallery();
     if (saving || !isDirty()) return Promise.resolve(false);
     const currentCpt = cpt();
     const currentId = postId();
@@ -311,6 +399,7 @@
         if (!res || !res.success) {
           const saved = Array.isArray(res?.data?.enregistres) ? res.data.enregistres : [];
           rememberSaved(saved);
+          applyImageResult(res?.data);
           errorMessage = errorText(res?.data);
           state = 'error';
           render();
@@ -318,6 +407,7 @@
         }
 
         rememberSaved(Array.isArray(res.data?.enregistres) ? res.data.enregistres : []);
+        applyImageResult(res.data);
         fields.clear();
         dates = null;
         captureBaselines();
@@ -503,6 +593,68 @@
     toggleTexteEnigme(trigger);
   }, true);
 
+  function toggleImages(trigger) {
+    const row = trigger.closest('.edition-row');
+    const box = row?.querySelector('.champ-images-editeur');
+    if (!box || imageTogglePending) return;
+    const feedback = row.querySelector('.champ-feedback');
+    const willOpen = box.hasAttribute('hidden');
+    if (!willOpen) {
+      box.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      if (!imageAccessOpen) return;
+      imageAccessOpen = false;
+      imageProtection('reactiver_htaccess_immediat_enigme');
+      return;
+    }
+
+    imageTogglePending = true;
+    imageProtection('desactiver_htaccess_enigme').then((ok) => {
+      imageTogglePending = false;
+      if (!ok) {
+        if (feedback) feedback.textContent = __('Impossible d’ouvrir les illustrations.');
+        return;
+      }
+      if (feedback) feedback.textContent = '';
+      imageAccessOpen = true;
+      box.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      window.requestAnimationFrame(() => {
+        window.dispatchEvent(new Event('resize'));
+        if (window.acf && typeof window.acf.doAction === 'function') {
+          window.acf.doAction('resize');
+        }
+      });
+    });
+  }
+
+  function watchGallery() {
+    document.querySelectorAll('.shell-edition .champ-images-editeur').forEach((box) => {
+      if (box.dataset.watched === '1') return;
+      box.dataset.watched = '1';
+      const sync = () => queue('enigme_visuel_image', galleryIds(box));
+      box.addEventListener('change', sync);
+      const observer = new MutationObserver(sync);
+      observer.observe(box, { childList: true, subtree: true });
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest('.shell-edition .ouvrir-panneau-images');
+    if (!trigger) return;
+    const row = trigger.closest('.edition-row');
+    if (!row?.querySelector('.champ-images-editeur')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    toggleImages(trigger);
+  }, true);
+
+  window.addEventListener('pagehide', () => {
+    if (!imageAccessOpen) return;
+    imageAccessOpen = false;
+    imageProtection('reactiver_htaccess_immediat_enigme');
+  });
+
   window.ctaShellEditionSave = {
     shouldQueue,
     queue,
@@ -514,6 +666,7 @@
 
   function start() {
     watchRichText();
+    watchGallery();
     mount();
   }
 

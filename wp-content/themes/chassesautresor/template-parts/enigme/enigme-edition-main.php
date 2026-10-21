@@ -160,6 +160,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                               <?php
                           },
                           'content' => function () use ($has_images_utiles, $images_ids, $peut_editer, $enigme_id) {
+                              $inlineImages = $peut_editer
+                                  && function_exists('cta_shell_edition_target')
+                                  && cta_shell_edition_target() !== null
+                                  && function_exists('acf_form');
                               ?>
                               <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
@@ -167,7 +171,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                     class="champ-modifier ouvrir-panneau-images"
                                     data-champ="enigme_visuel_image"
                                     data-cpt="enigme"
-                                    data-post-id="<?= esc_attr($enigme_id); ?>">
+                                    data-post-id="<?= esc_attr($enigme_id); ?>"
+                                    <?php if ($inlineImages) : ?>
+                                      aria-expanded="false"
+                                    <?php endif; ?>>
                                     <?php if ($has_images_utiles && is_array($images_ids)) : ?>
                                       <?php foreach ($images_ids as $img_id) : ?>
                                         <?php $thumb_url = esc_url(
@@ -202,6 +209,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                   <?php endif; ?>
                                 <?php endif; ?>
                               </div>
+                              <?php if ($inlineImages) : ?>
+                                <div class="champ-images-editeur" hidden>
+                                  <?php
+                                    $prepareImages = static function (array $field): array {
+                                        $class = trim(($field['wrapper']['class'] ?? '') . ' acf-hide-label');
+                                        $field['wrapper']['class'] = $class;
+
+                                        return $field;
+                                    };
+                                    add_filter('acf/prepare_field/name=enigme_visuel_image', $prepareImages);
+                                    acf_form([
+                                        'post_id' => $enigme_id,
+                                        'fields' => ['enigme_visuel_image'],
+                                        'form' => false,
+                                        'honeypot' => false,
+                                        'uploader' => 'wp',
+                                        'html_before_fields' => '',
+                                        'html_after_fields' => '',
+                                        'updated_message' => false,
+                                    ]);
+                                    remove_filter('acf/prepare_field/name=enigme_visuel_image', $prepareImages);
+                                    ?>
+                                </div>
+                              <?php endif; ?>
                               <div class="champ-feedback"></div>
                               <?php
                           },

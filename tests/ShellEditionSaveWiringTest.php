@@ -40,10 +40,14 @@ final class ShellEditionSaveWiringTest extends TestCase {
             $root . '/wp-content/plugins/chassesautresor-core/src/Content/RiddleMutationService.php'
         );
         $this->assertStringContainsString('champ-texte-editeur', $template);
+        $this->assertStringContainsString('champ-images-editeur', $template);
         $this->assertStringContainsString("closest('.edition-row')", $queue);
         $this->assertStringContainsString("new MouseEvent('mousedown'", $queue);
+        $this->assertStringContainsString('enigme_visuel_image', $queue);
         $this->assertStringContainsString('enigme_visuel_texte', $mutation);
         $this->assertStringContainsString('wp_kses_post', $mutation);
+        $this->assertStringContainsString('enigme_visuel_image', $mutation);
+        $this->assertStringContainsString('protectAfterSave', $riddleHandler);
         $this->assertStringNotContainsString('sleep(', $this->batchMethod($huntHandler));
     }
 

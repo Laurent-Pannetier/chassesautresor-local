@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Content;
 
+use ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 
 /**
@@ -109,15 +110,41 @@ class RiddleFieldMutationAjaxHandler {
             do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
         }
 
-        if ($batch['error'] !== null) {
-            wp_send_json_error([
-                'message' => $batch['error'],
-                'champ' => $batch['failed'],
-                'enregistres' => $batch['saved'],
-            ]);
+        $payload = ['enregistres' => $batch['saved']];
+        if (in_array('enigme_visuel_image', $batch['saved'], true)) {
+            RiddleImageProtectionLifecycle::protectAfterSave($riddleId);
+            RiddleImageProtectionLifecycle::restoreAfterSave($riddleId);
+            $payload['vignettes'] = self::imageThumbs($riddleId);
         }
 
-        wp_send_json_success(['enregistres' => $batch['saved']]);
+        if ($batch['error'] !== null) {
+            $payload['message'] = $batch['error'];
+            $payload['champ'] = $batch['failed'];
+            wp_send_json_error($payload);
+        }
+
+        wp_send_json_success($payload);
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function imageThumbs(int $riddleId): array {
+        $ids = function_exists('get_field') ? get_field('enigme_visuel_image', $riddleId, false) : [];
+        if (!is_array($ids) || !function_exists('cta_voir_image_enigme_url')) {
+            return [];
+        }
+
+        $thumbs = [];
+        foreach ($ids as $id) {
+            $imageId = (int) $id;
+            if ($imageId <= 0) {
+                continue;
+            }
+            $thumbs[] = cta_voir_image_enigme_url($imageId, 'thumbnail');
+        }
+
+        return $thumbs;
     }
 
     /**
