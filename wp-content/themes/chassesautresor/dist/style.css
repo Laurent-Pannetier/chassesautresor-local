@@ -9406,9 +9406,14 @@ body.comic-reader {
   background: #05070c;
 }
 
+body.single-enigme.comic-reader {
+  --comic-header-offset: 0px;
+}
+
 body.single-enigme.comic-reader header.site-header,
 body.single-enigme.comic-reader #masthead {
-  display: none;
+  position: relative;
+  z-index: 60;
 }
 
 body.comic-reader .page-enigme--reader {
@@ -9433,7 +9438,10 @@ body.comic-reader .page-enigme--reader .bloc-titre {
 
 body.comic-reader .page-enigme--reader .hero-visuel {
   position: fixed;
-  inset: 0;
+  top: var(--comic-header-offset, 0px);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 20;
   width: 100%;
   max-width: none;
@@ -9449,8 +9457,7 @@ body.comic-reader .page-enigme--reader .hero-visuel .galerie-enigme__stage {
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100vh;
-  height: 100svh;
+  height: 100%;
   max-height: none;
   margin: 0;
   overflow: hidden;
@@ -9535,17 +9542,21 @@ body.comic-reader .menu-lateral__reveal {
 
 body.comic-reader .enigme-mobile-header {
   position: fixed;
-  top: 0;
+  top: var(--comic-header-offset, 0px);
   right: 0;
   left: 0;
   margin: 0;
-  padding: calc(0.4rem + env(safe-area-inset-top, 0px)) 0.75rem 0.4rem;
+  padding: 0.4rem 0.75rem;
 }
 
 body.comic-reader .enigme-hunt-context {
   position: fixed;
-  top: calc(0.45rem + env(safe-area-inset-top, 0px));
+  top: calc(var(--comic-header-offset, 0px) + 0.45rem);
   left: 0.75rem;
+}
+
+body.comic-reader .enigme-edit-toggle--desktop {
+  top: calc(var(--comic-header-offset, 0px) + var(--space-md));
 }
 
 body.comic-reader:not(.is-hud-visible) .enigme-mobile-header,

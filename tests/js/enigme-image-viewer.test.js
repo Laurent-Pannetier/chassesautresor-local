@@ -382,6 +382,30 @@ describe('comic reader', () => {
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
   });
 
+  test('places the comic below the site header', () => {
+    const header = document.createElement('header');
+    header.className = 'site-header';
+    header.id = 'masthead';
+    document.body.prepend(header);
+    header.getBoundingClientRect = () => ({
+      top: 32,
+      bottom: 96,
+      height: 64,
+      left: 0,
+      right: 100,
+      width: 100,
+      x: 0,
+      y: 32,
+      toJSON() {
+        return {};
+      },
+    });
+
+    window.dispatchEvent(new Event('resize'));
+
+    expect(document.body.style.getPropertyValue('--comic-header-offset')).toBe('96px');
+  });
+
   test('leaves the reader when edition mode starts', async () => {
     expect(document.querySelector('.participation .reponse-launcher')).not.toBeNull();
     document.body.classList.add('edition-active-enigme');
