@@ -60,12 +60,16 @@ final class HuntLifecycleSwitchRenderTest extends TestCase
         $html = cat_render_hunt_lifecycle_switch(12);
 
         self::assertStringContainsString('hunt-lifecycle-card__state-badge', $html);
+        self::assertStringContainsString('État chasse', $html);
         self::assertStringContainsString('fa-hourglass-half', $html);
         self::assertStringContainsString('En attente', $html);
         self::assertStringContainsString('switch-control--lifecycle', $html);
         self::assertStringContainsString('data-hunt-lifecycle-label-off', $html);
-        self::assertStringContainsString('data-hunt-lifecycle-label-on', $html);
-        self::assertStringContainsString('is-current', $html);
+        self::assertStringContainsString('hunt-lifecycle-card__label-on is-action', $html);
+        self::assertStringNotContainsString('hunt-lifecycle-card__label-off is-action', $html);
+        self::assertStringNotContainsString('Éditer / Activer', $html);
+        self::assertStringNotContainsString('hunt-lifecycle-card__status', $html);
+        self::assertStringNotContainsString('is-current', $html);
         self::assertStringNotContainsString('fa-toggle-on', $html);
     }
 }

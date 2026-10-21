@@ -66,7 +66,7 @@ final class HuntLifecycleApplicationService
             'status_label' => $this->statusLabel($state, $isAdmin),
             'badge_label' => $this->badgeLabel($state),
             'badge_icon' => $this->lifecycle->stateIcon($state),
-            'help' => $this->helpText($state, $isDemoMode, $isAdmin, $canActivate, $canDeactivate),
+            'help' => $this->helpText($state, $isDemoMode, $isAdmin, $canActivate),
         ];
     }
 
@@ -240,26 +240,43 @@ final class HuntLifecycleApplicationService
         string $state,
         bool $isDemoMode,
         bool $isAdmin,
-        bool $canActivate,
-        bool $canDeactivate
+        bool $canActivate
     ): string {
+        if ($state === HuntLifecycleService::STATE_ACTIVE) {
+            return __(
+                'Une chasse active a des possibilités d’édition limitées.',
+                'chassesautresor-com'
+            );
+        }
         if ($state === HuntLifecycleService::STATE_PENDING && $isAdmin) {
-            return __('Une demande de validation est prête. Passez le switch sur Activer pour publier.', 'chassesautresor-com');
+            return __(
+                'Une demande de validation est prête. Passez le switch sur Activer pour publier.',
+                'chassesautresor-com'
+            );
         }
         if ($state === HuntLifecycleService::STATE_PENDING) {
-            return __('Votre demande est en cours de traitement. Vous pouvez annuler pour revenir en édition.', 'chassesautresor-com');
+            return __(
+                'Votre demande est en cours de traitement. Vous pouvez annuler pour revenir en édition.',
+                'chassesautresor-com'
+            );
         }
         if ($isDemoMode && $canActivate) {
-            return __('Mode démo : l’activation publie directement sans demande de validation.', 'chassesautresor-com');
+            return __(
+                'Mode démo : l’activation publie directement sans demande de validation.',
+                'chassesautresor-com'
+            );
         }
         if ($canActivate) {
-            return __('Activer envoie une demande de validation à l’administrateur.', 'chassesautresor-com');
-        }
-        if ($canDeactivate && $state === HuntLifecycleService::STATE_ACTIVE) {
-            return __('Repasser en édition rouvre les panneaux de modification.', 'chassesautresor-com');
+            return __(
+                'Activer envoie une demande de validation à l’administrateur.',
+                'chassesautresor-com'
+            );
         }
         if ($state === HuntLifecycleService::STATE_EDITABLE && !$canActivate) {
-            return __('Complétez la chasse et ses énigmes pour pouvoir activer.', 'chassesautresor-com');
+            return __(
+                'Complétez la chasse et ses énigmes pour pouvoir activer.',
+                'chassesautresor-com'
+            );
         }
 
         return '';
