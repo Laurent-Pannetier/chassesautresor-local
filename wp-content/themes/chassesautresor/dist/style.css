@@ -6543,6 +6543,48 @@ body.panneau-ouvert::before {
   border-bottom: 3px solid var(--color-primary);
 }
 
+body.shell-edition .edition-tabs {
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  width: -moz-max-content;
+  width: max-content;
+  max-width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.2rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-bg);
+}
+
+body.shell-edition .edition-tab {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  color: var(--shell-muted);
+  font-family: var(--font-main);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  opacity: 1;
+}
+
+body.shell-edition .edition-tab:hover,
+body.shell-edition .edition-tab:focus-visible {
+  background: transparent;
+  color: var(--shell-text);
+  opacity: 1;
+}
+
+body.shell-edition .edition-tab.active,
+body.shell-edition .edition-tab.active:hover,
+body.shell-edition .edition-tab.active:focus-visible {
+  border-bottom: 0;
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+  opacity: 1;
+}
+
 @media not all and (min-width: 600px) {
   .edition-tab {
     font-size: 16px;
