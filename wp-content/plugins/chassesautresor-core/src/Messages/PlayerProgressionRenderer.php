@@ -142,9 +142,6 @@ final class PlayerProgressionRenderer
         }
         $url = trim((string) ($riddle['url'] ?? ''));
         $stepsTotal = (int) ($riddle['steps_total'] ?? 0);
-        $stepsLabel = $stepsTotal > 0
-            ? $this->ratio((int) ($riddle['steps_done'] ?? 0), $stepsTotal)
-            : '—';
         $lastActivity = $this->formatDate((string) ($riddle['last_activity'] ?? ''));
         $activityLabel = $lastActivity !== ''
             ? sprintf(
@@ -171,8 +168,10 @@ final class PlayerProgressionRenderer
             . esc_html($this->statusLabel($status)) . '</p>';
         echo '</div>';
         echo '<dl class="progression-riddle__metrics">';
-        echo '<div><dt>' . esc_html(__('Étapes', 'chassesautresor-com')) . '</dt><dd>'
-            . esc_html($stepsLabel) . '</dd></div>';
+        if ($stepsTotal > 0) {
+            echo '<div><dt>' . esc_html(__('Étapes trouvées', 'chassesautresor-com')) . '</dt><dd>'
+                . esc_html((string) (int) ($riddle['steps_done'] ?? 0)) . '</dd></div>';
+        }
         echo '<div><dt>' . esc_html(__('Tentatives', 'chassesautresor-com')) . '</dt><dd>'
             . esc_html((string) (int) ($riddle['attempts'] ?? 0)) . '</dd></div>';
         echo '</dl>';

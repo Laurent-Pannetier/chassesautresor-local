@@ -53,37 +53,30 @@ final class AccountHuntRiddleStatisticsRenderer
         }
 
         ob_start();
-        ?>
-        <div class="dashboard-card myaccount-riddle-stats">
-            <div class="dashboard-card-header">
-                <i class="fas fa-chart-bar" aria-hidden="true"></i>
-                <h3><?php esc_html_e('Statistiques des énigmes', 'chassesautresor-com'); ?></h3>
-            </div>
-            <div class="dashboard-card-content">
-                <?php
-                if ($this->dashboardProvider !== null) {
-                    echo $this->periodNav($period, $pageUrl);
-                    echo $this->summaryMetrics($summary);
-                    echo $this->periodNote();
+        echo '<section class="progression-organizer">';
+        if ($this->dashboardProvider !== null) {
+            echo $this->periodNav($period, $pageUrl);
+            echo $this->summaryMetrics($summary);
+            echo $this->periodNote();
+        }
+        echo '<section class="progression-riddles" aria-label="'
+            . esc_attr(__('Énigmes', 'chassesautresor-com')) . '">';
+        echo '<h2 class="progression-riddles__title">' . esc_html(__('Énigmes', 'chassesautresor-com')) . '</h2>';
+        if ($rows === []) {
+            echo '<p class="progression-riddles__empty">' . esc_html(__(
+                'Aucune énigme associée à cette chasse pour le moment.',
+                'chassesautresor-com'
+            )) . '</p>';
+        } else {
+            echo '<ol class="progression-riddles__list">';
+            foreach ($rows as $row) {
+                if (is_array($row)) {
+                    echo $this->riddleItem($row);
                 }
-                if ($rows === []) {
-                    echo '<p>' . esc_html(__(
-                        'Aucune énigme associée à cette chasse pour le moment.',
-                        'chassesautresor-com'
-                    )) . '</p>';
-                } else {
-                    echo '<ul class="myaccount-riddle-stats-list">';
-                    foreach ($rows as $row) {
-                        if (is_array($row)) {
-                            echo $this->riddleItem($row);
-                        }
-                    }
-                    echo '</ul>';
-                }
-                ?>
-            </div>
-        </div>
-        <?php
+            }
+            echo '</ol>';
+        }
+        echo '</section></section>';
 
         return trim((string) ob_get_clean());
     }
@@ -114,20 +107,48 @@ final class AccountHuntRiddleStatisticsRenderer
         $winners = (int) ($summary['winners'] ?? 0);
         $cap = (int) ($summary['winner_cap'] ?? 0);
         $winnerValue = $cap > 0 ? $winners . '/' . $cap : (string) $winners;
-
-        return '<dl class="myaccount-riddle-stats-metrics progression-hunt-metrics">'
-            . $this->metric(__('Participants', 'chassesautresor-com'), (string) (int) ($summary['participants'] ?? 0))
-            . $this->metric(
+        $cards = [
+            [
+                __('Participants', 'chassesautresor-com'),
+                (string) (int) ($summary['participants'] ?? 0),
+                __('Inscrits sur la chasse', 'chassesautresor-com'),
+            ],
+            [
                 __('Engagement', 'chassesautresor-com'),
-                (int) ($summary['engagement_rate'] ?? 0) . ' %'
-            )
-            . $this->metric(
+                (int) ($summary['engagement_rate'] ?? 0) . ' %',
+                __('Part des énigmes engagées', 'chassesautresor-com'),
+            ],
+            [
                 __('Résolution', 'chassesautresor-com'),
-                (int) ($summary['resolution_rate'] ?? 0) . ' %'
-            )
-            . $this->metric(__('Tentatives', 'chassesautresor-com'), (string) (int) ($summary['tentatives'] ?? 0))
-            . $this->metric(__('Gagnants', 'chassesautresor-com'), $winnerValue)
-            . '</dl>';
+                (int) ($summary['resolution_rate'] ?? 0) . ' %',
+                __('Parmi les énigmes engagées', 'chassesautresor-com'),
+            ],
+            [
+                __('Tentatives', 'chassesautresor-com'),
+                (string) (int) ($summary['tentatives'] ?? 0),
+                __('Sur la période', 'chassesautresor-com'),
+            ],
+            [
+                __('Gagnants', 'chassesautresor-com'),
+                $winnerValue,
+                __('Places attribuées', 'chassesautresor-com'),
+            ],
+        ];
+
+        $html = '<section class="team-stats" aria-label="'
+            . esc_attr(__('Synthèse de la chasse', 'chassesautresor-com')) . '">';
+        $html .= '<h2 class="screen-reader-text">'
+            . esc_html(__('Synthèse de la chasse', 'chassesautresor-com')) . '</h2>';
+        $html .= '<div class="team-stats__grid">';
+        foreach ($cards as $card) {
+            $html .= '<article class="team-stat">';
+            $html .= '<p class="team-stat__label">' . esc_html($card[0]) . '</p>';
+            $html .= '<p class="team-stat__value">' . esc_html($card[1]) . '</p>';
+            $html .= '<p class="team-stat__caption">' . esc_html($card[2]) . '</p>';
+            $html .= '</article>';
+        }
+
+        return $html . '</div></section>';
     }
 
     private function periodNav(string $period, string $pageUrl): string
@@ -169,13 +190,15 @@ final class AccountHuntRiddleStatisticsRenderer
     /** @param array<string, mixed> $row */
     private function riddleItem(array $row): string
     {
-        $html = '<li class="myaccount-riddle-stats-item">';
-        $html .= '<h4 class="myaccount-riddle-stats-item__title">'
-            . esc_html((string) ($row['title'] ?? '')) . '</h4>';
+        $html = '<li class="progression-riddle">';
+        $html .= '<div class="progression-riddle__main">';
+        $html .= '<h3 class="progression-riddle__title">'
+            . esc_html((string) ($row['title'] ?? '')) . '</h3>';
+        $html .= '</div>';
         if (is_array($row['funnel'] ?? null)) {
             $html .= $this->funnel((array) $row['funnel']);
         }
-        $html .= '<dl class="myaccount-riddle-stats-metrics">';
+        $html .= '<dl class="progression-riddle__metrics progression-riddle__metrics--organizer">';
         $html .= $this->metric(
             __('Participants', 'chassesautresor-com'),
             (string) (int) ($row['participants'] ?? 0)
@@ -188,7 +211,7 @@ final class AccountHuntRiddleStatisticsRenderer
             __('Tentatives', 'chassesautresor-com'),
             (string) (int) ($row['tentatives'] ?? 0)
         );
-        $html .= $this->metric(__('Étapes', 'chassesautresor-com'), $this->stepsLabel($row));
+        $html .= $this->stepsMetric($row);
         if (is_array($row['yield'] ?? null)) {
             $html .= $this->metric(__('Rendement', 'chassesautresor-com'), $this->yieldLabel((array) $row['yield']));
         }
@@ -213,12 +236,10 @@ final class AccountHuntRiddleStatisticsRenderer
             )) . '</p>';
         }
         $html .= $this->stepsDetail((array) ($row['steps_detail'] ?? []));
-        $html .= '<div class="myaccount-riddle-stats-ranking">';
-        $html .= '<span class="myaccount-riddle-stats-ranking__label">'
-            . esc_html(__('Classement', 'chassesautresor-com')) . '</span>';
-        $html .= '<span class="myaccount-riddle-stats-ranking__value">'
-            . esc_html($this->rankingLabel((array) ($row['ranking'] ?? []))) . '</span>';
-        $html .= '</div></li>';
+        $html .= '<p class="progression-ranking"><span>'
+            . esc_html(__('Classement', 'chassesautresor-com')) . '</span> '
+            . esc_html($this->rankingLabel((array) ($row['ranking'] ?? []))) . '</p>';
+        $html .= '</li>';
 
         return $html;
     }
@@ -292,33 +313,32 @@ final class AccountHuntRiddleStatisticsRenderer
 
     private function metric(string $label, string $value): string
     {
-        return '<div class="myaccount-riddle-stats-metric">'
+        return '<div>'
             . '<dt>' . esc_html($label) . '</dt>'
             . '<dd>' . esc_html($value) . '</dd>'
             . '</div>';
     }
 
     /** @param array<string, mixed> $row */
-    private function stepsLabel(array $row): string
+    private function stepsMetric(array $row): string
     {
         $steps = (int) ($row['steps'] ?? 0);
         if ($steps <= 0) {
-            return '—';
+            return $this->metric(__('Étapes', 'chassesautresor-com'), '—');
         }
 
         $players = (int) ($row['step_players'] ?? 0);
-        $playersLabel = sprintf(
+        $caption = sprintf(
             /* translators: %d: number of players who completed at least one intermediate step */
             _n('%d joueur', '%d joueurs', $players, 'chassesautresor-com'),
             $players
         );
 
-        return sprintf(
-            /* translators: 1: number of intermediate steps, 2: localized player count label */
-            __('%1$d (%2$s)', 'chassesautresor-com'),
-            $steps,
-            $playersLabel
-        );
+        return '<div>'
+            . '<dt>' . esc_html(__('Étapes', 'chassesautresor-com')) . '</dt>'
+            . '<dd>' . esc_html((string) $steps) . '</dd>'
+            . '<p class="progression-riddle__caption">' . esc_html($caption) . '</p>'
+            . '</div>';
     }
 
     /** @param array<int, array<string, mixed>> $ranking */
@@ -377,12 +397,9 @@ final class AccountHuntRiddleStatisticsRenderer
 
     private function emptyCard(string $title, string $message): string
     {
-        return '<div class="dashboard-card myaccount-riddle-stats">'
-            . '<div class="dashboard-card-header">'
-            . '<i class="fas fa-chart-bar" aria-hidden="true"></i>'
-            . '<h3>' . esc_html($title) . '</h3>'
-            . '</div>'
-            . '<div class="dashboard-card-content"><p>' . esc_html($message) . '</p></div>'
-            . '</div>';
+        return '<section class="progression-organizer">'
+            . '<h2 class="progression-riddles__title">' . esc_html($title) . '</h2>'
+            . '<p class="progression-riddles__empty">' . esc_html($message) . '</p>'
+            . '</section>';
     }
 }

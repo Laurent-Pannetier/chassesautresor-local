@@ -48,22 +48,15 @@ if (isset($_GET['periode'])) {
 }
 $page_url = function_exists('cta_shell_location_url') ? cta_shell_location_url('progression') : '';
 ?>
-<div class="myaccount-layout">
-    <div class="myaccount-main">
-        <p class="dashboard-section-intro"><?php echo esc_html($intro); ?></p>
-        <div class="dashboard-grid dashboard-grid--wide">
-            <?php
-            $dashboard_provider = static function (int $hunt_id, string $period): array {
-                return (new ChassesAuTresor\Core\Progress\OrganizerProgressionApplicationService())
-                    ->build($hunt_id, $period);
-            };
-            $stats_renderer = new ChassesAuTresor\Core\Messages\AccountHuntRiddleStatisticsRenderer(
-                null,
-                $dashboard_provider
-            );
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-            echo $stats_renderer->render($hunt_id, $period, $page_url);
-            ?>
-        </div>
-    </div>
-</div>
+<p class="progression-intro"><?php echo esc_html($intro); ?></p>
+<?php
+$dashboard_provider = static function (int $hunt_id, string $period): array {
+    return (new ChassesAuTresor\Core\Progress\OrganizerProgressionApplicationService())
+        ->build($hunt_id, $period);
+};
+$stats_renderer = new ChassesAuTresor\Core\Messages\AccountHuntRiddleStatisticsRenderer(
+    null,
+    $dashboard_provider
+);
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+echo $stats_renderer->render($hunt_id, $period, $page_url);

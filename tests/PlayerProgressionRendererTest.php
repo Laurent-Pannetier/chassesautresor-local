@@ -72,7 +72,9 @@ final class PlayerProgressionRendererTest extends TestCase
         self::assertStringContainsString('aria-current="page"', $html);
         self::assertStringContainsString('Chasse B', $html);
         self::assertStringContainsString('En cours', $html);
-        self::assertStringContainsString('1/3', $html);
+        self::assertStringContainsString('Étapes trouvées', $html);
+        self::assertStringContainsString('<dd>1</dd>', $html);
+        self::assertStringNotContainsString('1/3', $html);
         self::assertStringContainsString('Reprendre', $html);
         self::assertStringContainsString('03/10/2026', $html);
         self::assertStringNotContainsString('<table', $html);

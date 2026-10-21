@@ -29,6 +29,10 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         {
             return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
         }
+        function esc_attr($value): string
+        {
+            return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+        }
 
         require_once __DIR__
             . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountHuntRiddleStatisticsRenderer.php';
@@ -49,11 +53,12 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
 
         $html = (new AccountHuntRiddleStatisticsRenderer($rowsProvider))->render(12);
 
-        self::assertStringContainsString('myaccount-riddle-stats-list', $html);
-        self::assertStringContainsString('myaccount-riddle-stats-metric', $html);
+        self::assertStringContainsString('progression-riddles__list', $html);
+        self::assertStringContainsString('progression-riddle__metrics', $html);
         self::assertStringContainsString('Énigme Alpha', $html);
         self::assertStringContainsString('Participants', $html);
-        self::assertStringContainsString('3 (1 joueur)', $html);
+        self::assertStringContainsString('<dd>3</dd>', $html);
+        self::assertStringContainsString('1 joueur', $html);
         self::assertStringContainsString('1. alice (2 tentatives) · 2. bob (4 tentatives)', $html);
         self::assertStringContainsString('<dd>4</dd>', $html);
         self::assertStringContainsString('<dd>2</dd>', $html);

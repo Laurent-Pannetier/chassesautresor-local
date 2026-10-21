@@ -812,7 +812,8 @@ html[data-theme="day"] .home-enigmas-preserve {
   gap: 0.45rem;
 }
 
-.progression-hunts__link {
+.progression-hunts__link,
+.progression-period a {
   display: inline-flex;
   align-items: center;
   min-height: 2.25rem;
@@ -826,7 +827,8 @@ html[data-theme="day"] .home-enigmas-preserve {
   text-decoration: none;
 }
 
-.progression-hunts__link[aria-current="page"] {
+.progression-hunts__link[aria-current="page"],
+.progression-period a[aria-current="page"] {
   border-color: transparent;
   background: var(--shell-accent);
   color: var(--shell-accent-text);
@@ -938,6 +940,96 @@ html[data-theme="day"] .home-enigmas-preserve {
   font-weight: 700;
   line-height: 1.2;
   text-decoration: none;
+}
+
+.progression-intro,
+.progression-note,
+.progression-hint,
+.progression-steps__meta,
+.progression-riddle__caption {
+  margin: 0;
+  color: var(--shell-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.progression-organizer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.progression-organizer .team-stats {
+  margin-top: 0;
+}
+
+.progression-period {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.progression-funnel,
+.progression-steps ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progression-funnel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.progression-funnel li,
+.progression-steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.75rem;
+  background: var(--shell-surface-2);
+}
+
+.progression-funnel span,
+.progression-steps summary,
+.progression-ranking span {
+  color: var(--shell-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.progression-funnel strong,
+.progression-steps__title {
+  color: var(--shell-text);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.progression-steps summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.progression-steps ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+}
+
+.progression-ranking {
+  margin: 0;
+  color: var(--shell-text);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.progression-ranking span {
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
 .app-placeholder {
@@ -1136,6 +1228,18 @@ html[data-theme="day"] .home-enigmas-preserve {
     grid-template-columns: 1fr 1fr;
   }
 
+  .progression-funnel,
+  .progression-riddle__metrics--organizer {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .progression-steps li {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
   .hunt-banner img {
     height: 18rem;
   }
@@ -1162,6 +1266,10 @@ html[data-theme="day"] .home-enigmas-preserve {
 @media (--bp-wide) {
   .team-stats__grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .progression-organizer .team-stats__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .hunt-banner img {
