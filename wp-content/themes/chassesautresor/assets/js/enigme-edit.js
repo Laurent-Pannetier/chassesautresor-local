@@ -485,7 +485,9 @@ function initEnigmeEdit() {
         .then(r => r.json())
         .then(res => {
           if (res.success && res.data?.redirect) {
-            window.location.href = res.data.redirect;
+            window.ctaShellEditionSave?.allowLeave?.();
+            const back = document.querySelector('.shell-edition')?.dataset.editionBack;
+            window.location.href = back || res.data.redirect;
           } else {
             alert('Échec suppression : ' + (res.data || 'inconnue'));
           }

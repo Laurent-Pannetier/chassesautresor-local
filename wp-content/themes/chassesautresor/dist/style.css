@@ -5345,6 +5345,16 @@ body.edition-active-indice .edition-panel-indice.edition-panel-modal {
   z-index: 10000;
 }
 
+body.shell-edition.mode-edition {
+  --color-editor-background: var(--shell-surface);
+  --color-editor-border: var(--shell-border);
+  --color-editor-text: var(--shell-text);
+  --color-editor-text-muted: var(--shell-muted);
+  --color-editor-heading: var(--shell-text);
+  --color-editor-field-hover: var(--shell-surface-2);
+  --color-editor-placeholder: var(--shell-muted);
+}
+
 body.shell-edition .edition-panel-enigme,
 body.shell-edition .edition-panel-chasse {
   position: relative;
@@ -5356,11 +5366,62 @@ body.shell-edition .edition-panel-chasse {
   transform: none;
   pointer-events: auto;
   padding: var(--space-md);
-  border-radius: 0;
-  background-color: var(--color-editor-background);
-  color: var(--color-editor-text);
-  border-bottom: 1px solid var(--color-editor-border);
+  border-radius: 0.85rem;
+  background-color: var(--shell-surface);
+  color: var(--shell-text);
+  border: 1px solid var(--shell-border);
   box-shadow: none;
+}
+
+body.shell-edition .tab-watermark {
+  display: none;
+}
+
+body.shell-edition .edition-panel input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=button]):not([type=submit]),
+body.shell-edition .edition-panel textarea,
+body.shell-edition .edition-panel select {
+  background: var(--shell-bg);
+  color: var(--shell-text);
+  border-color: var(--shell-border);
+}
+
+body.shell-edition .edition-panel input::-moz-placeholder, body.shell-edition .edition-panel textarea::-moz-placeholder {
+  color: var(--shell-muted);
+}
+
+body.shell-edition .edition-panel input::placeholder,
+body.shell-edition .edition-panel textarea::placeholder {
+  color: var(--shell-muted);
+}
+
+body.shell-edition .edition-delete {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--shell-border);
+}
+
+body.shell-edition .edition-delete__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--color-editor-error, #d93025);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-editor-error, #d93025);
+  font-weight: 700;
+  opacity: 1;
+  cursor: pointer;
+}
+
+body.shell-edition .edition-delete__button:hover,
+body.shell-edition .edition-delete__button:focus {
+  background: var(--color-editor-error, #d93025);
+  color: #fff;
+  opacity: 1;
 }
 
 body.shell-edition:not(.shell-edition-tabs-ready) .edition-tab-content {

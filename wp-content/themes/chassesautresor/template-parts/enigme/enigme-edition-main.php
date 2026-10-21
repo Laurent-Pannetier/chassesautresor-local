@@ -790,11 +790,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
         );
         ?>
       </div> <!-- .edition-panel-body -->
-    <?php if (utilisateur_peut_supprimer_enigme($enigme_id)) : ?>
-      <div class="edition-panel-footer">
-        <button type="button" id="bouton-supprimer-enigme" class="bouton-texte secondaire"><?= esc_html__('❌ Suppression énigme', 'chassesautresor-com'); ?></button>
-      </div>
-    <?php endif; ?>
     </div> <!-- #enigme-tab-param -->
 
     <div id="enigme-tab-stats" class="edition-tab-content" style="display:none;">
@@ -972,6 +967,16 @@ get_template_part(
         'objet_id'   => $enigme_id,
     ]
 );
+if (utilisateur_peut_supprimer_enigme($enigme_id)) :
+    ?>
+  <div class="edition-panel-footer edition-delete">
+    <button type="button" id="bouton-supprimer-enigme" class="edition-delete__button">
+      <i class="fa-solid fa-trash" aria-hidden="true"></i>
+      <?= esc_html__('Supprimer l’énigme', 'chassesautresor-com'); ?>
+    </button>
+  </div>
+    <?php
+endif;
 ?>
   </section>
 <?php endif; ?>

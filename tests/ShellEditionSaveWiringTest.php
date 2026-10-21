@@ -57,6 +57,14 @@ final class ShellEditionSaveWiringTest extends TestCase {
         $this->assertStringNotContainsString('sleep(', $this->batchMethod($huntHandler));
         $this->assertStringContainsString('Édition énigme', $template);
         $this->assertStringNotContainsString('panneau-fermer', $template);
+        $this->assertStringContainsString('bouton-supprimer-enigme', $template);
+        $this->assertStringContainsString('Supprimer l’énigme', $template);
+        $this->assertStringNotContainsString('Suppression énigme', $template);
+        $tentatives = strpos($template, 'id="enigme-tab-soumission"');
+        $deleteButton = strpos($template, 'bouton-supprimer-enigme');
+        $this->assertNotFalse($tentatives);
+        $this->assertNotFalse($deleteButton);
+        $this->assertGreaterThan($tentatives, $deleteButton);
         $this->assertStringContainsString('Édition chasse', $huntTemplate);
         $this->assertStringNotContainsString('panneau-fermer', $huntTemplate);
         $this->assertStringContainsString('shell-edition-save__cancel', $queue);

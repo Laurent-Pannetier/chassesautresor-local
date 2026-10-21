@@ -1137,6 +1137,9 @@
     isDirty,
     save,
     restore,
+    allowLeave() {
+      allowUnload = true;
+    },
     registerExtra,
     setExtra,
     hasExtra,
