@@ -80,6 +80,7 @@
   border: 1px solid var(--color-editor-border);
   border-radius: 6px;
   background: var(--color-white);
+  color: var(--color-editor-text, var(--color-text-fond-clair));
 }
 
 .riddle-step-card.is-dragging {
@@ -95,9 +96,21 @@
   width: 2rem;
   height: 2rem;
   place-items: center;
+  flex: 0 0 auto;
   border-radius: 50%;
-  background: var(--color-gris-1);
+  background: var(--color-grey-light);
+  color: var(--color-text-fond-clair);
   font-weight: 700;
+}
+
+.riddle-step-card .bouton-tertiaire {
+  color: inherit;
+  border-color: currentColor;
+}
+
+.riddle-step-card .bouton-tertiaire:hover {
+  background: var(--color-text-fond-clair);
+  color: var(--color-text-primary);
 }
 
 .riddle-step-card__content {
@@ -124,8 +137,8 @@
   margin: 0 0 var(--space-md);
   padding: var(--space-sm);
   border-radius: 6px;
-  background: var(--color-gris-1);
-  color: var(--color-gris-4);
+  background: var(--color-editor-field-hover, var(--color-grey-light));
+  color: var(--color-editor-text, var(--color-text-fond-clair));
 }
 
 .riddle-step-form {
@@ -212,6 +225,25 @@
   border: 1px solid var(--color-editor-border);
   border-radius: 6px;
   background: var(--color-white);
+  color: var(--color-editor-text, var(--color-text-fond-clair));
+}
+
+/* Le texte du shell nuit est clair : un fond blanc le rend illisible. */
+html:not([data-theme="day"]) body.shell-edition .riddle-step-card {
+  background: var(--shell-bg);
+  border-color: var(--shell-border);
+  color: var(--shell-text);
+}
+
+html:not([data-theme="day"]) body.shell-edition .riddle-step-card__rank {
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+}
+
+html:not([data-theme="day"]) body.shell-edition .riddle-step-form__content-editor {
+  background: var(--shell-bg);
+  color: var(--shell-text);
+  border-color: var(--shell-border);
 }
 
 .riddle-step-form__content-editor:focus {
