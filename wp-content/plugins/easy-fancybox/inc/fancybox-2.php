@@ -142,7 +142,7 @@ jQuery('.$value['options']['autoAttribute']['selector'].').not(\'.nofancybox,li.
 						var unlinkedImageBlocks=jQuery(".wp-block-image > img:not(.nofancybox,figure.nofancybox>img)");
 						unlinkedImageBlocks.wrap(function() {
 							var href = jQuery( this ).attr( "src" );
-							return "<a href=\'" + href + "\'></a>";
+							return jQuery( "<a></a>" ).attr( "href", href );
 						});';
 				}
 				// Set selectors.

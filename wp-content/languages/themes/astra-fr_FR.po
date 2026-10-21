@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Themes - Astra package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-09-26 20:10:28+0000\n"
+"PO-Revision-Date: 2026-10-03 09:22:32+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -44,7 +44,7 @@ msgstr "Personnalisé %d"
 msgid "Theme %s"
 msgstr "Thème %s"
 
-#: inc/markup-extras.php:1793
+#: inc/markup-extras.php:1805
 msgctxt "Blog / Archive: Excerpt Truncation Marker"
 msgid "%astra%"
 msgstr "%astra%"
@@ -190,11 +190,11 @@ msgstr "Icône Git carrée"
 msgid "Facebook Square"
 msgstr "Icône Facebook carrée"
 
-#: inc/lib/nps-survey/classes/nps-survey-script.php:466
+#: inc/lib/nps-survey/classes/nps-survey-script.php:540
 msgid "Request failed."
 msgstr "La requête a échoué."
 
-#: inc/lib/nps-survey/classes/nps-survey-script.php:431
+#: inc/lib/nps-survey/classes/nps-survey-script.php:505
 msgid "Remote request failed."
 msgstr "La requête distante a échoué."
 
@@ -349,21 +349,17 @@ msgstr "Entête transparent désactivé"
 msgid "Transparent header enabled"
 msgstr "Entête transparent activé"
 
-#: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:26
-msgid "Update Astra Transparent Header Settings"
-msgstr "Mettre à jour les réglages de l’entête transparent d’Astra"
-
 #: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:27
 msgid "Updates the Astra transparent header settings including enable state, device visibility, logo configuration, disable-on rules for specific page types, header border, and color settings for header backgrounds, site title, menus, submenus, and content links."
 msgstr "Met à jour les réglages de l’entête transparent d’Astra, notamment son état d’activation, sa visibilité selon l’appareil, la configuration du logo, les règles de désactivation pour certains types de pages, la bordure de l’entête et les réglages de couleur des arrière-plans d’entête, du titre du site, des menus, des sous-menus et des liens de contenu."
 
+#: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:26
+msgid "Update Astra Transparent Header Settings"
+msgstr "Mettre à jour les réglages de l’entête transparent d’Astra"
+
 #: inc/abilities/customizer/header/transparent/class-astra-get-transparent-header.php:150
 msgid "Retrieved transparent header settings successfully."
 msgstr "Réglages de l’entête transparent récupérés."
-
-#: inc/abilities/customizer/header/transparent/class-astra-get-transparent-header.php:26
-msgid "Retrieves the current Astra transparent header settings including enable state, device visibility, logo configuration, disable-on rules for specific page types, header border, and all color settings for header backgrounds, site title, menus, submenus, and content links."
-msgstr "Récupère les réglages actuels de l’entête transparent d’Astra, notamment son état d’activation, sa visibilité selon l’appareil, la configuration du logo, les règles de désactivation pour certains types de pages, la bordure de l’entête et tous les réglages de couleur des arrière-plans d’entête, du titre du site, des menus, des sous-menus et des liens de contenu."
 
 #: inc/abilities/customizer/header/transparent/class-astra-get-transparent-header.php:25
 msgid "Get Astra Transparent Header Settings"
@@ -393,6 +389,10 @@ msgstr "Visibilité selon l’appareil définie sur %s"
 #: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:258
 msgid "Valid options: both, desktop, mobile"
 msgstr "Options valides : both, desktop, mobile"
+
+#: inc/abilities/customizer/header/transparent/class-astra-get-transparent-header.php:26
+msgid "Retrieves the current Astra transparent header settings including enable state, device visibility, logo configuration, disable-on rules for specific page types, header border, and all color settings for header backgrounds, site title, menus, submenus, and content links."
+msgstr "Récupère les réglages actuels de l’entête transparent d’Astra, notamment son état d’activation, sa visibilité selon l’appareil, la configuration du logo, les règles de désactivation pour certains types de pages, la bordure de l’entête et tous les réglages de couleur des arrière-plans d’entête, du titre du site, des menus, des sous-menus et des liens de contenu."
 
 #. translators: %s: invalid device value
 #: inc/abilities/customizer/general/scroll-to-top/class-astra-update-scroll-to-top.php:181
@@ -458,10 +458,6 @@ msgstr "Veuillez fournir au moins une mise en page à mettre à jour (ordinateur
 msgid "The astra_get_option function is required but not found."
 msgstr "La fonction astra_get_option est nécessaire, mais elle est introuvable."
 
-#: inc/abilities/customizer/header/class-astra-update-header-builder.php:27
-msgid "Updates the Astra theme header builder configuration for desktop and mobile layouts. Allows positioning components like buttons, HTML blocks, menus, widgets, social icons, and search in popup (mobile drawer), above header, primary header, and below header sections with specific zone placements."
-msgstr "Met à jour la configuration du constructeur d’entête du thème Astra pour les mises en page sur ordinateur et mobile. Permet de positionner des composants tels que des boutons, des blocs HTML, des menus, des widgets, des icônes de réseaux sociaux et la recherche dans la fenêtre surgissante (tiroir mobile), les sections au-dessus de l’entête, entête principal et sous l’entête, avec des emplacements de zone précis."
-
 #: inc/abilities/customizer/header/class-astra-update-header-builder.php:26
 msgid "Update Astra Header Builder Settings"
 msgstr "Mettre à jour les réglages du constructeur d’entête d’Astra"
@@ -484,6 +480,10 @@ msgid "Found %d component ID that needs migration. Run without dry_run to apply 
 msgid_plural "Found %d component IDs that need migration. Run without dry_run to apply changes."
 msgstr[0] "%d ID de composant nécessitant une migration a été trouvé. Exécutez sans dry_run pour appliquer les modifications."
 msgstr[1] "%d ID de composants nécessitant une migration ont été trouvés. Exécutez sans dry_run pour appliquer les modifications."
+
+#: inc/abilities/customizer/header/class-astra-update-header-builder.php:27
+msgid "Updates the Astra theme header builder configuration for desktop and mobile layouts. Allows positioning components like buttons, HTML blocks, menus, widgets, social icons, and search in popup (mobile drawer), above header, primary header, and below header sections with specific zone placements."
+msgstr "Met à jour la configuration du constructeur d’entête du thème Astra pour les mises en page sur ordinateur et mobile. Permet de positionner des composants tels que des boutons, des blocs HTML, des menus, des widgets, des icônes de réseaux sociaux et la recherche dans la fenêtre surgissante (tiroir mobile), les sections au-dessus de l’entête, entête principal et sous l’entête, avec des emplacements de zone précis."
 
 #. translators: %d: number of fixes
 #: inc/abilities/customizer/header/class-astra-migrate-header-components.php:159
@@ -533,13 +533,13 @@ msgstr "Obtenir les options de design du constructeur d’entête d’Astra"
 msgid "Retrieved header builder settings. %1$d widgets available, %2$d layouts configured."
 msgstr "Réglages du constructeur d’entête récupérés. %1$d widgets disponibles, %2$d mises en page configurées."
 
-#: inc/abilities/customizer/header/builder/class-astra-list-header-builder-settings.php:36
-msgid "Lists all available header builder widgets/elements, current layout configuration, available positions, and complete metadata about the header builder structure. Shows which widgets can be added, current widget placements in all header positions (above/primary/below headers), and position availability for both desktop and mobile headers. Use this to discover what elements are available, what are already in use, and what can be added to the header."
-msgstr "Répertorie tous les widgets/éléments disponibles du constructeur d’entête, la configuration actuelle des mises en page, les positions disponibles et les métadonnées complètes sur la structure du constructeur d’entête. Indique quels widgets peuvent être ajoutés, les emplacements actuels des widgets dans toutes les positions d’entête (au-dessus/principal/en dessous) et la disponibilité des positions pour les entêtes sur ordinateur et mobile. Utilisez ceci pour découvrir les éléments disponibles, ceux déjà utilisés et ceux qui peuvent être ajoutés à l’entête."
-
 #: inc/abilities/customizer/header/builder/class-astra-list-header-builder-settings.php:35
 msgid "List Header Builder Settings"
 msgstr "Répertorier les réglages du constructeur d’entête"
+
+#: inc/abilities/customizer/header/builder/class-astra-list-header-builder-settings.php:36
+msgid "Lists all available header builder widgets/elements, current layout configuration, available positions, and complete metadata about the header builder structure. Shows which widgets can be added, current widget placements in all header positions (above/primary/below headers), and position availability for both desktop and mobile headers. Use this to discover what elements are available, what are already in use, and what can be added to the header."
+msgstr "Répertorie tous les widgets/éléments disponibles du constructeur d’entête, la configuration actuelle des mises en page, les positions disponibles et les métadonnées complètes sur la structure du constructeur d’entête. Indique quels widgets peuvent être ajoutés, les emplacements actuels des widgets dans toutes les positions d’entête (au-dessus/principal/en dessous) et la disponibilité des positions pour les entêtes sur ordinateur et mobile. Utilisez ceci pour découvrir les éléments disponibles, ceux déjà utilisés et ceux qui peuvent être ajoutés à l’entête."
 
 #. translators: %s: enabled or disabled
 #: inc/abilities/customizer/general/sidebar/class-astra-update-sticky-sidebar.php:121
@@ -789,6 +789,10 @@ msgstr "Les fonctions astra_get_option et astra_update_option sont nécessaires,
 msgid "Astra theme helper functions not available."
 msgstr "Les fonctions d’aide du thème Astra ne sont pas disponibles."
 
+#: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:25
+msgid "Updates the Astra theme footer builder configuration for desktop and mobile layouts. Allows positioning components like buttons, HTML blocks, widgets, social icons, footer menu, and copyright in above footer, primary footer, and below footer sections with column-based placements. Also configures column counts and layout widths for each footer section."
+msgstr "Met à jour la configuration du constructeur de pied de page du thème Astra pour les mises en page sur ordinateur et mobile. Permet de positionner des composants tels que des boutons, des blocs HTML, des widgets, des icônes de réseaux sociaux, le menu de pied de page et le copyright dans les sections au-dessus du pied de page, pied de page principal et sous le pied de page, avec des emplacements basés sur les colonnes. Configure également le nombre de colonnes et les largeurs de mise en page de chaque section du pied de page."
+
 #: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:24
 msgid "Update Astra Footer Builder Settings"
 msgstr "Mettre à jour les réglages du constructeur de pied de page d’Astra"
@@ -801,10 +805,6 @@ msgstr "Design du pied de page %1$s mis à jour : %2$s."
 #: inc/abilities/customizer/header/class-astra-update-header-builder-design.php:216
 msgid "Please provide at least one design option to update."
 msgstr "Veuillez fournir au moins une option de design à mettre à jour."
-
-#: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:25
-msgid "Updates the Astra theme footer builder configuration for desktop and mobile layouts. Allows positioning components like buttons, HTML blocks, widgets, social icons, footer menu, and copyright in above footer, primary footer, and below footer sections with column-based placements. Also configures column counts and layout widths for each footer section."
-msgstr "Met à jour la configuration du constructeur de pied de page du thème Astra pour les mises en page sur ordinateur et mobile. Permet de positionner des composants tels que des boutons, des blocs HTML, des widgets, des icônes de réseaux sociaux, le menu de pied de page et le copyright dans les sections au-dessus du pied de page, pied de page principal et sous le pied de page, avec des emplacements basés sur les colonnes. Configure également le nombre de colonnes et les largeurs de mise en page de chaque section du pied de page."
 
 #: inc/abilities/customizer/footer/class-astra-update-footer-builder-design.php:155
 #: inc/abilities/customizer/header/class-astra-update-header-builder-design.php:157
@@ -828,13 +828,13 @@ msgstr "Mettre à jour les options de design du constructeur de pied de page d�
 msgid "Retrieved footer builder settings successfully."
 msgstr "Réglages du constructeur de pied de page récupérés."
 
-#: inc/abilities/customizer/footer/class-astra-get-footer-builder.php:24
-msgid "Retrieves the current Astra theme footer builder configuration including desktop and mobile layouts with components like buttons, HTML blocks, widgets, social icons, footer menu, and copyright positioned in above footer, primary footer, and below footer sections."
-msgstr "Récupère la configuration actuelle du constructeur de pied de page du thème Astra, notamment les mises en page sur ordinateur et mobile avec des composants tels que des boutons, des blocs HTML, des widgets, des icônes de réseaux sociaux, le menu de pied de page et le copyright positionnés dans les sections au-dessus du pied de page, pied de page principal et sous le pied de page."
-
 #: inc/abilities/customizer/footer/class-astra-get-footer-builder.php:23
 msgid "Get Astra Footer Builder Settings"
 msgstr "Obtenir les réglages du constructeur de pied de page d’Astra"
+
+#: inc/abilities/customizer/footer/class-astra-get-footer-builder.php:24
+msgid "Retrieves the current Astra theme footer builder configuration including desktop and mobile layouts with components like buttons, HTML blocks, widgets, social icons, footer menu, and copyright positioned in above footer, primary footer, and below footer sections."
+msgstr "Récupère la configuration actuelle du constructeur de pied de page du thème Astra, notamment les mises en page sur ordinateur et mobile avec des composants tels que des boutons, des blocs HTML, des widgets, des icônes de réseaux sociaux, le menu de pied de page et le copyright positionnés dans les sections au-dessus du pied de page, pied de page principal et sous le pied de page."
 
 #: inc/abilities/customizer/footer/class-astra-get-footer-builder-design.php:142
 msgid "Retrieved footer builder design options successfully. IMPORTANT: When presenting any colors to the user, you MUST show visual color previews using this markdown format if valid color code: ![#HEXCODE](https://via.placeholder.com/15/HEXCODE/000000?text=+) `#HEXCODE` - Replace HEXCODE with the actual hex color value."
@@ -1554,11 +1554,6 @@ msgid "%s font settings updated successfully."
 msgstr "%s réglages de police ont bien été mis à jour."
 
 #. translators: %d: heading level
-#: inc/abilities/customizer/globals/typography/class-astra-update-heading-font.php:55
-msgid "Updates the Astra theme H%d heading font family, weight, size, and other typography settings. IMPORTANT: When user specifies size like \"32px\" or \"2rem\", you must separate the numeric value from the unit: font_size.desktop = 32 (number), font_size.desktop-unit = \"px\" (string)."
-msgstr "Permet de modifier la famille de polices, l’épaisseur, la taille et d’autres réglages typographiques des titres de niveau H%d du thème Astra. IMPORTANT : lorsque l’utilisateur spécifie une taille telle que « 32px » ou « 2rem », vous devez séparer la valeur numérique de l’unité : font_size.desktop = 32 (nombre), font_size.desktop-unit = « px » (chaîne de caractères)."
-
-#. translators: %d: heading level
 #: inc/abilities/customizer/globals/typography/class-astra-update-heading-font.php:54
 msgid "Update Astra H%d Font"
 msgstr "Mettre à jour la police Astra H%d"
@@ -1566,6 +1561,11 @@ msgstr "Mettre à jour la police Astra H%d"
 #: inc/abilities/customizer/globals/typography/class-astra-update-body-font.php:182
 msgid "Body font settings updated successfully."
 msgstr "Les réglages de police du corps du texte ont bien été mis à jour."
+
+#. translators: %d: heading level
+#: inc/abilities/customizer/globals/typography/class-astra-update-heading-font.php:55
+msgid "Updates the Astra theme H%d heading font family, weight, size, and other typography settings. IMPORTANT: When user specifies size like \"32px\" or \"2rem\", you must separate the numeric value from the unit: font_size.desktop = 32 (number), font_size.desktop-unit = \"px\" (string)."
+msgstr "Permet de modifier la famille de polices, l’épaisseur, la taille et d’autres réglages typographiques des titres de niveau H%d du thème Astra. IMPORTANT : lorsque l’utilisateur spécifie une taille telle que « 32px » ou « 2rem », vous devez séparer la valeur numérique de l’unité : font_size.desktop = 32 (nombre), font_size.desktop-unit = « px » (chaîne de caractères)."
 
 #: inc/abilities/customizer/globals/typography/class-astra-update-body-font.php:25
 msgid "Updates the Astra theme body font family, weight, size, and other typography settings. IMPORTANT: When user specifies size like \"16px\" or \"1.5rem\", you must separate the numeric value from the unit: font_size.desktop = 16 (number), font_size.desktop-unit = \"px\" (string)."
@@ -2152,6 +2152,17 @@ msgstr "Obtenir les boutons Astra Global"
 msgid "Breadcrumb settings updated: %s."
 msgstr "Réglages du fil d’Ariane mis à jour : %s."
 
+#: inc/abilities/admin/settings/performance/class-astra-update-performance.php:157
+#: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:483
+#: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:402
+#: inc/abilities/customizer/general/scroll-to-top/class-astra-update-scroll-to-top.php:228
+#: inc/abilities/customizer/general/sidebar/class-astra-update-sidebar.php:200
+#: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:351
+#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-page.php:247
+#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-post.php:277
+msgid "Please provide at least one setting to update."
+msgstr "Veuillez indiquer au moins un réglage à mettre à jour."
+
 #: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:396
 msgid "Spacing updated"
 msgstr "Espacement mis à jour"
@@ -2165,35 +2176,6 @@ msgstr "Mettre à jour les couleurs"
 #: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:352
 msgid "Typography updated"
 msgstr "Mettre à jour la typographie"
-
-#: inc/abilities/admin/settings/performance/class-astra-update-performance.php:157
-#: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:483
-#: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:402
-#: inc/abilities/customizer/general/scroll-to-top/class-astra-update-scroll-to-top.php:228
-#: inc/abilities/customizer/general/sidebar/class-astra-update-sidebar.php:200
-#: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:351
-#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-page.php:247
-#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-post.php:277
-msgid "Please provide at least one setting to update."
-msgstr "Veuillez indiquer au moins un réglage à mettre à jour."
-
-#: inc/abilities/admin/settings/performance/class-astra-update-performance.php:156
-#: inc/abilities/customizer/footer/class-astra-update-footer-builder-design.php:213
-#: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:482
-#: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:401
-#: inc/abilities/customizer/general/scroll-to-top/class-astra-update-scroll-to-top.php:227
-#: inc/abilities/customizer/general/sidebar/class-astra-update-sidebar.php:199
-#: inc/abilities/customizer/globals/buttons/class-astra-update-global-buttons.php:281
-#: inc/abilities/customizer/globals/colors/class-astra-update-global-palette.php:238
-#: inc/abilities/customizer/globals/container/class-astra-update-container-layout.php:182
-#: inc/abilities/customizer/header/class-astra-update-header-builder-design.php:215
-#: inc/abilities/customizer/header/class-astra-update-header-builder.php:385
-#: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:350
-#: inc/abilities/customizer/posttypes/blog/class-astra-update-blog-archive.php:216
-#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-page.php:246
-#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-post.php:276
-msgid "No changes specified."
-msgstr "Aucune modification indiquée."
 
 #: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:317
 msgid "Display settings updated"
@@ -2215,6 +2197,24 @@ msgstr "Options valides : \\003E, \\00BB, \\002F, unicode"
 #: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:281
 msgid "Invalid separator_type: %s."
 msgstr "Type de séparateur non valide : %s."
+
+#: inc/abilities/admin/settings/performance/class-astra-update-performance.php:156
+#: inc/abilities/customizer/footer/class-astra-update-footer-builder-design.php:213
+#: inc/abilities/customizer/footer/class-astra-update-footer-builder.php:482
+#: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:401
+#: inc/abilities/customizer/general/scroll-to-top/class-astra-update-scroll-to-top.php:227
+#: inc/abilities/customizer/general/sidebar/class-astra-update-sidebar.php:199
+#: inc/abilities/customizer/globals/buttons/class-astra-update-global-buttons.php:281
+#: inc/abilities/customizer/globals/colors/class-astra-update-global-palette.php:238
+#: inc/abilities/customizer/globals/container/class-astra-update-container-layout.php:182
+#: inc/abilities/customizer/header/class-astra-update-header-builder-design.php:215
+#: inc/abilities/customizer/header/class-astra-update-header-builder.php:385
+#: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:350
+#: inc/abilities/customizer/posttypes/blog/class-astra-update-blog-archive.php:216
+#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-page.php:246
+#: inc/abilities/customizer/posttypes/blog/class-astra-update-single-post.php:276
+msgid "No changes specified."
+msgstr "Aucune modification indiquée."
 
 #. translators: %s: alignment value
 #: inc/abilities/customizer/general/breadcrumb/class-astra-update-breadcrumb.php:271
@@ -2254,6 +2254,10 @@ msgstr "Permet de modifier les réglages du fil d’Ariane du thème Astra, nota
 msgid "Update Astra Breadcrumb Settings"
 msgstr "Mettre à jour les réglages du fil d’Ariane d’Astra"
 
+#: inc/abilities/customizer/general/breadcrumb/class-astra-get-breadcrumb.php:215
+msgid "Retrieved breadcrumb settings successfully. IMPORTANT: When presenting any colors to the user, you MUST show visual color previews using this markdown format if valid color code: ![#HEXCODE](https://via.placeholder.com/15/HEXCODE/000000?text=+) `#HEXCODE` - Replace HEXCODE with the actual hex color value."
+msgstr "Les réglages du fil d’Ariane ont bien été récupérés. IMPORTANT : lorsque vous présentez des couleurs à l’utilisateur, vous DEVEZ afficher des aperçus visuels des couleurs en utilisant ce format Markdown si le code de couleur est valide : ![#HEXCODE](https://via.placeholder.com/15/HEXCODE/000000?text=+) `#HEXCODE` - Remplacez HEXCODE par la valeur hexadécimale réelle de la couleur."
+
 #: inc/abilities/customizer/general/breadcrumb/class-astra-get-breadcrumb.php:26
 msgid "Retrieves the current Astra theme breadcrumb settings including position, alignment, display settings, separator, typography, colors, and spacing."
 msgstr "Récupère les réglages actuels du fil d’Ariane du thème Astra, notamment la position, l’alignement, les réglages d’affichage, le séparateur, la typographie, les couleurs et l’espacement."
@@ -2266,10 +2270,6 @@ msgstr "Accéder aux réglages de fil d’Ariane d’Astra"
 #: inc/abilities/class-astra-abstract-ability.php:137
 msgid "A system error occurred: %s"
 msgstr "Une erreur système s’est produite : %s"
-
-#: inc/abilities/customizer/general/breadcrumb/class-astra-get-breadcrumb.php:215
-msgid "Retrieved breadcrumb settings successfully. IMPORTANT: When presenting any colors to the user, you MUST show visual color previews using this markdown format if valid color code: ![#HEXCODE](https://via.placeholder.com/15/HEXCODE/000000?text=+) `#HEXCODE` - Replace HEXCODE with the actual hex color value."
-msgstr "Les réglages du fil d’Ariane ont bien été récupérés. IMPORTANT : lorsque vous présentez des couleurs à l’utilisateur, vous DEVEZ afficher des aperçus visuels des couleurs en utilisant ce format Markdown si le code de couleur est valide : ![#HEXCODE](https://via.placeholder.com/15/HEXCODE/000000?text=+) `#HEXCODE` - Remplacez HEXCODE par la valeur hexadécimale réelle de la couleur."
 
 #. translators: %s: error message
 #: inc/abilities/class-astra-abstract-ability.php:134
@@ -2348,10 +2348,6 @@ msgstr "Impossible de trouver un article ou une page avec le nom « %s »."
 msgid "Post not found."
 msgstr "Article non trouvé."
 
-#: inc/abilities/admin/postmeta/class-astra-get-postmeta.php:23
-msgid "Get Post-Specific Meta Settings (Individual Posts/Pages)"
-msgstr "Obtenir les réglages de métadonnées spécifiques à un article (articles/pages individuels)"
-
 #: inc/abilities/admin/postmeta/class-astra-get-postmeta.php:138
 #: inc/abilities/admin/postmeta/class-astra-update-postmeta.php:167
 #: inc/abilities/admin/settings/performance/class-astra-flush-local-fonts.php:98
@@ -2378,6 +2374,10 @@ msgstr "Obtenir les réglages de métadonnées spécifiques à un article (artic
 #: inc/abilities/customizer/header/transparent/class-astra-update-transparent-header.php:237
 msgid "Please activate the Astra theme to use this feature."
 msgstr "Veuillez activer le thème Astra pour pouvoir utiliser cette fonctionnalité."
+
+#: inc/abilities/admin/postmeta/class-astra-get-postmeta.php:23
+msgid "Get Post-Specific Meta Settings (Individual Posts/Pages)"
+msgstr "Obtenir les réglages de métadonnées spécifiques à un article (articles/pages individuels)"
 
 #: inc/abilities/admin/postmeta/class-astra-get-postmeta.php:137
 #: inc/abilities/admin/postmeta/class-astra-update-postmeta.php:166
@@ -2711,15 +2711,6 @@ msgstr "Navigation et entête"
 #: inc/builder/controllers/class-astra-builder-ui-controller.php:280
 msgid "Main menu toggle"
 msgstr "Permutateur du menu principal"
-
-#: inc/class-astra-mobile-header.php:109
-msgid "Toggle Menu"
-msgstr "Permutateur de menu"
-
-#: inc/core/class-astra-walker-page.php:85
-#: inc/core/class-astra-walker-page.php:97
-msgid "Toggle menu"
-msgstr "Permutateur de menu"
 
 #: inc/customizer/configurations/builder/header/configs/header-builder.php:727
 msgid "Advanced buttons, icons, search & more"
@@ -3153,28 +3144,28 @@ msgstr "Cette page utilise l’entête transparent. Cliquez ci-dessous pour le p
 msgid "Logo is set in the Transparent Header Section. Click below to customize it."
 msgstr "Le logo est placé dans la section de l’entête transparent. Cliquez ci-dessous pour le personnaliser."
 
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:296
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:433
 msgid "Could you please specify which plugin?"
 msgstr "Pourriez-vous s’il vous plaît préciser quelle extension ?"
 
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:295
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:432
 msgid "I found a better alternative plugin."
 msgstr "J’ai trouvé une meilleure extension alternative."
 
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:289
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:426
 msgid "The plugin isn't working properly."
 msgstr "L’extension ne fonctionne pas correctement."
 
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:153
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:156
 msgid "Skip & Deactivate"
 msgstr "Ignorer et désactiver"
 
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:152
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:155
 msgid "Submit & Deactivate"
 msgstr "Envoyer et désactiver"
 
 #. translators: %1$s: link html start, %2$s: link html end
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:141
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:142
 msgid "Need help from our experts? %1$sClick here to contact us.%2$s"
 msgstr "Besoin d’aide de nos experts ? %1$sCliquez ici pour nous contacter.%2$s"
 
@@ -3197,23 +3188,23 @@ msgid "Posts"
 msgstr "Articles"
 
 #: admin/class-astra-bsf-analytics.php:169
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:132
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:308
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:133
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:445
 msgid "Please tell us more details."
 msgstr "Merci de nous donner plus de détails."
 
 #: admin/class-astra-bsf-analytics.php:168
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:307
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:444
 msgid "Other"
 msgstr "Autre"
 
 #: admin/class-astra-bsf-analytics.php:163
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:302
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:439
 msgid "Please tell us more about the feature."
 msgstr "Parlez-nous davantage de cette fonctionnalité."
 
 #: admin/class-astra-bsf-analytics.php:162
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:301
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:438
 msgid "It's missing a specific feature."
 msgstr "Il manque une fonctionnalité spécifique."
 
@@ -3226,7 +3217,7 @@ msgid "I found a better alternative theme."
 msgstr "J’ai trouvé un meilleur thème alternatif."
 
 #: admin/class-astra-bsf-analytics.php:151
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:290
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:427
 msgid "Please tell us more about what went wrong?"
 msgstr "Pouvez-vous nous en dire plus sur ce qui s’est passé ?"
 
@@ -3235,12 +3226,12 @@ msgid "The theme isn't working properly."
 msgstr "Le thème ne fonctionne pas correctement."
 
 #: admin/class-astra-bsf-analytics.php:145
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:284
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:421
 msgid "How can we assist you?"
 msgstr "Comment pouvons-nous vous aider ?"
 
 #: admin/class-astra-bsf-analytics.php:144
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:283
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:420
 msgid "This is a temporary deactivation for testing."
 msgstr "Il s’agit d’une désactivation temporaire à des fins de test."
 
@@ -3248,11 +3239,11 @@ msgstr "Il s’agit d’une désactivation temporaire à des fins de test."
 msgid "Oops! Something went wrong. Please refresh the page and try again."
 msgstr "Oups ! Une erreur s’est produite. Veuillez actualiser la page et réessayer."
 
-#: inc/markup-extras.php:2051
+#: inc/markup-extras.php:2063
 msgid "Read: %s"
 msgstr "Lire : %s"
 
-#: inc/markup-extras.php:2041
+#: inc/markup-extras.php:2053
 msgid "Untitled Post"
 msgstr "Article sans titre"
 
@@ -3382,12 +3373,12 @@ msgstr "Diviseur 2"
 msgid "Rate the Theme"
 msgstr "Évaluer ce thème"
 
-#: inc/lib/nps-survey/classes/nps-survey-script.php:313
+#: inc/lib/nps-survey/classes/nps-survey-script.php:323
 msgid "Sorry, you are not allowed to do that."
 msgstr "Désolé, vous n’êtes pas autorisé à faire cela."
 
-#: inc/lib/nps-survey/classes/nps-survey-script.php:366
-#: inc/lib/nps-survey/classes/nps-survey-script.php:486
+#: inc/lib/nps-survey/classes/nps-survey-script.php:440
+#: inc/lib/nps-survey/classes/nps-survey-script.php:560
 msgid "Nonce verification failed."
 msgstr "Erreur de vérification du nonce."
 
@@ -3584,12 +3575,12 @@ msgctxt "Builder: Header Button 1 Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/blog/blog.php:453
+#: inc/blog/blog.php:495
 msgctxt "Search Page Title: Subheading - When Results Not Found"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/blog/blog.php:452
+#: inc/blog/blog.php:494
 msgctxt "Search Page Title: Subheading - When Results Found"
 msgid "%astra%"
 msgstr "%astra%"
@@ -3724,7 +3715,7 @@ msgctxt "WooCommerce Cart: Cart Button Text"
 msgid "%astra%"
 msgstr "%astra%"
 
-#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3721
+#: inc/compatibility/woocommerce/class-astra-woocommerce.php:3722
 msgctxt "WooCommerce Single Product: Payments - Payment Title."
 msgid "%astra%"
 msgstr "%astra%"
@@ -8907,10 +8898,6 @@ msgstr "Balai"
 msgid "Broom Ball"
 msgstr "Ballon-balai"
 
-#: assets/svg/logo-svg-icons/icons-v6-0.php:3027
-msgid "Brush"
-msgstr "Brosse"
-
 #: assets/svg/logo-svg-icons/icons-v6-0.php:3041
 msgid "BTC"
 msgstr "BTC"
@@ -10995,6 +10982,10 @@ msgstr "Basketball"
 msgid "Audio Description"
 msgstr "Audiodescription"
 
+#: assets/svg/logo-svg-icons/icons-v6-0.php:3027
+msgid "Brush"
+msgstr "Pinceau"
+
 #: inc/customizer/configurations/builder/header/configs/account.php:167
 msgid "Choose if you want to display Icon or Avatar with the Text selected Profile Type."
 msgstr "Choisissez si vous voulez afficher une icône ou un avatar avec le type de profil sélectionné par le texte."
@@ -11340,15 +11331,15 @@ msgstr " Certaines options de la page de panier peuvent ne pas fonctionner corre
 msgid "404 Page"
 msgstr "Page 404"
 
-#: inc/extras.php:1211
+#: inc/extras.php:1231
 msgid "Medium Large"
 msgstr "Moyen grand"
 
-#: inc/extras.php:1212
+#: inc/extras.php:1232
 msgid "Large"
 msgstr "Grand"
 
-#: inc/extras.php:1213 inc/extras.php:1220
+#: inc/extras.php:1233 inc/extras.php:1240
 msgid "Full Size"
 msgstr "Taille réelle"
 
@@ -11492,7 +11483,7 @@ msgstr "Activer la colonne latérale épinglée"
 msgid "Customizing &#9656; %s"
 msgstr "Personnalisation &#9656; %s"
 
-#: inc/extras.php:1209
+#: inc/extras.php:1229
 msgid "Thumbnail"
 msgstr "Miniature"
 
@@ -11939,12 +11930,12 @@ msgid "Note: This title appear on %1$s archive for banner Layout 2."
 msgstr "Note : cet titre apparaît sur les archives d’/de %1$s pour la mise en page 2 de la bannière."
 
 #: admin/includes/class-astra-admin-ajax.php:68
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:223
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:360
 msgid "Sorry, you are not allowed to do this operation."
 msgstr "Désolé, vous n’avez pas l’autorisation pour effectuer cette opération."
 
 #: admin/includes/class-astra-admin-ajax.php:69
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:236
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:373
 msgid "Nonce validation failed"
 msgstr "Échec de validation du nonce"
 
@@ -12254,7 +12245,7 @@ msgstr "GitHub"
 msgid "Patreon"
 msgstr "Patreon"
 
-#: assets/svg/logo-svg-icons/icons-v6-2.php:1947 inc/extras.php:1210
+#: assets/svg/logo-svg-icons/icons-v6-2.php:1947 inc/extras.php:1230
 msgid "Medium"
 msgstr "Moyen"
 
@@ -13550,15 +13541,6 @@ msgstr "Espacement des icônes"
 msgid "Icon Background Space"
 msgstr "Espacement d’arrière-plan des icônes"
 
-#: inc/addons/scroll-to-top/classes/customizer/class-astra-scroll-to-top-configs.php:120
-#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:441
-#: inc/customizer/configurations/builder/header/configs/account.php:449
-#: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:159
-#: inc/customizer/configurations/builder/header/configs/search.php:75
-#: inc/customizer/configurations/builder/header/configs/woo-cart.php:613
-msgid "Icon Size"
-msgstr "Taille d’icône"
-
 #: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:83
 msgid "Color Type"
 msgstr "Type de couleur"
@@ -13838,6 +13820,15 @@ msgstr "Types d’entête"
 #: inc/customizer/configurations/builder/header/configs/header-builder.php:523
 msgid "Header Builder"
 msgstr "Constructeur d’entête"
+
+#: inc/addons/scroll-to-top/classes/customizer/class-astra-scroll-to-top-configs.php:120
+#: inc/customizer/configurations/builder/base/class-astra-social-icon-component-configs.php:441
+#: inc/customizer/configurations/builder/header/configs/account.php:449
+#: inc/customizer/configurations/builder/header/configs/mobile-trigger.php:159
+#: inc/customizer/configurations/builder/header/configs/search.php:75
+#: inc/customizer/configurations/builder/header/configs/woo-cart.php:613
+msgid "Icon Size"
+msgstr "Taille de l’icône"
 
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:73
 #: inc/customizer/configurations/layout/class-astra-site-identity-configs.php:542
@@ -14454,10 +14445,6 @@ msgstr "La page des derniers articles est la page d’accueil de votre site lors
 msgid "Blog Page is when Latest Posts are selected to be displayed on a particular page."
 msgstr "La page des articles correspond au cas où les derniers articles sont affichés sur une page en particulier."
 
-#: inc/extras.php:554
-msgid "Menu Toggle"
-msgstr "Permutateur de Menu"
-
 #: admin/includes/class-astra-menu.php:414
 #: admin/includes/class-astra-theme-builder-free.php:102
 #: inc/core/class-astra-admin-settings.php:189
@@ -15055,7 +15042,7 @@ msgstr "Lien"
 #: inc/customizer/configurations/builder/header/configs/account.php:294
 #: inc/customizer/configurations/builder/header/configs/off-canvas.php:151
 #: inc/customizer/configurations/layout/class-astra-header-layout-configs.php:649
-#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:105
+#: inc/lib/bsf-analytics/modules/deactivation-survey/classes/class-deactivation-survey-feedback.php:106
 #: inc/customizer/extend-custom-controls/build/index.js:1
 msgid "Icon"
 msgstr "Icône"
@@ -15464,11 +15451,11 @@ msgstr "Évaluations"
 msgid "Add To Cart"
 msgstr "Ajouter au panier"
 
-#: inc/compatibility/woocommerce/woocommerce-common-functions.php:80
+#: inc/compatibility/woocommerce/woocommerce-common-functions.php:81
 msgid "Out of stock"
 msgstr "En rupture de stock"
 
-#: inc/compatibility/woocommerce/woocommerce-common-functions.php:133
+#: inc/compatibility/woocommerce/woocommerce-common-functions.php:134
 msgid "Availability:"
 msgstr "Disponibilité :"
 
@@ -15630,7 +15617,7 @@ msgstr "Mise en page 2 de barre du pied de page"
 msgid "Default Layout"
 msgstr "Mise en page par défaut"
 
-#: inc/markup-extras.php:1895
+#: inc/markup-extras.php:1907
 msgid "Click here to assign a widget for this area."
 msgstr "Cliquez ici pour assigner un widget pour cette zone."
 
@@ -16393,7 +16380,7 @@ msgstr "Ajouter du HTML personnalisé"
 msgid "Y"
 msgstr "Y"
 
-#: inc/markup-extras.php:1855
+#: inc/markup-extras.php:1867
 msgid "Add Widget"
 msgstr "Ajouter un widget"
 
@@ -16469,7 +16456,7 @@ msgstr "Catégorie"
 #: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:106
 #: inc/customizer/configurations/layout/class-astra-blog-layout-configs.php:386
 #: inc/customizer/configurations/layout/class-astra-blog-single-layout-configs.php:48
-#: inc/extras.php:1234
+#: inc/extras.php:1254
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:222
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:228
 #: inc/modules/posts-structures/customizer/class-astra-posts-archive-structures-configs.php:343
@@ -16667,22 +16654,6 @@ msgstr "Avant l’entête"
 msgid "After Header"
 msgstr "Après l’entête"
 
-#: inc/customizer/class-astra-customizer-register-sections-panels.php:216
-msgid "Single Post"
-msgstr "Publication unique"
-
-#: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:91
-msgid "Sidebar Width"
-msgstr "Largeur de la colonne latérale"
-
-#: inc/admin-functions.php:77
-#: inc/customizer/configurations/builder/footer/configs/menu-footer.php:42
-#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:89
-#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:127
-#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:159
-msgid "Footer Menu"
-msgstr "Menu du pied de page"
-
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-typo-configs.php:115
 #: inc/addons/heading-colors/customizer/class-astra-heading-colors-configs.php:171
 #: inc/addons/heading-colors/customizer/class-astra-heading-colors-configs.php:211
@@ -16719,6 +16690,22 @@ msgstr "Menu du pied de page"
 #: inc/modules/related-posts/customizer/class-astra-related-posts-configs.php:1358
 msgid "Font Size"
 msgstr "Taille de police"
+
+#: inc/customizer/class-astra-customizer-register-sections-panels.php:216
+msgid "Single Post"
+msgstr "Publication unique"
+
+#: inc/customizer/configurations/layout/class-astra-sidebar-layout-configs.php:91
+msgid "Sidebar Width"
+msgstr "Largeur de la colonne latérale"
+
+#: inc/admin-functions.php:77
+#: inc/customizer/configurations/builder/footer/configs/menu-footer.php:42
+#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:89
+#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:127
+#: inc/customizer/configurations/layout/class-astra-footer-layout-configs.php:159
+msgid "Footer Menu"
+msgstr "Menu du pied de page"
 
 #: inc/addons/breadcrumbs/customizer/class-astra-breadcrumbs-color-configs.php:96
 #: inc/compatibility/woocommerce/customizer/sections/layout/class-astra-woo-shop-single-layout-configs.php:316

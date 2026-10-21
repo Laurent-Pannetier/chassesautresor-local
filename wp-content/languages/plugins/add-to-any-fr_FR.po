@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - AddToAny Share Buttons - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-09-12 17:44:33+0000\n"
+"PO-Revision-Date: 2026-09-29 12:26:59+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -260,10 +260,6 @@ msgstr "Partager par e-mail"
 msgid "Bookmark in your browser"
 msgstr "Ajouter un signet dans votre navigateur"
 
-#: addtoany.admin.php:794 addtoany.admin.php:862
-msgid "Icon Size"
-msgstr "Taille de l'icone"
-
 #: addtoany.admin.php:591
 msgid "Share this:"
 msgstr "Partagez ceci&nbsp;:"
@@ -373,3 +369,7 @@ msgstr "Tout afficher"
 #: add-to-any.php:547
 msgid "Show less"
 msgstr "Afficher moins"
+
+#: addtoany.admin.php:794 addtoany.admin.php:862
+msgid "Icon Size"
+msgstr "Taille de l’icône"
