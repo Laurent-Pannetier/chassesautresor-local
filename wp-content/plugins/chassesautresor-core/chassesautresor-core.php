@@ -466,7 +466,7 @@ ChassesAuTresor\Core\Content\OrganizerFieldMutationAjaxHandler::register('add_ac
 ChassesAuTresor\Core\Content\OrganizerRelationshipSaveHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\OrganizerRoleAssignmentHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\WordPressAccessPolicyHookHandler::register('add_action', 'add_filter');
-ChassesAuTresor\Core\Content\BackOfficeAccessHookHandler::register('add_action');
+ChassesAuTresor\Core\Content\BackOfficeAccessHookHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Content\RiddleRenderCacheHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\RiddleMutationLifecycleHookHandler::register('add_action');
 ChassesAuTresor\Core\Content\HuntMutationLifecycleHookHandler::register('add_action');
