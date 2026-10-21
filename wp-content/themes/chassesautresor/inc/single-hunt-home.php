@@ -118,7 +118,23 @@ function cat_single_hunt_enigmas_url(): string
 }
 
 /**
- * Enigmas loop and hunt solutions at the top of engaged, organizer and admin homes.
+ * Whether a sommaire row is shown.
+ *
+ * Players only see an enigma whose accessibility state, already resolved by
+ * get_cta_enigme() from the prerequisites, is `accessible`.
+ * Organizers and administrators keep the whole album on the same homepage.
+ */
+function cat_sommaire_enigme_est_visible(string $etatSysteme, bool $privileged): bool
+{
+    if ($privileged) {
+        return true;
+    }
+
+    return $etatSysteme === 'accessible';
+}
+
+/**
+ * Album table of contents and hunt solutions at the top of engaged, organizer and admin homes.
  */
 function cat_render_single_hunt_home_enigmas(): void
 {
@@ -143,7 +159,7 @@ function cat_render_single_hunt_home_enigmas(): void
         && function_exists('chasse_has_validatable_enigme')
         && !chasse_has_validatable_enigme($huntId);
 
-    // Keeps the existing enigmas loop on its previous canvas, away from the shell palette.
+    // The paper sommaire sits on the previous enigmas canvas, away from the shell palette.
     echo '<div class="home-enigmas-preserve">';
     echo '<section id="enigmes" class="home-enigmas" aria-labelledby="home-enigmas-title">';
     echo '<h2 id="home-enigmas-title" class="screen-reader-text">';
@@ -151,7 +167,7 @@ function cat_render_single_hunt_home_enigmas(): void
     echo '</h2>';
     echo '<div id="liste-enigmes" class="chasse-enigmes-liste">';
     get_template_part(
-        'template-parts/enigme/chasse-partial-boucle-enigmes',
+        'template-parts/enigme/chasse-partial-sommaire-enigmes',
         null,
         [
             'chasse_id' => $huntId,
