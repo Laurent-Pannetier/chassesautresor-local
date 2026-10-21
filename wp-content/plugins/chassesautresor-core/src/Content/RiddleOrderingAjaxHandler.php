@@ -41,13 +41,22 @@ class RiddleOrderingAjaxHandler {
         }
 
         $order = array_map('intval', (array) ($_POST['ordre'] ?? []));
-        (new RiddleOrderingService())->apply(
+        $huntRiddleIds = self::riddleIds($huntId);
+        $ordering = new RiddleOrderingService();
+        $updated = $ordering->apply(
             $order,
-            self::riddleIds($huntId),
+            $huntRiddleIds,
             static function (int $riddleId, int $menuOrder): void {
                 wp_update_post(['ID' => $riddleId, 'menu_order' => $menuOrder]);
             }
         );
+        if ($updated > 0 && function_exists('update_field')) {
+            update_field(
+                RiddleCacheMutationService::FIELD_NAME,
+                $ordering->cacheOrder($order, $huntRiddleIds),
+                $huntId
+            );
+        }
 
         wp_send_json_success();
     }

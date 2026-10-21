@@ -177,10 +177,15 @@ foreach ($ids_enigmes as $enigme_id) {
                 $tab = $en_attente ? 'soumission' : 'stats';
             }
         }
+        $section = function_exists('cta_shell_normalize_edition_section')
+            ? cta_shell_normalize_edition_section('enigme', $tab)
+            : 'parametres';
         $permalink = (string) get_permalink($enigme_id);
-        $reglages_url = function_exists('add_query_arg')
-            ? (string) add_query_arg(['edition' => 'open', 'tab' => $tab], $permalink)
-            : $permalink . '?edition=open&tab=' . rawurlencode($tab);
+        $reglages_url = function_exists('cta_shell_edition_url')
+            ? cta_shell_edition_url('enigme', $enigme_id, $section)
+            : (function_exists('add_query_arg')
+                ? (string) add_query_arg(['edition' => 'open', 'tab' => $tab], $permalink)
+                : $permalink . '?edition=open&tab=' . rawurlencode($tab));
     }
 
     $lignes[] = [
@@ -234,9 +239,11 @@ if ($peut_ajouter && !$has_incomplete) {
 $edition_chasse_url = '';
 if ($peut_editer_chasse && function_exists('get_permalink')) {
     $permalink_chasse = (string) get_permalink($chasse_id);
-    $edition_chasse_url = function_exists('add_query_arg')
-        ? (string) add_query_arg(['edition' => 'open', 'tab' => 'param'], $permalink_chasse)
-        : $permalink_chasse . '?edition=open&tab=param';
+    $edition_chasse_url = function_exists('cta_shell_edition_url')
+        ? cta_shell_edition_url('chasse', (int) $chasse_id, 'parametres')
+        : (function_exists('add_query_arg')
+            ? (string) add_query_arg(['edition' => 'open', 'tab' => 'param'], $permalink_chasse)
+            : $permalink_chasse . '?edition=open&tab=param');
 }
 ?>
 <div class="sommaire-bd">

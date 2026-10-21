@@ -30,6 +30,12 @@ final class HuntFieldMutationAjaxHandlerTest extends TestCase {
                 10,
                 1,
             ],
+            [
+                'wp_ajax_enregistrer_champs_chasse',
+                [HuntFieldMutationAjaxHandler::class, 'handleBatch'],
+                10,
+                1,
+            ],
         ], $hooks);
     }
 }

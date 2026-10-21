@@ -104,6 +104,40 @@ class RiddleMutationService {
             $valid = (bool) update_field($field, sanitize_text_field($value), $riddleId);
         }
 
+        if ($field === 'enigme_visuel_texte') {
+            $html = wp_kses_post(wp_unslash((string) $value));
+            $updated = update_field($field, $html, $riddleId);
+            $stored = (string) get_post_meta($riddleId, $field, true);
+            $valid = $updated || trim($stored) === trim($html);
+
+            return [
+                'error' => $valid ? null : 'echec_mise_a_jour_final',
+                'terminal' => false,
+                'refresh_state' => false,
+            ];
+        }
+
+        if ($field === 'enigme_visuel_image') {
+            $raw = is_array($value) ? $value : explode(',', (string) wp_unslash($value));
+            $ids = [];
+            foreach ($raw as $item) {
+                $id = (int) $item;
+                if ($id > 0 && !in_array($id, $ids, true)) {
+                    $ids[] = $id;
+                }
+            }
+            $updated = update_field($field, $ids, $riddleId);
+            $stored = get_field($field, $riddleId, false);
+            $storedIds = array_map('intval', is_array($stored) ? $stored : []);
+            $valid = $updated || $storedIds === $ids;
+
+            return [
+                'error' => $valid ? null : 'echec_mise_a_jour_final',
+                'terminal' => false,
+                'refresh_state' => false,
+            ];
+        }
+
         if (!$valid) {
             $cleanValue = is_numeric($value) ? (int) $value : sanitize_text_field($value);
             $updated = update_field($field, $cleanValue, $riddleId);

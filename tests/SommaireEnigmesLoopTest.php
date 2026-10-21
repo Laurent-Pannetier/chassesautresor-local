@@ -130,7 +130,9 @@ final class SommaireEnigmesLoopTest extends TestCase
         self::assertStringContainsString('Ajouter une énigme', $html);
         self::assertStringContainsString('fa-plus', $html);
         self::assertStringContainsString('Éditer la chasse', $html);
-        self::assertStringContainsString('edition=open', $html);
+        self::assertStringContainsString('https://example.test/outils/?chasse=1&section=parametres', $html);
+        self::assertStringContainsString('https://example.test/outils/?enigme=11&section=parametres', $html);
+        self::assertStringNotContainsString('edition=open', $html);
         self::assertStringContainsString('data-reorder="1"', $html);
         self::assertStringContainsString('sommaire-bd__poignee', $html);
         self::assertStringContainsString('sommaire-bd__reglages', $html);
@@ -284,6 +286,15 @@ final class SommaireEnigmesLoopTest extends TestCase
         }
         if (!function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
             eval('function verifier_ou_mettre_a_jour_cache_complet($id) {}');
+        }
+        if (!function_exists('cta_shell_normalize_edition_section')) {
+            eval('function cta_shell_normalize_edition_section($type, $section) {'
+                . ' $map = ["param" => "parametres", "soumission" => "tentatives"];'
+                . ' return $map[$section] ?? $section; }');
+        }
+        if (!function_exists('cta_shell_edition_url')) {
+            eval('function cta_shell_edition_url($type, $id, $section = "parametres") {'
+                . ' return "https://example.test/outils/?" . $type . "=" . (int) $id . "&section=" . $section; }');
         }
         if (!function_exists('utilisateur_peut_modifier_enigme')) {
             eval('function utilisateur_peut_modifier_enigme($id) {'

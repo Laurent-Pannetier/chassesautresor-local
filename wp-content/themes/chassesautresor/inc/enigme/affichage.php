@@ -233,11 +233,14 @@ require_once __DIR__ . '/indices.php';
         echo '<header class="enigme-mobile-header enigme-mobile-header--no-back">';
         echo '<div class="enigme-mobile-actions">';
         if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id)) {
-            echo '<button type="button" class="toggle-mode-edition-enigme enigme-mobile-edit" aria-label="'
+            $edition_url = function_exists('cta_shell_edition_url')
+                ? cta_shell_edition_url('enigme', (int) $enigme_id, 'parametres')
+                : add_query_arg(['edition' => 'open', 'tab' => 'param'], (string) get_permalink($enigme_id));
+            echo '<a class="enigme-mobile-edit" href="' . esc_url($edition_url) . '" aria-label="'
                 . esc_attr__('Paramètres', 'chassesautresor-com') . '">';
             echo '<span class="screen-reader-text">' . esc_html__('Paramètres', 'chassesautresor-com') . '</span>';
             echo $settings_icon;
-            echo '</button>';
+            echo '</a>';
         }
         if ($peut_voir_aside) {
             echo '<button type="button" class="enigme-mobile-panel-toggle" aria-controls="enigme-mobile-panel" aria-expanded="false" aria-label="' . esc_attr__('Menu énigme', 'chassesautresor-com') . '">';
@@ -249,11 +252,15 @@ require_once __DIR__ . '/indices.php';
         echo '</header>';
 
         if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id)) {
-            echo '<button type="button" class="bouton-edition-toggle enigme-edit-toggle--desktop toggle-mode-edition-enigme" aria-label="'
+            $edition_url = function_exists('cta_shell_edition_url')
+                ? cta_shell_edition_url('enigme', (int) $enigme_id, 'parametres')
+                : add_query_arg(['edition' => 'open', 'tab' => 'param'], (string) get_permalink($enigme_id));
+            echo '<a class="bouton-edition-toggle enigme-edit-toggle--desktop" href="'
+                . esc_url($edition_url) . '" aria-label="'
                 . esc_attr__('Paramètres', 'chassesautresor-com') . '">';
             echo '<span class="screen-reader-text">' . esc_html__('Paramètres', 'chassesautresor-com') . '</span>';
             echo $settings_icon;
-            echo '</button>';
+            echo '</a>';
         }
 
         if ($peut_voir_aside) {

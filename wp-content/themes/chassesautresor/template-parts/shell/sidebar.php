@@ -27,9 +27,12 @@ $render_link = static function (array $item): void {
     if (!empty($item['active'])) {
         $classes .= ' is-active';
     }
+    if (!empty($item['section'])) {
+        $classes .= ' is-section';
+    }
     $icon = function_exists('cta_shell_icon') ? cta_shell_icon((string) ($item['icon'] ?? '')) : '';
     echo '<a class="' . esc_attr($classes) . '" href="' . esc_url((string) $item['url']) . '"';
-    if (!empty($item['active'])) {
+    if (!empty($item['current'])) {
         echo ' aria-current="page"';
     }
     echo '>';
@@ -44,6 +47,13 @@ $render_link = static function (array $item): void {
     <nav class="app-nav" aria-label="<?php esc_attr_e('Navigation principale', 'chassesautresor-com'); ?>">
         <?php foreach ($primary as $item) : ?>
             <?php $render_link($item); ?>
+            <?php if (($item['key'] ?? '') === 'outils' && (!empty($item['active']) || !empty($item['section']))) : ?>
+                <?php
+                if (function_exists('cta_shell_render_outils_submenu')) {
+                    cta_shell_render_outils_submenu();
+                }
+                ?>
+            <?php endif; ?>
         <?php endforeach; ?>
     </nav>
     <div class="app-sidebar__foot">

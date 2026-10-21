@@ -46,4 +46,12 @@ class RiddleOrderingServiceTest extends TestCase {
         $this->assertSame(0, $count);
         $this->assertFalse($called);
     }
+
+    public function testCacheOrderKeepsUntouchedRiddlesAfterTheDraggedOnes(): void
+    {
+        $this->assertSame(
+            [30, 10, 20],
+            (new RiddleOrderingService())->cacheOrder([30, 99, 10, 30], [10, 20, 30])
+        );
+    }
 }

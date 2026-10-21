@@ -117,7 +117,7 @@ final class RiddleAccessRedirectHandler {
             !$riddleComplete &&
             !isset($_GET['edition'])
         ) {
-            wp_redirect(add_query_arg('edition', 'open', get_permalink($riddleId)));
+            wp_redirect(self::editionUrl($riddleId, 'param'));
             exit;
         }
 
@@ -127,17 +127,32 @@ final class RiddleAccessRedirectHandler {
             && CoreServiceFactory::riddleAttempts($wpdb)->countPendingForRiddle($riddleId) > 0
             && !isset($_GET['edition'])
         ) {
-            wp_redirect(
-                add_query_arg(
-                    [
-                        'edition' => 'open',
-                        'tab'     => 'soumission',
-                    ],
-                    get_permalink($riddleId)
-                )
-            );
+            wp_redirect(self::editionUrl($riddleId, 'soumission'));
             exit;
         }
+    }
+
+    private static function editionUrl(int $riddleId, string $tab): string
+    {
+        if (function_exists('cta_shell_edition_url')) {
+            $section = function_exists('cta_shell_normalize_edition_section')
+                ? cta_shell_normalize_edition_section('enigme', $tab)
+                : 'parametres';
+
+            return cta_shell_edition_url('enigme', $riddleId, $section);
+        }
+
+        if ($tab === 'param') {
+            return add_query_arg('edition', 'open', get_permalink($riddleId));
+        }
+
+        return add_query_arg(
+            [
+                'edition' => 'open',
+                'tab' => $tab,
+            ],
+            get_permalink($riddleId)
+        );
     }
 
     private static function gatedEntryUrl(int $huntId, int $userId): string

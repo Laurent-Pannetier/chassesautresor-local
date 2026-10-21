@@ -60,14 +60,50 @@ class RiddleCompletionService
         bool $hasPrerequisites,
         bool $hasCompleteSteps = true
     ): bool {
-        $hasValidImage = $imageId > 0 && $imageId !== $placeholderImageId;
-        $hasValidAnswerConfiguration = $validationMode !== 'automatique' || $hasAnswers;
-        $hasValidAccessConfiguration = $accessCondition !== 'pre_requis' || $hasPrerequisites;
+        return $this->missingKeys(
+            $hasValidTitle,
+            $imageId,
+            $placeholderImageId,
+            $validationMode,
+            $hasAnswers,
+            $accessCondition,
+            $hasPrerequisites,
+            $hasCompleteSteps
+        ) === [];
+    }
 
-        return $hasValidTitle
-            && $hasValidImage
-            && $hasValidAnswerConfiguration
-            && $hasValidAccessConfiguration
-            && $hasCompleteSteps;
+    /**
+     * Stable keys for the fields that still block publication of a riddle.
+     *
+     * @return string[]
+     */
+    public function missingKeys(
+        bool $hasValidTitle,
+        int $imageId,
+        int $placeholderImageId,
+        string $validationMode,
+        bool $hasAnswers,
+        string $accessCondition,
+        bool $hasPrerequisites,
+        bool $hasCompleteSteps = true
+    ): array {
+        $missing = [];
+        if (!$hasValidTitle) {
+            $missing[] = 'title';
+        }
+        if ($imageId <= 0 || $imageId === $placeholderImageId) {
+            $missing[] = 'illustrations';
+        }
+        if ($validationMode === 'automatique' && !$hasAnswers) {
+            $missing[] = 'final_answer';
+        }
+        if ($accessCondition === 'pre_requis' && !$hasPrerequisites) {
+            $missing[] = 'prerequisites';
+        }
+        if (!$hasCompleteSteps) {
+            $missing[] = 'steps';
+        }
+
+        return $missing;
     }
 }

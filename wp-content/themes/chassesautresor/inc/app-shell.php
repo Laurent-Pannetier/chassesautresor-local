@@ -422,6 +422,16 @@ function cta_shell_document_title(array $parts): array
         return $parts;
     }
 
+    $target = function_exists('cta_shell_edition_target') ? cta_shell_edition_target() : null;
+    if (is_array($target) && function_exists('get_the_title')) {
+        $editionTitle = (string) get_the_title((int) $target['id']);
+        if ($editionTitle !== '') {
+            $parts['title'] = $editionTitle;
+
+            return $parts;
+        }
+    }
+
     $titles = cta_shell_page_titles();
     $slug = cta_shell_request_slug();
     if (isset($titles[$slug])) {

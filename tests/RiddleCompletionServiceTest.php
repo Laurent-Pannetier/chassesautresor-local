@@ -65,6 +65,20 @@ class RiddleCompletionServiceTest extends TestCase
         $this->assertFalse($service->isComplete(true, 99, 99, 'manuelle', false, 'immediat', false));
     }
 
+    public function testMissingKeysFollowTheSameRulesAsCompletion(): void
+    {
+        $service = new RiddleCompletionService();
+
+        $this->assertSame(
+            [],
+            $service->missingKeys(true, 10, 99, 'manuelle', false, 'immediat', false)
+        );
+        $this->assertSame(
+            ['title', 'illustrations', 'final_answer', 'prerequisites', 'steps'],
+            $service->missingKeys(false, 99, 99, 'automatique', false, 'pre_requis', false, false)
+        );
+    }
+
     public function testAutomaticRiddleRequiresAnAnswer(): void
     {
         $service = new RiddleCompletionService();

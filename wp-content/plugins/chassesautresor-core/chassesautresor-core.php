@@ -319,6 +319,7 @@ require_once __DIR__ . '/src/Content/HuntDateValidationHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntLinkMutationService.php';
 require_once __DIR__ . '/src/Content/HuntRewardMutationService.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationService.php';
+require_once __DIR__ . '/src/Content/ShellEditionFieldBatch.php';
 require_once __DIR__ . '/src/Content/HuntFieldMutationAjaxHandler.php';
 require_once __DIR__ . '/src/Content/HuntMutationLifecycleHookHandler.php';
 require_once __DIR__ . '/src/Content/HuntClosureService.php';

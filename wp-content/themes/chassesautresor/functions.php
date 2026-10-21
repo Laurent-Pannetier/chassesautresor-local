@@ -624,6 +624,7 @@ require_once $inc_path . 'edition/edition-enigme.php';
 require_once $inc_path . 'edition/edition-indice.php';
 require_once $inc_path . 'edition/edition-solution.php';
 require_once $inc_path . 'edition/edition-securite.php';
+require_once $inc_path . 'shell-edition.php';
 
 /**
  * Injecte automatiquement `acf_form_head()` pour les fiches chasse.
@@ -643,13 +644,18 @@ require_once $inc_path . 'edition/edition-securite.php';
 add_action('wp_head', 'forcer_acf_form_head_chasse', 0);
 function forcer_acf_form_head_chasse()
 {
-    if (!is_singular('chasse') || !function_exists('acf_form_head')) {
+    $shellTarget = function_exists('cta_shell_edition_target') ? cta_shell_edition_target() : null;
+    if ($shellTarget === null && !is_singular('chasse')) {
+        return;
+    }
+    if (!function_exists('acf_form_head')) {
         return;
     }
 
-    $post_id = get_queried_object_id();
-
-    if (!current_user_can('edit_post', $post_id)) {
+    $post_id = is_array($shellTarget) ? (int) $shellTarget['id'] : (int) get_queried_object_id();
+    $canEdit = current_user_can('edit_post', $post_id)
+        || (function_exists('utilisateur_peut_voir_panneau') && utilisateur_peut_voir_panneau($post_id));
+    if (!$canEdit) {
         return;
     }
 

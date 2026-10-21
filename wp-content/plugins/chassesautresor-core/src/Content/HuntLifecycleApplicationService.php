@@ -39,6 +39,8 @@ final class HuntLifecycleApplicationService
      *   can_activate:bool,
      *   can_deactivate:bool,
      *   disabled:bool,
+     *   content_ready:bool,
+     *   gaps:array<int, array{label:string,url:string}>,
      *   status_label:string,
      *   badge_label:string,
      *   badge_icon:string,
@@ -52,7 +54,18 @@ final class HuntLifecycleApplicationService
         $isAdmin = user_can($userId, 'administrator');
         $isOrg = $this->isOrganizerAssociated($userId, $huntId);
         $canRequest = $this->accessResolver->canRequest($huntId, $userId);
-        $canActivate = $this->lifecycle->canActivate($isAdmin, $isOrg, $isDemoMode, $state, $canRequest);
+        $gaps = function_exists('cat_collect_hunt_activation_gaps')
+            ? cat_collect_hunt_activation_gaps($huntId)
+            : [];
+        $contentReady = $gaps === [];
+        $canActivate = $this->lifecycle->canActivate(
+            $isAdmin,
+            $isOrg,
+            $isDemoMode,
+            $state,
+            $canRequest,
+            $contentReady
+        );
         $canDeactivate = $this->lifecycle->canDeactivate($isAdmin, $isOrg, $isDemoMode, $state);
         $checked = $this->lifecycle->isSwitchOn($state);
 
@@ -63,10 +76,12 @@ final class HuntLifecycleApplicationService
             'can_activate' => $canActivate,
             'can_deactivate' => $canDeactivate,
             'disabled' => !($checked ? $canDeactivate : $canActivate),
+            'content_ready' => $contentReady,
+            'gaps' => $gaps,
             'status_label' => $this->statusLabel($state, $isAdmin),
             'badge_label' => $this->badgeLabel($state),
             'badge_icon' => $this->lifecycle->stateIcon($state),
-            'help' => $this->helpText($state, $isDemoMode, $isAdmin, $canActivate),
+            'help' => $this->helpText($state, $isDemoMode, $isAdmin, $canActivate, $contentReady),
         ];
     }
 
@@ -240,8 +255,18 @@ final class HuntLifecycleApplicationService
         string $state,
         bool $isDemoMode,
         bool $isAdmin,
-        bool $canActivate
+        bool $canActivate,
+        bool $contentReady = true
     ): string {
+        if (
+            !$contentReady
+            && in_array($state, [HuntLifecycleService::STATE_EDITABLE, HuntLifecycleService::STATE_PENDING], true)
+        ) {
+            return __(
+                'Complétez la chasse et ses énigmes pour pouvoir activer.',
+                'chassesautresor-com'
+            );
+        }
         if ($state === HuntLifecycleService::STATE_ACTIVE) {
             return __(
                 'Une chasse active a des possibilités d’édition limitées.',

@@ -88,7 +88,9 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
 
         $links[] = [
             'label' => __('Chasse', 'chassesautresor-com'),
-            'url' => add_query_arg(['edition' => 'open', 'tab' => 'param'], get_permalink($huntId)),
+            'url' => function_exists('cta_shell_edition_url')
+                ? cta_shell_edition_url('chasse', $huntId, 'parametres')
+                : add_query_arg(['edition' => 'open', 'tab' => 'param'], get_permalink($huntId)),
         ];
 
         $riddleIds = array_map(
@@ -99,7 +101,9 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
             $title = get_the_title($riddleId);
             $links[] = [
                 'label' => $title !== '' ? $title : __('Énigme', 'chassesautresor-com'),
-                'url' => add_query_arg(['edition' => 'open', 'tab' => 'param'], get_permalink($riddleId)),
+                'url' => function_exists('cta_shell_edition_url')
+                    ? cta_shell_edition_url('enigme', $riddleId, 'parametres')
+                    : add_query_arg(['edition' => 'open', 'tab' => 'param'], get_permalink($riddleId)),
             ];
         }
 
@@ -141,6 +145,36 @@ if (!function_exists('cat_render_hunt_lifecycle_switch')) {
                     ></i>
                     <span data-hunt-lifecycle-badge-label><?php echo esc_html($badgeLabel); ?></span>
                 </span>
+                <?php if (!empty($view['gaps']) && is_array($view['gaps'])) : ?>
+                    <?php $gapsId = 'hunt-activation-gaps-' . (int) $view['hunt_id']; ?>
+                    <button
+                        type="button"
+                        class="hunt-lifecycle-card__gaps"
+                        popovertarget="<?php echo esc_attr($gapsId); ?>"
+                        aria-label="<?php esc_attr_e('Éléments manquants', 'chassesautresor-com'); ?>"
+                    >
+                        <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
+                    </button>
+                    <div id="<?php echo esc_attr($gapsId); ?>" popover class="hunt-lifecycle-card__gaps-pop">
+                        <ul>
+                            <?php foreach ($view['gaps'] as $gap) : ?>
+                                <?php
+                                $gapLabel = (string) ($gap['label'] ?? '');
+                                $gapUrl = (string) ($gap['url'] ?? '');
+                                ?>
+                                <li>
+                                    <?php if ($gapUrl !== '') : ?>
+                                        <a href="<?php echo esc_url($gapUrl); ?>">
+                                            <?php echo esc_html($gapLabel); ?>
+                                        </a>
+                                    <?php else : ?>
+                                        <?php echo esc_html($gapLabel); ?>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="dashboard-card-content hunt-lifecycle-card__content">
                 <div

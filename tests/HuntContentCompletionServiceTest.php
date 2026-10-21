@@ -31,6 +31,20 @@ class HuntContentCompletionServiceTest extends TestCase
         $this->assertFalse($service->isComplete(true, 'Description', 99, 99, 'manuelle', false));
     }
 
+    public function testMissingKeysListEveryBlockingHuntField(): void
+    {
+        $service = new HuntCompletionService();
+
+        $this->assertSame(
+            ['title', 'description', 'image', 'validatable_riddle'],
+            $service->missingKeys(false, ' ', 99, 99, 'automatique', false)
+        );
+        $this->assertSame(
+            [],
+            $service->missingKeys(true, 'Description', 10, 99, 'automatique', true)
+        );
+    }
+
     public function testAutomaticHuntRequiresAValidatableRiddle(): void
     {
         $service = new HuntCompletionService();
