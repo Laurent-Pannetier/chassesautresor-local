@@ -118,7 +118,23 @@ function cat_single_hunt_enigmas_url(): string
 }
 
 /**
- * Enigmas loop and hunt solutions at the top of engaged, organizer and admin homes.
+ * Whether a sommaire row is shown.
+ *
+ * Players only see an enigma whose accessibility state, already resolved by
+ * get_cta_enigme() from the prerequisites, is `accessible`.
+ * Organizers and administrators keep the whole album on the same homepage.
+ */
+function cat_sommaire_enigme_est_visible(string $etatSysteme, bool $privileged): bool
+{
+    if ($privileged) {
+        return true;
+    }
+
+    return $etatSysteme === 'accessible';
+}
+
+/**
+ * Album table of contents and hunt solutions at the top of engaged, organizer and admin homes.
  */
 function cat_render_single_hunt_home_enigmas(): void
 {
@@ -143,7 +159,7 @@ function cat_render_single_hunt_home_enigmas(): void
         && function_exists('chasse_has_validatable_enigme')
         && !chasse_has_validatable_enigme($huntId);
 
-    // Keeps the existing enigmas loop on its previous canvas, away from the shell palette.
+    // The paper sommaire sits on the previous enigmas canvas, away from the shell palette.
     echo '<div class="home-enigmas-preserve">';
     echo '<section id="enigmes" class="home-enigmas" aria-labelledby="home-enigmas-title">';
     echo '<h2 id="home-enigmas-title" class="screen-reader-text">';
@@ -151,7 +167,7 @@ function cat_render_single_hunt_home_enigmas(): void
     echo '</h2>';
     echo '<div id="liste-enigmes" class="chasse-enigmes-liste">';
     get_template_part(
-        'template-parts/enigme/chasse-partial-boucle-enigmes',
+        'template-parts/enigme/chasse-partial-sommaire-enigmes',
         null,
         [
             'chasse_id' => $huntId,
@@ -169,7 +185,18 @@ function cat_render_single_hunt_home_enigmas(): void
 }
 
 /**
- * Public hunt pages return home. Edition stays on the chasse URL.
+ * Whether a direct visit to the hunt page must return home.
+ *
+ * The public page has no remaining entry point. Edition stays only for a
+ * visitor who is allowed to modify that hunt.
+ */
+function cat_single_hunt_request_returns_home(string $edition, bool $canEdit): bool
+{
+    return $edition === '' || !$canEdit;
+}
+
+/**
+ * Public hunt pages return home. Edition stays only for an authorized editor.
  */
 function cat_redirect_public_single_hunt(): void
 {
@@ -180,13 +207,18 @@ function cat_redirect_public_single_hunt(): void
         return;
     }
 
-    $edition = isset($_GET['edition']) ? (string) wp_unslash($_GET['edition']) : '';
-    if ($edition !== '') {
+    $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : 'GET';
+    if ($method !== 'GET' && $method !== 'HEAD') {
         return;
     }
 
-    $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : 'GET';
-    if ($method !== 'GET' && $method !== 'HEAD') {
+    $edition = isset($_GET['edition']) ? (string) wp_unslash($_GET['edition']) : '';
+    $huntId = function_exists('get_queried_object_id') ? (int) get_queried_object_id() : 0;
+    $canEdit = $edition !== ''
+        && $huntId > 0
+        && function_exists('utilisateur_peut_modifier_post')
+        && utilisateur_peut_modifier_post($huntId);
+    if (!cat_single_hunt_request_returns_home($edition, $canEdit)) {
         return;
     }
 

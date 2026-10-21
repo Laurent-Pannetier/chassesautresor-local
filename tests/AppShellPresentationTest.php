@@ -143,6 +143,53 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringNotContainsString('app-shell', $loop);
     }
 
+    public function test_staff_homes_keep_the_hunt_banner_before_the_enigmas(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        foreach (['dashboard-organisateur.php', 'dashboard-admin.php'] as $file) {
+            $dashboard = (string) file_get_contents($theme . '/template-parts/myaccount/' . $file);
+            $banner = strpos($dashboard, 'cta_shell_render_hunt_banner');
+            $enigmas = strpos($dashboard, 'cat_render_single_hunt_home_enigmas');
+
+            $this->assertNotFalse($banner, $file);
+            $this->assertNotFalse($enigmas, $file);
+            $this->assertLessThan($enigmas, $banner, $file);
+        }
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_home_sidebar_is_omitted_on_an_enigma_page(): void
+    {
+        if (!function_exists('is_singular')) {
+            eval('function is_singular($postType = "") {
+                $current = $GLOBALS["cat_test_singular"] ?? "";
+                if ($postType === "") {
+                    return $current !== "";
+                }
+                return $current === $postType;
+            }');
+        }
+        $this->bootShell();
+
+        $GLOBALS['cat_test_singular'] = 'enigme';
+        $this->assertFalse(cta_shell_shows_sidebar());
+
+        $GLOBALS['cat_test_singular'] = 'page';
+        $this->assertTrue(cta_shell_shows_sidebar());
+
+        $shell = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/app-shell.php'
+        );
+        $topbar = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/template-parts/shell/topbar.php'
+        );
+        $this->assertStringContainsString('app-shell--no-nav', $shell);
+        $this->assertStringContainsString('cta_shell_shows_sidebar()', $topbar);
+    }
+
     private function bootShell(): void
     {
         if (!defined('ABSPATH')) {

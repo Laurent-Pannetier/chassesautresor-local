@@ -47,20 +47,22 @@ if ($logged_in) {
 $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
 ?>
 <header class="app-topbar">
-    <button
-        type="button"
-        class="app-nav-toggle"
-        data-app-nav-toggle
-        aria-controls="app-sidebar"
-        aria-expanded="false"
-    >
-        <span class="app-nav-toggle__icon" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-        </span>
-        <span class="screen-reader-text"><?php esc_html_e('Menu', 'chassesautresor-com'); ?></span>
-    </button>
+    <?php if (!function_exists('cta_shell_shows_sidebar') || cta_shell_shows_sidebar()) : ?>
+        <button
+            type="button"
+            class="app-nav-toggle"
+            data-app-nav-toggle
+            aria-controls="app-sidebar"
+            aria-expanded="false"
+        >
+            <span class="app-nav-toggle__icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="screen-reader-text"><?php esc_html_e('Menu', 'chassesautresor-com'); ?></span>
+        </button>
+    <?php endif; ?>
     <div class="app-topbar__lead">
         <div class="app-topbar__brand">
             <?php if (

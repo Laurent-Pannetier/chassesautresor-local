@@ -197,6 +197,37 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('.titre-enigmes-wrapper {', $styles);
     }
 
+    public function testHomepageEnigmasUseTheAlbumSommaire(): void
+    {
+        $home = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-home.php');
+        $partial = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/enigme/chasse-partial-sommaire-enigmes.php'
+        );
+        $styles = (string) file_get_contents(
+            self::THEME_PATH . '/assets/scss/_sommaire-bd.scss'
+        );
+
+        self::assertStringContainsString(
+            'template-parts/enigme/chasse-partial-sommaire-enigmes',
+            $home
+        );
+        self::assertStringContainsString('cat_sommaire_enigme_est_visible', $home);
+        self::assertStringContainsString('sommaire-bd__vignette', $partial);
+        self::assertStringContainsString('sommaire-bd__pointilles', $partial);
+        self::assertStringContainsString('sommaire-bd__numero', $partial);
+        self::assertStringContainsString('get_cta_enigme', $partial);
+        self::assertStringContainsString("etatSysteme === 'accessible'", $home);
+        self::assertStringContainsString('cat_single_hunt_request_returns_home', $home);
+        self::assertStringContainsString('Éditer la chasse', $partial);
+        self::assertStringContainsString('Ajouter une énigme', $partial);
+        self::assertStringContainsString('sommaire-bd__poignee', $partial);
+        self::assertStringContainsString('sommaire-bd__reglages', $partial);
+        self::assertStringContainsString('display: none;', $styles);
+        self::assertStringContainsString('.sommaire-bd__pointilles', $styles);
+        self::assertStringContainsString('font-variant-numeric: tabular-nums;', $styles);
+        self::assertStringContainsString('border: 1px solid #1a140f;', $styles);
+    }
+
     public function testCompactHuntEnigmaCardsUsePosterLayout(): void
     {
         $styles = (string) file_get_contents(self::THEME_PATH . '/assets/scss/_cartes.scss');
