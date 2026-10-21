@@ -80,7 +80,7 @@ final class RiddleStatisticsApplicationService
      *     trouves:int,
      *     steps:int,
      *     step_players:int,
-     *     ranking:array<int, array{username:string, tentatives:int}>
+     *     ranking:array<int, array{username:string, tentatives:int, date:string}>
      * }>
      */
     public function overviewForHunt(
@@ -141,6 +141,7 @@ final class RiddleStatisticsApplicationService
                     static fn (array $solver): array => [
                         'username' => (string) ($solver['username'] ?? ''),
                         'tentatives' => (int) ($solver['tentatives'] ?? 0),
+                        'date' => (string) ($solver['date'] ?? ''),
                     ],
                     $ranking
                 ),

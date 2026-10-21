@@ -8,7 +8,7 @@ class AppShellPresentationTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_team_stats_placeholder_does_not_invent_values(): void
+    public function test_team_stats_without_a_hunt_do_not_invent_values(): void
     {
         $this->bootShell();
 
@@ -16,9 +16,9 @@ class AppShellPresentationTest extends TestCase
         cta_shell_render_team_stats();
         $html = (string) ob_get_clean();
 
-        $this->assertStringContainsString('team-stat', $html);
-        $this->assertStringContainsString('Emplacement', $html);
-        $this->assertStringNotContainsString('%', $html);
+        $this->assertStringContainsString('Aucune chasse engagée pour le moment.', $html);
+        $this->assertStringNotContainsString('Emplacement', $html);
+        $this->assertStringNotContainsString('team-stat', $html);
         $text = trim(strip_tags($html));
         $this->assertSame(0, preg_match('/\d/', $text));
     }

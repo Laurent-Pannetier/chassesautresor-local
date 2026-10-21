@@ -254,29 +254,86 @@ function cta_shell_render_hunt_banner(): void
 }
 
 /**
- * Team statistic slots. No indicator, value or calculation is invented.
+ * Player progression for the current hunt. An empty note is shown when no hunt applies.
  */
 function cta_shell_render_team_stats(): void
 {
-    $section = __('Statistiques de l’équipe', 'chassesautresor-com');
-    $label = __('Emplacement', 'chassesautresor-com');
-    $caption = __('Non défini', 'chassesautresor-com');
-
-    echo '<section class="team-stats" aria-label="' . esc_attr($section) . '">';
-    echo '<h2 class="screen-reader-text">' . esc_html($section) . '</h2>';
-    echo '<div class="team-stats__grid">';
-    for ($index = 0; $index < 4; $index++) {
-        echo '<article class="team-stat">';
-        echo '<div class="team-stat__head">';
-        echo '<p class="team-stat__label">' . esc_html($label) . '</p>';
-        echo '<span class="team-stat__icon" aria-hidden="true">' . cta_shell_icon('stat') . '</span>';
-        echo '</div>';
-        echo '<p class="team-stat__value"><span aria-hidden="true">—</span>';
-        echo '<span class="screen-reader-text">' . esc_html($caption) . '</span></p>';
-        echo '<p class="team-stat__caption">' . esc_html($caption) . '</p>';
-        echo '</article>';
+    $user_id = function_exists('get_current_user_id') ? (int) get_current_user_id() : 0;
+    $hunts = cta_shell_player_hunts($user_id);
+    $requested = isset($_GET['chasse']) ? (int) $_GET['chasse'] : 0;
+    $hunt_id = 0;
+    foreach ($hunts as $hunt) {
+        if ((int) $hunt['id'] === $requested) {
+            $hunt_id = $requested;
+            break;
+        }
     }
-    echo '</div></section>';
+    if ($hunt_id <= 0 && $hunts !== []) {
+        $hunt_id = (int) $hunts[0]['id'];
+    }
+
+    if (
+        $user_id <= 0
+        || $hunt_id <= 0
+        || !class_exists(\ChassesAuTresor\Core\Messages\PlayerProgressionRenderer::class)
+        || !class_exists(\ChassesAuTresor\Core\Progress\PlayerProgressionApplicationService::class)
+    ) {
+        echo '<p class="app-placeholder__note">';
+        echo esc_html__('Aucune chasse engagée pour le moment.', 'chassesautresor-com');
+        echo '</p>';
+        return;
+    }
+
+    global $wpdb;
+    $overview = (new \ChassesAuTresor\Core\Progress\PlayerProgressionApplicationService(
+        new \ChassesAuTresor\Core\Progress\ProgressionOverviewRepository($wpdb)
+    ))->build($user_id, $hunt_id);
+    echo (new \ChassesAuTresor\Core\Messages\PlayerProgressionRenderer())->render(
+        $overview,
+        $hunts,
+        $hunt_id
+    );
+}
+
+/**
+ * Hunts a player can inspect. Single-hunt mode uses the primary hunt.
+ *
+ * @return array<int, array{id:int,title:string,url:string}>
+ */
+function cta_shell_player_hunts(int $user_id): array
+{
+    if ($user_id <= 0) {
+        return [];
+    }
+
+    $ids = [];
+    $single_hunt = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
+    if ($single_hunt && function_exists('cat_get_primary_hunt_id')) {
+        $primary = (int) cat_get_primary_hunt_id();
+        $ids = $primary > 0 ? [$primary] : [];
+    } elseif (function_exists('ca_get_user_engaged_hunt_ids')) {
+        $ids = ca_get_user_engaged_hunt_ids($user_id);
+    } elseif (function_exists('cat_get_primary_hunt_id')) {
+        $primary = (int) cat_get_primary_hunt_id();
+        $ids = $primary > 0 ? [$primary] : [];
+    }
+
+    $base = function_exists('cta_shell_location_url') ? cta_shell_location_url('progression') : '';
+    $hunts = [];
+    foreach ($ids as $id) {
+        $id = (int) $id;
+        if ($id <= 0) {
+            continue;
+        }
+        $title = function_exists('get_the_title') ? (string) get_the_title($id) : '';
+        $url = $base;
+        if ($base !== '' && function_exists('add_query_arg')) {
+            $url = (string) add_query_arg('chasse', (string) $id, $base);
+        }
+        $hunts[] = ['id' => $id, 'title' => $title, 'url' => $url];
+    }
+
+    return $hunts;
 }
 
 /**
