@@ -96,20 +96,36 @@ add_action('init', 'myaccount_unhook_dashboard_attempts', 20);
 function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
 {
     $user = $user instanceof WP_User ? $user : wp_get_current_user();
+    $singleHunt = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
     $is_settings = function_exists('is_wc_endpoint_url')
-        && (is_wc_endpoint_url('edit-account') || is_wc_endpoint_url('orders') || is_wc_endpoint_url('edit-address'));
+        && (
+            is_wc_endpoint_url('edit-account')
+            || is_wc_endpoint_url('orders')
+            || is_wc_endpoint_url('edit-address')
+        );
     $is_tentatives = function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('tentatives');
-    $is_home = function_exists('is_account_page')
+    $isAccountRoot = function_exists('is_account_page')
         && is_account_page()
+        && function_exists('is_wc_endpoint_url')
         && !is_wc_endpoint_url()
         && empty($_GET['section']);
+    if ($singleHunt && $isAccountRoot) {
+        $is_settings = true;
+    }
+    $is_home = $singleHunt
+        ? (function_exists('is_front_page') && is_front_page())
+        : $isAccountRoot;
+    $homeUrl = $singleHunt ? home_url('/') : wc_get_account_endpoint_url('dashboard');
+    $profileUrl = $singleHunt
+        ? wc_get_account_endpoint_url('dashboard')
+        : wc_get_account_endpoint_url('edit-account');
 
     $items = [
         [
             'endpoint' => 'dashboard',
             'label'    => __('Accueil', 'chassesautresor-com'),
             'icon'     => 'fas fa-home',
-            'url'      => wc_get_account_endpoint_url('dashboard'),
+            'url'      => $homeUrl,
             'active'   => $is_home,
         ],
     ];
@@ -128,7 +144,7 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
         'endpoint' => 'edit-account',
         'label'    => __('Profil', 'chassesautresor-com'),
         'icon'     => 'fas fa-user',
-        'url'      => wc_get_account_endpoint_url('edit-account'),
+        'url'      => $profileUrl,
         'active'   => $is_settings,
     ];
 
@@ -241,12 +257,18 @@ function myaccount_enqueue_header_account_menu(): void
         'header-account-menu',
         'ctaHeaderAccountMenu',
         [
-            'accountUrl'  => wc_get_account_endpoint_url('dashboard'),
-            'settingsUrl' => wc_get_account_endpoint_url('edit-account'),
+            'accountUrl'  => (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+                ? home_url('/')
+                : wc_get_account_endpoint_url('dashboard'),
+            'settingsUrl' => (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+                ? wc_get_account_endpoint_url('dashboard')
+                : wc_get_account_endpoint_url('edit-account'),
             'logoutUrl'   => wc_logout_url(),
             'labels'      => [
                 'menu'     => __('Menu du compte', 'chassesautresor-com'),
-                'account'  => __('Mon compte', 'chassesautresor-com'),
+                'account'  => (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+                    ? __('Accueil', 'chassesautresor-com')
+                    : __('Mon compte', 'chassesautresor-com'),
                 'settings' => __('Profil', 'chassesautresor-com'),
                 'logout'   => __('Déconnexion', 'chassesautresor-com'),
             ],
@@ -306,9 +328,16 @@ function myaccount_get_organizer_nav(int $user_id): ?array
             continue;
         }
 
+        $huntUrl = get_permalink($chasse->ID);
+        if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+            $huntUrl = function_exists('cat_single_hunt_enigmas_url')
+                ? cat_single_hunt_enigmas_url()
+                : home_url('/#enigmes');
+        }
+
         $chasse_item = [
             'title'        => get_the_title($chasse->ID),
-            'url'          => get_permalink($chasse->ID),
+            'url'          => $huntUrl,
             'classes'      => $presentation['classes'],
             'pending_icon' => $presentation['pending_icon'],
             'enigmes'      => [],

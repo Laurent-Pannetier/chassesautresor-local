@@ -58,15 +58,9 @@ function cta_get_single_hunt_enigmes_nav_url(): string
         return home_url('/');
     }
 
-    if ((string) get_post_status($huntId) === 'publish') {
-        if (class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
-            return \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::enigmasUrl($huntId);
-        }
-
-        return cta_get_hunt_page_url($huntId) . '#chasse-enigmes-wrapper';
-    }
-
-    return cta_get_hunt_page_url($huntId);
+    return function_exists('cat_single_hunt_enigmas_url')
+        ? cat_single_hunt_enigmas_url()
+        : home_url('/#enigmes');
 }
 
 /**
@@ -79,7 +73,12 @@ function cta_is_single_hunt_enigmes_nav_current(): bool
         return false;
     }
 
-    if (is_singular('chasse') && (int) get_queried_object_id() === $huntId) {
+    if (
+        function_exists('is_front_page')
+        && is_front_page()
+        && function_exists('cat_single_hunt_home_audience')
+        && cat_single_hunt_home_audience() !== 'presentation'
+    ) {
         return true;
     }
 
@@ -281,10 +280,14 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
     $destination = $singleHunt ? cta_primary_enigmas_destination($huntId, $userId) : 'allow';
 
     if ($singleHunt && cta_is_primary_hunt_staff($huntId, $userId)) {
+        $staffUrl = function_exists('cat_single_hunt_enigmas_url')
+            ? cat_single_hunt_enigmas_url()
+            : home_url('/#enigmes');
+
         return [
             'cta_html' => sprintf(
                 '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
-                esc_url(cta_get_hunt_page_url($huntId)),
+                esc_url($staffUrl),
                 esc_html__('Voir', 'chassesautresor-com')
             ),
             'cta_message' => '',
@@ -326,9 +329,13 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
         $label = $singleHunt
             ? __('Énigmes', 'chassesautresor-com')
             : __('Reprendre ma progression', 'chassesautresor-com');
-        $url = class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)
-            ? \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::enigmasUrl($huntId)
-            : get_permalink($huntId) . '#chasse-enigmes-wrapper';
+        if (class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)) {
+            $url = \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::enigmasUrl($huntId);
+        } elseif ($singleHunt) {
+            $url = home_url('/#enigmes');
+        } else {
+            $url = get_permalink($huntId) . '#chasse-enigmes-wrapper';
+        }
 
         return [
             'cta_html' => sprintf(

@@ -11140,6 +11140,42 @@ body.accueil-fullscreen {
   padding-top: 500px;
 }
 
+.home.cat-single-hunt.has-hero .homepage-hero-wrapper,
+.home.cat-single-hunt.has-hero .bandeau-hero--latest-chasse,
+.home.cat-single-hunt.has-hero .hero-overlay {
+  height: 100svh;
+  min-height: 100svh;
+  border-radius: 0;
+}
+
+.home.cat-single-hunt.has-hero .hero-overlay {
+  background-color: rgba(6, 10, 31, 0.45);
+}
+
+.home.cat-single-hunt.has-hero #content {
+  padding-top: 100svh;
+}
+
+.hero-start {
+  margin: 0 0 var(--space-md);
+  color: var(--color-white);
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.75);
+}
+
+.home.cat-single-hunt-cockpit .ast-container {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.home.cat-single-hunt-cockpit #content {
+  padding-top: 0;
+}
+
 .home-hunts__toolbar {
   width: 100%;
   display: flex;
@@ -11509,118 +11545,6 @@ body.accueil-fullscreen {
   color: var(--color-white);
 }
 
-.single-hunt-home__facts {
-  position: relative;
-  z-index: 2;
-  padding-top: var(--space-xl) !important;
-}
-
-.single-hunt-home__journey {
-  padding-block: var(--space-xl) !important;
-}
-
-.single-hunt-journey {
-  display: grid;
-  gap: var(--space-xl);
-  align-items: center;
-  padding: var(--space-xl);
-  border: 1px solid rgba(255, 215, 0, 0.22);
-  border-radius: 1.25rem;
-  background: linear-gradient(120deg, rgba(255, 215, 0, 0.08), transparent 55%), rgba(255, 255, 255, 0.04);
-}
-
-.single-hunt-journey h2 {
-  margin-bottom: var(--space-sm);
-  font-size: clamp(1.4rem, 6vw, 2.1rem);
-}
-
-.single-hunt-journey__content > p:last-of-type {
-  margin-bottom: 0;
-  color: var(--color-grey-medium);
-}
-
-.single-hunt-journey__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-  align-items: center;
-}
-
-.single-hunt-journey__actions form {
-  margin: 0;
-}
-
-.single-hunt-progress {
-  margin-top: var(--space-lg);
-}
-
-.single-hunt-progress__labels {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-md);
-  margin-bottom: var(--space-xs);
-  color: var(--color-white);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.single-hunt-progress progress {
-  display: block;
-  width: 100%;
-  height: 0.75rem;
-  overflow: hidden;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.single-hunt-progress progress::-webkit-progress-bar {
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.single-hunt-progress progress::-webkit-progress-value {
-  border-radius: 999px;
-  background: var(--color-primary);
-}
-
-.single-hunt-progress progress::-moz-progress-bar {
-  border-radius: 999px;
-  background: var(--color-primary);
-}
-
-.single-hunt-facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-sm);
-  margin: 0;
-}
-
-.single-hunt-fact {
-  min-width: 0;
-  padding: var(--space-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.9rem;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.single-hunt-fact dt {
-  margin-bottom: var(--space-xs);
-  color: var(--color-grey-medium);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.single-hunt-fact dd {
-  margin: 0;
-  color: var(--color-white);
-  font-size: 0.95rem;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
 .single-hunt-home__story {
   background: rgba(0, 0, 0, 0.18);
 }
@@ -11848,46 +11772,16 @@ body.accueil-fullscreen {
   .single-hunt-home section {
     padding-block: var(--space-4xl);
   }
-  .single-hunt-facts {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
   .single-hunt-home__riddles-teaser {
     grid-template-columns: auto minmax(0, 1fr);
     padding: var(--space-2xl);
   }
 }
 @media (min-width: 1024px) {
-  .single-hunt-home__facts {
-    margin-top: calc(var(--space-3xl) * -1);
-  }
-  .single-hunt-facts {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    padding: var(--space-md);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 1.25rem;
-    background: rgba(6, 10, 31, 0.92);
-    box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.28);
-  }
-  .single-hunt-fact {
-    border: 0;
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 0;
-    background: transparent;
-  }
-  .single-hunt-fact:last-child {
-    border-right: 0;
-  }
   .single-hunt-home__story-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
     align-items: center;
     gap: var(--space-4xl);
-  }
-  .single-hunt-journey {
-    grid-template-columns: minmax(0, 1fr) auto;
-    padding: var(--space-2xl);
-  }
-  .single-hunt-journey__actions {
-    justify-content: flex-end;
   }
   .single-hunt-home__section-heading {
     flex-direction: row;
@@ -12658,6 +12552,25 @@ body #primary {
   max-width: none;
   padding-left: 0;
   padding-right: 0;
+}
+
+.myaccount-demo-notice {
+  margin: 0 0 var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+#enigmes {
+  scroll-margin-top: 5.5rem;
+}
+
+.home-enigmas {
+  margin-bottom: var(--space-2xl);
 }
 
 .myaccount-layout {

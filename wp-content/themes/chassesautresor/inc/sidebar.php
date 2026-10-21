@@ -152,7 +152,13 @@ if (!function_exists('render_sidebar')) {
 
         echo '<div class="menu-lateral__header">';
         if ($chasse_id) {
-            $url_chasse = get_permalink($chasse_id);
+            $permalink_chasse = get_permalink($chasse_id);
+            $url_chasse = $permalink_chasse;
+            if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+                $url_chasse = function_exists('cat_single_hunt_enigmas_url')
+                    ? cat_single_hunt_enigmas_url()
+                    : home_url('/#enigmes');
+            }
             $titre      = get_the_title($chasse_id);
             $can_edit   = function_exists('utilisateur_peut_voir_panneau')
                 ? utilisateur_peut_voir_panneau($chasse_id)
@@ -168,9 +174,9 @@ if (!function_exists('render_sidebar')) {
                 $edit_url = function_exists('add_query_arg')
                     ? add_query_arg(
                         ['edition' => 'open', 'tab' => 'param'],
-                        $url_chasse
+                        $permalink_chasse
                     )
-                    : $url_chasse . '?edition=open&tab=param';
+                    : $permalink_chasse . '?edition=open&tab=param';
                 echo '<a class="menu-lateral__edition-toggle enigme-menu__edit" href="'
                     . esc_url($edit_url)
                     . '" aria-label="'
