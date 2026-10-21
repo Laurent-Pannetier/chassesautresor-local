@@ -1605,6 +1605,7 @@ msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:617
 #: template-parts/chasse/chasse-affichage-complet.php:364
+#: template-parts/enigme/enigme-edition-main.php
 msgid "Gratuit"
 msgstr "Free"
 
@@ -2242,10 +2243,6 @@ msgstr ""
 "You are free to set the cost of an attempt for your riddle: free or paid in "
 "points. When a player spends points to submit an answer, those points are "
 "immediately credited to your account."
-
-#: template-parts/enigme/enigme-edition-main.php:563
-msgid "Free"
-msgstr ""
 
 #: template-parts/enigme/enigme-edition-main.php:607
 msgid "Libre"

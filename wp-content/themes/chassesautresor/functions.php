@@ -220,6 +220,12 @@ function cta_account_icon_by_state( $default ) {
 add_filter( 'astra_get_option_header-account-icon-type', 'cta_account_icon_by_state' );
 
 /**
+ * Removes Astra's scroll-to-top control on the whole site.
+ * It stacks on the edition save bar.
+ */
+add_filter( 'astra_get_option_scroll-to-top-enable', '__return_false' );
+
+/**
  * Removes the "Continue Shopping" button from Astra's flyout cart when empty.
  *
  * @return void

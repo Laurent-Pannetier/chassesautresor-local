@@ -95,6 +95,9 @@ class AccountProfilePresentationTest extends TestCase
         $this->assertStringContainsString('var(--shell-surface)', $scss);
         $this->assertStringContainsString('.app-shell h2.dashboard-section-title', $shell);
         $this->assertStringContainsString('color: var(--shell-text);', $shell);
+        $this->assertStringContainsString('--shell-card-background:', $shell);
+        $this->assertStringContainsString('.app-shell .myaccount-main .dashboard-card', $shell);
+        $this->assertStringContainsString('background: var(--shell-card-background);', $scss);
     }
 
     public function test_profile_header_drops_the_last_connection_line(): void

@@ -1620,6 +1620,7 @@ msgstr ""
 
 #: template-parts/chasse/chasse-edition-main.php:617
 #: template-parts/chasse/chasse-affichage-complet.php:364
+#: template-parts/enigme/enigme-edition-main.php
 msgid "Gratuit"
 msgstr "Gratuit"
 
@@ -2268,10 +2269,6 @@ msgid ""
 "Vous êtes libre de définir le coût d’une tentative pour votre énigme : "
 "gratuite ou payante en points. Lorsqu’un joueur dépense des points pour "
 "soumettre une réponse, ceux-ci sont immédiatement crédités sur votre compte."
-msgstr ""
-
-#: template-parts/enigme/enigme-edition-main.php:563
-msgid "Free"
 msgstr ""
 
 #: template-parts/enigme/enigme-edition-main.php:607

@@ -77,10 +77,10 @@
 
 .riddle-step-card {
   padding: var(--space-sm);
-  border: 1px solid var(--color-editor-border);
+  border: 1px solid var(--shell-border, var(--color-editor-border));
   border-radius: 6px;
-  background: var(--color-white);
-  color: var(--color-editor-text, var(--color-text-fond-clair));
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
 }
 
 .riddle-step-card.is-dragging {
@@ -89,6 +89,7 @@
 
 .riddle-step-card__handle {
   cursor: grab;
+  color: var(--shell-muted);
 }
 
 .riddle-step-card__rank {
@@ -98,8 +99,8 @@
   place-items: center;
   flex: 0 0 auto;
   border-radius: 50%;
-  background: var(--color-grey-light);
-  color: var(--color-text-fond-clair);
+  background: var(--shell-accent-soft);
+  color: var(--shell-text);
   font-weight: 700;
 }
 
@@ -111,6 +112,27 @@
 .riddle-step-card .bouton-tertiaire:hover {
   background: var(--color-text-fond-clair);
   color: var(--color-text-primary);
+}
+
+.riddle-step-card__content,
+.riddle-step-card__content strong {
+  color: var(--shell-text);
+}
+
+.edition-panel .riddle-step-card .bouton-tertiaire,
+.edition-panel .riddle-step-card .bouton-texte {
+  opacity: 1;
+  color: var(--shell-text);
+  border-color: var(--shell-border);
+}
+
+.edition-panel .riddle-step-card .bouton-tertiaire:hover,
+.edition-panel .riddle-step-card .bouton-tertiaire:focus,
+.edition-panel .riddle-step-card .bouton-texte:hover,
+.edition-panel .riddle-step-card .bouton-texte:focus {
+  opacity: 1;
+  background: var(--shell-bg);
+  color: var(--shell-text);
 }
 
 .riddle-step-card__content {
@@ -137,8 +159,8 @@
   margin: 0 0 var(--space-md);
   padding: var(--space-sm);
   border-radius: 6px;
-  background: var(--color-editor-field-hover, var(--color-grey-light));
-  color: var(--color-editor-text, var(--color-text-fond-clair));
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
 }
 
 .riddle-step-form {
@@ -222,10 +244,10 @@
   min-height: 10rem;
   padding: var(--space-sm);
   overflow-y: auto;
-  border: 1px solid var(--color-editor-border);
+  border: 1px solid var(--shell-border, var(--color-editor-border));
   border-radius: 6px;
-  background: var(--color-white);
-  color: var(--color-editor-text, var(--color-text-fond-clair));
+  background: var(--shell-bg);
+  color: var(--shell-text);
 }
 
 /* Le texte du shell nuit est clair : un fond blanc le rend illisible. */
@@ -375,6 +397,93 @@ li.edition-row {
 
 .edition-row-content {
   flex: 1;
+}
+
+ul.resume-infos > li.edition-optional-fold {
+  display: block;
+  width: 100%;
+  border-top: 1px solid var(--color-editor-border);
+  padding-top: var(--space-xs);
+}
+
+.edition-optional__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 40px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--shell-muted, var(--color-editor-text-muted));
+}
+
+.edition-optional__summary::-webkit-details-marker {
+  display: none;
+}
+
+.edition-optional__summary::after {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: auto;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-0.1rem);
+}
+
+.edition-optional[open] > .edition-optional__summary::after {
+  transform: rotate(-135deg) translateY(-0.1rem);
+}
+
+.edition-optional__summary:focus-visible {
+  outline: 2px solid var(--shell-accent, var(--color-editor-accent));
+  outline-offset: 2px;
+  border-radius: 0.35rem;
+}
+
+.edition-optional__marker {
+  width: 0.7rem;
+  height: 0.7rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 1.5px solid var(--shell-muted, var(--color-editor-text-muted));
+  opacity: 0.8;
+}
+
+.edition-optional-fold:has(.champ-rempli) .edition-optional__marker,
+.edition-optional-fold.is-filled .edition-optional__marker {
+  background: var(--shell-muted, var(--color-editor-text-muted));
+}
+
+.edition-optional-fold.is-filled .edition-optional__hint {
+  color: var(--shell-text, var(--color-editor-text));
+  font-size: 0.85rem;
+}
+
+.edition-optional-fold.is-filled .edition-optional__hint::before {
+  content: '·';
+  margin-right: 0.4rem;
+  color: var(--shell-muted, var(--color-editor-text-muted));
+}
+
+.edition-optional__title {
+  color: var(--shell-text, var(--color-editor-text));
+  font-size: 0.95rem;
+}
+
+.edition-optional__hint {
+  color: var(--shell-muted, var(--color-editor-text-muted));
+  font-size: 0.75rem;
+}
+
+.edition-optional__fields {
+  margin: 0.15rem 0 0.35rem;
+  padding: 0;
+}
+
+.edition-row.champ-optionnel .icon-attente,
+.edition-row.champ-optionnel .icone-check {
+  color: var(--shell-muted, var(--color-editor-text-muted));
+  font-size: 0.72rem;
 }
 
 #chasse-tab-param .edition-row-label label {
@@ -648,6 +757,24 @@ body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
   display: inline-block;
   max-width: 60px;
   margin-right: var(--space-xxs);
+}
+
+.edition-panel .champ-img .champ-modifier {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.edition-panel .champ-img .champ-modifier img.vignette-enigme {
+  display: block;
+  width: 4.75rem;
+  max-width: none;
+  height: 2.7rem;
+  margin: 0;
+  object-fit: cover;
+  border-radius: 0.45rem;
+  border: 1px solid var(--shell-border, var(--color-editor-border));
 }
 
 .champ-img .champ-modifier .icone-modif {
@@ -1210,17 +1337,18 @@ body.shell-edition.mode-edition {
   --color-editor-placeholder: var(--shell-muted);
 }
 
-/* Les tuiles stats / animation héritent d'un fond blanc (hsl(--card))
-   alors que titres et icônes suivent déjà le texte du shell. */
-body.shell-edition .edition-panel .dashboard-card {
-  background: var(--shell-surface-2);
-  border-color: var(--shell-border);
+/* Les tuiles stats / animation reprennent la lueur des cartes profil. */
+body.shell-edition .edition-panel legend {
   color: var(--shell-text);
+  background: var(--shell-surface);
+  padding: 0 0.4rem;
 }
 
+body.shell-edition .edition-panel .dashboard-card,
 body.shell-edition .edition-panel .dashboard-card:hover {
-  background: var(--shell-surface-2);
-  border-color: var(--shell-accent);
+  background: var(--shell-card-background);
+  color: var(--shell-text);
+  border-color: var(--shell-border);
 }
 
 body.shell-edition .edition-panel .dashboard-card h3,
@@ -1252,6 +1380,199 @@ html:not([data-theme="day"]) body.shell-edition .edition-panel .dashboard-card .
   background-color: var(--shell-accent-soft);
   color: var(--shell-text);
   border-color: var(--shell-accent);
+}
+
+body.shell-edition .edition-panel .champ-mode-options.segmented-control {
+  width: max-content;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-bg);
+  overflow: hidden;
+}
+
+body.shell-edition .edition-panel .champ-mode-options.segmented-control input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  opacity: 0;
+}
+
+body.shell-edition .edition-panel .champ-mode-options.segmented-control label {
+  flex: 0 0 auto;
+  border-right: 0;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  background: transparent;
+  color: var(--shell-muted);
+  font-size: 0.875rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+body.shell-edition .edition-panel .champ-mode-options.segmented-control input[type="radio"]:checked + label {
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+}
+
+body.shell-edition .edition-panel .champ-mode-options.segmented-control input[type="radio"]:disabled + label {
+  opacity: 0.45;
+}
+
+body.shell-edition .edition-panel .help-icon--aide,
+body.shell-edition .edition-panel .help-icon--info,
+body.shell-edition .edition-panel .help-icon--aide-small {
+  width: auto;
+  height: auto;
+  margin-left: 0.35rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--shell-accent);
+  opacity: 1;
+}
+
+body.shell-edition .edition-panel .help-icon-button:hover,
+body.shell-edition .edition-panel .help-icon-button:focus-visible {
+  color: var(--shell-accent-strong);
+  opacity: 1;
+  background: transparent;
+}
+
+body.shell-edition .edition-panel .segmented-control .help-icon-button {
+  color: var(--shell-accent);
+  opacity: 1;
+}
+
+body.shell-edition .edition-panel .segmented-control input:checked + label .help-icon-button {
+  color: var(--shell-accent-text);
+  opacity: 1;
+}
+
+body.shell-edition .riddle-final-answer-editor__summary {
+  width: fit-content;
+  max-width: 100%;
+  gap: 0.55rem;
+  padding: 0.2rem 0.2rem 0.2rem 0.85rem;
+  background: var(--shell-surface-2);
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+}
+
+body.shell-edition .riddle-final-answer-editor__label {
+  color: var(--shell-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+body.shell-edition .riddle-final-answer-editor__notice {
+  color: var(--shell-muted);
+  font-size: 0.78rem;
+}
+
+body.shell-edition .edition-panel .riddle-final-answer-edit {
+  appearance: none;
+  margin: 0;
+  padding: 0.32rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+  opacity: 1;
+  cursor: pointer;
+}
+
+body.shell-edition .edition-panel .riddle-final-answer-edit:hover,
+body.shell-edition .edition-panel .riddle-final-answer-edit:focus {
+  background: var(--shell-accent-strong);
+  color: var(--shell-accent-text);
+  opacity: 1;
+}
+
+body.shell-edition .edition-panel-section {
+  border: 0;
+  margin-bottom: 0;
+  padding: 0;
+  background: transparent;
+}
+
+body.shell-edition .edition-panel-body {
+  min-height: 0;
+  padding: 0.25rem 0 0;
+}
+
+body.shell-edition .edition-format-hint {
+  margin: 0.4rem 0 0;
+  max-width: 36rem;
+  color: var(--shell-muted);
+}
+
+@media (min-width: 768px) {
+  body.shell-edition .edition-panel-body input.champ-texte-edit {
+    width: min(100%, 36rem);
+  }
+}
+
+body.shell-edition .edition-panel .champ-ajouter,
+body.shell-edition .edition-panel .champ-modifier.ouvrir-panneau-description,
+body.shell-edition .edition-panel .ouvrir-panneau-images {
+  color: var(--shell-accent);
+  opacity: 1;
+  background: transparent;
+  font-weight: 600;
+}
+
+body.shell-edition .edition-panel .champ-ajouter:hover,
+body.shell-edition .edition-panel .champ-ajouter:focus,
+body.shell-edition .edition-panel .champ-modifier.ouvrir-panneau-description:hover,
+body.shell-edition .edition-panel .champ-modifier.ouvrir-panneau-description:focus {
+  color: var(--shell-accent-strong);
+  background: transparent;
+  opacity: 1;
+}
+
+body.shell-edition .edition-panel .champ-img .champ-ajout-image {
+  color: var(--shell-accent);
+  font-weight: 600;
+}
+
+body.shell-edition .champ-mode-options .switch-slider {
+  background: var(--shell-track);
+}
+
+body.shell-edition .champ-mode-options .switch-slider::before {
+  background: var(--shell-text);
+}
+
+body.shell-edition .champ-mode-options .switch-control input:checked + .switch-slider {
+  background: var(--shell-accent);
+}
+
+body.shell-edition .champ-mode-options .switch-control input:checked + .switch-slider::before {
+  background: var(--shell-accent-text);
+}
+
+body.shell-edition .champ-cout-points .toggle-option {
+  color: var(--shell-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+body.shell-edition .champ-cout-points:not(:has(#enigme-cout-toggle:checked)) .toggle-option:first-of-type,
+body.shell-edition .champ-cout-points:has(#enigme-cout-toggle:checked) .toggle-option:nth-of-type(2) {
+  color: var(--shell-text);
 }
 
 body.shell-edition .edition-panel-enigme,
@@ -1328,12 +1649,9 @@ body.shell-edition .edition-panel-header-top {
   gap: 0.75rem;
 }
 
+body.shell-edition .edition-panel-header-top h1,
 body.shell-edition .edition-panel-header-top h2 {
   flex: 1 1 12rem;
-}
-
-body.shell-edition {
-  padding-bottom: 4.75rem;
 }
 
 .shell-edition-save {
@@ -1543,9 +1861,14 @@ body.edition-active .edition-panel {
   color: var(--color-editor-text);
 }
 
+.edition-panel-header h1,
 .edition-panel-header h2 {
+  font-family: var(--font-main);
   font-size: 1.25rem;
   font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--color-editor-heading);
   margin: 0;
   display: flex;

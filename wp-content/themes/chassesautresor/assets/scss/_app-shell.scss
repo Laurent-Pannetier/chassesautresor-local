@@ -15,6 +15,9 @@ html {
   --shell-accent-strong: #7eebf8;
   --shell-accent-text: #042229;
   --shell-accent-soft: rgba(46, 200, 230, 0.2);
+  --shell-card-background:
+    radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
+    var(--shell-surface);
   --shell-track: #0c1218;
   --shell-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
   --shell-topbar-height: 4.25rem;
@@ -58,6 +61,8 @@ body.app-shell-active #masthead {
 }
 
 .app-shell {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
   background: var(--shell-bg);
@@ -397,6 +402,9 @@ img.avatar-pirate {
 }
 
 .app-frame {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -551,6 +559,9 @@ img.avatar-pirate {
 }
 
 .app-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   min-width: 0;
 }
 
@@ -561,6 +572,16 @@ img.avatar-pirate {
   max-width: none;
   width: 100%;
   background: transparent;
+}
+
+.app-shell #page {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.app-shell #content.site-content {
+  flex: 1 1 auto;
 }
 
 .app-shell .site-content .ast-container,
@@ -681,9 +702,7 @@ img.avatar-pirate {
   padding: 1rem 1.05rem 1.05rem;
   border: 1px solid var(--shell-border);
   border-radius: 1.15rem;
-  background:
-    radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
-    var(--shell-surface);
+  background: var(--shell-card-background);
   box-shadow: var(--shell-shadow);
   color: var(--shell-text);
 }
@@ -763,9 +782,7 @@ html[data-theme="day"] .home-enigmas-preserve {
   padding: 1rem 1.05rem 0.95rem;
   border: 1px solid var(--shell-border);
   border-radius: 1.15rem;
-  background:
-    radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
-    var(--shell-surface);
+  background: var(--shell-card-background);
   box-shadow: var(--shell-shadow);
 }
 
@@ -1109,6 +1126,7 @@ html[data-theme="day"] .home-enigmas-preserve {
 
   .app-frame {
     display: flex;
+    flex-direction: row;
     align-items: stretch;
     min-height: calc(100dvh - var(--shell-topbar-height));
   }
@@ -1116,6 +1134,7 @@ html[data-theme="day"] .home-enigmas-preserve {
   .app-sidebar {
     position: sticky;
     top: var(--shell-topbar-height);
+    align-self: flex-start;
     flex: 0 0 var(--shell-sidebar-width);
     width: var(--shell-sidebar-width);
     height: calc(100dvh - var(--shell-topbar-height));
@@ -1283,9 +1302,25 @@ body.admin-bar .app-topbar {
   top: 32px;
 }
 
+body.shell-edition {
+  --shell-savebar-offset: 4.75rem;
+}
+
+body.shell-edition .app-main {
+  padding-bottom: var(--shell-savebar-offset);
+}
+
+body.shell-edition .app-sidebar {
+  bottom: var(--shell-savebar-offset);
+}
+
 body.admin-bar .app-sidebar {
   top: calc(var(--shell-topbar-height) + 32px);
   height: calc(100dvh - var(--shell-topbar-height) - 32px);
+}
+
+body.admin-bar.shell-edition .app-sidebar {
+  height: calc(100dvh - var(--shell-topbar-height) - 32px - var(--shell-savebar-offset));
 }
 
 @media (max-width: 782px) {
@@ -1296,6 +1331,16 @@ body.admin-bar .app-sidebar {
   body.admin-bar .app-sidebar {
     top: calc(var(--shell-topbar-height) + 46px);
     height: calc(100dvh - var(--shell-topbar-height) - 46px);
+  }
+
+  body.admin-bar.shell-edition .app-sidebar {
+    height: calc(100dvh - var(--shell-topbar-height) - 46px - var(--shell-savebar-offset));
+  }
+}
+
+@media (--bp-tablet) {
+  body.shell-edition .app-sidebar {
+    height: calc(100dvh - var(--shell-topbar-height) - var(--shell-savebar-offset));
   }
 }
 
@@ -1415,6 +1460,36 @@ body.admin-bar .app-sidebar {
 .app-nav__status-pop a,
 .hunt-lifecycle-card__gaps-pop a {
   color: inherit;
+}
+
+.app-shell .myaccount-main .dashboard-card {
+  border: 1px solid var(--shell-border);
+  border-radius: 1.15rem;
+  background: var(--shell-card-background);
+  box-shadow: var(--shell-shadow);
+  color: var(--shell-text);
+}
+
+.app-shell .myaccount-main .dashboard-card:hover {
+  border-color: var(--shell-border);
+  background: var(--shell-card-background);
+}
+
+.app-shell .myaccount-main .dashboard-card-header h3,
+.app-shell .myaccount-main .dashboard-card .stat-value {
+  color: var(--shell-text);
+}
+
+.app-shell .myaccount-main .dashboard-card-header > i {
+  color: var(--shell-accent);
+}
+
+.app-shell .myaccount-main .dashboard-card-content {
+  color: var(--shell-muted);
+}
+
+.app-shell .myaccount-main .dashboard-placeholder {
+  border-style: dashed;
 }
 
 .dashboard-card-action {

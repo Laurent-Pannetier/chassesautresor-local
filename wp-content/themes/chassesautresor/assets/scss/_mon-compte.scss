@@ -2108,9 +2108,7 @@ body.woocommerce h2 {
     padding: 1rem 1.05rem 1.05rem;
     border: 1px solid var(--shell-border);
     border-radius: 1.15rem;
-    background:
-        radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
-        var(--shell-surface);
+    background: var(--shell-card-background);
     box-shadow: var(--shell-shadow);
 }
 
