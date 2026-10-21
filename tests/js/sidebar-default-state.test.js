@@ -10,6 +10,7 @@ describe('riddle desktop sidebar default state', () => {
 
     expect(source).toContain('hideAside();\n    window.sidebarAside');
     expect(source).toContain('window.enigmeAside = window.sidebarAside;');
+    expect(source).toContain("document.body.classList.contains('comic-reader')");
 
     const renderer = fs.readFileSync(
       path.resolve(__dirname, '../../wp-content/themes/chassesautresor/inc/sidebar.php'),

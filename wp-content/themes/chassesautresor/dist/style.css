@@ -9523,10 +9523,14 @@ body.comic-reader .page-enigme--reader .galerie-enigme__nav:focus-visible {
 }
 body.comic-reader .enigme-mobile-header,
 body.comic-reader .enigme-hunt-context,
-body.comic-reader .enigme-edit-toggle--desktop,
-body.comic-reader .menu-lateral__reveal {
+body.comic-reader .enigme-edit-toggle--desktop {
   z-index: 45;
   transition: opacity 0.28s ease;
+}
+
+body.comic-reader .menu-lateral,
+body.comic-reader .menu-lateral__reveal {
+  display: none;
 }
 
 body.comic-reader .enigme-mobile-header {
@@ -9546,9 +9550,7 @@ body.comic-reader .enigme-hunt-context {
 
 body.comic-reader:not(.is-hud-visible) .enigme-mobile-header,
 body.comic-reader:not(.is-hud-visible) .enigme-edit-toggle--desktop,
-body.comic-reader:not(.is-hud-visible) .enigme-hunt-context,
-body.comic-reader:not(.is-hud-visible) .menu-lateral__reveal,
-body.comic-reader:not(.is-hud-visible) .menu-lateral.is-hidden {
+body.comic-reader:not(.is-hud-visible) .enigme-hunt-context {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
