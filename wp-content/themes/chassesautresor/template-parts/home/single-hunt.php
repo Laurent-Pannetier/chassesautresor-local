@@ -39,8 +39,6 @@ $rewardTitle = trim((string) ($fields['titre_recompense'] ?? ''));
 $cta = function_exists('cta_get_primary_hunt_cta')
     ? cta_get_primary_hunt_cta($huntId, $userId)
     : ['cta_html' => '', 'cta_message' => '', 'type' => ''];
-$promptHuntJoin = function_exists('cta_should_prompt_hunt_join')
-    && cta_should_prompt_hunt_join($huntId, (int) $userId);
 $engagementError = isset($_GET['erreur'])
     ? sanitize_text_field(wp_unslash((string) $_GET['erreur']))
     : '';
@@ -57,18 +55,6 @@ $editorialContent = $frontPage instanceof WP_Post
                 <?php
                 esc_html_e(
                     'Mode démo : cette chasse est présentée sur l’accueil avant sa publication officielle.',
-                    'chassesautresor-com'
-                );
-                ?>
-            </div>
-        </div>
-    <?php endif; ?>
-    <?php if ($promptHuntJoin) : ?>
-        <div class="single-hunt-home__join-notice" role="status">
-            <div class="conteneur">
-                <?php
-                esc_html_e(
-                    'Rejoignez la chasse pour accéder aux énigmes.',
                     'chassesautresor-com'
                 );
                 ?>
