@@ -238,12 +238,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   );
                   ?>
 
+                  <li class="edition-optional-fold">
+                    <details class="edition-optional">
+                      <summary class="edition-optional__summary">
+                        <span class="edition-optional__marker" aria-hidden="true"></span>
+                        <span class="edition-optional__title">
+                          <?= esc_html__('Texte et sous-titre', 'chassesautresor-com'); ?>
+                        </span>
+                        <span class="edition-optional__hint">
+                          <?= esc_html__('optionnel', 'chassesautresor-com'); ?>
+                        </span>
+                      </summary>
+                      <ul class="resume-infos edition-optional__fields">
                   <?php
+                  $texte_classes = 'champ-enigme champ-wysiwyg champ-optionnel'
+                      . (empty(trim($texte_enigme)) ? ' champ-vide' : ' champ-rempli')
+                      . ($peut_editer ? '' : ' champ-desactive');
                   get_template_part(
                       'template-parts/common/edition-row',
                       null,
                       [
-                          'class'      => 'champ-enigme champ-wysiwyg' . (empty(trim($texte_enigme)) ? ' champ-vide' : ' champ-rempli') . ($peut_editer ? '' : ' champ-desactive'),
+                          'class'      => $texte_classes,
                           'attributes' => [
                               'data-champ'   => 'enigme_visuel_texte',
                               'data-cpt'     => 'enigme',
@@ -332,11 +347,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                   ?>
 
                   <?php
+                  $legende_classes = 'champ-enigme champ-texte champ-soustitre champ-optionnel'
+                      . (empty(trim($legende)) ? ' champ-vide' : ' champ-rempli')
+                      . ($peut_editer ? '' : ' champ-desactive');
                   get_template_part(
                       'template-parts/common/edition-row',
                       null,
                       [
-                          'class'      => 'champ-enigme champ-texte champ-soustitre' . (empty(trim($legende)) ? ' champ-vide' : ' champ-rempli') . ($peut_editer ? '' : ' champ-desactive'),
+                          'class'      => $legende_classes,
                           'attributes' => [
                               'data-champ'   => 'enigme_visuel_legende',
                               'data-cpt'     => 'enigme',
@@ -358,6 +376,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                       ]
                   );
                   ?>
+                      </ul>
+                    </details>
+                  </li>
                 </ul>
               </div>
 
@@ -481,17 +502,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           data-riddle-id="<?= esc_attr($enigme_id); ?>"
                           data-editable="<?= $peut_editer ? '1' : '0'; ?>"
                         >
-                          <p class="riddle-final-answer-editor__summary">
+                          <div class="riddle-final-answer-editor__summary">
                             <strong class="riddle-final-answer-editor__label"><?= esc_html($finalAnswerWidgetLabel); ?></strong>
                             <?php if (!$finalAnswerComplete) : ?>
-                              <span class="champ-ajout-image"><?= esc_html__('configuration incomplète', 'chassesautresor-com'); ?></span>
+                              <span class="riddle-final-answer-editor__notice">
+                                <?= esc_html__('configuration incomplète', 'chassesautresor-com'); ?>
+                              </span>
                             <?php endif; ?>
-                          </p>
-                          <?php if ($peut_editer) : ?>
-                            <button type="button" class="champ-modifier riddle-final-answer-edit">
-                              <?= esc_html__('Configurer', 'chassesautresor-com'); ?>
-                            </button>
-                          <?php endif; ?>
+                            <?php if ($peut_editer) : ?>
+                              <button type="button" class="riddle-final-answer-edit">
+                                <?= esc_html__('Configurer', 'chassesautresor-com'); ?>
+                              </button>
+                            <?php endif; ?>
+                          </div>
                           <form class="riddle-final-answer-form" hidden>
                             <fieldset class="riddle-step-form__field">
                               <legend><?= esc_html__('Mode de réponse', 'chassesautresor-com'); ?></legend>

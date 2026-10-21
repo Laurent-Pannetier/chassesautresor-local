@@ -72,6 +72,24 @@ final class EditionShellChromeTest extends TestCase
         $this->assertStringNotContainsString('champ-protection-solutions', $animation);
     }
 
+    public function testOptionalRiddleCopyIsCollapsedAndHelpPopupFollowsTheShell(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $riddle = (string) file_get_contents($theme . '/template-parts/enigme/enigme-edition-main.php');
+        $styles = (string) file_get_contents($theme . '/assets/scss/_edition.scss');
+        $aside = (string) file_get_contents($theme . '/assets/scss/_aside.scss');
+
+        $this->assertStringContainsString('edition-optional-fold', $riddle);
+        $this->assertStringContainsString('champ-optionnel', $riddle);
+        $this->assertStringContainsString('Texte et sous-titre', $riddle);
+        $this->assertStringContainsString('riddle-final-answer-editor__summary', $riddle);
+        $this->assertStringContainsString('.edition-row.champ-optionnel .icon-attente', $styles);
+        $this->assertStringContainsString('width: max-content;', $styles);
+        $this->assertStringContainsString('body.shell-edition .riddle-final-answer-editor__summary', $styles);
+        $this->assertStringContainsString('background: var(--shell-surface, #fff);', $aside);
+        $this->assertStringContainsString('color: var(--shell-text, #152033);', $aside);
+    }
+
     public function testFooterReachesTheBottomOfTheDashboardMenu(): void
     {
         $styles = (string) file_get_contents(

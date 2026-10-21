@@ -88,16 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
       throw new Error(result.data?.message || RiddleFinalAnswerEdit.texts.error);
     }
     if (label) label.textContent = result.data.summary || label.textContent;
-    const incomplete = summary?.querySelector('.champ-ajout-image');
+    const incomplete = summary?.querySelector('.riddle-final-answer-editor__notice');
     if (result.data.complete) {
       incomplete?.remove();
       row?.classList.remove('champ-vide', 'champ-attention');
       row?.classList.add('champ-rempli');
     } else if (!incomplete && summary) {
       const notice = document.createElement('span');
-      notice.className = 'champ-ajout-image';
+      notice.className = 'riddle-final-answer-editor__notice';
       notice.textContent = RiddleFinalAnswerEdit.texts.incomplete;
-      summary.appendChild(notice);
+      const editButtonInSummary = summary.querySelector('.riddle-final-answer-edit');
+      if (editButtonInSummary) {
+        summary.insertBefore(notice, editButtonInSummary);
+      } else {
+        summary.appendChild(notice);
+      }
       row?.classList.add('champ-vide');
       row?.classList.remove('champ-rempli');
     }
