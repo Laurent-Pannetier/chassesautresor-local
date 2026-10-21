@@ -169,23 +169,6 @@ function cat_render_single_hunt_home_enigmas(): void
 }
 
 /**
- * Short demo line on cockpits. The presentation page keeps its own banner.
- */
-function cat_render_cockpit_demo_notice(): void
-{
-    if (!function_exists('cat_is_demo_mode') || !cat_is_demo_mode()) {
-        return;
-    }
-
-    echo '<p class="myaccount-demo-notice" role="status">';
-    esc_html_e(
-        'Mode démo : cette chasse est présentée avant sa publication officielle.',
-        'chassesautresor-com'
-    );
-    echo '</p>';
-}
-
-/**
  * Public hunt pages return home. Edition stays on the chasse URL.
  */
 function cat_redirect_public_single_hunt(): void

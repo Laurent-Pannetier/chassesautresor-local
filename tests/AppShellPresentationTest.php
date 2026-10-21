@@ -77,6 +77,11 @@ class AppShellPresentationTest extends TestCase
         $outils = (string) file_get_contents($theme . '/template-parts/shell/outils.php');
 
         $this->assertStringNotContainsString('Bienvenue', $layout);
+        $this->assertStringNotContainsString('cat_render_cockpit_demo_notice', $layout);
+        $this->assertStringNotContainsString(
+            'présentée avant sa publication officielle',
+            (string) file_get_contents($theme . '/inc/single-hunt-home.php')
+        );
         $this->assertStringNotContainsString('Accès rapide édition', $organizer);
         $this->assertStringNotContainsString('Accès rapide édition', $admin);
         $this->assertStringNotContainsString('cat_render_hunt_quick_edit_card', $outils);

@@ -89,9 +89,6 @@ get_header();
         ?>
         <main class="myaccount-content">
             <?php
-            if (!empty($GLOBALS['cat_account_home_on_front']) && function_exists('cat_render_cockpit_demo_notice')) {
-                cat_render_cockpit_demo_notice();
-            }
             if ($content_template && file_exists($content_template)) {
                 include $content_template;
             } else {
