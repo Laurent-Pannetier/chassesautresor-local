@@ -64,3 +64,12 @@ Détail : [`docs/deploy.md`](docs/deploy.md).
 3. Synchroniser le thème vers `chassesautresor-wp`, puis déployer via Hostinger Git.
 4. Si le Core a changé : déployer le **même état** de `chassesautresor-core` via l’UI Hostinger.
 5. Vérifier ACF / migrations SQL si le lot en dépend.
+
+## Cursor Cloud specific instructions
+
+- PHP 8.3, Composer (`bin/composer` via `source ./setup-env.sh`), Node, MariaDB et WP-CLI sont fournis par l’environnement. MariaDB et `wp server` démarrent au boot sur `http://127.0.0.1:8080`.
+- La base suit `wp-config.php` : base `local`, utilisateur `root`, mot de passe `root`, hôte `localhost`. Sur cette image, le socket MariaDB est `/run/mysqld/mysqld.sock` (`/var/run` n’est pas un lien vers `/run`).
+- Une base vide est installée au boot : compte `admin` / `admin`, thème `chassesautresor`, plugins ACF Pro et `chassesautresor-core`. Le mot de passe du site (visiteurs non connectés) est `citizen` par défaut (`ca_site_password`).
+- WooCommerce n’est pas activé : des paquets `vendor/` sont ignorés par Git et le plugin ne démarre pas. Le script de boot écrit `wp-content/mu-plugins/cloud-woocommerce-shim.php` pour fournir `is_account_page()`, `is_cart()` et `wc_get_account_endpoint_url()`. Ne pas committer ce fichier.
+- Tests : `source ./setup-env.sh && vendor/bin/phpunit -c tests/phpunit.xml`, puis `npm test`. CSS : `npm run build:css`.
+- Deux tests PHPUnit échouent sur PHP 8.3 (`RiddleSolutionFilePolicyServiceTest::testPastPublicationIsDeferredByAtLeastFiveSeconds` et `RiddleSolutionFileSchedulerTest::testSchedulerAppliesMinimumDelay`) : `strtotime('+-1 days ...')` est lu comme +1 jour. Ce n’est pas un échec d’installation.
