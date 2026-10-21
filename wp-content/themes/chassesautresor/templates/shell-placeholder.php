@@ -1,6 +1,6 @@
 <?php
 /**
- * Empty page for a shell destination whose content is not defined.
+ * Shell destination: real content for Outils and Progression, placeholder otherwise.
  *
  * @package chassesautresor
  */
@@ -20,6 +20,16 @@ if ($show_outils) :
     <main class="app-outils" id="app-outils">
         <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
         <?php get_template_part('template-parts/shell/outils'); ?>
+    </main>
+    <?php
+    get_footer();
+    return;
+endif;
+if ($slug === 'progression') :
+    ?>
+    <main class="app-progression" id="app-progression">
+        <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
+        <?php get_template_part('template-parts/shell/progression'); ?>
     </main>
     <?php
     get_footer();

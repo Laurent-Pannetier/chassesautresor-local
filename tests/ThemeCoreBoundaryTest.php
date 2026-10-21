@@ -1490,17 +1490,24 @@ final class ThemeCoreBoundaryTest extends TestCase
         $orgDashboard = (string) file_get_contents(
             self::THEME_PATH . '/template-parts/myaccount/dashboard-organisateur.php'
         );
+        $statsPage = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/shell/progression.php'
+        );
         $renderer = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountHuntRiddleStatisticsRenderer.php'
         );
 
-        self::assertStringContainsString(
-            'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
+        self::assertStringNotContainsString(
+            'AccountHuntRiddleStatisticsRenderer',
             $adminDashboard
+        );
+        self::assertStringNotContainsString(
+            'AccountHuntRiddleStatisticsRenderer',
+            $orgDashboard
         );
         self::assertStringContainsString(
             'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
-            $orgDashboard
+            $statsPage
         );
         $outils = (string) file_get_contents(
             self::THEME_PATH . '/template-parts/shell/outils.php'
@@ -1510,6 +1517,7 @@ final class ThemeCoreBoundaryTest extends TestCase
         self::assertStringContainsString('class AccountHuntRiddleStatisticsRenderer', $renderer);
         self::assertStringNotContainsString('RiddleStatisticsApplicationService', $adminDashboard);
         self::assertStringNotContainsString('RiddleStatisticsApplicationService', $orgDashboard);
+        self::assertStringNotContainsString('RiddleStatisticsApplicationService', $statsPage);
     }
 
     public function testAdminModerationQueueLivesOnAccountHomeNotHuntPage(): void
