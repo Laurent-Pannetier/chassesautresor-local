@@ -40,6 +40,16 @@ if ($show_outils) :
     get_footer();
     return;
 endif;
+if ($slug === 'equipe') :
+    ?>
+    <main class="app-equipe" id="app-equipe">
+        <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
+        <?php get_template_part('template-parts/shell/equipe'); ?>
+    </main>
+    <?php
+    get_footer();
+    return;
+endif;
 if ($slug === 'progression') :
     ?>
     <main class="app-progression" id="app-progression">

@@ -135,7 +135,7 @@ function cta_shell_request_slug(): string
             $path = trim(substr($path, strlen($homePath)), '/');
         }
     }
-    $allowed = ['progression', 'reglement', 'trophees', 'outils', 'points', 'notifications'];
+    $allowed = ['progression', 'reglement', 'trophees', 'outils', 'points', 'equipe', 'notifications'];
 
     return in_array($path, $allowed, true) ? $path : '';
 }
@@ -292,6 +292,14 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
             'points',
             cta_shell_location_url('points'),
             cta_shell_location_is_current('points'),
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'equipe',
+            __('Équipe', 'chassesautresor-com'),
+            'team',
+            cta_shell_location_url('equipe'),
+            cta_shell_location_is_current('equipe'),
             'primary'
         ),
     ];
