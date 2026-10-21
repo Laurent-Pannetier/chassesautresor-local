@@ -1029,10 +1029,13 @@ document.querySelectorAll('.champ-cout-points .champ-enregistrer').forEach(bouto
 
     if (!champ || !postId) return;
 
+    const queued = window.ctaShellEditionSave?.shouldQueue('chasse', champ, valeur);
     modifierChampSimple(champ, valeur, postId, 'chasse');
 
     if (champ === 'chasse_infos_cout_points') {
-      rafraichirStatutChasse(postId);
+      if (!queued) {
+        rafraichirStatutChasse(postId);
+      }
       mettreAJourBadgeCoutChasse(postId, parseInt(valeur, 10));
     }
 
@@ -1200,6 +1203,11 @@ function initChampDateFin() {
     }
 
     enregistrerDatesChasse().then((ok) => {
+      if (ok === 'queued') {
+        if (status) status.innerHTML = '';
+        mettreAJourAffichageDateFin();
+        return;
+      }
       if (status) {
         status.innerHTML = ok
           ? '<i class="fa-solid fa-check" aria-hidden="true"></i>'
@@ -1510,14 +1518,26 @@ function enregistrerDatesChasse() {
   const postId = inputDateDebut.closest('.champ-chasse')?.dataset.postId;
   if (!postId) return Promise.resolve(false);
 
-  const params = new URLSearchParams({
-    action: 'modifier_dates_chasse',
-    post_id: postId,
+  const payload = {
     date_debut: inputDateDebut.value.trim(),
     // On conserve toujours la date en base, même si l'affichage est "Illimitée"
     date_fin: inputDateFin.value.trim(),
     illimitee: toggleDateFin?.checked ? 0 : 1,
     debut_differee: toggleDateDebut?.checked ? 1 : 0,
+  };
+
+  if (document.querySelector('.shell-edition') && window.ctaShellEditionSave?.queueDates) {
+    window.ctaShellEditionSave.queueDates(payload);
+    return Promise.resolve('queued');
+  }
+
+  const params = new URLSearchParams({
+    action: 'modifier_dates_chasse',
+    post_id: postId,
+    date_debut: payload.date_debut,
+    date_fin: payload.date_fin,
+    illimitee: payload.illimitee,
+    debut_differee: payload.debut_differee,
     nonce: window.CHP_CHASSE_DEFAUT?.nonce || ''
   });
   console.log('[enregistrerDatesChasse] params=', params.toString());

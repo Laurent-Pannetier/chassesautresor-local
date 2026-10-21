@@ -420,3 +420,41 @@ function cta_shell_enqueue_edition_nav(): void
     );
 }
 add_action('wp_enqueue_scripts', 'cta_shell_enqueue_edition_nav');
+
+/**
+ * Loads the explicit save bar on a hunt or riddle edition screen.
+ */
+function cta_shell_enqueue_edition_save(): void
+{
+    if (!function_exists('cta_shell_edition_target') || cta_shell_edition_target() === null) {
+        return;
+    }
+    if (!wp_script_is('champ-init', 'enqueued')) {
+        return;
+    }
+
+    $path = get_stylesheet_directory() . '/assets/js/shell-edition-save.js';
+    if (!file_exists($path)) {
+        return;
+    }
+
+    wp_enqueue_script(
+        'cta-shell-edition-save',
+        get_stylesheet_directory_uri() . '/assets/js/shell-edition-save.js',
+        ['wp-i18n'],
+        (string) filemtime($path),
+        true
+    );
+    wp_set_script_translations(
+        'cta-shell-edition-save',
+        'chassesautresor-com',
+        get_template_directory() . '/languages'
+    );
+
+    $scripts = wp_scripts();
+    $deps = $scripts->registered['champ-init']->deps;
+    if (!in_array('cta-shell-edition-save', $deps, true)) {
+        $scripts->registered['champ-init']->deps[] = 'cta-shell-edition-save';
+    }
+}
+add_action('wp_enqueue_scripts', 'cta_shell_enqueue_edition_save', 20);

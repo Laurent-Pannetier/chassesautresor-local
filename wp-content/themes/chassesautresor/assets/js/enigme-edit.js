@@ -434,7 +434,12 @@ function initEnigmeEdit() {
 
   document.querySelectorAll('input[name="acf[enigme_mode_validation]"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      if (enigmeId) {
+      const queued = window.ctaShellEditionSave?.shouldQueue(
+        'enigme',
+        'enigme_mode_validation',
+        radio.value
+      );
+      if (enigmeId && !queued) {
         forcerRecalculStatutEnigme(enigmeId);
       }
       mettreAJourCartesStats();
@@ -672,16 +677,18 @@ function initChampAccesCondition() {
   }
 
   function enregistrer(valeur) {
-    if (!postId) return;
+    if (!postId) return false;
+    const queued = window.ctaShellEditionSave?.shouldQueue(cpt, 'enigme_acces_condition', valeur);
     modifierChampSimple('enigme_acces_condition', valeur, postId, cpt);
+    return !!queued;
   }
 
   radios.forEach(radio => {
     radio.addEventListener('change', () => {
       const valeur = radio.value;
       appliquerEtat();
-      enregistrer(valeur);
-      if (typeof window.forcerRecalculStatutEnigme === 'function' && postId) {
+      const queued = enregistrer(valeur);
+      if (!queued && typeof window.forcerRecalculStatutEnigme === 'function' && postId) {
         window.forcerRecalculStatutEnigme(postId);
       }
     });
@@ -1333,7 +1340,19 @@ function initChampPreRequis() {
         const cochés = checkboxes.filter(el => el.checked).map(el => el.value);
 
         // ✅ 1. Mise à jour des prérequis cochés
-        modifierChampSimple(champ, cochés, postId, cpt).then(() => {
+        modifierChampSimple(champ, cochés, postId, cpt).then((result) => {
+          if (result === 'queued') {
+            if (cochés.length > 0 && radioPre && !radioPre.checked) {
+              radioPre.checked = true;
+            }
+            if (cochés.length === 0) {
+              if (radioImmediat) radioImmediat.checked = true;
+              modifierChampSimple('enigme_acces_condition', 'immediat', postId, cpt);
+            }
+            majClasse();
+            return;
+          }
+
           // ✅ 2. Si une ou plusieurs cases sont cochées, enregistrer condition 'pre_requis'
           if (cochés.length > 0) {
             if (radioPre && !radioPre.checked) radioPre.checked = true;
@@ -1388,6 +1407,10 @@ function initEnregistrementPreRequis() {
   if (!radioPreRequis || !champBloc || !postId) return;
 
   radioPreRequis.addEventListener('change', () => {
+    if (document.querySelector('.shell-edition')) {
+      return;
+    }
+
     const cochés = [...champBloc.querySelectorAll('input[type="checkbox"]:checked')].map(cb => cb.value);
 
     // 🔒 Ne rien faire si aucune case cochée

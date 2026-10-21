@@ -30,6 +30,12 @@ final class RiddleFieldMutationAjaxHandlerTest extends TestCase {
                 10,
                 1,
             ],
+            [
+                'wp_ajax_enregistrer_champs_enigme',
+                [RiddleFieldMutationAjaxHandler::class, 'handleBatch'],
+                10,
+                1,
+            ],
         ], $hooks);
     }
 }
