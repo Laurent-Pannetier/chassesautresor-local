@@ -53,6 +53,12 @@ if ( apply_filters( 'astra_header_profile_gmpg_link', true ) ) {
                 <?php echo esc_html( astra_default_strings( 'string-header-skip-link', false ) ); ?>
 </a>
 
+<?php
+if ( function_exists( 'cta_shell_open' ) ) {
+	cta_shell_open();
+}
+?>
+
 <div
 <?php
         echo wp_kses_post(

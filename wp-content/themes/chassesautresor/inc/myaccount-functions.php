@@ -88,6 +88,112 @@ function myaccount_unhook_dashboard_attempts(): void
 add_action('init', 'myaccount_unhook_dashboard_attempts', 20);
 
 /**
+ * Slug of a shell page requested by its public path.
+ */
+function cta_shell_request_slug(): string
+{
+    if (!isset($_SERVER['REQUEST_URI']) || !function_exists('wp_parse_url')) {
+        return '';
+    }
+
+    $request = (string) $_SERVER['REQUEST_URI'];
+    if (function_exists('wp_unslash')) {
+        $request = (string) wp_unslash($request);
+    }
+
+    $path = wp_parse_url($request, PHP_URL_PATH);
+    $path = is_string($path) ? strtolower(trim($path, '/')) : '';
+    if (function_exists('home_url')) {
+        $homePath = wp_parse_url(home_url('/'), PHP_URL_PATH);
+        $homePath = is_string($homePath) ? strtolower(trim($homePath, '/')) : '';
+        if ($homePath !== '' && ($path === $homePath || strpos($path, $homePath . '/') === 0)) {
+            $path = trim(substr($path, strlen($homePath)), '/');
+        }
+    }
+    $allowed = ['progression', 'reglement', 'trophees', 'points', 'notifications'];
+
+    return in_array($path, $allowed, true) ? $path : '';
+}
+
+/**
+ * Permalink of a published page, when that page already exists.
+ */
+function cta_shell_published_page_url(string $slug): string
+{
+    if ($slug === '' || !function_exists('get_page_by_path') || !function_exists('get_permalink')) {
+        return '';
+    }
+
+    $page = get_page_by_path($slug);
+    if (!$page instanceof WP_Post) {
+        return '';
+    }
+    if (function_exists('get_post_status') && get_post_status($page) !== 'publish') {
+        return '';
+    }
+
+    $link = get_permalink($page);
+
+    return is_string($link) ? $link : '';
+}
+
+/**
+ * Public URL of a shell destination.
+ *
+ * Progression and Règlement reuse a published page when one exists.
+ * Otherwise they stay on an empty location, like the requested placeholders.
+ */
+function cta_shell_location_url(string $slug): string
+{
+    if (in_array($slug, ['progression', 'reglement'], true)) {
+        $existing = cta_shell_published_page_url($slug);
+        if ($existing !== '') {
+            return $existing;
+        }
+    }
+
+    if (function_exists('home_url')) {
+        return home_url('/' . $slug . '/');
+    }
+
+    return '/' . $slug . '/';
+}
+
+/**
+ * Whether the current request matches a shell destination.
+ */
+function cta_shell_location_is_current(string $slug): bool
+{
+    if (cta_shell_request_slug() === $slug) {
+        return true;
+    }
+
+    return function_exists('is_page') && is_page($slug);
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function cta_shell_nav_item(
+    string $key,
+    string $label,
+    string $icon,
+    string $url,
+    bool $active,
+    string $group
+): array {
+    return [
+        'key'      => $key,
+        'endpoint' => $key,
+        'label'    => $label,
+        'icon'     => $icon,
+        'url'      => $url,
+        'active'   => $active,
+        'group'    => $group,
+    ];
+}
+
+/**
  * Build the primary sidebar navigation items for the current user.
  *
  * @param WP_User|null $user Current user.
@@ -96,59 +202,95 @@ add_action('init', 'myaccount_unhook_dashboard_attempts', 20);
 function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
 {
     $user = $user instanceof WP_User ? $user : wp_get_current_user();
+    if (!$user instanceof WP_User) {
+        return [];
+    }
     $singleHunt = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
+    $slug = cta_shell_request_slug();
     $is_settings = function_exists('is_wc_endpoint_url')
         && (
             is_wc_endpoint_url('edit-account')
             || is_wc_endpoint_url('orders')
             || is_wc_endpoint_url('edit-address')
         );
-    $is_tentatives = function_exists('is_wc_endpoint_url') && is_wc_endpoint_url('tentatives');
     $isAccountRoot = function_exists('is_account_page')
         && is_account_page()
         && function_exists('is_wc_endpoint_url')
         && !is_wc_endpoint_url()
         && empty($_GET['section']);
-    if ($singleHunt && $isAccountRoot) {
+    if ($singleHunt && $isAccountRoot && $slug === '') {
         $is_settings = true;
     }
-    $is_home = $singleHunt
-        ? (function_exists('is_front_page') && is_front_page())
-        : $isAccountRoot;
-    $homeUrl = $singleHunt ? home_url('/') : wc_get_account_endpoint_url('dashboard');
+    $is_home = $slug === '' && (
+        $singleHunt
+            ? (function_exists('is_front_page') && is_front_page())
+            : $isAccountRoot
+    );
+    $homeUrl = $singleHunt && function_exists('home_url')
+        ? home_url('/')
+        : wc_get_account_endpoint_url('dashboard');
     $profileUrl = $singleHunt
         ? wc_get_account_endpoint_url('dashboard')
         : wc_get_account_endpoint_url('edit-account');
 
-    $items = [
-        [
-            'endpoint' => 'dashboard',
-            'label'    => __('Accueil', 'chassesautresor-com'),
-            'icon'     => 'fas fa-home',
-            'url'      => $homeUrl,
-            'active'   => $is_home,
-        ],
+    return [
+        cta_shell_nav_item(
+            'accueil',
+            __('Accueil', 'chassesautresor-com'),
+            'home',
+            $homeUrl,
+            $is_home,
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'progression',
+            __('Progression', 'chassesautresor-com'),
+            'progression',
+            cta_shell_location_url('progression'),
+            cta_shell_location_is_current('progression'),
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'reglement',
+            __('Règlement', 'chassesautresor-com'),
+            'rules',
+            cta_shell_location_url('reglement'),
+            cta_shell_location_is_current('reglement'),
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'trophees',
+            __('Trophées', 'chassesautresor-com'),
+            'trophy',
+            cta_shell_location_url('trophees'),
+            cta_shell_location_is_current('trophees'),
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'profil',
+            __('Profil', 'chassesautresor-com'),
+            'profile',
+            $profileUrl,
+            $is_settings,
+            'personal'
+        ),
+        cta_shell_nav_item(
+            'points',
+            __('Points', 'chassesautresor-com'),
+            'points',
+            cta_shell_location_url('points'),
+            cta_shell_location_is_current('points'),
+            'personal'
+        ),
+        cta_shell_nav_item(
+            'notifications',
+            __('Notifications', 'chassesautresor-com'),
+            'notifications',
+            cta_shell_location_url('notifications'),
+            cta_shell_location_is_current('notifications'),
+            'personal'
+        ),
     ];
-
-    if (myaccount_user_is_player($user)) {
-        $items[] = [
-            'endpoint' => 'tentatives',
-            'label'    => __('Tentatives', 'chassesautresor-com'),
-            'icon'     => 'fas fa-list-check',
-            'url'      => wc_get_account_endpoint_url('tentatives'),
-            'active'   => $is_tentatives,
-        ];
-    }
-
-    $items[] = [
-        'endpoint' => 'edit-account',
-        'label'    => __('Profil', 'chassesautresor-com'),
-        'icon'     => 'fas fa-user',
-        'url'      => $profileUrl,
-        'active'   => $is_settings,
-    ];
-
-    return $items;
 }
 
 /**

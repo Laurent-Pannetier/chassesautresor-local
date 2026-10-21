@@ -1,0 +1,793 @@
+/* Shell: top bar, left menu, day and night surfaces.
+   The enigmas loop keeps its own canvas via .home-enigmas-preserve. */
+
+html {
+  --shell-bg: #0c1016;
+  --shell-sidebar: #10151c;
+  --shell-surface: #171d27;
+  --shell-surface-2: #1e2633;
+  --shell-topbar: rgba(16, 21, 28, 0.94);
+  --shell-text: #e7eef6;
+  --shell-muted: #93a0b3;
+  --shell-border: rgba(255, 255, 255, 0.08);
+  --shell-accent: #2ec8e6;
+  --shell-accent-strong: #7eebf8;
+  --shell-accent-text: #042229;
+  --shell-accent-soft: rgba(46, 200, 230, 0.2);
+  --shell-track: #0c1218;
+  --shell-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  --shell-topbar-height: 4rem;
+  --shell-sidebar-width: 16.5rem;
+  --shell-icon-home: #3ee0f0;
+  --shell-icon-progression: #f5b942;
+  --shell-icon-rules: #7dcea0;
+  --shell-icon-trophy: #f5c451;
+  --shell-icon-profile: #7eb6ff;
+  --shell-icon-points: #f0c14a;
+  --shell-icon-notifications: #ff8b7b;
+}
+
+html[data-theme="day"] {
+  --shell-bg: #f4f7fb;
+  --shell-sidebar: #ffffff;
+  --shell-surface: #ffffff;
+  --shell-surface-2: #eef3f8;
+  --shell-topbar: rgba(255, 255, 255, 0.94);
+  --shell-text: #152033;
+  --shell-muted: #5d6b7e;
+  --shell-border: rgba(21, 32, 51, 0.1);
+  --shell-accent: #14b4cc;
+  --shell-accent-strong: #0e8fa3;
+  --shell-accent-text: #042229;
+  --shell-accent-soft: rgba(20, 180, 204, 0.16);
+  --shell-track: #e7eef5;
+  --shell-shadow: 0 10px 24px rgba(21, 32, 51, 0.08);
+}
+
+body.app-shell-active {
+  margin: 0;
+  background: var(--shell-bg);
+  background-image: none;
+}
+
+body.app-shell-active #masthead {
+  display: none !important;
+}
+
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--shell-bg);
+  color: var(--shell-text);
+}
+
+.app-topbar,
+.app-sidebar,
+.app-nav__link,
+.app-theme,
+.app-personal,
+.team-stat,
+.hunt-banner,
+.app-placeholder,
+.app-topbar__team,
+.app-topbar__trophies,
+.app-topbar__logout,
+.app-topbar__login,
+.app-nav-toggle,
+.app-frame,
+.app-main,
+.app-shell #page,
+.app-shell #content.site-content,
+.app-shell .ast-container,
+.app-shell #primary {
+  box-sizing: border-box;
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--shell-topbar-height);
+  padding: 0 0.75rem;
+  background: var(--shell-topbar);
+  border-bottom: 1px solid var(--shell-border);
+  backdrop-filter: blur(10px);
+}
+
+.app-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface);
+  color: var(--shell-text);
+  cursor: pointer;
+}
+
+.app-nav-toggle:hover,
+.app-nav-toggle:focus {
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  border-color: var(--shell-border);
+}
+
+.app-nav-toggle__icon {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-nav-toggle__icon span {
+  display: block;
+  width: 1rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.app-topbar__brand {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.app-topbar__brand a {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  text-decoration: none;
+}
+
+.app-topbar__brand img,
+.app-topbar__brand .custom-logo {
+  display: block;
+  width: auto;
+  max-width: 7.25rem;
+  height: 1.65rem;
+  object-fit: contain;
+  object-position: left center;
+  filter: none;
+}
+
+.app-topbar .screen-reader-text,
+.app-sidebar .screen-reader-text,
+.hunt-banner .screen-reader-text,
+.team-stats .screen-reader-text,
+.app-placeholder .screen-reader-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-topbar__meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  min-width: 0;
+  margin-left: auto;
+}
+
+.app-topbar__team,
+.app-topbar__trophies,
+.app-topbar__player,
+.app-topbar__logout,
+.app-topbar__login {
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.app-topbar__team,
+.app-topbar__trophies {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 6.25rem;
+  min-height: 2.15rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface);
+  color: var(--shell-text);
+}
+
+.app-topbar__team-label,
+.app-topbar__team-value,
+.app-topbar__player,
+.app-topbar__trophy-count {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-topbar__team-label,
+.app-topbar__trophy-count {
+  color: var(--shell-muted);
+}
+
+.app-topbar__player {
+  display: none;
+  max-width: 8rem;
+  color: var(--shell-text);
+}
+
+.app-topbar__trophy-icon,
+.app-topbar__logout span[aria-hidden="true"] {
+  display: inline-flex;
+  width: 1.05rem;
+  height: 1.05rem;
+  color: var(--shell-icon-trophy);
+}
+
+.app-topbar__trophy-icon svg,
+.app-topbar__logout svg,
+.app-nav__icon svg,
+.app-theme__icon svg,
+.team-stat__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.app-topbar__profile {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 2.15rem;
+  height: 2.15rem;
+  overflow: hidden;
+  border: 2px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface-2);
+}
+
+.app-topbar__profile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-topbar__logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface);
+  color: var(--shell-text);
+}
+
+.app-topbar__logout span[aria-hidden="true"] {
+  color: var(--shell-text);
+}
+
+.app-topbar__login {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.15rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+}
+
+.app-frame {
+  min-width: 0;
+}
+
+.app-nav-backdrop {
+  display: none;
+}
+
+.app-shell.is-nav-open .app-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: block;
+  background: rgba(4, 8, 14, 0.55);
+}
+
+.app-sidebar {
+  position: fixed;
+  z-index: 30;
+  top: var(--shell-topbar-height);
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(86vw, 18.5rem);
+  padding: 0.85rem 0.75rem 1rem;
+  overflow: auto;
+  background: var(--shell-sidebar);
+  border-right: 1px solid var(--shell-border);
+  box-shadow: var(--shell-shadow);
+  transform: translateX(-105%);
+  transition: transform 0.2s ease;
+}
+
+.app-shell.is-nav-open .app-sidebar {
+  transform: translateX(0);
+}
+
+.app-nav,
+.app-personal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.app-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 2.55rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  color: var(--shell-text);
+  font-family: var(--font-main);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.app-nav__link:hover,
+.app-nav__link:focus-visible {
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  text-decoration: none;
+}
+
+.app-nav__link.is-active {
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+}
+
+.app-nav__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.app-nav__link.is-active .app-nav__icon {
+  color: inherit;
+}
+
+.app-nav__icon--home { color: var(--shell-icon-home); }
+.app-nav__icon--progression { color: var(--shell-icon-progression); }
+.app-nav__icon--rules { color: var(--shell-icon-rules); }
+.app-nav__icon--trophy { color: var(--shell-icon-trophy); }
+.app-nav__icon--profile { color: var(--shell-icon-profile); }
+.app-nav__icon--points { color: var(--shell-icon-points); }
+.app-nav__icon--notifications { color: var(--shell-icon-notifications); }
+
+.app-sidebar__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.app-theme {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-track);
+}
+
+.app-theme__option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.15rem;
+  padding: 0.3rem 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--shell-muted);
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.app-theme__option:hover,
+.app-theme__option:focus {
+  background: transparent;
+  color: var(--shell-text);
+}
+
+.app-theme__option.is-active,
+.app-theme__option.is-active:hover,
+.app-theme__option.is-active:focus {
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+}
+
+.app-theme__icon {
+  display: inline-flex;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.app-personal {
+  padding: 0.45rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1.15rem;
+  background: var(--shell-surface);
+}
+
+.app-main {
+  min-width: 0;
+}
+
+.app-shell #page,
+.app-shell .site-content,
+.app-shell .ast-container,
+.app-shell .ast-container--boxed {
+  max-width: none;
+  width: 100%;
+  background: transparent;
+}
+
+.app-shell .site-content .ast-container,
+.app-shell .ast-container--boxed {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.app-shell #content.site-content {
+  padding: 1rem 1rem 2.5rem;
+}
+
+.app-shell #primary {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.app-shell .myaccount-layout {
+  display: block;
+  min-height: 0;
+  background: transparent;
+  background-image: none;
+  color: inherit;
+}
+
+.app-shell .myaccount-sidebar,
+.app-shell .myaccount-sidebar-toggle,
+.app-shell .myaccount-sidebar-backdrop {
+  display: none;
+}
+
+.app-shell .myaccount-main,
+.app-shell .myaccount-content {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  overflow: visible;
+}
+
+.app-shell .myaccount-content {
+  padding: 0;
+}
+
+.app-shell .myaccount-header {
+  height: auto;
+  min-height: 0;
+  margin-bottom: 1rem;
+  padding: 0;
+  background: transparent;
+  border-bottom: 0;
+  color: var(--shell-text);
+}
+
+.app-shell .myaccount-title,
+.app-placeholder__title {
+  margin: 0;
+  color: var(--shell-text);
+  font-family: var(--font-main);
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.25;
+  text-transform: none;
+}
+
+.app-shell .myaccount-title-greeting,
+.app-shell .myaccount-last-active {
+  color: var(--shell-muted);
+}
+
+.app-shell .cat-site-footer {
+  margin-top: 2rem;
+  background: transparent;
+  color: var(--shell-muted);
+  border-top-color: var(--shell-border);
+}
+
+.app-shell .cat-site-footer__copyright,
+.app-shell .cat-site-footer__legal a {
+  color: var(--shell-muted);
+}
+
+.hunt-banner {
+  overflow: hidden;
+  margin: 0 0 1.5rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1.15rem;
+  background: var(--shell-surface);
+}
+
+.hunt-banner img {
+  display: block;
+  width: 100%;
+  height: 12.5rem;
+  object-fit: cover;
+}
+
+.hunt-banner__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 10rem;
+  margin: 0;
+  padding: 1.5rem;
+  color: var(--shell-muted);
+  text-align: center;
+}
+
+.home-enigmas-preserve {
+  background-color: #0b132b;
+  background-image: url("../assets/svg/pattern-typographique.svg");
+  background-position: center;
+  background-repeat: repeat;
+  background-size: 600px 600px;
+  color: #f5f5dc;
+}
+
+.team-stats {
+  margin-top: 1.75rem;
+}
+
+.team-stats__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+}
+
+.team-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  min-height: 8.5rem;
+  padding: 1rem 1.05rem 0.95rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
+    var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+}
+
+.team-stat__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.team-stat__label,
+.team-stat__caption {
+  margin: 0;
+  color: var(--shell-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.team-stat__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: var(--shell-accent);
+}
+
+.team-stat__value {
+  margin: 0;
+  color: var(--shell-text);
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.app-placeholder {
+  max-width: 40rem;
+  padding: 0.5rem 0 2rem;
+}
+
+.app-placeholder__note {
+  margin: 0.75rem 0 0;
+  color: var(--shell-muted);
+  font-size: 1rem;
+}
+
+.app-shell .app-sidebar .dashboard-nav-link,
+.app-shell .app-sidebar .organizer-nav-link,
+.app-shell .app-sidebar .nav-title {
+  color: var(--shell-text);
+}
+
+.app-shell .app-sidebar .dashboard-nav-link:hover,
+.app-shell .app-sidebar .dashboard-nav-link:focus,
+.app-shell .app-sidebar .organizer-nav-link:hover,
+.app-shell .app-sidebar .organizer-nav-link:focus {
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  text-decoration: none;
+}
+
+.app-shell .organizer-organisation-nav .organizer-nav-children {
+  border-left-color: var(--shell-border);
+}
+
+.app-shell .organizer-organisation-nav .organizer-nav-children::after,
+.app-shell .organizer-organisation-nav .organizer-nav-children .organizer-nav-item::before {
+  background: var(--shell-border);
+}
+
+.app-shell .organizer-organisation-nav .organizer-nav-children::after {
+  background: var(--shell-sidebar);
+}
+
+.app-topbar__login:focus-visible,
+.app-topbar__logout:focus-visible,
+.app-topbar__profile:focus-visible,
+.app-topbar__trophies:focus-visible,
+.app-nav__link:focus-visible,
+.app-theme__option:focus-visible,
+.app-nav-toggle:focus-visible {
+  outline: 2px solid var(--shell-accent);
+  outline-offset: 2px;
+}
+
+@media (--bp-small) {
+  .app-topbar__player {
+    display: inline;
+  }
+
+  .hunt-banner img {
+    height: 15rem;
+  }
+}
+
+@media (--bp-tablet) {
+  .app-nav-toggle {
+    display: none;
+  }
+
+  .app-shell.is-nav-open .app-nav-backdrop {
+    display: none;
+  }
+
+  .app-frame {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100dvh - var(--shell-topbar-height));
+  }
+
+  .app-sidebar {
+    position: sticky;
+    top: var(--shell-topbar-height);
+    flex: 0 0 var(--shell-sidebar-width);
+    width: var(--shell-sidebar-width);
+    height: calc(100dvh - var(--shell-topbar-height));
+    box-shadow: none;
+    transform: none;
+  }
+
+  .app-main {
+    flex: 1 1 auto;
+  }
+
+  .app-shell #content.site-content {
+    padding: 1.5rem 1.75rem 3rem;
+  }
+
+  .app-topbar {
+    padding: 0 1.25rem;
+  }
+
+  .app-topbar__brand img,
+  .app-topbar__brand .custom-logo {
+    max-width: 13.5rem;
+    height: 2.25rem;
+  }
+
+  .team-stats__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hunt-banner img {
+    height: 18rem;
+  }
+}
+
+@media (--bp-desktop) {
+  .app-shell #content.site-content {
+    padding: 1.75rem 2.25rem 3.5rem;
+  }
+
+  .app-topbar__meta {
+    gap: 0.75rem;
+  }
+
+  .app-topbar__team,
+  .app-topbar__trophies {
+    max-width: none;
+  }
+
+  .app-topbar__player {
+    max-width: 14rem;
+  }
+}
+
+@media (--bp-wide) {
+  .team-stats__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .hunt-banner img {
+    height: 22rem;
+  }
+}
+
+body.admin-bar .app-topbar {
+  top: 32px;
+}
+
+body.admin-bar .app-sidebar {
+  top: calc(var(--shell-topbar-height) + 32px);
+  height: calc(100dvh - var(--shell-topbar-height) - 32px);
+}
+
+@media (max-width: 782px) {
+  body.admin-bar .app-topbar {
+    top: 46px;
+  }
+
+  body.admin-bar .app-sidebar {
+    top: calc(var(--shell-topbar-height) + 46px);
+    height: calc(100dvh - var(--shell-topbar-height) - 46px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar {
+    transition: none;
+  }
+}
