@@ -38,8 +38,9 @@ function cta_shell_icon(string $name): string
         'progression' => '<path fill="currentColor" d="M4 13h3.2v7H4v-7zm6.4-4h3.2v11h-3.2V9zM16.8 5H20v15h-3.2V5z"/>',
         'rules' => '<path fill="currentColor" d="M7 2.5h7.2L19 7.3V21.5H7V2.5zm7 1.6V8h3.9'
             . 'L14 4.1zM9.2 12h6.2v1.6H9.2V12zm0 3.4h6.2v1.6H9.2v-1.6z"/>',
-        'shield' => '<path fill="currentColor" d="M12 2.4 5 5.1v6.2c0 4.5 2.9 7.7 7 9.7 4.1-2 7-5.2'
-            . ' 7-9.7V5.1L12 2.4z"/>',
+        'flame' => '<path fill="currentColor" d="M12.1 2.2c.4 2.8-.7 4.6-2 6.2-1.1 1.4-2 2.7-2 4.7'
+            . 'a4.8 4.8 0 0 0 9.6.2c0-1.7-.8-3-1.8-4.1.3 1-.1 1.9-.9 2.3-.4-2.2.2-4.2 1.1-5.8'
+            . ' 1.2-2.2.6-4.4-1-6.5-.8 1.6-2.2 2.8-3 3z"/>',
         'trophy' => '<path fill="currentColor" d="M8 3h8v2h3.1c.5 0 .9.4.9.9v2.2A4.1 4.1 0 0 1'
             . ' 16.2 12 5.8 5.8 0 0 1 13 16.6V19h3v2H8v-2h3v-2.4A5.8 5.8 0 0 1 7.8 12'
             . ' 4.1 4.1 0 0 1 4 8.1V5.9c0-.5.4-.9.9-.9H8V3zm0 4H6.1v1.1A2.1 2.1 0 0 0'

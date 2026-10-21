@@ -94,7 +94,8 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString("cta_shell_icon(", $sidebar);
         $this->assertStringNotContainsString('organizer-nav', $sidebar);
         $this->assertStringContainsString("cta_shell_icon('trophy')", $topbar);
-        $this->assertStringContainsString('Chasse au trésor', $topbar);
+        $this->assertStringContainsString("cta_shell_icon('flame')", $topbar);
+        $this->assertStringNotContainsString('Chasse au trésor', $topbar);
         $this->assertStringContainsString('Antre de feu', $topbar);
         $this->assertStringNotContainsString('customer-logout', $topbar);
     }

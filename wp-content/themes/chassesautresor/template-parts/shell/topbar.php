@@ -84,16 +84,11 @@ $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
             <span class="app-topbar__hunt-mark" aria-hidden="true">
                 <?php
                 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                echo cta_shell_icon('shield');
+                echo cta_shell_icon('flame');
                 ?>
             </span>
-            <span class="app-topbar__hunt-copy">
-                <span class="app-topbar__hunt-label">
-                    <?php esc_html_e('Chasse au trésor', 'chassesautresor-com'); ?>
-                </span>
-                <span class="app-topbar__hunt-title">
-                    <?php esc_html_e('Antre de feu', 'chassesautresor-com'); ?>
-                </span>
+            <span class="app-topbar__hunt-title">
+                <?php esc_html_e('Antre de feu', 'chassesautresor-com'); ?>
             </span>
         </div>
     </div>

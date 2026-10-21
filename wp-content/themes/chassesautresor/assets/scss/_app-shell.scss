@@ -176,8 +176,8 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   align-items: center;
   gap: 0.4rem;
   min-width: 0;
-  max-width: 9.5rem;
-  min-height: 2.35rem;
+  max-width: 11rem;
+  min-height: 2.2rem;
   padding: 0.2rem 0.55rem 0.2rem 0.3rem;
   border: 1px solid var(--shell-border);
   border-radius: 0.85rem;
@@ -193,8 +193,8 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   width: 1.55rem;
   height: 1.55rem;
   border-radius: 0.45rem;
-  background: var(--shell-accent-soft);
-  color: var(--shell-accent);
+  background: rgba(255, 138, 61, 0.16);
+  color: #ff8a3d;
 }
 
 .app-topbar__hunt-mark svg {
@@ -203,36 +203,15 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   height: 0.95rem;
 }
 
-.app-topbar__hunt-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 0.05rem;
-}
-
-.app-topbar__hunt-label,
 .app-topbar__hunt-title {
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.app-topbar__hunt-label {
-  color: var(--shell-muted);
-  font-family: var(--font-main);
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-
-.app-topbar__hunt-title {
   color: var(--shell-text);
   font-family: var(--font-main);
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 700;
   line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .app-topbar .screen-reader-text,
@@ -860,7 +839,7 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   .app-topbar__hunt {
     gap: 0.6rem;
     max-width: 18rem;
-    min-height: 3.15rem;
+    min-height: 2.85rem;
     padding: 0.35rem 0.95rem 0.35rem 0.4rem;
     border-radius: 1rem;
   }
@@ -874,11 +853,6 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   .app-topbar__hunt-mark svg {
     width: 1.2rem;
     height: 1.2rem;
-  }
-
-  .app-topbar__hunt-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.06em;
   }
 
   .app-topbar__hunt-title {
