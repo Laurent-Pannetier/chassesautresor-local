@@ -15,11 +15,18 @@ class CompletionCacheManager {
     private static array $checked = [];
 
     public function isOrganizerComplete(int $organizerId, ?callable $hasValidTitle = null): bool {
+        return $this->organizerMissingKeys($organizerId, $hasValidTitle) === [];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function organizerMissingKeys(int $organizerId, ?callable $hasValidTitle = null): array {
         if (get_post_type($organizerId) !== 'organisateur') {
-            return false;
+            return ['title'];
         }
 
-        return (new OrganizerCompletionService())->isComplete(
+        return (new OrganizerCompletionService())->missingKeys(
             $hasValidTitle ? (bool) $hasValidTitle($organizerId) : $this->hasValidTitle($organizerId),
             !empty(get_field('logo_organisateur', $organizerId)),
             (string) get_field('description_longue', $organizerId)
@@ -31,8 +38,19 @@ class CompletionCacheManager {
         ?bool $hasValidatableRiddle = null,
         ?callable $hasValidTitle = null
     ): bool {
+        return $this->huntMissingKeys($huntId, $hasValidatableRiddle, $hasValidTitle) === [];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function huntMissingKeys(
+        int $huntId,
+        ?bool $hasValidatableRiddle = null,
+        ?callable $hasValidTitle = null
+    ): array {
         if (get_post_type($huntId) !== 'chasse') {
-            return false;
+            return ['title'];
         }
         $image = get_field('chasse_principale_image', $huntId);
         $imageId = is_array($image) ? (int) ($image['ID'] ?? 0) : (int) $image;
@@ -46,7 +64,7 @@ class CompletionCacheManager {
             $hasValidatableRiddle = $service->hasValidatableRiddle($validationModes);
         }
 
-        return $service->isComplete(
+        return $service->missingKeys(
             $hasValidTitle ? (bool) $hasValidTitle($huntId) : $this->hasValidTitle($huntId),
             (string) get_field('chasse_principale_description', $huntId),
             $imageId,
@@ -61,8 +79,19 @@ class CompletionCacheManager {
         ?callable $hasValidTitle = null,
         ?callable $hasAnswers = null
     ): bool {
+        return $this->riddleMissingKeys($riddleId, $hasValidTitle, $hasAnswers) === [];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function riddleMissingKeys(
+        int $riddleId,
+        ?callable $hasValidTitle = null,
+        ?callable $hasAnswers = null
+    ): array {
         if (get_post_type($riddleId) !== 'enigme') {
-            return false;
+            return ['title'];
         }
         $images = get_field('enigme_visuel_image', $riddleId);
         $imageId = is_array($images) && !empty($images[0]['ID']) ? (int) $images[0]['ID'] : 0;
@@ -70,7 +99,7 @@ class CompletionCacheManager {
         $stepIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
         $hasCompleteSteps = (new RiddleStepCompletenessService())->areStepsComplete($stepIds);
 
-        return (new RiddleCompletionService())->isComplete(
+        return (new RiddleCompletionService())->missingKeys(
             $hasValidTitle ? (bool) $hasValidTitle($riddleId) : $this->hasValidTitle($riddleId),
             $imageId,
             defined('ID_IMAGE_PLACEHOLDER_ENIGME') ? ID_IMAGE_PLACEHOLDER_ENIGME : 3925,

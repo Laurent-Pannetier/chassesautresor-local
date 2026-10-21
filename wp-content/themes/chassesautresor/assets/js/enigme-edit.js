@@ -132,6 +132,11 @@ function initEnigmeEdit() {
 
 
   panneauEdition?.querySelector('.panneau-fermer')?.addEventListener('click', () => {
+    const back = document.querySelector('.shell-edition')?.dataset.editionBack;
+    if (back) {
+      window.location.assign(back);
+      return;
+    }
     document.body.classList.remove('edition-active-enigme');
     document.body.classList.remove('panneau-ouvert');
     document.body.classList.remove('mode-edition');

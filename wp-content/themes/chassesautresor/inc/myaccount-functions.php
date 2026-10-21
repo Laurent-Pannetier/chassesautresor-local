@@ -205,7 +205,8 @@ function cta_shell_nav_item(
     string $icon,
     string $url,
     bool $active,
-    string $group
+    string $group,
+    bool $section = false
 ): array {
     return [
         'key'      => $key,
@@ -214,6 +215,8 @@ function cta_shell_nav_item(
         'icon'     => $icon,
         'url'      => $url,
         'active'   => $active,
+        'current'  => $active,
+        'section'  => $section,
         'group'    => $group,
     ];
 }
@@ -294,13 +297,16 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
     ];
 
     if (cta_shell_user_sees_outils($user)) {
+        $outilsOpen = cta_shell_location_is_current('outils');
+        $editing = function_exists('cta_shell_edition_target') && cta_shell_edition_target() !== null;
         $items[] = cta_shell_nav_item(
             'outils',
             __('Outils', 'chassesautresor-com'),
             'tools',
             cta_shell_location_url('outils'),
-            cta_shell_location_is_current('outils'),
-            'primary'
+            $outilsOpen && !$editing,
+            'primary',
+            $outilsOpen && $editing
         );
     }
 

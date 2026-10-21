@@ -154,27 +154,25 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 function_exists('utilisateur_peut_modifier_enigme')
                 && utilisateur_peut_modifier_enigme($post->ID)
             ) {
-                if ($post->ID === $current_enigme_id) {
-                    $edit = '<button id="toggle-mode-edition-enigme" type="button"'
-                        . ' class="enigme-menu__edit" aria-label="'
-                        . esc_attr__("Paramètres", "chassesautresor-com")
-                        . '"><i class="fa-solid fa-gear"></i></button>';
-                } else {
-                    $status = function_exists('get_post_status')
-                        ? get_post_status($post->ID)
-                        : 'publish';
-                    $tab = ($status === 'publish' && get_field('enigme_cache_complet', $post->ID))
-                        ? 'stats'
-                        : 'param';
-                    $base_url = get_permalink($post->ID);
-                    $edit_url = function_exists('add_query_arg')
-                        ? add_query_arg(['edition' => 'open', 'tab' => $tab], $base_url)
-                        : $base_url . '?edition=open&tab=' . $tab;
-                    $edit = '<a class="enigme-menu__edit" href="' . esc_url($edit_url)
-                        . '" aria-label="'
-                        . esc_attr__("Paramètres", "chassesautresor-com")
-                        . '"><i class="fa-solid fa-gear"></i></a>';
-                }
+                $status = function_exists('get_post_status')
+                    ? get_post_status($post->ID)
+                    : 'publish';
+                $tab = ($status === 'publish' && get_field('enigme_cache_complet', $post->ID))
+                    ? 'stats'
+                    : 'param';
+                $edit_url = function_exists('cta_shell_edition_url')
+                    ? cta_shell_edition_url(
+                        'enigme',
+                        (int) $post->ID,
+                        function_exists('cta_shell_normalize_edition_section')
+                            ? cta_shell_normalize_edition_section('enigme', $tab)
+                            : 'parametres'
+                    )
+                    : add_query_arg(['edition' => 'open', 'tab' => $tab], (string) get_permalink($post->ID));
+                $edit = '<a class="enigme-menu__edit" href="' . esc_url($edit_url)
+                    . '" aria-label="'
+                    . esc_attr__("Paramètres", "chassesautresor-com")
+                    . '"><i class="fa-solid fa-gear"></i></a>';
             }
 
             $title        = esc_html(get_the_title($post->ID));

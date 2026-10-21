@@ -285,6 +285,11 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
     document.body.classList.toggle('mode-edition');
   });
   document.querySelector('.edition-panel-chasse .panneau-fermer')?.addEventListener('click', () => {
+    const back = document.querySelector('.shell-edition')?.dataset.editionBack;
+    if (back) {
+      window.location.assign(back);
+      return;
+    }
     document.body.classList.remove('edition-active-chasse');
     document.body.classList.remove('panneau-ouvert');
     document.body.classList.remove('mode-edition');

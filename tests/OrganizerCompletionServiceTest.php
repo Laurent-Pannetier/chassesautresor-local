@@ -19,5 +19,9 @@ class OrganizerCompletionServiceTest extends TestCase
         $this->assertFalse($service->isComplete(true, false, 'Description'));
         $this->assertFalse($service->isComplete(true, true, ''));
         $this->assertFalse($service->isComplete(true, true, '   '));
+        $this->assertSame(
+            ['title', 'logo', 'description'],
+            $service->missingKeys(false, false, ' ')
+        );
     }
 }

@@ -1185,6 +1185,23 @@ body.edition-active-indice .edition-panel-indice.edition-panel-modal {
   z-index: 10000;
 }
 
+body.shell-edition.edition-active-enigme .edition-panel-enigme.edition-panel-modal,
+body.shell-edition.edition-active-chasse .edition-panel-chasse.edition-panel-modal {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  border-radius: 0;
+  z-index: auto;
+}
+
+body.shell-edition:not(.shell-edition-tabs-ready) .edition-tab-content {
+  display: none !important;
+}
+
 
 .edition-panel > .edition-panel-header {
   padding: var(--space-xs) 0;

@@ -84,6 +84,34 @@ final class HuntLifecycleServiceTest extends TestCase
         self::assertSame('reopen', $service->deactivateAction(HuntLifecycleService::STATE_ACTIVE));
     }
 
+    public function testIncompleteContentBlocksActivationForEveryActor(): void
+    {
+        $service = new HuntLifecycleService();
+
+        self::assertFalse($service->canActivate(
+            false,
+            true,
+            true,
+            HuntLifecycleService::STATE_EDITABLE,
+            true,
+            false
+        ));
+        self::assertFalse($service->canActivate(
+            true,
+            false,
+            false,
+            HuntLifecycleService::STATE_PENDING,
+            true,
+            false
+        ));
+        self::assertTrue($service->canDeactivate(
+            true,
+            false,
+            false,
+            HuntLifecycleService::STATE_ACTIVE
+        ));
+    }
+
     public function testStateIconsMapToHeaderBadgeIcons(): void
     {
         $service = new HuntLifecycleService();

@@ -53,13 +53,18 @@ final class HuntLifecycleService
         bool $isAssociatedOrganizer,
         bool $isDemoMode,
         string $state,
-        bool $canRequestValidation
+        bool $canRequestValidation,
+        bool $isContentReady = true
     ): bool {
         if (!($isAdministrator || $isAssociatedOrganizer)) {
             return false;
         }
 
         if ($state === self::STATE_ACTIVE || $state === self::STATE_BLOCKED) {
+            return false;
+        }
+
+        if (!$isContentReady) {
             return false;
         }
 

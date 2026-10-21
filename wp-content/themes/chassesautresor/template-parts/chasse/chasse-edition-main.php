@@ -786,7 +786,12 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
       ?>
         <div class="edition-panel-body">
           <div class="stats-header" style="display:flex;align-items:center;justify-content:flex-end;gap:1rem;">
-            <a href="?edition=open&amp;tab=stats" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> <?= esc_html__('Actualiser', 'chassesautresor-com'); ?></a>
+            <?php
+            $statsRefresh = function_exists('cta_shell_edition_url')
+                ? cta_shell_edition_url('chasse', (int) $chasse_id, 'stats')
+                : '?edition=open&tab=stats';
+            ?>
+            <a href="<?= esc_url($statsRefresh); ?>" class="stats-reset"><i class="fa-solid fa-rotate-right"></i> <?= esc_html__('Actualiser', 'chassesautresor-com'); ?></a>
             <div class="stats-filtres">
               <label for="chasse-periode"><?= esc_html__('Période :', 'chassesautresor-com'); ?></label>
               <select id="chasse-periode">

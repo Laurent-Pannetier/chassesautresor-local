@@ -26,9 +26,12 @@ defined('ABSPATH') || exit;
  */
 function enqueue_script_enigme_edit()
 {
-  if (!is_singular('enigme')) return;
+  $shellId = function_exists('cta_shell_edition_post_id') ? cta_shell_edition_post_id('enigme') : 0;
+  if (!is_singular('enigme') && $shellId <= 0) {
+      return;
+  }
 
-  $enigme_id = get_the_ID();
+  $enigme_id = $shellId > 0 ? $shellId : (int) get_the_ID();
   if (!utilisateur_peut_modifier_post($enigme_id)) return;
 
   // 📦 Modules JS partagés + scripts spécifiques

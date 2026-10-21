@@ -171,12 +171,12 @@ if (!function_exists('render_sidebar')) {
             echo '<h2 class="menu-lateral__title">' . $titre_html . '</h2>';
 
             if ($can_edit) {
-                $edit_url = function_exists('add_query_arg')
-                    ? add_query_arg(
+                $edit_url = function_exists('cta_shell_edition_url')
+                    ? cta_shell_edition_url('chasse', (int) $chasse_id, 'parametres')
+                    : add_query_arg(
                         ['edition' => 'open', 'tab' => 'param'],
                         $permalink_chasse
-                    )
-                    : $permalink_chasse . '?edition=open&tab=param';
+                    );
                 echo '<a class="menu-lateral__edition-toggle enigme-menu__edit" href="'
                     . esc_url($edit_url)
                     . '" aria-label="'

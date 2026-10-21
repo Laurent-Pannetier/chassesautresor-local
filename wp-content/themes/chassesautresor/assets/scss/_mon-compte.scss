@@ -1750,6 +1750,10 @@ body.woocommerce h2 {
     text-align: center;
 }
 
+.hunt-lifecycle-card__header .hunt-lifecycle-card__gaps {
+    margin-left: auto;
+}
+
 @media (max-width: 480px) {
     .hunt-lifecycle-card__control {
         gap: 0.65rem;

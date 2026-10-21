@@ -15,6 +15,21 @@ $title = $titles[$slug] ?? '';
 $show_outils = $slug === 'outils'
     && function_exists('cta_shell_user_sees_outils')
     && cta_shell_user_sees_outils();
+$edition = function_exists('cta_shell_edition_target') ? cta_shell_edition_target() : null;
+if ($show_outils && is_array($edition) && function_exists('cta_shell_render_edition')) :
+    $editionTitle = function_exists('get_the_title') ? (string) get_the_title((int) $edition['id']) : '';
+    if ($editionTitle === '') {
+        $editionTitle = $title;
+    }
+    ?>
+    <main class="app-outils app-outils--edition" id="app-outils">
+        <h1 class="app-placeholder__title"><?php echo esc_html($editionTitle); ?></h1>
+        <?php cta_shell_render_edition($edition); ?>
+    </main>
+    <?php
+    get_footer();
+    return;
+endif;
 if ($show_outils) :
     ?>
     <main class="app-outils" id="app-outils">
