@@ -85,6 +85,18 @@
         return;
       }
 
+      const reward = bloc.querySelector('.champ-recompense-editeur');
+      if (reward) {
+        readReward(reward).forEach((value, name) => baselines.set(name, value));
+        return;
+      }
+
+      const links = bloc.querySelector('.champ-liens-editeur');
+      if (links) {
+        baselines.set(champ, linksValue(links));
+        return;
+      }
+
       const radios = bloc.querySelectorAll('input[type="radio"]');
       if (radios.length) {
         const checked = bloc.querySelector('input[type="radio"]:checked');
@@ -212,8 +224,21 @@
       fields.delete(key);
       if (value === undefined) return;
       baselines.set(key, normalize(value));
-      if (key === 'enigme_visuel_texte') {
-        updateTexteExcerpt(value);
+      if (key === 'enigme_visuel_texte' || key === 'chasse_principale_description') {
+        updateTexteExcerpt(key, value);
+      }
+      if (key.indexOf('chasse_infos_recompense_') === 0) {
+        updateRewardSummary();
+      }
+      if (key === 'chasse_principale_liens' && typeof updateTargetBlocks === 'function') {
+        let parsed = [];
+        try {
+          parsed = JSON.parse(value);
+        } catch (error) {
+          parsed = [];
+        }
+        const card = document.querySelector('.shell-edition [data-champ="chasse_principale_liens"]');
+        if (card) updateTargetBlocks(card, key, postId(), parsed);
       }
       if (typeof window.onChampSimpleMisAJour === 'function') {
         window.onChampSimpleMisAJour(key, postId(), value, cpt(), null);
@@ -228,6 +253,10 @@
     }
   }
 
+  function richTextField(area) {
+    return area.closest('[data-champ]')?.dataset.champ || '';
+  }
+
   function richTextValue(area) {
     const editor = window.tinymce?.get(area.id);
     const live = editor && typeof editor.isHidden === 'function' && !editor.isHidden();
@@ -236,7 +265,33 @@
 
   function syncRichText() {
     document.querySelectorAll('.shell-edition .champ-texte-editeur textarea.wp-editor-area').forEach((area) => {
-      queue('enigme_visuel_texte', richTextValue(area));
+      const champ = richTextField(area);
+      if (champ) queue(champ, richTextValue(area));
+    });
+  }
+
+  function readReward(box) {
+    return new Map([
+      ['chasse_infos_recompense_titre', box.querySelector('#champ-recompense-titre')?.value ?? ''],
+      ['chasse_infos_recompense_texte', box.querySelector('#champ-recompense-texte')?.value ?? ''],
+      ['chasse_infos_recompense_valeur', box.querySelector('#champ-recompense-valeur')?.value ?? ''],
+    ]);
+  }
+
+  function syncReward() {
+    document.querySelectorAll('.shell-edition .champ-recompense-editeur').forEach((box) => {
+      readReward(box).forEach((value, champ) => queue(champ, value));
+    });
+  }
+
+  function linksValue(box) {
+    if (typeof serializeLiensForm !== 'function' || typeof normaliserLiens !== 'function') return '[]';
+    return JSON.stringify(normaliserLiens(serializeLiensForm(box), { trier: true }));
+  }
+
+  function syncLinks() {
+    document.querySelectorAll('.shell-edition .champ-liens-editeur').forEach((box) => {
+      queue('chasse_principale_liens', linksValue(box));
     });
   }
 
@@ -319,8 +374,8 @@
     refreshImageAccess();
   }
 
-  function updateTexteExcerpt(value) {
-    const bloc = document.querySelector('.shell-edition [data-champ="enigme_visuel_texte"]');
+  function updateTexteExcerpt(champ, value) {
+    const bloc = document.querySelector(`.shell-edition [data-champ="${champ}"]`);
     if (!bloc) return;
     const plain = String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     const words = plain.split(' ').filter(Boolean);
@@ -351,14 +406,34 @@
     if (add) {
       add.classList.remove('champ-ajouter');
       add.classList.add('champ-modifier');
-      add.textContent = __('éditer');
-      add.setAttribute('aria-label', __('Éditer le texte'));
+      const verb = bloc.dataset.cpt === 'chasse' ? __('modifier') : __('éditer');
+      add.textContent = verb;
+      add.setAttribute('aria-label', verb);
     }
+  }
+
+  function updateRewardSummary() {
+    const bloc = document.querySelector('.shell-edition .champ-recompense-editeur');
+    const row = bloc?.closest('.edition-row');
+    if (!bloc || !row) return;
+    const titre = bloc.querySelector('#champ-recompense-titre')?.value.trim() || '';
+    const texte = bloc.querySelector('#champ-recompense-texte')?.value.trim() || '';
+    const valeur = Number(bloc.querySelector('#champ-recompense-valeur')?.value || 0);
+    const summary = row.querySelector('.champ-texte-contenu');
+    const complet = titre !== '' && texte !== '' && valeur > 0;
+    row.classList.toggle('champ-rempli', complet);
+    row.classList.toggle('champ-vide', !complet);
+    if (!summary) return;
+    summary.textContent = complet
+      ? Math.round(valeur).toLocaleString('fr-FR') + ' € – ' + titre + ' – ' + texte.slice(0, 200)
+      : '';
   }
 
   function save() {
     syncRichText();
     syncGallery();
+    syncReward();
+    syncLinks();
     if (saving || !isDirty()) return Promise.resolve(false);
     const currentCpt = cpt();
     const currentId = postId();
@@ -567,12 +642,13 @@
     richTextWatched = true;
     window.acf.addAction('wysiwyg_tinymce_init', (editor) => {
       const area = editor?.id ? document.getElementById(editor.id) : null;
-      if (!area || !area.closest('.champ-texte-editeur') || area.dataset.watched === '1') return;
+      const champ = area ? richTextField(area) : '';
+      if (!area || !champ || !area.closest('.champ-texte-editeur') || area.dataset.watched === '1') return;
       area.dataset.watched = '1';
-      baselines.set('enigme_visuel_texte', normalize(editor.getContent()));
-      fields.delete('enigme_visuel_texte');
+      baselines.set(champ, normalize(editor.getContent()));
+      fields.delete(champ);
       editor.on('change keyup undo redo', () => {
-        queue('enigme_visuel_texte', editor.getContent());
+        queue(champ, editor.getContent());
       });
       if (state !== 'saving') {
         state = isDirty() ? 'dirty' : 'idle';
@@ -582,15 +658,53 @@
   }
 
   document.addEventListener('click', (event) => {
-    const trigger = event.target.closest(
-      '.shell-edition .ouvrir-panneau-description[data-champ="enigme_visuel_texte"]'
-    );
+    const trigger = event.target.closest('.shell-edition .ouvrir-panneau-description');
     if (!trigger) return;
     const row = trigger.closest('.edition-row');
     if (!row?.querySelector('.champ-texte-editeur')) return;
     event.preventDefault();
     event.stopPropagation();
     toggleTexteEnigme(trigger);
+  }, true);
+
+  function toggleBox(trigger, selector) {
+    const bloc = trigger.closest('.edition-row, .dashboard-card');
+    const box = bloc?.querySelector(selector);
+    if (!box) return;
+    const willOpen = box.hasAttribute('hidden');
+    box.hidden = !willOpen;
+    trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  }
+
+  function watchInlineFields() {
+    document.querySelectorAll('.shell-edition .champ-recompense-editeur').forEach((box) => {
+      if (box.dataset.watched === '1') return;
+      box.dataset.watched = '1';
+      box.addEventListener('input', () => {
+        readReward(box).forEach((value, champ) => queue(champ, value));
+      });
+    });
+    document.querySelectorAll('.shell-edition .champ-liens-editeur').forEach((box) => {
+      if (box.dataset.watched === '1') return;
+      box.dataset.watched = '1';
+      box.addEventListener('input', () => queue('chasse_principale_liens', linksValue(box)));
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    const reward = event.target.closest('.shell-edition .ouvrir-panneau-recompense');
+    if (reward?.closest('.edition-row')?.querySelector('.champ-recompense-editeur')) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleBox(reward, '.champ-recompense-editeur');
+      return;
+    }
+    const links = event.target.closest('.shell-edition .ouvrir-panneau-liens');
+    if (links?.closest('.dashboard-card')?.querySelector('.champ-liens-editeur')) {
+      event.preventDefault();
+      event.stopPropagation();
+      toggleBox(links, '.champ-liens-editeur');
+    }
   }, true);
 
   function toggleImages(trigger) {
@@ -662,11 +776,22 @@
     hasField,
     isDirty,
     save,
+    rebase() {
+      fields.clear();
+      dates = null;
+      captureBaselines();
+      if (state !== 'saving') {
+        state = isDirty() ? 'dirty' : 'idle';
+        errorMessage = '';
+      }
+      render();
+    },
   };
 
   function start() {
     watchRichText();
     watchGallery();
+    watchInlineFields();
     mount();
   }
 

@@ -145,24 +145,6 @@ function initEnigmeEdit() {
 
 
   // ==============================
-  // 🧭 Déclencheur automatique
-  // ==============================
-  const params = new URLSearchParams(window.location.search);
-  const doitOuvrir = params.get('edition') === 'open';
-  const tab = params.get('tab');
-  if (doitOuvrir && boutonsToggle.length > 0) {
-    boutonsToggle[0].click();
-    if (tab) {
-      const btn = panneauEdition?.querySelector(
-        `.edition-tab[data-target="enigme-tab-${tab}"]`
-      );
-      btn?.click();
-    }
-    DEBUG && console.log('🔧 Ouverture auto du panneau édition énigme via ?edition=open');
-  }
-
-
-  // ==============================
   // 🟢 Initialisation des champs
   // ==============================
   document.querySelectorAll('.champ-enigme[data-champ]').forEach((bloc) => {
@@ -325,24 +307,6 @@ function initEnigmeEdit() {
   // ==============================
   document.querySelectorAll('.edition-panel-enigme .champ-modifier[data-champ]').forEach((btn) => {
     if (typeof initChampDeclencheur === 'function') initChampDeclencheur(btn);
-  });
-
-
-  // ==============================
-  // 📜 Panneau description (wysiwyg)
-  // ==============================
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.ouvrir-panneau-description');
-    if (!btn || btn.dataset.cpt !== 'enigme') return;
-
-    if (typeof window.openPanel === 'function') {
-      window.openPanel('panneau-description-enigme');
-    }
-  });
-  document.querySelector('#panneau-description-enigme .panneau-fermer')?.addEventListener('click', () => {
-    if (typeof window.closePanel === 'function') {
-      window.closePanel('panneau-description-enigme');
-    }
   });
 
 
@@ -544,79 +508,6 @@ window.addEventListener('solution-created', () => {
   rafraichirCarteSolutions();
 });
 
-// ================================
-// 🖼️ Panneau images galerie (ACF gallery)
-// ================================
-document.addEventListener('click', (e) => {
-  const btn = e.target.closest('.ouvrir-panneau-images');
-  if (!btn || btn.dataset.cpt !== 'enigme') return;
-
-  const panneau = document.getElementById('panneau-images-enigme');
-  if (!panneau) return;
-
-  const postId = btn.dataset.postId;
-  if (!postId) return;
-
-  // ❌ Ne PAS ouvrir le panneau ici
-
-  fetch(ajaxurl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      action: 'desactiver_htaccess_enigme',
-      nonce: window.CHP_ENIGME_DEFAUT?.nonce || '',
-      post_id: postId
-    })
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.success) {
-        console.warn(`⚠️ Désactivation htaccess échouée ou inutile : ${data.data}`);
-        return;
-      }
-
-      DEBUG && console.log(`🔓 htaccess désactivé pour énigme ${postId}`);
-
-      // ✅ Ouverture du panneau uniquement maintenant
-      if (typeof window.openPanel === 'function') {
-        window.openPanel('panneau-images-enigme');
-      }
-    })
-    .catch(err => {
-      console.error('❌ Erreur réseau AJAX htaccess :', err);
-    });
-});
-
-
-
-// ==============================
-// 🔐 Restauration htaccess à la fermeture du panneau images
-// ==============================
-document.querySelector('#panneau-images-enigme .panneau-fermer')?.addEventListener('click', () => {
-  if (typeof window.closePanel === 'function') {
-    window.closePanel('panneau-images-enigme');
-  }
-
-  const postId = document.querySelector('.edition-panel-enigme')?.dataset.postId;
-  if (postId) {
-    fetch(ajaxurl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        action: 'reactiver_htaccess_immediat_enigme',
-        nonce: window.CHP_ENIGME_DEFAUT?.nonce || '',
-        post_id: postId
-      })
-    }).then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          DEBUG && console.log(`🔒 htaccess restauré immédiatement pour énigme ${postId}`);
-        } else {
-          console.warn('⚠️ Erreur restauration htaccess immédiate :', res.data);
-        }
-      });
-  }
-});
 // ================================
 // ⏱️ Initialisation du délai entre deux mauvaises réponses
 // ================================

@@ -729,13 +729,3 @@ if ($edition_active && !$est_complet) {
     </template>
   </div>
 <?php endif; ?>
-
-<?php
-// Inclure le panneau si édition active
-if ($edition_active) {
-  get_template_part('template-parts/chasse/chasse-edition-main', null, [
-    'chasse_id'   => $chasse_id,
-    'infos_chasse' => $infos_chasse
-  ]);
-}
-?>

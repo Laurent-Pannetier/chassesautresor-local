@@ -41,6 +41,12 @@ final class ShellEditionSaveWiringTest extends TestCase {
         );
         $this->assertStringContainsString('champ-texte-editeur', $template);
         $this->assertStringContainsString('champ-images-editeur', $template);
+        $huntTemplate = (string) file_get_contents(
+            $root . '/wp-content/themes/chassesautresor/template-parts/chasse/chasse-edition-main.php'
+        );
+        $this->assertStringContainsString('champ-recompense-editeur', $huntTemplate);
+        $this->assertStringContainsString('chasse_principale_description', $huntTemplate);
+        $this->assertStringNotContainsString('chasse-edition-description', $huntTemplate);
         $this->assertStringContainsString("closest('.edition-row')", $queue);
         $this->assertStringContainsString("new MouseEvent('mousedown'", $queue);
         $this->assertStringContainsString('enigme_visuel_image', $queue);

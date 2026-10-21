@@ -331,39 +331,6 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
   }
 
   // ==============================
-  // 📜 Panneau description (wysiwyg)
-  // ==============================
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.ouvrir-panneau-description');
-    if (!btn || btn.dataset.cpt !== 'chasse') return;
-    if (typeof window.openPanel === 'function') {
-      window.openPanel('panneau-description-chasse');
-    }
-  });
-  document.querySelector('#panneau-description-chasse .panneau-fermer')?.addEventListener('click', () => {
-    if (typeof window.closePanel === 'function') {
-      window.closePanel('panneau-description-chasse');
-    }
-  });
-
-  // ==============================
-  // 🏱 Panneau récompense
-  // ==============================
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.ouvrir-panneau-recompense');
-    if (!btn || btn.dataset.cpt !== 'chasse') return;
-    if (typeof window.openPanel === 'function') {
-      window.openPanel('panneau-recompense-chasse');
-    }
-
-  });
-  document.querySelector('#panneau-recompense-chasse .panneau-fermer')?.addEventListener('click', () => {
-    if (typeof window.closePanel === 'function') {
-      window.closePanel('panneau-recompense-chasse');
-    }
-  });
-
-  // ==============================
   // 🎯 Badge dynamique récompense
   // ==============================
   if (typeof window.mettreAJourResumeInfos === 'function') {
@@ -406,7 +373,7 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
     }
   }
 
-  if (inputValeurRecompense) {
+  if (inputValeurRecompense && !document.querySelector('.shell-edition')) {
     inputValeurRecompense.addEventListener('input', formaterValeurRecompense);
     formaterValeurRecompense();
   }
@@ -510,10 +477,13 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
           });
         })
       ).then(() => {
+        if (inputTitreRecompense) inputTitreRecompense.value = '';
+        if (inputTexteRecompense) inputTexteRecompense.value = '';
+        if (inputValeurRecompense) inputValeurRecompense.value = '';
+        if (window.ctaShellEditionSave?.rebase) {
+          window.ctaShellEditionSave.rebase();
+        }
         majAffichageRecompense('', '', 0);
-        inputTitreRecompense.value = '';
-        inputTexteRecompense.value = '';
-        inputValeurRecompense.value = '';
         if (typeof window.closePanel === 'function') {
           window.closePanel('panneau-recompense-chasse');
         }
