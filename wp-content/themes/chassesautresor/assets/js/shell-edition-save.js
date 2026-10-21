@@ -69,6 +69,14 @@
       const champ = bloc.dataset.champ;
       if (!champ || baselines.has(champ)) return;
 
+      const rich = bloc.querySelector('.champ-texte-editeur textarea.wp-editor-area');
+      if (rich) {
+        const editor = window.tinymce?.get(rich.id);
+        const live = editor && typeof editor.isHidden === 'function' && !editor.isHidden();
+        baselines.set(champ, normalize(live ? editor.getContent() : rich.value));
+        return;
+      }
+
       const radios = bloc.querySelectorAll('input[type="radio"]');
       if (radios.length) {
         const checked = bloc.querySelector('input[type="radio"]:checked');
@@ -196,6 +204,9 @@
       fields.delete(key);
       if (value === undefined) return;
       baselines.set(key, normalize(value));
+      if (key === 'enigme_visuel_texte') {
+        updateTexteExcerpt(value);
+      }
       if (typeof window.onChampSimpleMisAJour === 'function') {
         window.onChampSimpleMisAJour(key, postId(), value, cpt(), null);
       }
@@ -209,7 +220,57 @@
     }
   }
 
+  function richTextValue(area) {
+    const editor = window.tinymce?.get(area.id);
+    const live = editor && typeof editor.isHidden === 'function' && !editor.isHidden();
+    return live ? editor.getContent() : area.value;
+  }
+
+  function syncRichText() {
+    document.querySelectorAll('.shell-edition .champ-texte-editeur textarea.wp-editor-area').forEach((area) => {
+      queue('enigme_visuel_texte', richTextValue(area));
+    });
+  }
+
+  function updateTexteExcerpt(value) {
+    const bloc = document.querySelector('.shell-edition [data-champ="enigme_visuel_texte"]');
+    if (!bloc) return;
+    const plain = String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    const words = plain.split(' ').filter(Boolean);
+    const excerpt = words.slice(0, 25).join(' ');
+    let summary = bloc.querySelector('.champ-texte-contenu');
+    if (!excerpt) {
+      summary?.remove();
+      bloc.classList.add('champ-vide');
+      bloc.classList.remove('champ-rempli');
+      const edit = bloc.querySelector('.champ-modifier, .champ-ajouter');
+      if (edit) {
+        edit.classList.remove('champ-modifier');
+        edit.classList.add('champ-ajouter');
+        edit.textContent = __('ajouter');
+        edit.removeAttribute('aria-label');
+      }
+      return;
+    }
+    if (!summary) {
+      summary = document.createElement('span');
+      summary.className = 'champ-texte-contenu';
+      bloc.querySelector('.champ-texte')?.prepend(summary);
+    }
+    summary.textContent = words.length > 25 ? excerpt + '…' : excerpt;
+    bloc.classList.add('champ-rempli');
+    bloc.classList.remove('champ-vide');
+    const add = bloc.querySelector('.champ-ajouter');
+    if (add) {
+      add.classList.remove('champ-ajouter');
+      add.classList.add('champ-modifier');
+      add.textContent = __('éditer');
+      add.setAttribute('aria-label', __('Éditer le texte'));
+    }
+  }
+
   function save() {
+    syncRichText();
     if (saving || !isDirty()) return Promise.resolve(false);
     const currentCpt = cpt();
     const currentId = postId();
@@ -352,9 +413,6 @@
     const kind = editionPanel.dataset.cpt;
     if (kind !== 'enigme' && kind !== 'chasse') return;
 
-    const header = editionPanel.querySelector('.edition-panel-header-top');
-    if (!header) return;
-
     const bar = document.createElement('div');
     bar.className = 'shell-edition-save';
     statusNode = document.createElement('p');
@@ -368,13 +426,11 @@
       save();
     });
     bar.append(statusNode, button);
+    document.body.append(bar);
 
-    const closer = header.querySelector('.panneau-fermer');
+    const closer = editionPanel.querySelector('.edition-panel-header-top .panneau-fermer');
     if (closer) {
       closer.dataset.shellEditionLeave = '1';
-      header.insertBefore(bar, closer);
-    } else {
-      header.append(bar);
     }
 
     editionPanel.dataset.saveReady = '1';
@@ -389,6 +445,64 @@
   });
   document.addEventListener('click', onDocumentClick, true);
 
+  function toggleTexteEnigme(trigger) {
+    const bloc = trigger.closest('.edition-row');
+    const box = bloc?.querySelector('.champ-texte-editeur');
+    if (!box) return;
+    const willOpen = box.hasAttribute('hidden');
+    box.hidden = !willOpen;
+    trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    if (!willOpen) return;
+    window.requestAnimationFrame(() => {
+      const area = box.querySelector('textarea.wp-editor-area');
+      if (!area) return;
+      const editor = window.tinymce?.get(area.id);
+      if (editor) {
+        const frame = editor.iframeElement;
+        if (frame && frame.offsetHeight < 80) {
+          frame.style.height = '220px';
+        }
+        return;
+      }
+      const wrap = box.querySelector('.acf-editor-wrap.delay');
+      if (!wrap) return;
+      wrap.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+    });
+  }
+
+  let richTextWatched = false;
+
+  function watchRichText() {
+    if (richTextWatched || !window.acf || typeof window.acf.addAction !== 'function') return;
+    richTextWatched = true;
+    window.acf.addAction('wysiwyg_tinymce_init', (editor) => {
+      const area = editor?.id ? document.getElementById(editor.id) : null;
+      if (!area || !area.closest('.champ-texte-editeur') || area.dataset.watched === '1') return;
+      area.dataset.watched = '1';
+      baselines.set('enigme_visuel_texte', normalize(editor.getContent()));
+      fields.delete('enigme_visuel_texte');
+      editor.on('change keyup undo redo', () => {
+        queue('enigme_visuel_texte', editor.getContent());
+      });
+      if (state !== 'saving') {
+        state = isDirty() ? 'dirty' : 'idle';
+      }
+      render();
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest(
+      '.shell-edition .ouvrir-panneau-description[data-champ="enigme_visuel_texte"]'
+    );
+    if (!trigger) return;
+    const row = trigger.closest('.edition-row');
+    if (!row?.querySelector('.champ-texte-editeur')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    toggleTexteEnigme(trigger);
+  }, true);
+
   window.ctaShellEditionSave = {
     shouldQueue,
     queue,
@@ -398,9 +512,14 @@
     save,
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', mount);
-  } else {
+  function start() {
+    watchRichText();
     mount();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
   }
 })();

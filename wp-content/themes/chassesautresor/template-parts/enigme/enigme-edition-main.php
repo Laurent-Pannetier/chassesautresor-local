@@ -226,16 +226,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                               <?php
                           },
                           'content' => function () use ($texte_enigme, $peut_editer, $enigme_id) {
+                              $inlineTexte = $peut_editer
+                                  && function_exists('cta_shell_edition_target')
+                                  && cta_shell_edition_target() !== null
+                                  && function_exists('acf_form');
                               ?>
                               <div class="champ-texte">
                                 <?php if (empty(trim($texte_enigme))) : ?>
                                   <?php if ($peut_editer) : ?>
-                                    <a href="#" class="champ-ajouter ouvrir-panneau-description"
-                                      data-champ="enigme_visuel_texte"
-                                      data-cpt="enigme"
-                                      data-post-id="<?= esc_attr($enigme_id); ?>">
-                                      <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
-                                    </a>
+                                    <?php if ($inlineTexte) : ?>
+                                      <button type="button"
+                                        class="champ-ajouter ouvrir-panneau-description"
+                                        data-champ="enigme_visuel_texte"
+                                        data-cpt="enigme"
+                                        data-post-id="<?= esc_attr($enigme_id); ?>"
+                                        aria-expanded="false">
+                                        <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                      </button>
+                                    <?php else : ?>
+                                      <a href="#" class="champ-ajouter ouvrir-panneau-description"
+                                        data-champ="enigme_visuel_texte"
+                                        data-cpt="enigme"
+                                        data-post-id="<?= esc_attr($enigme_id); ?>">
+                                        <?= esc_html__('ajouter', 'chassesautresor-com'); ?>
+                                      </a>
+                                    <?php endif; ?>
                                   <?php endif; ?>
                                 <?php else : ?>
                                   <span class="champ-texte-contenu">
@@ -246,12 +261,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                       data-champ="enigme_visuel_texte"
                                       data-cpt="enigme"
                                       data-post-id="<?= esc_attr($enigme_id); ?>"
+                                      <?php if ($inlineTexte) : ?>
+                                        aria-expanded="false"
+                                      <?php endif; ?>
                                       aria-label="<?= esc_attr__('Éditer le texte', 'chassesautresor-com'); ?>">
                                       <?= esc_html__('éditer', 'chassesautresor-com'); ?>
                                     </button>
                                   <?php endif; ?>
                                 <?php endif; ?>
                               </div>
+                              <?php if ($inlineTexte) : ?>
+                                <div class="champ-texte-editeur" hidden>
+                                  <?php
+                                    $prepareTexte = static function (array $field): array {
+                                        $class = trim(($field['wrapper']['class'] ?? '') . ' acf-hide-label');
+                                        $field['wrapper']['class'] = $class;
+                                        $field['delay'] = 1;
+
+                                        return $field;
+                                    };
+                                    add_filter('acf/prepare_field/name=enigme_visuel_texte', $prepareTexte);
+                                    acf_form([
+                                        'post_id' => $enigme_id,
+                                        'fields' => ['enigme_visuel_texte'],
+                                        'form' => false,
+                                        'honeypot' => false,
+                                        'uploader' => 'wp',
+                                        'html_before_fields' => '',
+                                        'html_after_fields' => '',
+                                        'updated_message' => false,
+                                    ]);
+                                    remove_filter('acf/prepare_field/name=enigme_visuel_texte', $prepareTexte);
+                                    ?>
+                                </div>
+                              <?php endif; ?>
                               <div class="champ-feedback"></div>
                               <?php
                           },

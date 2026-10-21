@@ -104,6 +104,19 @@ class RiddleMutationService {
             $valid = (bool) update_field($field, sanitize_text_field($value), $riddleId);
         }
 
+        if ($field === 'enigme_visuel_texte') {
+            $html = wp_kses_post(wp_unslash((string) $value));
+            $updated = update_field($field, $html, $riddleId);
+            $stored = (string) get_post_meta($riddleId, $field, true);
+            $valid = $updated || trim($stored) === trim($html);
+
+            return [
+                'error' => $valid ? null : 'echec_mise_a_jour_final',
+                'terminal' => false,
+                'refresh_state' => false,
+            ];
+        }
+
         if (!$valid) {
             $cleanValue = is_numeric($value) ? (int) $value : sanitize_text_field($value);
             $updated = update_field($field, $cleanValue, $riddleId);

@@ -1211,16 +1211,30 @@ body.shell-edition .edition-panel-header-top h2 {
   flex: 1 1 12rem;
 }
 
+body.shell-edition {
+  padding-bottom: 4.75rem;
+}
+
 .shell-edition-save {
+  position: fixed;
+  z-index: 20;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  background: var(--shell-surface, var(--color-editor-background));
+  border-top: 1px solid var(--shell-border, var(--color-editor-border));
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .shell-edition-save__button {
   appearance: none;
+  margin-left: auto;
   min-height: 2.25rem;
   padding: 0.35rem 0.9rem;
   border: 0;
@@ -1245,6 +1259,25 @@ body.shell-edition .edition-panel-header-top h2 {
 
 .shell-edition-save__status.is-error {
   color: var(--color-editor-error, #8d2a2a);
+}
+
+@media (--bp-tablet) {
+  .shell-edition-save {
+    left: var(--shell-sidebar-width);
+  }
+}
+
+body.shell-edition .edition-row.champ-wysiwyg {
+  align-items: flex-start;
+}
+
+body.shell-edition .champ-texte-editeur {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+body.shell-edition .champ-texte-editeur .acf-hide-label > .acf-label {
+  display: none;
 }
 
 

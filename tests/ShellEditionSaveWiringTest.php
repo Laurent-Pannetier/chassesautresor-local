@@ -33,6 +33,17 @@ final class ShellEditionSaveWiringTest extends TestCase {
         $this->assertStringContainsString('queueDates', $hunt);
         $this->assertStringContainsString('wp_ajax_enregistrer_champs_enigme', $riddleHandler);
         $this->assertStringContainsString('wp_ajax_enregistrer_champs_chasse', $huntHandler);
+        $template = (string) file_get_contents(
+            $root . '/wp-content/themes/chassesautresor/template-parts/enigme/enigme-edition-main.php'
+        );
+        $mutation = (string) file_get_contents(
+            $root . '/wp-content/plugins/chassesautresor-core/src/Content/RiddleMutationService.php'
+        );
+        $this->assertStringContainsString('champ-texte-editeur', $template);
+        $this->assertStringContainsString("closest('.edition-row')", $queue);
+        $this->assertStringContainsString("new MouseEvent('mousedown'", $queue);
+        $this->assertStringContainsString('enigme_visuel_texte', $mutation);
+        $this->assertStringContainsString('wp_kses_post', $mutation);
         $this->assertStringNotContainsString('sleep(', $this->batchMethod($huntHandler));
     }
 

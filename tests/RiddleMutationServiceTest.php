@@ -46,4 +46,43 @@ PHP);
             $result
         );
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testVisualTextKeepsAllowedHtml(): void {
+        eval(<<<'PHP'
+namespace ChassesAuTresor\Core\Content;
+function update_field($field, $value, $postId) {
+    $GLOBALS['riddleMutationFields'][$field] = $value;
+    return true;
+}
+function sanitize_text_field($value) { return trim(strip_tags((string) $value)); }
+function wp_unslash($value) { return is_string($value) ? stripslashes($value) : $value; }
+function wp_kses_post($value) { return (string) $value; }
+function get_post_meta($postId, $field, $single) { return null; }
+PHP);
+
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleFieldPolicyService.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/RiddleMutationService.php';
+
+        $html = '<p>Bonjour <strong>monde</strong></p>';
+        $GLOBALS['riddleMutationFields'] = [];
+        $result = (new ChassesAuTresor\Core\Content\RiddleMutationService())->apply(
+            7,
+            'enigme_visuel_texte',
+            $html,
+            static fn () => null,
+            1_800_000_000
+        );
+
+        $this->assertSame($html, $GLOBALS['riddleMutationFields']['enigme_visuel_texte']);
+        $this->assertSame(
+            ['error' => null, 'terminal' => false, 'refresh_state' => false],
+            $result
+        );
+    }
 }
