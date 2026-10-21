@@ -215,11 +215,7 @@ require_once __DIR__ . '/indices.php';
             );
         }
 
-        $retour_url = $chasse_id ? get_permalink($chasse_id) : home_url('/');
         $compact_experience = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
-        // En mode chasse unique, le retour texte (enigme-hunt-context) suffit :
-        // on n'affiche pas la pastille image pour éviter le doublon.
-        $show_hunt_back_pastille = !$compact_experience;
         $settings_icon = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none"'
             . ' stroke="currentColor" stroke-width="2" stroke-linecap="round"'
             . ' stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path'
@@ -234,28 +230,7 @@ require_once __DIR__ . '/indices.php';
             . ' 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06'
             . ' a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2'
             . ' 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
-        $header_class = 'enigme-mobile-header';
-        if (!$show_hunt_back_pastille) {
-            $header_class .= ' enigme-mobile-header--no-back';
-        }
-        echo '<header class="' . esc_attr($header_class) . '">';
-        if ($show_hunt_back_pastille) {
-            $hunt_image = $chasse_id ? get_field('chasse_principale_image', $chasse_id) : null;
-            $hunt_image_id = is_array($hunt_image) ? (int) ($hunt_image['ID'] ?? 0) : (int) $hunt_image;
-            $hunt_thumbnail = $hunt_image_id > 0
-                ? wp_get_attachment_image($hunt_image_id, 'thumbnail', false, [
-                    'class' => 'enigme-hunt-back__image',
-                    'alt' => '',
-                ])
-                : '';
-            echo '<a class="enigme-mobile-back enigme-hunt-back" href="' . esc_url($retour_url) . '" aria-label="'
-                . esc_attr__('Retour à la chasse', 'chassesautresor-com') . '">';
-            echo $hunt_thumbnail;
-            echo '<span class="enigme-hunt-back__icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none"'
-                . ' stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">'
-                . '<path d="M15 18l-6-6 6-6"/></svg></span>';
-            echo '</a>';
-        }
+        echo '<header class="enigme-mobile-header enigme-mobile-header--no-back">';
         echo '<div class="enigme-mobile-actions">';
         if (function_exists('utilisateur_peut_modifier_enigme') && utilisateur_peut_modifier_enigme($enigme_id)) {
             echo '<button type="button" class="toggle-mode-edition-enigme enigme-mobile-edit" aria-label="'
@@ -314,12 +289,6 @@ require_once __DIR__ . '/indices.php';
         }
 
         echo '<main class="' . esc_attr($page_class) . '">';
-        if ($compact_experience && $chasse_id) {
-            echo '<a class="enigme-hunt-context" href="' . esc_url($retour_url) . '">';
-            echo '<span aria-hidden="true">&larr;</span> ';
-            echo esc_html(get_the_title($chasse_id));
-            echo '</a>';
-        }
         render_enigme_title($enigme_id, $style, $user_id);
         render_enigme_hero($enigme_id, $style, $user_id);
         render_enigme_content($enigme_id, $style, $user_id);
