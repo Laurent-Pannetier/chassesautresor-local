@@ -432,58 +432,45 @@ li.edition-row {
 }
 
 @media not all and (--bp-desktop) {
-  .dashboard-card.champ-protection-solutions .qr-code-image,
   .dashboard-card.champ-qr-code .qr-code-image {
     flex: 0 0 150px;
   }
 
-  .dashboard-card.champ-protection-solutions .qr-code-image img,
   .dashboard-card.champ-qr-code .qr-code-image img {
     width: 150px;
   }
 
-  .dashboard-card.champ-protection-solutions .qr-code-image i,
   .dashboard-card.champ-qr-code .qr-code-image i {
     font-size: 150px;
   }
 }
 
 @media not all and (--bp-tablet) {
-  .dashboard-card.champ-protection-solutions .qr-code-image,
   .dashboard-card.champ-qr-code .qr-code-image {
     flex: 0 0 100px;
-  }
-
-  .dashboard-card.champ-protection-solutions .qr-code-image i {
-    font-size: 100px;
   }
 }
 
 @media not all and (--bp-mobile) {
-  .dashboard-card.champ-protection-solutions .qr-code-block,
   .dashboard-card.champ-qr-code .qr-code-block {
     flex-direction: column;
     align-items: center;
   }
 
-  .dashboard-card.champ-protection-solutions .qr-code-content,
   .dashboard-card.champ-qr-code .qr-code-content {
     align-items: center;
     text-align: center;
   }
 
-  .dashboard-card.champ-protection-solutions .qr-code-image,
   .dashboard-card.champ-qr-code .qr-code-image {
     width: 100px;
     flex: none;
   }
 
-  .dashboard-card.champ-protection-solutions .qr-code-image img,
   .dashboard-card.champ-qr-code .qr-code-image img {
     width: 100px;
   }
 
-  .dashboard-card.champ-protection-solutions .qr-code-image i,
   .dashboard-card.champ-qr-code .qr-code-image i {
     font-size: 100px;
   }
@@ -1189,6 +1176,50 @@ body.shell-edition.mode-edition {
   --color-editor-heading: var(--shell-text);
   --color-editor-field-hover: var(--shell-surface-2);
   --color-editor-placeholder: var(--shell-muted);
+}
+
+/* Les tuiles stats / animation héritent d'un fond blanc (hsl(--card))
+   alors que titres et icônes suivent déjà le texte du shell. */
+body.shell-edition .edition-panel .dashboard-card {
+  background: var(--shell-surface-2);
+  border-color: var(--shell-border);
+  color: var(--shell-text);
+}
+
+body.shell-edition .edition-panel .dashboard-card:hover {
+  background: var(--shell-surface-2);
+  border-color: var(--shell-accent);
+}
+
+body.shell-edition .edition-panel .dashboard-card h3,
+body.shell-edition .edition-panel .dashboard-card h4,
+body.shell-edition .edition-panel .dashboard-card p,
+body.shell-edition .edition-panel .dashboard-card .stat-value,
+body.shell-edition .edition-panel .dashboard-card > i,
+body.shell-edition .edition-panel .dashboard-card .icone-defaut {
+  color: var(--shell-text);
+}
+
+html:not([data-theme="day"]) body.shell-edition .edition-panel .dashboard-card .bouton-cta:not(
+  .cta-indice-chasse,
+  .cta-indice-enigme,
+  .cta-solution-chasse,
+  .cta-solution-enigme
+) {
+  background-color: var(--shell-bg);
+  color: var(--shell-text);
+  border: 1px solid var(--shell-border);
+}
+
+html:not([data-theme="day"]) body.shell-edition .edition-panel .dashboard-card .bouton-cta:not(
+  .cta-indice-chasse,
+  .cta-indice-enigme,
+  .cta-solution-chasse,
+  .cta-solution-enigme
+):hover {
+  background-color: var(--shell-accent-soft);
+  color: var(--shell-text);
+  border-color: var(--shell-accent);
 }
 
 body.shell-edition .edition-panel-enigme,
@@ -2302,15 +2333,13 @@ body.shell-edition .edition-tab.active:focus-visible {
   height: 2rem;
 }
 
-.dashboard-card.champ-qr-code,
-.dashboard-card.champ-protection-solutions {
+.dashboard-card.champ-qr-code {
   width: 75%;
   margin: var(--space-4xl) auto;
 }
 
 @media not all and (--bp-desktop) {
-  .dashboard-card.champ-qr-code,
-  .dashboard-card.champ-protection-solutions {
+  .dashboard-card.champ-qr-code {
     width: 100%;
     margin: var(--space-xl) auto;
   }
