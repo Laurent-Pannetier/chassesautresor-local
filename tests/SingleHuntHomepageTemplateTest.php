@@ -217,6 +217,11 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('sommaire-bd__numero', $partial);
         self::assertStringContainsString('get_cta_enigme', $partial);
         self::assertStringContainsString("etatSysteme === 'accessible'", $home);
+        self::assertStringContainsString('cat_single_hunt_request_returns_home', $home);
+        self::assertStringContainsString('Éditer la chasse', $partial);
+        self::assertStringContainsString('Ajouter une énigme', $partial);
+        self::assertStringContainsString('sommaire-bd__poignee', $partial);
+        self::assertStringContainsString('sommaire-bd__reglages', $partial);
         self::assertStringContainsString('display: none;', $styles);
         self::assertStringContainsString('.sommaire-bd__pointilles', $styles);
         self::assertStringContainsString('font-variant-numeric: tabular-nums;', $styles);

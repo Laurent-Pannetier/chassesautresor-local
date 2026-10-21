@@ -19,6 +19,16 @@ final class SommaireEnigmesLoopTest extends TestCase
         self::assertTrue(cat_sommaire_enigme_est_visible('accessible', true));
     }
 
+    public function testHuntPageReturnsHomeUnlessAnAuthorizedEditorOpensIt(): void
+    {
+        require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/single-hunt-home.php';
+
+        self::assertTrue(cat_single_hunt_request_returns_home('', false));
+        self::assertTrue(cat_single_hunt_request_returns_home('', true));
+        self::assertTrue(cat_single_hunt_request_returns_home('open', false));
+        self::assertFalse(cat_single_hunt_request_returns_home('open', true));
+    }
+
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
@@ -59,6 +69,48 @@ final class SommaireEnigmesLoopTest extends TestCase
         self::assertStringContainsString('Le coffre scellé', $html);
         self::assertStringContainsString('sommaire-bd__numero">2<', $html);
         self::assertStringContainsString('href="/enigme/12"', $html);
+        self::assertStringContainsString('sommaire-bd__item--verrouillee', $html);
+        self::assertStringContainsString('Nécessite', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testAuthorizedRolesGetAddEditReorderAndSettings(): void
+    {
+        $html = $this->renderSommaire(true, true, [
+            'add' => true,
+            'edit_hunt' => true,
+            'edit_riddle' => true,
+            'validation' => 'creation',
+        ]);
+
+        self::assertStringContainsString('Ajouter une énigme', $html);
+        self::assertStringContainsString('fa-plus', $html);
+        self::assertStringContainsString('Éditer la chasse', $html);
+        self::assertStringContainsString('edition=open', $html);
+        self::assertStringContainsString('data-reorder="1"', $html);
+        self::assertStringContainsString('sommaire-bd__poignee', $html);
+        self::assertStringContainsString('sommaire-bd__reglages', $html);
+        self::assertStringContainsString('fa-coins', $html);
+        self::assertStringContainsString('sommaire-bd__trouvee', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testAddStaysVisibleButInactiveWhileAnEnigmaIsIncomplete(): void
+    {
+        $html = $this->renderSommaire(true, true, [
+            'add' => true,
+            'incomplete' => true,
+        ]);
+
+        self::assertStringContainsString('disabled', $html);
+        self::assertStringContainsString('Terminez l’énigme incomplète', $html);
+        self::assertStringNotContainsString('href="https://example.test/creer-enigme/', $html);
     }
 
     /**
@@ -72,11 +124,18 @@ final class SommaireEnigmesLoopTest extends TestCase
         self::assertSame('', $html);
     }
 
-    private function renderSommaire(bool $privileged, bool $engaged = true): string
+    /**
+     * @param array{add?:bool,edit_hunt?:bool,edit_riddle?:bool,incomplete?:bool,validation?:string} $flags
+     */
+    private function renderSommaire(bool $privileged, bool $engaged = true, array $flags = []): string
     {
         $this->bootStubs();
         $GLOBALS['sommaire_privileged'] = $privileged;
         $GLOBALS['sommaire_engaged'] = $engaged;
+        $GLOBALS['sommaire_can_add'] = $flags['add'] ?? false;
+        $GLOBALS['sommaire_can_edit_hunt'] = $flags['edit_hunt'] ?? false;
+        $GLOBALS['sommaire_can_edit_riddle'] = $flags['edit_riddle'] ?? false;
+        $GLOBALS['sommaire_incomplete'] = $flags['incomplete'] ?? false;
 
         require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/single-hunt-home.php';
 
@@ -85,7 +144,7 @@ final class SommaireEnigmesLoopTest extends TestCase
             'est_orga_associe' => $privileged,
             'infos_chasse' => [
                 'statut' => 'en_cours',
-                'statut_validation' => 'valide',
+                'statut_validation' => $flags['validation'] ?? 'valide',
                 'enigmes_associees' => [11, 12, 13],
             ],
             'show_help_icon' => false,
@@ -154,7 +213,40 @@ final class SommaireEnigmesLoopTest extends TestCase
         if (!function_exists('get_field')) {
             eval('function get_field($key, $post_id = null, $format = true) {'
                 . ' if ($key === "enigme_visuel_image" && (int) $post_id === 11) { return [501]; }'
+                . ' if ($key === "enigme_cache_complet") { return empty($GLOBALS["sommaire_incomplete"]); }'
+                . ' if ($key === "enigme_mode_validation" && (int) $post_id === 11) { return "automatique"; }'
+                . ' if ($key === "enigme_tentative_cout_points" && (int) $post_id === 11) { return 3; }'
+                . ' if ($key === "enigme_acces_pre_requis" && (int) $post_id === 12) { return [11]; }'
                 . ' return null; }');
+        }
+        if (!function_exists('esc_attr_e')) {
+            eval('function esc_attr_e($text, $domain = null) {'
+                . ' echo htmlspecialchars((string) $text, ENT_QUOTES, "UTF-8"); }');
+        }
+        if (!function_exists('add_query_arg')) {
+            eval('function add_query_arg($args, $url) {'
+                . ' return $url . "?" . http_build_query($args); }');
+        }
+        if (!function_exists('home_url')) {
+            eval('function home_url($path = "/") { return "https://example.test" . $path; }');
+        }
+        if (!function_exists('wp_create_nonce')) {
+            eval('function wp_create_nonce($action) { return "nonce"; }');
+        }
+        if (!function_exists('utilisateur_peut_ajouter_enigme')) {
+            eval('function utilisateur_peut_ajouter_enigme($chasse_id, $user_id = null) {'
+                . ' return !empty($GLOBALS["sommaire_can_add"]); }');
+        }
+        if (!function_exists('utilisateur_peut_modifier_post')) {
+            eval('function utilisateur_peut_modifier_post($id) {'
+                . ' return !empty($GLOBALS["sommaire_can_edit_hunt"]); }');
+        }
+        if (!function_exists('verifier_ou_mettre_a_jour_cache_complet')) {
+            eval('function verifier_ou_mettre_a_jour_cache_complet($id) {}');
+        }
+        if (!function_exists('utilisateur_peut_modifier_enigme')) {
+            eval('function utilisateur_peut_modifier_enigme($id) {'
+                . ' return !empty($GLOBALS["sommaire_can_edit_riddle"]); }');
         }
         if (!function_exists('build_picture_enigme')) {
             eval('function build_picture_enigme($image_id, $alt, $sizes, $attrs = []) {'

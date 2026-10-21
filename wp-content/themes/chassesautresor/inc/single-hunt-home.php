@@ -185,7 +185,18 @@ function cat_render_single_hunt_home_enigmas(): void
 }
 
 /**
- * Public hunt pages return home. Edition stays on the chasse URL.
+ * Whether a direct visit to the hunt page must return home.
+ *
+ * The public page has no remaining entry point. Edition stays only for a
+ * visitor who is allowed to modify that hunt.
+ */
+function cat_single_hunt_request_returns_home(string $edition, bool $canEdit): bool
+{
+    return $edition === '' || !$canEdit;
+}
+
+/**
+ * Public hunt pages return home. Edition stays only for an authorized editor.
  */
 function cat_redirect_public_single_hunt(): void
 {
@@ -196,13 +207,18 @@ function cat_redirect_public_single_hunt(): void
         return;
     }
 
-    $edition = isset($_GET['edition']) ? (string) wp_unslash($_GET['edition']) : '';
-    if ($edition !== '') {
+    $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : 'GET';
+    if ($method !== 'GET' && $method !== 'HEAD') {
         return;
     }
 
-    $method = isset($_SERVER['REQUEST_METHOD']) ? strtoupper((string) $_SERVER['REQUEST_METHOD']) : 'GET';
-    if ($method !== 'GET' && $method !== 'HEAD') {
+    $edition = isset($_GET['edition']) ? (string) wp_unslash($_GET['edition']) : '';
+    $huntId = function_exists('get_queried_object_id') ? (int) get_queried_object_id() : 0;
+    $canEdit = $edition !== ''
+        && $huntId > 0
+        && function_exists('utilisateur_peut_modifier_post')
+        && utilisateur_peut_modifier_post($huntId);
+    if (!cat_single_hunt_request_returns_home($edition, $canEdit)) {
         return;
     }
 
