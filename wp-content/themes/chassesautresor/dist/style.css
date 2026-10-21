@@ -11140,20 +11140,28 @@ body.accueil-fullscreen {
   padding-top: 500px;
 }
 
-.home.cat-single-hunt.has-hero .homepage-hero-wrapper,
-.home.cat-single-hunt.has-hero .bandeau-hero--latest-chasse,
+.home.cat-single-hunt.has-hero .homepage-hero-wrapper {
+  height: auto;
+  min-height: 0;
+}
+
+.home.cat-single-hunt.has-hero .bandeau-hero--latest-chasse {
+  position: relative;
+  top: auto;
+  height: auto;
+  min-height: 100svh;
+}
+
 .home.cat-single-hunt.has-hero .hero-overlay {
   height: 100svh;
   min-height: 100svh;
   border-radius: 0;
-}
-
-.home.cat-single-hunt.has-hero .hero-overlay {
   background-color: rgba(6, 10, 31, 0.45);
 }
 
-.home.cat-single-hunt.has-hero #content {
-  padding-top: 100svh;
+.home.cat-single-hunt.has-hero #content,
+.home.cat-single-hunt.has-hero .homepage-hero-wrapper + #content {
+  padding-top: 0;
 }
 
 .hero-start {

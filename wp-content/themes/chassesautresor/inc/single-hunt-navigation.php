@@ -266,6 +266,40 @@ function cta_should_prompt_hunt_join(int $huntId, int $userId): bool
 }
 
 /**
+ * Login link labeled like the engagement button, for visitors without an account.
+ */
+function cta_render_single_hunt_participate_link(): string
+{
+    $loginUrl = class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)
+        ? \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::joinLoginUrl()
+        : wp_login_url(home_url('/'));
+
+    return sprintf(
+        '<a href="%s" class="bouton-cta bouton-cta--color cta-chasse-action">%s</a>',
+        esc_url($loginUrl),
+        esc_html__('Participer', 'chassesautresor-com')
+    );
+}
+
+/**
+ * Engagement form for a logged-in visitor who has not joined the hunt yet.
+ */
+function cta_render_single_hunt_participate_form(int $huntId): string
+{
+    $action = esc_url(site_url('/traitement-engagement'));
+    $html = '<form method="post" action="' . $action . '" class="cta-chasse-form">';
+    $html .= '<input type="hidden" name="chasse_id" value="' . esc_attr((string) $huntId) . '">';
+    $html .= wp_nonce_field('engager_chasse_' . $huntId, 'engager_chasse_nonce', true, false);
+    $html .= sprintf(
+        '<button type="submit" class="bouton-cta bouton-cta--color">%s</button>',
+        esc_html__('Participer', 'chassesautresor-com')
+    );
+    $html .= '</form>';
+
+    return $html;
+}
+
+/**
  * Builds the context-aware primary-hunt CTA used on the homepage.
  *
  * @return array{cta_html:string,cta_message:string,type:string}
@@ -277,7 +311,6 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
         ? generer_cta_chasse($huntId, $userId)
         : ['cta_html' => '', 'cta_message' => '', 'type' => ''];
     $singleHunt = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
-    $destination = $singleHunt ? cta_primary_enigmas_destination($huntId, $userId) : 'allow';
 
     if ($singleHunt && cta_is_primary_hunt_staff($huntId, $userId)) {
         $staffUrl = function_exists('cat_single_hunt_enigmas_url')
@@ -295,33 +328,15 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
         ];
     }
 
-    if ($singleHunt && $destination === 'login' && ($cta['type'] ?? '') === 'connexion') {
-        $loginUrl = class_exists(\ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::class)
-            ? \ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::joinLoginUrl()
-            : wp_login_url(home_url('/'));
+    if ($singleHunt && ($cta['type'] ?? '') !== 'engage') {
+        $participateHtml = (int) $userId <= 0
+            ? cta_render_single_hunt_participate_link()
+            : cta_render_single_hunt_participate_form($huntId);
 
         return [
-            'cta_html' => sprintf(
-                '<a href="%s" class="bouton-cta bouton-cta--color cta-chasse-action">%s</a>',
-                esc_url($loginUrl),
-                esc_html__('Rejoindre la chasse', 'chassesautresor-com')
-            ),
+            'cta_html' => $participateHtml,
             'cta_message' => '',
-            'type' => 'rejoindre',
-        ];
-    }
-
-    if ($singleHunt && $destination === 'home' && ($cta['type'] ?? '') === 'engager') {
-        $html = str_replace(
-            esc_html__('Participer', 'chassesautresor-com'),
-            esc_html__('Rejoindre la chasse', 'chassesautresor-com'),
-            (string) ($cta['cta_html'] ?? '')
-        );
-
-        return [
-            'cta_html' => $html,
-            'cta_message' => (string) ($cta['cta_message'] ?? ''),
-            'type' => 'rejoindre',
+            'type' => 'participer',
         ];
     }
 
@@ -345,18 +360,6 @@ function cta_get_primary_hunt_cta(int $huntId, ?int $userId = null): array
             ),
             'cta_message' => '',
             'type' => 'engage',
-        ];
-    }
-
-    if (function_exists('cat_is_demo_mode') && cat_is_demo_mode() && empty($cta['cta_html'])) {
-        return [
-            'cta_html' => sprintf(
-                '<a href="%s" class="bouton-cta bouton-cta--color">%s</a>',
-                esc_url(home_url('/#single-hunt-story-title')),
-                esc_html__('Découvrir l’aperçu', 'chassesautresor-com')
-            ),
-            'cta_message' => '',
-            'type' => 'demo',
         ];
     }
 

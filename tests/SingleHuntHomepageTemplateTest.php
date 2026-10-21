@@ -101,7 +101,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('single-hunt-progress', $template);
         self::assertStringNotContainsString('<progress', $template);
         self::assertStringNotContainsString('Vos énigmes.', $template);
-        self::assertStringContainsString('Rejoignez la chasse pour accéder aux énigmes.', $template);
+        self::assertStringNotContainsString('Rejoignez la chasse pour accéder aux énigmes.', $template);
         self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
             self::THEME_PATH . '/template-parts/myaccount/dashboard-joueur.php'
         ));
@@ -111,7 +111,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
             self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
         ));
-        self::assertStringContainsString('cta_should_prompt_hunt_join', $template);
+        self::assertStringNotContainsString('cta_should_prompt_hunt_join', $template);
         self::assertStringNotContainsString('Prochaine étape', $template);
         self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);
         self::assertStringNotContainsString('Modifiez la chasse ou consultez son activité.', $template);
@@ -135,7 +135,9 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cat_redirect_public_single_hunt', (string) file_get_contents(
             self::THEME_PATH . '/inc/single-hunt-home.php'
         ));
-        self::assertStringContainsString('Rejoindre la chasse', $navigation);
+        self::assertStringContainsString('Participer', $navigation);
+        self::assertStringNotContainsString('Découvrir l’aperçu', $navigation);
+        self::assertStringNotContainsString('Rejoindre la chasse', $navigation);
         self::assertStringContainsString('Reprendre ma progression', $navigation);
         self::assertStringContainsString('cta_is_primary_hunt_staff', $navigation);
         self::assertStringContainsString("esc_html__('Voir'", $navigation);
