@@ -48,18 +48,6 @@ describe('riddle steps editor widget visibility', () => {
             <input name="gps_coordinates" disabled>
             <input name="gps_tolerance" disabled>
           </fieldset>
-          <select name="widget_affichage">
-            <option value="always">Toujours visible</option>
-            <option value="hotspot">Point & click</option>
-          </select>
-          <div class="riddle-step-hotspot-editor__canvas" hidden>
-            <div class="riddle-step-hotspot-editor__stage">
-              <img class="riddle-step-hotspot-editor__image" hidden>
-              <div class="riddle-step-hotspot-editor__zone" hidden></div>
-            </div>
-            <input type="hidden" name="hotspot_zone" value="">
-            <button type="button" class="riddle-step-hotspot-clear" hidden></button>
-          </div>
           <p class="riddle-step-form__feedback"></p>
         </form>
       </section>
@@ -96,8 +84,6 @@ describe('riddle steps editor widget visibility', () => {
           widget: 'directions',
           button_label: 'Continuer',
           direction_sequences: 'N,E,S',
-          widget_affichage: 'always',
-          hotspot_zone: '',
         },
       }),
     });

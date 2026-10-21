@@ -22,6 +22,39 @@
 }
 
 
+.participation-dock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.participation-dock > .zone-reponse {
+  flex: 1 1 16rem;
+  min-width: min(100%, 12rem);
+}
+
+.participation-dock > .zone-indices {
+  flex: 1 1 14rem;
+}
+
+.participation-dock .zone-indices-line__label {
+  flex-basis: auto;
+}
+
+.reponse-launcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.reponse-launcher__open {
+  width: auto;
+  max-width: 100%;
+}
+
 .reponse-indices-separator {
   margin-top: var(--space-xl);
   margin-bottom: var(--space-lg);
@@ -670,7 +703,7 @@ li.active .enigme-menu__edit {
     color: var(--color-text-primary);
   }
 
-  .zone-reponse .bouton-cta,
+  .zone-reponse .bouton-cta:not(.reponse-launcher__open),
   .zone-reponse button[type='submit'] {
     width: 100%;
   }
@@ -750,11 +783,6 @@ li.active .enigme-menu__edit {
     flex-direction: column;
     align-items: center;
     padding-block: var(--space-sm);
-  }
-
-  .riddle-player-step.has-hotspot.is-widget-only,
-  .riddle-player-step.is-hotspot-host[hidden] {
-    display: none !important;
   }
 
   .participation:has(.riddle-steps-player):not(:has(.riddle-player-step:not([hidden]))):not(
@@ -1513,19 +1541,13 @@ body.no-scroll {
   margin-inline: auto;
 }
 
-/* Hotspot host with no visible content: form lives in the lightbox overlay. */
-.riddle-player-step.has-hotspot.is-widget-only,
-.riddle-player-step.is-hotspot-host[hidden] {
-  display: none !important;
-}
-
 .riddle-steps-player:not(:has(.riddle-player-step:not([hidden]))) {
   display: none;
   margin: 0;
 }
 
 /*
- * Collapse the participation chrome when it only hosts a hidden hotspot form.
+ * Collapse the participation chrome when it only hosts a hidden reply form.
  * :has() re-evaluates after AJAX unlock appends a visible next step.
  */
 .participation:has(.riddle-steps-player):not(:has(.riddle-player-step:not([hidden]))):not(
@@ -1566,39 +1588,9 @@ body.no-scroll {
   margin-bottom: 0;
 }
 
-/* Hotspot only inside lightbox (native size). Reading view keeps full-image zoom. */
-.enigme-lightbox__hotspot-stage {
-  position: relative;
-  display: inline-block;
-  line-height: 0;
-  max-width: none;
-}
-
-.enigme-lightbox__hotspot-stage .enigme-lightbox__image {
-  display: block;
-  pointer-events: none;
-}
-
-.riddle-gallery-hotspot {
-  position: absolute;
-  z-index: 2;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  cursor: pointer;
-  appearance: none;
-}
-
-.riddle-gallery-hotspot:focus-visible {
-  outline: 2px solid rgba(232, 140, 90, 0.85);
-  outline-offset: 2px;
-}
-
 /* Author display:flex on widget forms overrides the HTML hidden attribute. */
-form.is-hotspot-widget[hidden],
-form.is-hotspot-widget:not(.is-immersive-open) {
+form.is-reply-widget[hidden],
+form.is-reply-widget:not(.is-immersive-open) {
   display: none !important;
 }
 
@@ -1613,7 +1605,7 @@ body.riddle-widget-immersive-open {
   overflow: hidden;
 }
 
-form.is-hotspot-widget.is-immersive-open {
+form.is-reply-widget.is-immersive-open {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -1622,8 +1614,8 @@ form.is-hotspot-widget.is-immersive-open {
   flex-direction: column;
   align-items: center;
   gap: var(--space-sm);
-  width: min(calc(100vw - 2rem), 28rem);
-  max-width: min(calc(100vw - 2rem), 28rem);
+  width: min(calc(100vw - 1.5rem), 42rem);
+  max-width: min(calc(100vw - 1.5rem), 42rem);
   max-height: min(90vh, 40rem);
   overflow-x: hidden;
   overflow-y: auto;
@@ -1639,17 +1631,17 @@ form.is-hotspot-widget.is-immersive-open {
   animation: riddle-widget-rise 0.28s ease-out;
 }
 
-form.is-hotspot-widget.is-immersive-open:focus {
+form.is-reply-widget.is-immersive-open:focus {
   outline: none;
 }
 
-form.is-hotspot-widget.is-immersive-open:focus-visible {
+form.is-reply-widget.is-immersive-open:focus-visible {
   outline: 2px solid rgba(232, 140, 90, 0.75);
   outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  form.is-hotspot-widget.is-immersive-open {
+  form.is-reply-widget.is-immersive-open {
     animation: none;
   }
 }

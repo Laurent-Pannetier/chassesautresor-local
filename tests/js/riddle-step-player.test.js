@@ -176,8 +176,6 @@ describe('riddle step player positioning', () => {
       fullUrl: 'full.jpg',
       thumbUrl: 'thumb.jpg',
       alt: 'Page',
-      hotspotZone: '',
-      hotspotLabel: '',
     });
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
     expect(Element.prototype.scrollIntoView.mock.instances[0]).toBe(
@@ -271,32 +269,32 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[name="reponse"]').value).toBe('');
   });
 
-  test('unlocks the next step when a portaled immersive hotspot form succeeds', async () => {
+  test('unlocks the next step when a portaled reply widget succeeds', async () => {
     window.sessionStorage.clear();
     window.EnigmeGallery = {
       appendPage: jest.fn().mockReturnValue(1),
       getGallery: () => document.querySelector('[data-enigme-gallery]'),
     };
     document.body.innerHTML = `
-      <div class="enigme-lightbox-overlay">
-        <div class="enigme-lightbox__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
-          <button type="button" class="riddle-gallery-hotspot" data-riddle-open-widget></button>
-        </div>
-      </div>
+      <div class="enigme-lightbox-overlay"></div>
       <div class="galerie-enigme-wrapper" data-enigme-gallery></div>
       <section class="riddle-steps-player">
-        <article class="riddle-player-step is-current has-hotspot" data-player-step-id="12">
-          <form
-            class="riddle-step-text-form riddle-step-directions-form is-hotspot-widget"
-            data-widget-action="soumettre_reponse_etape"
-            hidden
-          >
-            <input name="enigme_id" value="42">
-            <input name="etape_id" value="12">
-            <input name="reponse" value="N,E">
-            <button type="submit">Validate</button>
-            <p class="riddle-step-click-form__feedback"></p>
-          </form>
+        <article class="riddle-player-step is-current" data-player-step-id="12">
+          <div class="reponse-launcher">
+            <button type="button" data-riddle-open-widget data-riddle-reply-key="step-12">Répondre</button>
+            <form
+              class="riddle-step-text-form riddle-step-directions-form is-reply-widget"
+              data-riddle-reply-key="step-12"
+              data-widget-action="soumettre_reponse_etape"
+              hidden
+            >
+              <input name="enigme_id" value="42">
+              <input name="etape_id" value="12">
+              <input name="reponse" value="N,E">
+              <button type="submit">Validate</button>
+              <p class="riddle-step-click-form__feedback"></p>
+            </form>
+          </div>
         </article>
       </section>
     `;
@@ -326,7 +324,7 @@ describe('riddle step player positioning', () => {
     document.querySelector('[data-riddle-open-widget]').dispatchEvent(
       new MouseEvent('click', { bubbles: true, cancelable: true })
     );
-    const form = document.querySelector('form.is-hotspot-widget');
+    const form = document.querySelector('form.is-reply-widget');
     expect(form.parentElement).toBe(document.body);
 
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -335,31 +333,26 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[data-player-step-id="12"]')).toBeNull();
     expect(document.querySelector('[data-player-step-id="13"]').textContent).toBe('Next step');
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
-    expect(document.querySelector('form.is-hotspot-widget')).toBeNull();
+    expect(document.querySelector('form.is-reply-widget')).toBeNull();
     expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(false);
   });
 
-  test('opens and closes the immersive hotspot widget from the lightbox', () => {
+  test('opens and closes the reply widget from the Répondre button', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
-      <div class="enigme-lightbox-overlay">
-        <div class="enigme-lightbox">
-          <div class="enigme-lightbox__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
-            <img class="enigme-lightbox__image" width="100" height="100">
-            <button type="button" class="riddle-gallery-hotspot" data-riddle-open-widget></button>
-          </div>
+      <article class="riddle-player-step is-current" data-player-step-id="12">
+        <div class="reponse-launcher">
+          <button type="button" data-riddle-open-widget data-riddle-reply-key="step-12">Répondre</button>
+          <form class="riddle-step-directions-form is-reply-widget" data-riddle-reply-key="step-12" hidden>
+            <button type="button" data-riddle-close-widget>Close</button>
+            <button type="submit">Validate</button>
+          </form>
         </div>
-      </div>
-      <article class="riddle-player-step is-current has-hotspot" data-player-step-id="12">
-        <form class="riddle-step-directions-form is-hotspot-widget" hidden>
-          <button type="button" data-riddle-close-widget>Close</button>
-          <button type="submit">Validate</button>
-        </form>
       </article>
     `;
     eval(source);
 
-    const form = document.querySelector('form.is-hotspot-widget');
+    const form = document.querySelector('form.is-reply-widget');
     expect(form.hasAttribute('hidden')).toBe(true);
 
     document.querySelector('[data-riddle-open-widget]').dispatchEvent(
@@ -382,31 +375,27 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
   });
 
-  test('opens the widget when clicking inside the lightbox hotspot zone', () => {
+  test('does not open the reply widget from the picture', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
-      <div class="enigme-lightbox__hotspot-stage" data-riddle-hotspot-zone="40,40,20,20" data-riddle-hotspot-step="12">
+      <button type="button" class="enigme-media-zoom" data-enigme-lightbox-src="full.jpg">
         <img class="enigme-lightbox__image" width="100" height="100">
-      </div>
+      </button>
       <article class="riddle-player-step is-current" data-player-step-id="12">
-        <form class="riddle-step-directions-form is-hotspot-widget" hidden>
+        <button type="button" data-riddle-open-widget data-riddle-reply-key="step-12">Répondre</button>
+        <form class="riddle-step-directions-form is-reply-widget" data-riddle-reply-key="step-12" hidden>
           <button type="submit">Validate</button>
         </form>
       </article>
     `;
     eval(source);
-    const image = document.querySelector('.enigme-lightbox__image');
-    image.getBoundingClientRect = () => ({ left: 0, top: 0, width: 100, height: 100 });
-
-    image.dispatchEvent(new MouseEvent('click', {
+    document.querySelector('.enigme-media-zoom').dispatchEvent(new MouseEvent('click', {
       bubbles: true,
-      cancelable: true,
-      clientX: 50,
-      clientY: 50
+      cancelable: true
     }));
 
-    const form = document.querySelector('form.is-hotspot-widget');
-    expect(form.classList.contains('is-immersive-open')).toBe(true);
-    expect(form.parentElement).toBe(document.body);
+    const form = document.querySelector('form.is-reply-widget');
+    expect(form.classList.contains('is-immersive-open')).toBe(false);
+    expect(form.hasAttribute('hidden')).toBe(true);
   });
 });
