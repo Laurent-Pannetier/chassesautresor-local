@@ -109,7 +109,8 @@ final class RiddlePlayerPanelRenderer {
             . ' etiquette" data-indice-id="' . esc_attr($hint['id']) . '" data-cout="' . esc_attr($cost)
             . '" data-unlocked="' . ($unlocked ? '1' : '0') . '"><i class="fa-solid '
             . ($unlocked ? 'fa-eye' : 'fa-lightbulb') . '" aria-hidden="true"></i> '
-            . esc_html($hint['title']) . $costHtml . '</a>';
+            . '<span class="indice-link__label">' . esc_html($hint['title']) . '</span>'
+            . $costHtml . '</a>';
     }
 
     /** @param int|false $timestamp */

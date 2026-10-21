@@ -119,9 +119,18 @@ if (!function_exists('render_sidebar')) {
             'context'      => $context,
         ]);
 
+        // Le volet gauche n’existe plus sur l’énigme : il couvrait le feuilletage.
+        // La navigation et les stats restent disponibles dans le menu mobile.
+        if ($context === 'enigme') {
+            return [
+                'navigation' => $navigation_html,
+                'stats'      => $stats_section_html,
+            ];
+        }
+
         $chasse_validation = $chasse_id ? get_field('chasse_cache_statut_validation', $chasse_id) : '';
         $aside_classes     = ['menu-lateral'];
-        if (in_array($context, ['chasse', 'enigme'], true)) {
+        if ($context === 'chasse') {
             $aside_classes[] = 'is-hidden';
         }
         $is_player         = !(
@@ -177,18 +186,6 @@ if (!function_exists('render_sidebar')) {
         echo '</div>';
 
         echo '<div class="menu-lateral__content">' . $navigation_html . '</div>';
-        if ($context === 'enigme') {
-            echo '<div class="menu-lateral__accordeons">';
-            echo '<div class="accordeon-bloc">';
-            echo '<div class="accordeon-contenu accordeon-ferme">' . $stats_section_html . '</div>';
-            echo '<button class="accordeon-toggle" type="button" aria-expanded="false">'
-                . '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>'
-                . '<span class="screen-reader-text">'
-                . esc_html__('Afficher les statistiques', 'chassesautresor-com')
-                . '</span></button>';
-            echo '</div>';
-            echo '</div>';
-        }
         echo '</aside>';
 
         return [

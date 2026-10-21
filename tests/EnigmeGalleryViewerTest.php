@@ -151,6 +151,7 @@ class EnigmeGalleryViewerTest extends TestCase
         $html = ob_get_clean();
 
         $this->assertStringContainsString('data-enigme-gallery', $html);
+        $this->assertStringContainsString('data-comic-reader', $html);
         $this->assertStringContainsString('data-enigme-lightbox-src=', $html);
         $this->assertStringContainsString('enigme-media-zoom', $html);
         $this->assertStringContainsString('enigme-media-zoom__hint', $html);
@@ -196,10 +197,11 @@ class EnigmeGalleryViewerTest extends TestCase
 
         $this->assertSame(2, substr_count($html, 'data-gallery-index="'));
         $this->assertStringContainsString('data-gallery-step-id="11"', $html);
-        $this->assertStringContainsString('Page 2 / 2', $html);
+        $this->assertStringContainsString('Page 1 / 2', $html);
+        $this->assertStringContainsString('galerie-enigme__slide is-active', $html);
         $this->assertStringContainsString('galerie-enigme__slide--step', $html);
-        $this->assertMatchesRegularExpression(
-            '/galerie-enigme__slide--step[^>]*is-active|is-active[^>]*galerie-enigme__slide--step/',
+        $this->assertDoesNotMatchRegularExpression(
+            '/galerie-enigme__slide--step[^>]*\bis-active\b/',
             $html
         );
     }
