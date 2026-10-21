@@ -257,8 +257,10 @@ body .wp-block-file .wp-block-file__button:focus,
     text-decoration: none;
 }
 .bouton-cta--color {
-    background-color: var(--color-background-button);
-    color: var(--color-text-primary);
+    background-color: var(--color-signal);
+    color: var(--color-white);
+    border: 0;
+    border-radius: 999px;
 }
 .bouton-cta--color:hover {
     background-color: var(--color-background-button-hover);
@@ -298,8 +300,8 @@ body .wp-block-file .wp-block-file__button:focus,
 .badge-cout {
     display: inline-block;
     padding: var(--space-xxs) var(--space-xs);
-    background: var(--color-secondary);
-    color: var(--color-text-primary);
+    background: var(--color-brass);
+    color: var(--color-white);
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -348,9 +350,9 @@ body .wp-block-file .wp-block-file__button:focus,
 /* ========== ⭐ BOUTON PRIMAIRE ========== */
 
 .bouton-primaire {
-    background: var(--color-primary);
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-primary);
+    background: var(--color-signal);
+    color: var(--color-white);
+    border: 1px solid var(--color-signal);
     transition: background 0.3s ease, transform 0.2s ease;
     padding: 10px 15px;
     border-radius: 3px;
@@ -361,8 +363,10 @@ body .wp-block-file .wp-block-file__button:focus,
 }
 
 .bouton-primaire:hover {
-    background: var(--color-secondary);
-    transform: scale(1.05);
+    background: var(--color-signal-hover);
+    border-color: var(--color-signal-hover);
+    color: var(--color-white);
+    transform: none;
 }
 
 .bouton-primaire:disabled {
@@ -379,9 +383,10 @@ body .wp-block-file .wp-block-file__button:focus,
 /* ========== 🎯 BOUTON SECONDAIRE ========== */
 
 .bouton-secondaire {
-    background: var(--color-secondary); /* Orange doré */
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-primary);
+    background: transparent;
+    color: var(--color-trail);
+    border: 1px solid var(--color-trail);
+    border-radius: 999px;
     transition: background 0.3s ease, transform 0.2s ease;
     padding: 10px 15px;
     border-radius: 3px;
@@ -392,9 +397,9 @@ body .wp-block-file .wp-block-file__button:focus,
 }
 
 .bouton-secondaire:hover {
-    background: var(--color-primary);
-    color: var(--color-text-primary);
-    transform: scale(1.05);
+    background: var(--color-trail);
+    color: var(--color-white);
+    transform: none;
 }
 .bouton-secondaire.no-click {
     background: var(--color-gris-3);

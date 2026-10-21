@@ -342,6 +342,15 @@ add_action(
 );
 
 /**
+ * Polices du carnet d'expédition : Fraunces pour les titres, Outfit pour l'interface.
+ */
+function cta_carnet_fonts_url(): string
+{
+    return 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700'
+        . '&family=Outfit:wght@400..700&display=swap';
+}
+
+/**
  * Chargement des styles du thème parent et enfant avec prise en charge d'Astra.
  */
 add_action('wp_enqueue_scripts', function () {
@@ -352,9 +361,16 @@ add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('astra-style', get_template_directory_uri() . '/style.css');
 
     wp_enqueue_style(
+        'chassesautresor-fonts',
+        cta_carnet_fonts_url(),
+        [],
+        null
+    );
+
+    wp_enqueue_style(
         'chassesautresor-style',
         $theme_uri . '/dist/style.css',
-        ['astra-style'],
+        ['astra-style', 'chassesautresor-fonts'],
         filemtime($theme_path . '/dist/style.css')
     );
 
@@ -575,10 +591,12 @@ function cta_enqueue_login_styles(): void
     $theme_path = get_stylesheet_directory();
     $css_rel    = '/assets/css/login.css';
 
+    wp_enqueue_style('chassesautresor-fonts', cta_carnet_fonts_url(), [], null);
+
     wp_enqueue_style(
         'cta-login',
         $theme_uri . $css_rel,
-        [],
+        ['chassesautresor-fonts'],
         filemtime($theme_path . $css_rel)
     );
 

@@ -1,0 +1,133 @@
+/* Carnet d'expédition — chrome public, cartes et lecture d'énigme. */
+
+.ast-above-header-bar,
+.ast-primary-header-bar,
+.main-header-bar,
+.site-header,
+.site-above-header-wrap {
+    background-color: rgba(246, 241, 232, 0.94);
+    color: var(--color-ink);
+}
+
+.main-header-bar,
+.ast-primary-header-bar {
+    border-bottom: 1px solid var(--color-rule);
+    backdrop-filter: blur(12px);
+}
+
+.ast-builder-menu .menu-link,
+.ast-header-account-link,
+.ast-site-header-cart a,
+.site-header .ast-header-account-wrap,
+.site-header .menu-link {
+    color: var(--color-ink);
+}
+
+.ast-builder-menu .menu-link:hover,
+.ast-builder-menu .menu-link:focus-visible,
+.ast-builder-menu .current-menu-item > .menu-link {
+    color: var(--color-trail);
+}
+
+a:where(:not(.bouton-cta):not(.bouton-primaire):not(.bouton-secondaire):not(.button)) {
+    color: var(--color-trail);
+}
+
+.carte {
+    background: var(--color-card);
+    border: 1px solid var(--color-rule);
+    border-radius: 16px;
+    box-shadow: none;
+}
+
+.carte:hover {
+    border-color: var(--color-trail);
+    box-shadow: none;
+}
+
+.cards-grid--poster .carte-enigme,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme {
+    border-color: var(--color-rule);
+    border-radius: 16px;
+    box-shadow: none;
+}
+
+.cards-grid--poster .carte-enigme:hover,
+.cards-grid--poster .carte-enigme:focus-within,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:hover,
+.page-chasse-wrapper--compact .cards-grid .carte-enigme:focus-within {
+    border-color: var(--color-trail);
+    box-shadow: none;
+}
+
+.page-enigme .enigme-texte {
+    max-width: 65ch;
+    color: var(--color-ink);
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.page-enigme .enigme-header {
+    border-bottom-color: var(--color-rule);
+}
+
+.page-enigme .participation {
+    background: var(--color-card);
+    border: 1px solid var(--color-rule);
+    border-radius: 16px;
+    color: var(--color-ink);
+}
+
+.page-enigme .zone-indices {
+    background: var(--color-paper);
+    border-radius: 12px;
+}
+
+.page-enigme .message-joueur-statut {
+    margin: 0;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: 12px;
+    background: #E5F0EA;
+    color: var(--color-trail);
+    font-weight: 600;
+}
+
+@media not all and (--bp-desktop) {
+    body:not([class*="edition-active"]) .page-enigme .participation {
+        position: sticky;
+        bottom: 0;
+        z-index: 30;
+        border-radius: 16px 16px 0 0;
+    }
+}
+
+@media (--bp-desktop) {
+    body:not([class*="edition-active"]) .page-enigme {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(17rem, 22rem);
+        column-gap: var(--space-2xl);
+        align-items: start;
+        max-width: 70rem;
+        margin-inline: auto;
+        text-align: left;
+    }
+
+    body:not([class*="edition-active"]) .page-enigme .enigme-hunt-context,
+    body:not([class*="edition-active"]) .page-enigme .enigme-header,
+    body:not([class*="edition-active"]) .page-enigme .hero-visuel,
+    body:not([class*="edition-active"]) .page-enigme .contenu-principal,
+    body:not([class*="edition-active"]) .page-enigme .solution {
+        grid-column: 1;
+    }
+
+    body:not([class*="edition-active"]) .page-enigme .participation {
+        grid-column: 2;
+        grid-row: 1 / span 8;
+        position: sticky;
+        top: 5.5rem;
+        align-self: start;
+        width: auto;
+        max-width: none;
+        margin: 0;
+    }
+}

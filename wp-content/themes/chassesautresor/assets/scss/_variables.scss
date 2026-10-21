@@ -16,7 +16,8 @@
 
 :root {
   /* Typographie et breakpoints */
-  --font-main: 'Poppins', sans-serif; /* Police principale */
+  --font-display: 'Fraunces', 'Iowan Old Style', Palatino, serif;
+  --font-main: 'Outfit', 'Avenir Next', sans-serif;
   --bp-xs: 374px;
   --bp-small: 480px;
   --bp-mobile: 600px;
@@ -36,23 +37,36 @@
   --bp-922: var(--bp-desktop);
   --bp-xl: var(--bp-wide);
 
-  /* Couleurs globales */
-  --color-primary: #FFD700;   /* 🟡 Couleur principale : jaune or */
-  --color-secondary: #E1A95F; /* 🟠 Couleur secondaire : lien */
-  --color-accent: #CD7F32;    /* 🟤 Accent : bronze */
+  /* Carnet d'expédition */
+  --color-paper: #F6F1E8;
+  --color-card: #FFFCF7;
+  --color-ink: #1C1915;
+  --color-ink-soft: #5C564C;
+  --color-trail: #1F4D3A;
+  --color-trail-deep: #16382A;
+  --color-brass: #8C6A32;
+  --color-brass-soft: #F3EAD7;
+  --color-signal: #C2410C;
+  --color-signal-hover: #9A3412;
+  --color-rule: #E4DCCF;
 
-  --color-text-primary: #F5F5DC;   /* 📜 Texte principal : beige clair */
-  --color-text-secondary: #555555; /* 🎨 Texte secondaire : gris foncé */
-  --color-titre-enigme: #E5C07B;   /* 🏆 Titre des énigmes : or vieilli */
+  /* Couleurs globales — alias du carnet, pour les composants existants */
+  --color-primary: var(--color-trail);
+  --color-secondary: var(--color-brass);
+  --color-accent: var(--color-brass);
 
-  --color-background: #0B132B;               /* 🎭 Fond général */
-  --color-background-button: #880000;        /* 🔘 Fond des boutons : rouge profond */
-  --color-background-button-hover: #a00000;  /* 🔘 Survol des boutons : rouge foncé */
-  --color-background-button-inactive: #A9A9A9; /* 🔘 Boutons inactifs : gris */
-  --color-success: #228B22;                  /* ✅ Barre de progression */
+  --color-text-primary: var(--color-ink);
+  --color-text-secondary: var(--color-ink-soft);
+  --color-titre-enigme: var(--color-ink);
 
-  --color-filter-accent: #1F3E63;            /* 🔵 Mise en avant discrète des filtres */
-  --color-filter-accent-glow: rgba(31, 62, 99, 0.45); /* 🔵 Halo léger pour les interactions des filtres */
+  --color-background: var(--color-paper);
+  --color-background-button: var(--color-signal);
+  --color-background-button-hover: var(--color-signal-hover);
+  --color-background-button-inactive: #A9A9A9;
+  --color-success: var(--color-trail);
+
+  --color-filter-accent: var(--color-trail);
+  --color-filter-accent-glow: rgba(31, 77, 58, 0.28);
 
   --color-error: #D93025;                    /* ⚠️ Messages d'erreur */
 
@@ -60,27 +74,27 @@
   --color-black: #000000;                    /* ⚫ Noir */
   --color-black-rgb: 0, 0, 0;                /* ⚫ Noir en RGB */
   --color-grey-light: #EEEEEE;               /* 🌫️ Gris clair */
-  --color-grey-medium: #CCCCCC;              /* 🌫️ Gris moyen */
+  --color-grey-medium: #8A8175;
   --color-grey-dark: #333333;                /* 🌫️ Gris foncé */
-  --input-placeholder-color: #8A8876;        /* ✏️ Texte de placeholder lisible sur fonds clairs ou foncés */
+  --input-placeholder-color: #8A8175;
 
-  --color-primary-dark: #B8860B;             /* 🟡 Or sombre (dégradé) */
-  --color-background-dark: #060A1F;          /* 🎭 Fond sombre profond */
+  --color-primary-dark: var(--color-trail-deep);
+  --color-background-dark: #EFE6D6;
 
   --color-gris-3: #adadad;                  /* ⚪ Gris neutre n°3 */
   --color-text-fond-clair: #1c1c1c;         /* noir clair */
   --color-text-fond-clair-rgb: 28, 28, 28;  /* noir clair en RGB */
-  --color-gris-carte: #c2c2c2;              /* 🧩 Fond de carte énigme : gris bleuté doux */
+  --color-gris-carte: #E7E0D4;
   --color-blue-grey-light: #C9D1E0;       /* 💠 Bleu-gris clair */
 
   /* Groupe d'état : etat-enigme-menu */
   --etat-enigme-menu-en-cours: currentColor;             /* état par défaut */
-  --etat-enigme-menu-bloquee: var(--color-grey-medium);
-  --etat-enigme-menu-en-attente: var(--color-grey-medium); /* tentative manuelle en cours */
+  --etat-enigme-menu-bloquee: #8A8175;
+  --etat-enigme-menu-en-attente: #9A6B2F; /* tentative manuelle en cours */
   --etat-enigme-menu-succes: var(--color-success);
   --etat-enigme-menu-non-engagee: transparent;
   --etat-enigme-menu-incomplete: var(--color-error);
-  --etat-enigme-menu-eligible: var(--color-primary); /* chasse éligible à validation */
+  --etat-enigme-menu-eligible: var(--color-brass);
 
   /* Asides */
   --aside-bg-rgb: 238, 238, 238;            /* 🎨 Couleur de fond des asides : gris clair du nuancier (var(--color-grey-light)) */
