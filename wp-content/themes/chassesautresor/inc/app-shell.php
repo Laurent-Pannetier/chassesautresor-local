@@ -148,6 +148,14 @@ function cta_shell_is_virtual_request(): bool
 }
 
 /**
+ * The home navigation stays on the cockpit. An enigma page has its own menu.
+ */
+function cta_shell_shows_sidebar(): bool
+{
+    return !function_exists('is_singular') || !is_singular('enigme');
+}
+
+/**
  * Opens the shell around the theme markup.
  */
 function cta_shell_open(): void
@@ -158,12 +166,16 @@ function cta_shell_open(): void
 
     $GLOBALS['cta_shell_opened'] = true;
     $theme = cta_shell_theme();
+    $showNav = cta_shell_shows_sidebar();
+    $shellClass = $showNav ? 'app-shell' : 'app-shell app-shell--no-nav';
 
-    echo '<div class="app-shell" data-theme="' . esc_attr($theme) . '">';
+    echo '<div class="' . esc_attr($shellClass) . '" data-theme="' . esc_attr($theme) . '">';
     get_template_part('template-parts/shell/topbar');
     echo '<div class="app-frame">';
-    echo '<div class="app-nav-backdrop" data-app-nav-close hidden></div>';
-    get_template_part('template-parts/shell/sidebar');
+    if ($showNav) {
+        echo '<div class="app-nav-backdrop" data-app-nav-close hidden></div>';
+        get_template_part('template-parts/shell/sidebar');
+    }
     echo '<div class="app-main">';
 }
 
