@@ -591,25 +591,6 @@ if ($objet_type === 'chasse') {
             </div>
           </div>
         <?php endif; ?>
-
-        <?php if ($objet_type !== 'organisateur') : ?>
-          <div class="dashboard-card carte-orgy champ-protection-solutions">
-            <div class="qr-code-block">
-              <div class="qr-code-image">
-                <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-              </div>
-              <div class="qr-code-content">
-                <h3><?= esc_html__('Sécurité des PDF de solution', 'chassesautresor-com'); ?></h3>
-                <h4><?= esc_html__('Vos PDF sont conservés dans un coffre-fort numérique', 'chassesautresor-com'); ?></h4>
-                <p>
-                  <?= esc_html__('Les fichiers PDF de solution sont conservés dans un dossier protégé. ', 'chassesautresor-com'); ?>
-                  <?= esc_html__("Ils ne seront partagés qu'à la date que vous aurez choisie : ", 'chassesautresor-com'); ?>
-                  <?= esc_html__('immédiatement après la fin de la chasse ou après un délai paramétrable.', 'chassesautresor-com'); ?>
-                </p>
-              </div>
-            </div>
-          </div>
-        <?php endif; ?>
       </div>
     </div>
   </div>
