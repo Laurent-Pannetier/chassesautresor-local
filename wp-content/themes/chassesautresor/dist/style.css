@@ -8306,8 +8306,22 @@ li.active .enigme-menu__edit {
   padding: var(--space-md);
   background: rgba(12, 12, 12, 0.88);
   overscroll-behavior: contain;
+  animation: enigme-lightbox-in 0.22s ease;
 }
 
+@keyframes enigme-lightbox-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .enigme-lightbox-overlay {
+    animation: none;
+  }
+}
 .enigme-lightbox {
   position: relative;
   width: -moz-max-content;
@@ -9656,9 +9670,62 @@ body.comic-reader .page-enigme--reader .hero-visuel .galerie-enigme__stage {
 }
 
 body.comic-reader .page-enigme--reader .galerie-enigme__stage {
+  position: relative;
   touch-action: none;
 }
 
+body.comic-reader .page-enigme--reader .galerie-enigme__slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  opacity: 0;
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.34s ease, transform 0.34s ease;
+  pointer-events: none;
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-active {
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-incoming {
+  z-index: 2;
+  opacity: 0;
+  transition: none;
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-incoming.is-from-next {
+  transform: translate3d(1.5rem, 0, 0);
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-incoming.is-from-prev {
+  transform: translate3d(-1.5rem, 0, 0);
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-leaving {
+  z-index: 0;
+  opacity: 0;
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-leaving.is-from-next {
+  transform: translate3d(-1.5rem, 0, 0);
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-leaving.is-from-prev {
+  transform: translate3d(1.5rem, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.comic-reader .page-enigme--reader .galerie-enigme__slide {
+    transition: none;
+    transform: none;
+  }
+}
 body.comic-reader .page-enigme--reader .galerie-enigme__slide.is-active,
 body.comic-reader .page-enigme--reader .galerie-enigme__stage .enigme-media-zoom,
 body.comic-reader .page-enigme--reader .galerie-enigme__stage picture,
@@ -9699,6 +9766,7 @@ body.comic-reader .page-enigme--reader .enigme-media-zoom:focus-visible img {
 }
 
 body.comic-reader .page-enigme--reader .galerie-enigme__nav {
+  z-index: 3;
   opacity: 0;
   pointer-events: none;
 }
@@ -11196,6 +11264,27 @@ span.champ-obligatoire {
 @keyframes pager-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+/* Fondu court entre les documents. Le lecteur BD anime ses planches à part. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root) {
+  animation-duration: 0.22s;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-new(root) {
+  animation-duration: 0.32s;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
   }
 }
 /* 📦 Grid system */

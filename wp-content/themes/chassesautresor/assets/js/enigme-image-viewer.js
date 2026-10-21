@@ -9,7 +9,7 @@
  * la lightbox en taille native (1:1).
  */
 (function () {
-  window.__comicReaderTeardown?.();
+  window.__enigmeViewerDispose?.();
 
   const CLOSE_LABEL =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.closeLabel) || 'Fermer';
@@ -109,6 +109,34 @@
     }
   };
 
+  const PAGE_TURN_MS = 340;
+
+  const prefersReducedMotion = () =>
+    window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches === true;
+
+  const clearPageTurn = (gallery) => {
+    if (gallery._pageTurnTimer) {
+      window.clearTimeout(gallery._pageTurnTimer);
+      gallery._pageTurnTimer = null;
+    }
+    gallery.querySelectorAll('.galerie-enigme__slide').forEach((slide) => {
+      slide.classList.remove('is-leaving', 'is-incoming', 'is-from-next', 'is-from-prev');
+      if (!slide.classList.contains('is-active')) {
+        slide.hidden = true;
+      }
+    });
+  };
+
+  const preloadNearbySlides = (gallery, index) => {
+    const slides = gallery.querySelectorAll('.galerie-enigme__slide');
+    [index - 1, index + 1].forEach((neighbor) => {
+      const img = slides[neighbor]?.querySelector('img');
+      if (img && img.loading === 'lazy') {
+        img.loading = 'eager';
+      }
+    });
+  };
+
   const selectGallerySlide = (gallery, index) => {
     const slides = [...gallery.querySelectorAll('.galerie-enigme__slide')];
     const thumbs = gallery.querySelectorAll('[data-gallery-goto]');
@@ -118,11 +146,25 @@
 
     const previousIndex = slides.findIndex((slide) => slide.classList.contains('is-active'));
     const target = Math.max(0, Math.min(index, slides.length - 1));
+    clearPageTurn(gallery);
+    const animate =
+      document.body.classList.contains('comic-reader') &&
+      !prefersReducedMotion() &&
+      previousIndex >= 0 &&
+      previousIndex !== target;
+    const forward = target > previousIndex;
 
     slides.forEach((slide, slideIndex) => {
       const isActive = slideIndex === target;
+      const isOutgoing = animate && slideIndex === previousIndex;
       slide.classList.toggle('is-active', isActive);
-      slide.hidden = !isActive;
+      slide.hidden = !(isActive || isOutgoing);
+      if (isOutgoing) {
+        slide.classList.add('is-leaving', forward ? 'is-from-next' : 'is-from-prev');
+      }
+      if (animate && isActive) {
+        slide.classList.add('is-incoming', forward ? 'is-from-next' : 'is-from-prev');
+      }
       slide.dataset.galleryIndex = String(slideIndex);
       const img = slide.querySelector('img');
       if (img) {
@@ -142,6 +184,21 @@
     });
 
     updateGalleryChrome(gallery, target);
+    preloadNearbySlides(gallery, target);
+    if (animate) {
+      const incoming = slides[target];
+      window.requestAnimationFrame(() => {
+        incoming?.classList.remove('is-incoming', 'is-from-next', 'is-from-prev');
+      });
+      gallery._pageTurnTimer = window.setTimeout(() => {
+        const outgoing = slides[previousIndex];
+        if (outgoing && !outgoing.classList.contains('is-active')) {
+          outgoing.classList.remove('is-leaving', 'is-from-next', 'is-from-prev');
+          outgoing.hidden = true;
+        }
+        gallery._pageTurnTimer = null;
+      }, PAGE_TURN_MS);
+    }
     if (previousIndex !== target) {
       gallery.dispatchEvent(
         new CustomEvent('comic-page-change', { bubbles: true, detail: { index: target } })
@@ -199,6 +256,8 @@
     img.src = page.previewUrl;
     img.alt = alt;
     img.loading = 'lazy';
+    img.decoding = 'async';
+    img.referrerPolicy = 'no-referrer';
     if (page.width) {
       img.width = Number(page.width);
     }
@@ -237,6 +296,8 @@
       thumbImg.src = page.thumbUrl;
       thumbImg.alt = '';
       thumbImg.loading = 'lazy';
+      thumbImg.decoding = 'async';
+      thumbImg.referrerPolicy = 'no-referrer';
       thumbImg.width = 72;
       thumbImg.height = 72;
       thumb.appendChild(thumbImg);
@@ -865,6 +926,7 @@
     image.src = src;
     image.alt = alt || '';
     image.decoding = 'async';
+    image.referrerPolicy = 'no-referrer';
 
     dialog.appendChild(closeButton);
     dialog.appendChild(image);
@@ -881,7 +943,7 @@
     });
   };
 
-  document.addEventListener('click', (event) => {
+  const onViewerClick = (event) => {
     const stepButton = event.target.closest('[data-gallery-step]');
     if (stepButton) {
       const gallery = stepButton.closest('[data-enigme-gallery]');
@@ -923,9 +985,10 @@
       zoomTrigger.getAttribute('data-enigme-lightbox-alt') || '',
       zoomTrigger
     );
-  });
+  };
+  document.addEventListener('click', onViewerClick);
 
-  document.addEventListener('keydown', (event) => {
+  const onViewerKeydown = (event) => {
     if (event.key === 'Escape') {
       if (document.querySelector('form.is-reply-widget.is-immersive-open')) {
         return;
@@ -960,13 +1023,15 @@
     if (gallery.classList.contains('is-comic-active')) {
       gallery.dispatchEvent(new CustomEvent('comic-page-change', { bubbles: true }));
     }
-  });
+  };
+  document.addEventListener('keydown', onViewerKeydown);
 
   document.querySelectorAll('[data-enigme-gallery]').forEach((gallery) => {
     const active = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
       (slide) => slide.classList.contains('is-active')
     );
     updateGalleryChrome(gallery, active >= 0 ? active : 0);
+    preloadNearbySlides(gallery, active >= 0 ? active : 0);
     if (gallery.hasAttribute('data-comic-reader')) {
       initComicReader(gallery);
     }
@@ -1190,6 +1255,16 @@
         }, 280);
         noticeTimer = null;
       }, duration);
+    }
+  };
+
+  window.__enigmeViewerDispose = () => {
+    document.removeEventListener('click', onViewerClick);
+    document.removeEventListener('keydown', onViewerKeydown);
+    window.__comicReaderTeardown?.();
+    if (noticeTimer) {
+      window.clearTimeout(noticeTimer);
+      noticeTimer = null;
     }
   };
 })();

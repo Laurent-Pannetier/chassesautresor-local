@@ -22,11 +22,17 @@ $signer = new ChassesAuTresor\Core\Media\ProtectedRiddleImageSignedUrlService();
 $exp = isset($_GET['exp']) && ctype_digit((string) $_GET['exp']) ? (int) $_GET['exp'] : 0;
 $uid = isset($_GET['uid']) && ctype_digit((string) $_GET['uid']) ? (int) $_GET['uid'] : -1;
 $sig = isset($_GET['sig']) ? (string) $_GET['sig'] : '';
+$format = isset($_GET['fmt']) ? strtolower((string) $_GET['fmt']) : '';
 $current_user_id = get_current_user_id();
+
+if ($format !== '' && $format !== 'webp') {
+    http_response_code(400);
+    exit(__('Format d\'image invalide', 'chassesautresor-com'));
+}
 
 if (
     $uid !== $current_user_id
-    || !$signer->verify($image_id, $taille, $uid, $exp, $sig)
+    || !$signer->verify($image_id, $taille, $uid, $exp, $sig, null, $format)
 ) {
     http_response_code(403);
     exit(__('Lien image invalide ou expiré', 'chassesautresor-com'));
@@ -61,13 +67,13 @@ if (!$can_view) {
 }
 
 // 📦 Récupération du chemin de l'image
-$info = $asset_service->findImage($image_id, $taille);
+$info = $asset_service->findImage($image_id, $taille, $format);
 $path = $info['path'] ?? null;
 $mime = $info['mime'] ?? 'application/octet-stream';
 
 // 🔁 Fallback automatique vers full si fichier manquant
 if (!$path && $taille !== 'full') {
-    $info = $asset_service->findImage($image_id);
+    $info = $asset_service->findImage($image_id, 'full', $format);
     $path = $info['path'] ?? null;
     $mime = $info['mime'] ?? 'application/octet-stream';
 }
@@ -76,6 +82,20 @@ if (!$path) {
     http_response_code(404);
     exit(__('Fichier introuvable', 'chassesautresor-com'));
 }
+
+$allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+if (!in_array($mime, $allowed_mimes, true)) {
+    http_response_code(415);
+    exit(__('Format d\'image invalide', 'chassesautresor-com'));
+}
+
+$delivery = new ChassesAuTresor\Core\Media\ProtectedRiddleImageDeliveryService();
+$safe_path = is_string($path) ? $delivery->confineToUploads($path) : null;
+if ($safe_path === null) {
+    http_response_code(404);
+    exit(__('Fichier introuvable', 'chassesautresor-com'));
+}
+$path = $safe_path;
 
 // 🧹 Nettoyage WordPress
 while (ob_get_level()) {
@@ -92,6 +112,10 @@ $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
 
 header('Cache-Control: private, max-age=120, must-revalidate');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: no-referrer');
+header('Cross-Origin-Resource-Policy: same-origin');
+header("Content-Security-Policy: default-src 'none'; sandbox");
 header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
 header('ETag: ' . $etag);
 
@@ -107,7 +131,6 @@ if ($if_none_match_match || $if_modified_since_match) {
 
 header('Content-Type: ' . $mime);
 
-$delivery = new ChassesAuTresor\Core\Media\ProtectedRiddleImageDeliveryService();
 if ($delivery->tryLiteSpeedSend($path, $mime)) {
     exit;
 }

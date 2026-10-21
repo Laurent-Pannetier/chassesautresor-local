@@ -63,6 +63,30 @@ final class ProtectedRiddleImageSignedUrlServiceTest extends TestCase
         self::assertStringContainsString('exp=', $url);
         self::assertStringContainsString('sig=', $url);
     }
+
+    public function testWebpFormatIsBoundInTheSignature(): void
+    {
+        $service = new ProtectedRiddleImageSignedUrlService(600);
+        $now = 1_700_000_000;
+        $signed = $service->sign(42, 'large', 7, $now, 'webp');
+
+        self::assertTrue(
+            $service->verify(42, 'large', 7, $signed['exp'], $signed['sig'], $now + 10, 'webp')
+        );
+        self::assertFalse(
+            $service->verify(42, 'large', 7, $signed['exp'], $signed['sig'], $now + 10)
+        );
+
+        $url = $service->buildUrl(42, 'large', 7, 'https://example.test/voir-image-enigme', $now, 'webp');
+        self::assertStringContainsString('fmt=webp', $url);
+        self::assertStringNotContainsString('fmt=webp', $service->buildUrl(
+            42,
+            'large',
+            7,
+            'https://example.test/voir-image-enigme',
+            $now
+        ));
+    }
 }
 
 final class RiddleStepImageStoragePathTest extends TestCase

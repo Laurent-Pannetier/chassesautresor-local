@@ -9,9 +9,9 @@ if (!function_exists('trouver_chemin_image')) {
     /**
      * @return array{path: string, mime: string}|null
      */
-    function trouver_chemin_image(int $imageId, string $size = 'full'): ?array
+    function trouver_chemin_image(int $imageId, string $size = 'full', string $format = ''): ?array
     {
-        return (new ProtectedImagePathService())->find($imageId, $size);
+        return (new ProtectedImagePathService())->find($imageId, $size, $format);
     }
 }
 
@@ -19,8 +19,12 @@ if (!function_exists('cta_voir_image_enigme_url')) {
     /**
      * Build a signed proxy URL for a protected riddle/step image.
      */
-    function cta_voir_image_enigme_url(int $imageId, string $size = 'full', ?int $userId = null): string
-    {
+    function cta_voir_image_enigme_url(
+        int $imageId,
+        string $size = 'full',
+        ?int $userId = null,
+        string $format = ''
+    ): string {
         $userId = $userId ?? get_current_user_id();
         $service = new ProtectedRiddleImageSignedUrlService();
 
@@ -28,7 +32,9 @@ if (!function_exists('cta_voir_image_enigme_url')) {
             $imageId,
             $size,
             (int) $userId,
-            site_url('/voir-image-enigme')
+            site_url('/voir-image-enigme'),
+            null,
+            $format
         );
     }
 }

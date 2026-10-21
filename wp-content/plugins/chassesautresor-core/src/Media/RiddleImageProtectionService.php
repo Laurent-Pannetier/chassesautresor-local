@@ -112,23 +112,24 @@ class RiddleImageProtectionService {
     }
 
     /**
-     * Block direct HTTP access while allowing LiteSpeed X-LiteSpeed-Location.
+     * Block every direct HTTP access while allowing LiteSpeed X-LiteSpeed-Location.
      *
      * LiteSpeed keeps %{ORG_REQ_URI} as the client-facing URI. A request that started
      * as /voir-image-enigme can therefore internally fetch /_enigmes/... without matching
      * the deny rule. Require all denied would also block that internal redirect.
+     *
+     * The referer is not consulted: it is trivial to spoof and would reopen the files.
+     * Media-library uploads still use the temporary rename of this file.
      */
     public function rules(int $riddleId): string {
-        return "# Protection des images de l'énigme {$riddleId}\n"
+        return "# Protection des fichiers de l'énigme {$riddleId}\n"
             . "<IfModule mod_rewrite.c>\nRewriteEngine On\n\n"
-            . "# LiteSpeed: refuse les accès directs à /_enigmes/ (ORG_REQ_URI = URI d'origine)\n"
+            . "# LiteSpeed: refuse l'accès direct. L'URI d'origine reste /voir-image-enigme.\n"
             . "RewriteCond %{ORG_REQ_URI} /_enigmes/\n"
-            . "RewriteCond %{HTTP_REFERER} !^https?://[^/]+/wp-admin/ [NC]\n"
-            . "RewriteRule \\.(jpe?g|png|gif|webp)$ - [F,L]\n\n"
-            . "# Apache / Local: ORG_REQ_URI absent → refuse l'accès HTTP direct aux images\n"
+            . "RewriteRule ^ - [F,L]\n\n"
+            . "# Apache / Local: ORG_REQ_URI absent → refuse tout accès HTTP direct.\n"
             . "RewriteCond %{ORG_REQ_URI} ^$\n"
-            . "RewriteCond %{HTTP_REFERER} !^https?://[^/]+/wp-admin/ [NC]\n"
-            . "RewriteRule \\.(jpe?g|png|gif|webp)$ - [F,L]\n"
+            . "RewriteRule ^ - [F,L]\n"
             . "</IfModule>\n";
     }
 }

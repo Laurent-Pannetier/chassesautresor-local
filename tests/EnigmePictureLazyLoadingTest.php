@@ -32,10 +32,25 @@ class EnigmePictureLazyLoadingTest extends TestCase
         $this->assertSame(1, substr_count($html, 'loading="lazy"'));
     }
 
-    public function test_loading_attribute_cannot_be_overridden(): void
+    public function test_explicit_eager_loading_is_kept_for_the_hero(): void
     {
-        $html = build_picture_enigme(42, 'Alt text', ['full'], ['loading' => 'eager']);
+        $html = build_picture_enigme(
+            42,
+            'Alt text',
+            ['full'],
+            ['loading' => 'eager', 'fetchpriority' => 'high']
+        );
+        $this->assertStringContainsString('loading="eager"', $html);
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+        $this->assertStringContainsString('decoding="async"', $html);
+        $this->assertStringContainsString('referrerpolicy="no-referrer"', $html);
+        $this->assertSame(1, substr_count($html, 'loading="eager"'));
+    }
+
+    public function test_unknown_loading_value_stays_lazy(): void
+    {
+        $html = build_picture_enigme(42, 'Alt text', ['full'], ['loading' => 'auto']);
         $this->assertStringContainsString('loading="lazy"', $html);
-        $this->assertStringNotContainsString('loading="eager"', $html);
+        $this->assertStringNotContainsString('loading="auto"', $html);
     }
 }

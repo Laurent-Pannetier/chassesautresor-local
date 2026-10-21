@@ -16,13 +16,19 @@ final class ProtectedRiddleImageSignedUrlService
     }
 
     /** @return array{exp:int,uid:int,sig:string} */
-    public function sign(int $imageId, string $size, int $userId, ?int $now = null): array
-    {
+    public function sign(
+        int $imageId,
+        string $size,
+        int $userId,
+        ?int $now = null,
+        string $format = ''
+    ): array {
+        $format = $this->normalizeFormat($format);
         $exp = ($now ?? time()) + max(60, $this->ttlSeconds);
         return [
             'exp' => $exp,
             'uid' => max(0, $userId),
-            'sig' => $this->signature($imageId, $size, max(0, $userId), $exp),
+            'sig' => $this->signature($imageId, $size, max(0, $userId), $exp, $format),
         ];
     }
 
@@ -32,33 +38,55 @@ final class ProtectedRiddleImageSignedUrlService
         int $userId,
         int $exp,
         string $signature,
-        ?int $now = null
+        ?int $now = null,
+        string $format = ''
     ): bool {
         if ($signature === '' || $exp < ($now ?? time())) {
             return false;
         }
 
-        $expected = $this->signature($imageId, $size, max(0, $userId), $exp);
+        $format = $this->normalizeFormat($format);
+        $expected = $this->signature($imageId, $size, max(0, $userId), $exp, $format);
         return hash_equals($expected, $signature);
     }
 
-    /** @param array<string, scalar> $query */
-    public function buildUrl(int $imageId, string $size, int $userId, string $baseUrl, ?int $now = null): string
-    {
-        $signed = $this->sign($imageId, $size, $userId, $now);
-        return \add_query_arg([
+    public function buildUrl(
+        int $imageId,
+        string $size,
+        int $userId,
+        string $baseUrl,
+        ?int $now = null,
+        string $format = ''
+    ): string {
+        $format = $this->normalizeFormat($format);
+        $signed = $this->sign($imageId, $size, $userId, $now, $format);
+        $args = [
             'id' => $imageId,
             'taille' => $size,
             'exp' => $signed['exp'],
             'uid' => $signed['uid'],
             'sig' => $signed['sig'],
-        ], $baseUrl);
+        ];
+        if ($format !== '') {
+            $args['fmt'] = $format;
+        }
+
+        return \add_query_arg($args, $baseUrl);
     }
 
-    private function signature(int $imageId, string $size, int $userId, int $exp): string
+    private function signature(int $imageId, string $size, int $userId, int $exp, string $format = ''): string
     {
         $payload = $imageId . '|' . $size . '|' . $userId . '|' . $exp;
+        if ($format !== '') {
+            $payload .= '|' . $format;
+        }
+
         return hash_hmac('sha256', $payload, $this->secret());
+    }
+
+    private function normalizeFormat(string $format): string
+    {
+        return strtolower($format) === 'webp' ? 'webp' : '';
     }
 
     private function secret(): string
