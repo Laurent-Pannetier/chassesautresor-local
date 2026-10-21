@@ -249,6 +249,8 @@
   const HUD_HIDE_MS = 3200;
   const HUD_INTRO_MS = 2800;
   const HUD_PAGE_MS = 1400;
+  const HUD_EDGE_MS = 800;
+  const EDGE_PX = 72;
   const TAP_MS = 320;
   const SWIPE_PX = 48;
 
@@ -291,6 +293,7 @@
     let tapTimer = null;
     let lastTapAt = 0;
     let pointerOverHud = false;
+    let pointerOverTopbar = false;
     let pointerNearHud = false;
     let pinchBase = 0;
     let gesture = null;
@@ -300,6 +303,7 @@
     let hud = null;
     let controls = null;
     let lastHints = '';
+    const shellTopbar = document.querySelector('.app-topbar');
 
     const storageKey = `comic-hud:${gallery.id || 'galerie'}`;
 
@@ -326,11 +330,20 @@
       }
     };
 
+    const topEdgeOffset = () => {
+      if (!document.body.classList.contains('admin-bar')) {
+        return 0;
+      }
+      return window.matchMedia?.('(max-width: 782px)').matches ? 46 : 32;
+    };
+
     const hudPinned = () =>
       document.body.classList.contains('riddle-widget-immersive-open') ||
       !!document.querySelector('.indice-display:not(:empty)') ||
       pointerOverHud ||
-      (hud && hud.contains(document.activeElement));
+      pointerOverTopbar ||
+      (hud && hud.contains(document.activeElement)) ||
+      !!(shellTopbar && shellTopbar.contains(document.activeElement));
 
     const showHud = () => {
       if (!readerActive) {
@@ -469,6 +482,27 @@
         scheduleHide();
       });
     };
+
+    const onTopbarEnter = () => {
+      pointerOverTopbar = true;
+      if (!readerActive) {
+        return;
+      }
+      showHud();
+      clearHide();
+    };
+
+    const onTopbarLeave = () => {
+      pointerOverTopbar = false;
+      if (readerActive) {
+        scheduleHide();
+      }
+    };
+
+    if (shellTopbar) {
+      shellTopbar.addEventListener('pointerenter', onTopbarEnter);
+      shellTopbar.addEventListener('pointerleave', onTopbarLeave);
+    }
 
     const openActiveLightbox = () => {
       const trigger = gallery.querySelector(
@@ -613,8 +647,13 @@
       if (!readerActive || !finePointerQuery().matches) {
         return;
       }
-      const nearBottom = event.clientY >= window.innerHeight - 72;
-      if (nearBottom || pointerOverHud) {
+      const offset = topEdgeOffset();
+      const nearTop = event.clientY >= offset && event.clientY <= offset + EDGE_PX;
+      const nearBottom = event.clientY >= window.innerHeight - EDGE_PX;
+      if (typeof event.target?.closest === 'function') {
+        pointerOverTopbar = !!event.target.closest('.app-topbar');
+      }
+      if (nearTop || nearBottom || pointerOverHud || pointerOverTopbar) {
         pointerNearHud = true;
         showHud();
         clearHide();
@@ -622,7 +661,7 @@
       }
       if (pointerNearHud) {
         pointerNearHud = false;
-        scheduleHide(800);
+        scheduleHide(HUD_EDGE_MS);
       }
     };
     document.addEventListener('mousemove', onMouseMove);
@@ -631,7 +670,7 @@
       if (!readerActive) {
         return;
       }
-      if (event.target.closest?.('.is-comic-hud, .enigme-mobile-header')) {
+      if (event.target.closest?.('.is-comic-hud, .enigme-mobile-header, .app-topbar')) {
         showHud();
         clearHide();
       }
@@ -715,6 +754,7 @@
         return;
       }
       readerActive = false;
+      pointerOverTopbar = false;
       clearHide();
       if (tapTimer) {
         window.clearTimeout(tapTimer);
@@ -754,6 +794,8 @@
       stage.removeEventListener('pointerup', onPointerUp);
       stage.removeEventListener('pointercancel', onPointerUp);
       gallery.removeEventListener('comic-page-change', onPageChange);
+      shellTopbar?.removeEventListener('pointerenter', onTopbarEnter);
+      shellTopbar?.removeEventListener('pointerleave', onTopbarLeave);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('focusin', onFocusIn);
       document.removeEventListener('focusout', onFocusOut);

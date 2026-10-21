@@ -252,6 +252,9 @@ describe('comic reader', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     document.body.innerHTML = `
+      <header class="app-topbar">
+        <a class="app-topbar__login" href="/login">Connexion</a>
+      </header>
       <div class="page-enigme page-enigme--reader">
         <header class="bloc-titre"><h1>Titre</h1></header>
         <div class="galerie-enigme-wrapper" data-enigme-gallery data-comic-reader id="galerie-enigme-9" data-gallery-page-count="2">
@@ -379,6 +382,80 @@ describe('comic reader', () => {
     link.dataset.unlocked = '1';
     await Promise.resolve();
 
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
+  test('reveals the hud from the top edge and hides it 800ms after leaving', () => {
+    window.matchMedia = (query) => ({
+      matches: query === '(hover: hover) and (pointer: fine)',
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    window.innerHeight = 800;
+
+    jest.advanceTimersByTime(2900);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 400 }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 20 }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 400 }));
+    jest.advanceTimersByTime(799);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    jest.advanceTimersByTime(1);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
+  test('keeps the hud while the pointer or focus stays on the site topbar', () => {
+    window.matchMedia = (query) => ({
+      matches: query === '(hover: hover) and (pointer: fine)',
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    jest.advanceTimersByTime(2900);
+
+    const topbar = document.querySelector('.app-topbar');
+    topbar.dispatchEvent(new Event('pointerenter'));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    jest.advanceTimersByTime(4000);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+
+    topbar.dispatchEvent(new Event('pointerleave'));
+    jest.advanceTimersByTime(3199);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    jest.advanceTimersByTime(1);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    const link = topbar.querySelector('a');
+    link.focus();
+    link.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    topbar.dispatchEvent(new Event('pointerleave'));
+    jest.advanceTimersByTime(4000);
+    expect(document.activeElement).toBe(link);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
+  test('starts the top edge below the wordpress admin bar', () => {
+    document.body.classList.add('admin-bar');
+    window.matchMedia = (query) => ({
+      matches: query === '(hover: hover) and (pointer: fine)',
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    window.innerHeight = 800;
+    jest.advanceTimersByTime(2900);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 10 }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 40 }));
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
   });
 
