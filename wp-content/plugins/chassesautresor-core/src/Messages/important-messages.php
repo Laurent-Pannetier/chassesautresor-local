@@ -7,6 +7,40 @@ use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /**
+ * Hunt state notices belong to the platform experience.
+ */
+function cat_hunt_state_notices_are_hidden(): bool
+{
+    return function_exists('cat_is_platform_mode') && !cat_is_platform_mode();
+}
+
+/**
+ * Stored copy of a hunt validation, ban, correction or deletion notice.
+ */
+function cat_is_hunt_state_notice(string $text, string $key = ''): bool
+{
+    if (preg_match('/^correction_(info_)?chasse_/', $key) === 1) {
+        return true;
+    }
+
+    foreach (
+        [
+            'demande de validation pour la chasse',
+            'a été bannie',
+            'a été supprimée',
+            'nécessite des corrections',
+            'éligible à une',
+        ] as $needle
+    ) {
+        if (str_contains($text, $needle)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * Retrieve persistent account messages visible in the current content context.
  *
  * @return array<int, array<string, mixed>>
@@ -46,6 +80,14 @@ function myaccount_get_persistent_messages(int $userId): array
     $output = [];
     foreach ($messages as $key => $message) {
         if (!is_array($message) || !isset($message['text'])) {
+            continue;
+        }
+
+        if (
+            cat_hunt_state_notices_are_hidden()
+            && cat_is_hunt_state_notice((string) ($message['text'] ?? ''), (string) $key)
+        ) {
+            CoreServiceFactory::accountMessages($wpdb)->removePersistent($userId, (string) $key);
             continue;
         }
 
@@ -102,13 +144,16 @@ function myaccount_get_flash_messages(int $userId): array
 
     $messages = [];
     foreach (CoreServiceFactory::accountMessages($wpdb)->pullFlash($userId) as $message) {
-        if (isset($message['text'])) {
-            $messages[] = [
-                'text' => (string) $message['text'],
-                'type' => (string) ($message['type'] ?? 'info'),
-                'dismissible' => !empty($message['dismissible']),
-            ];
+        $text = (string) ($message['text'] ?? '');
+        if ($text === '' || (cat_hunt_state_notices_are_hidden() && cat_is_hunt_state_notice($text))) {
+            continue;
         }
+
+        $messages[] = [
+            'text' => $text,
+            'type' => (string) ($message['type'] ?? 'info'),
+            'dismissible' => !empty($message['dismissible']),
+        ];
     }
 
     return $messages;
@@ -133,15 +178,17 @@ function myaccount_get_important_messages(): string {
             . '</p>';
     }
 
+    $showHuntStateNotices = !cat_hunt_state_notices_are_hidden();
+
     if (current_user_can('administrator')) {
-        $pending = get_posts([
+        $pending = $showHuntStateNotices ? get_posts([
             'post_type' => 'chasse',
             'post_status' => ['publish', 'pending', 'draft'],
             'numberposts' => -1,
             'fields' => 'ids',
             'meta_key' => 'chasse_cache_statut_validation',
             'meta_value' => 'en_attente',
-        ]);
+        ]) : [];
 
         if (!empty($pending)) {
             $links = array_map(
@@ -211,7 +258,7 @@ function myaccount_get_important_messages(): string {
             ];
         }
 
-        if ($organisateur_id) {
+        if ($organisateur_id && $showHuntStateNotices) {
             $pendingChasses = get_posts([
                 'post_type'   => 'chasse',
                 'post_status' => ['publish', 'pending'],

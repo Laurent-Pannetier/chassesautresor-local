@@ -86,6 +86,10 @@ class HuntDeletionAjaxHandler {
     }
 
     private static function addDeletedMessage(int $userId): void {
+        if (function_exists('cat_is_platform_mode') && !cat_is_platform_mode()) {
+            return;
+        }
+
         global $wpdb;
 
         (new AccountMessageService(new UserMessageRepository($wpdb)))->addFlash(
