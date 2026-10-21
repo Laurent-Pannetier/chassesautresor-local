@@ -44,9 +44,13 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $is_orga = $orga_override !== null ? (bool) $orga_override : utilisateur_est_organisateur_associe_a_chasse($user_id, $chasse_id);
 
     if ($validation === 'en_attente' && $is_orga) {
-        $account_url = function_exists('wc_get_account_endpoint_url')
-            ? wc_get_account_endpoint_url('dashboard')
-            : home_url('/mon-compte/');
+        if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+            $account_url = home_url('/');
+        } elseif (function_exists('wc_get_account_endpoint_url')) {
+            $account_url = wc_get_account_endpoint_url('dashboard');
+        } else {
+            $account_url = home_url('/mon-compte/');
+        }
 
         return [
             'cta_html'    => sprintf(
@@ -94,8 +98,19 @@ function generer_cta_chasse(int $chasse_id, ?int $user_id = null): array
     $engage_override = $GLOBALS['force_engage_override'] ?? null;
     $est_engage = $engage_override !== null ? (bool) $engage_override : utilisateur_est_engage_dans_chasse($user_id, $chasse_id);
     if ($est_engage) {
+        $enigmasHref = '#chasse-enigmes-wrapper';
+        if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode()) {
+            $enigmasHref = function_exists('cat_single_hunt_enigmas_url')
+                ? cat_single_hunt_enigmas_url()
+                : home_url('/#enigmes');
+        }
+
+        $enigmasLabel = esc_html__('Voir mes énigmes', 'chassesautresor-com');
+        $enigmasLink = '<a href="' . esc_url($enigmasHref) . '" class="bouton-secondaire">'
+            . $enigmasLabel . '</a>';
+
         return [
-            'cta_html'    => '<a href="#chasse-enigmes-wrapper" class="bouton-secondaire">' . esc_html__('Voir mes énigmes', 'chassesautresor-com') . '</a>',
+            'cta_html'    => $enigmasLink,
             'cta_message' => '<p>✅ ' . esc_html__('Vous participez à cette chasse', 'chassesautresor-com') . '</p>',
             'type'        => 'engage',
         ];

@@ -59,7 +59,11 @@ get_header();
     <div class="myaccount-sidebar-backdrop" aria-hidden="true"></div>
     <aside id="myaccount-sidebar" class="myaccount-sidebar">
         <div class="myaccount-brand">
-            <a href="<?php echo esc_url(home_url('/mon-compte/')); ?>">
+            <a href="<?php echo esc_url(
+                (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode())
+                    ? home_url('/')
+                    : home_url('/mon-compte/')
+            ); ?>">
                 <?php echo esc_html($display_name); ?>
             </a>
             <button
@@ -137,6 +141,15 @@ get_header();
                         foreach ($organizer_hunt_ids as $hunt_id) {
                             $hunt_title = get_the_title($hunt_id);
                             $hunt_link  = get_permalink($hunt_id);
+                            if (
+                                $hunt_link
+                                && function_exists('cat_is_single_hunt_mode')
+                                && cat_is_single_hunt_mode()
+                            ) {
+                                $hunt_link = function_exists('cat_single_hunt_enigmas_url')
+                                    ? cat_single_hunt_enigmas_url()
+                                    : home_url('/#enigmes');
+                            }
                             if ($hunt_title && $hunt_link) {
                                 $organizer_hunts[] = array(
                                     'title' => $hunt_title,
@@ -195,10 +208,25 @@ get_header();
             <?php
             $page_title    = '';
             $page_greeting = '';
-            if (is_wc_endpoint_url('edit-account') || is_wc_endpoint_url('orders') || is_wc_endpoint_url('edit-address')) {
+            $single_hunt_home = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
+            $is_profile_root = $single_hunt_home
+                && function_exists('is_account_page')
+                && is_account_page()
+                && function_exists('is_wc_endpoint_url')
+                && !is_wc_endpoint_url()
+                && empty($_GET['section']);
+            if (
+                $is_profile_root
+                || is_wc_endpoint_url('edit-account')
+                || is_wc_endpoint_url('orders')
+                || is_wc_endpoint_url('edit-address')
+            ) {
                 $page_title = __('Profil', 'chassesautresor-com');
             } elseif (is_wc_endpoint_url('tentatives')) {
                 $page_title = __('Tentatives', 'chassesautresor-com');
+            } elseif (!empty($GLOBALS['cat_account_home_on_front'])) {
+                $page_greeting = __('Bienvenue', 'chassesautresor-com');
+                $page_title    = $display_name;
             } elseif (is_account_page() && empty($_GET['section'])) {
                 $page_greeting = __('Bienvenue', 'chassesautresor-com');
                 $page_title    = $display_name;
@@ -223,6 +251,9 @@ get_header();
         </header>
         <main class="myaccount-content">
             <?php
+            if (!empty($GLOBALS['cat_account_home_on_front']) && function_exists('cat_render_cockpit_demo_notice')) {
+                cat_render_cockpit_demo_notice();
+            }
             if ($content_template && file_exists($content_template)) {
                 include $content_template;
             } else {

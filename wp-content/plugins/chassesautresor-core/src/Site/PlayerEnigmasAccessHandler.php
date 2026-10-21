@@ -69,6 +69,15 @@ final class PlayerEnigmasAccessHandler
 
     public static function enigmasUrl(int $huntId): string
     {
+        if (function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode() && function_exists('home_url')) {
+            $primaryId = function_exists('cat_get_primary_hunt_id') ? (int) cat_get_primary_hunt_id() : 0;
+            if ($primaryId <= 0 || $huntId === $primaryId) {
+                return function_exists('cat_single_hunt_enigmas_url')
+                    ? cat_single_hunt_enigmas_url()
+                    : home_url('/#enigmes');
+            }
+        }
+
         $permalink = function_exists('get_permalink') ? get_permalink($huntId) : '';
         $base = is_string($permalink) && $permalink !== '' ? $permalink : home_url('/');
 

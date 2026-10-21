@@ -13,8 +13,13 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         $template = (string) file_get_contents(self::THEME_PATH . '/front-page.php');
 
         self::assertStringContainsString('cat_is_single_hunt_mode()', $template);
+        self::assertStringContainsString('cat_single_hunt_home_audience()', $template);
         self::assertStringContainsString("get_template_part('template-parts/home/platform')", $template);
         self::assertStringContainsString("get_template_part('template-parts/home/single-hunt')", $template);
+        self::assertStringContainsString('content-dashboard-joueur.php', $template);
+        self::assertStringContainsString('content-profil.php', (string) file_get_contents(
+            self::THEME_PATH . '/woocommerce/myaccount/my-account.php'
+        ));
     }
 
     public function testSingleHuntHomepageHasNoCatalogControls(): void
@@ -25,8 +30,15 @@ final class SingleHuntHomepageTemplateTest extends TestCase
 
         self::assertStringContainsString('cat_get_primary_hunt_id()', $template);
         self::assertStringContainsString('cat_is_demo_mode()', $template);
-        self::assertStringContainsString('single-hunt-home__facts', $template);
+        self::assertStringNotContainsString('single-hunt-home__facts', $template);
+        self::assertStringNotContainsString('Première visite', $template);
         self::assertStringContainsString('single-hunt-home__story', $template);
+        self::assertStringContainsString('hero-start', (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/headers/front-page-latest-hero.php'
+        ));
+        self::assertStringContainsString('Départ le %s', (string) file_get_contents(
+            self::THEME_PATH . '/inc/single-hunt-home.php'
+        ));
         self::assertStringNotContainsString('single-hunt-home__riddles', $template);
         self::assertStringNotContainsString('Le parcours', $template);
         self::assertStringNotContainsString('home-hunts__toolbar', $template);
@@ -84,13 +96,21 @@ final class SingleHuntHomepageTemplateTest extends TestCase
             self::THEME_PATH . '/template-parts/home/single-hunt.php'
         );
 
-        self::assertStringContainsString('single-hunt-home__journey', $template);
-        self::assertStringContainsString('Créer mon compte', $template);
-        self::assertStringContainsString('$isEngaged', $template);
-        self::assertStringContainsString('single-hunt-progress', $template);
-        self::assertStringContainsString('<progress', $template);
-        self::assertStringContainsString('Vos énigmes.', $template);
+        self::assertStringNotContainsString('single-hunt-home__journey', $template);
+        self::assertStringNotContainsString('Créer mon compte', $template);
+        self::assertStringNotContainsString('single-hunt-progress', $template);
+        self::assertStringNotContainsString('<progress', $template);
+        self::assertStringNotContainsString('Vos énigmes.', $template);
         self::assertStringContainsString('Rejoignez la chasse pour accéder aux énigmes.', $template);
+        self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-joueur.php'
+        ));
+        self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-organisateur.php'
+        ));
+        self::assertStringContainsString('cat_render_single_hunt_home_enigmas', (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-admin.php'
+        ));
         self::assertStringContainsString('cta_should_prompt_hunt_join', $template);
         self::assertStringNotContainsString('Prochaine étape', $template);
         self::assertStringNotContainsString('Votre espace de gestion est prêt.', $template);
@@ -111,7 +131,10 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('single_hunt_riddles_access', $template);
         self::assertStringNotContainsString('chasse-partial-boucle-enigmes', $template);
         self::assertStringNotContainsString('/#home-enigmes', $navigation);
-        self::assertStringContainsString('#chasse-enigmes-wrapper', $navigation);
+        self::assertStringContainsString('/#enigmes', $navigation);
+        self::assertStringContainsString('cat_redirect_public_single_hunt', (string) file_get_contents(
+            self::THEME_PATH . '/inc/single-hunt-home.php'
+        ));
         self::assertStringContainsString('Rejoindre la chasse', $navigation);
         self::assertStringContainsString('Reprendre ma progression', $navigation);
         self::assertStringContainsString('cta_is_primary_hunt_staff', $navigation);
@@ -119,7 +142,10 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('cta_get_hunt_page_url', $navigation);
         self::assertStringContainsString("esc_html__('Énigmes'", $navigation);
         self::assertStringContainsString('joinLoginUrl', $navigation);
-        self::assertStringContainsString('home_url(\'/\')', $this->getSingleHuntTemplate());
+        self::assertStringNotContainsString('Voir tous les détails', $template);
+        self::assertStringContainsString("home_url('/')", (string) file_get_contents(
+            self::THEME_PATH . '/inc/single-hunt-home.php'
+        ));
         self::assertStringNotContainsString(
             "add_query_arg(\n    'redirect_to',\n    \$huntUrl,",
             $this->getSingleHuntTemplate()
@@ -246,7 +272,7 @@ final class SingleHuntHomepageTemplateTest extends TestCase
     {
         $script = (string) file_get_contents(self::THEME_PATH . '/assets/js/single-hunt-analytics.js');
 
-        self::assertStringContainsString('single_hunt_registration', $this->getSingleHuntTemplate());
+        self::assertStringNotContainsString('single_hunt_registration', $this->getSingleHuntTemplate());
         self::assertStringContainsString('single_hunt_engagement_start', $script);
         self::assertStringContainsString('single_hunt_riddle_open', $script);
         self::assertStringContainsString('single_hunt_riddle_resolved', $script);

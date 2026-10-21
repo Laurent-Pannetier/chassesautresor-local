@@ -7,6 +7,14 @@
 
 defined('ABSPATH') || exit;
 
+if (
+    function_exists('cat_is_single_hunt_mode')
+    && cat_is_single_hunt_mode()
+    && function_exists('cat_render_single_hunt_home_enigmas')
+) {
+    cat_render_single_hunt_home_enigmas();
+}
+
 $hunt_id = function_exists('cat_get_managed_hunt_id_for_user')
     ? cat_get_managed_hunt_id_for_user()
     : 0;
