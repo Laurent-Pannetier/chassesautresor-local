@@ -1216,6 +1216,25 @@ body.shell-edition.mode-edition {
   --color-editor-placeholder: var(--shell-muted);
 }
 
+body.shell-edition .edition-panel legend {
+  color: var(--shell-text);
+  background: var(--shell-surface);
+  padding: 0 0.4rem;
+}
+
+body.shell-edition .edition-panel .dashboard-card,
+body.shell-edition .edition-panel .dashboard-card:hover {
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  border-color: var(--shell-border);
+}
+
+body.shell-edition .edition-panel .dashboard-card h3,
+body.shell-edition .edition-panel .dashboard-card > i,
+body.shell-edition .edition-panel .dashboard-card .icone-defaut {
+  color: var(--shell-text);
+}
+
 body.shell-edition .edition-panel-enigme,
 body.shell-edition .edition-panel-chasse {
   position: relative;

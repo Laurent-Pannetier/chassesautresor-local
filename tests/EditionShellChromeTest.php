@@ -54,6 +54,24 @@ final class EditionShellChromeTest extends TestCase
         $this->assertStringNotContainsString('background: var(--color-white);', $this->stepCardBlock($styles));
     }
 
+    public function testNightEditionLabelsStayReadableAndVaultNoticeIsGone(): void
+    {
+        $styles = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/assets/scss/_edition.scss'
+        );
+        $animation = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/template-parts/common/edition-animation.php'
+        );
+
+        $this->assertStringContainsString('body.shell-edition .edition-panel legend', $styles);
+        $this->assertStringContainsString(
+            'body.shell-edition .edition-panel .dashboard-card h3',
+            $styles
+        );
+        $this->assertStringNotContainsString('coffre-fort numérique', $animation);
+        $this->assertStringNotContainsString('champ-protection-solutions', $animation);
+    }
+
     public function testFooterReachesTheBottomOfTheDashboardMenu(): void
     {
         $styles = (string) file_get_contents(
