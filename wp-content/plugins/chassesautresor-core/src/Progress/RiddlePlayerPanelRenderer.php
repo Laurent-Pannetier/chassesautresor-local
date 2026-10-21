@@ -8,6 +8,8 @@ use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** Render the portable data-driven part of a riddle participation panel. */
 final class RiddlePlayerPanelRenderer {
+    /** Imposed hint placement: a cluster beside Répondre. Image anchors come later. */
+    private const HINT_DISPLAY_GLOBAL = 'global';
     private RiddleParticipationService $participation;
     private RiddleParticipationInfoService $information;
     private ?HuntProgressService $progress;
@@ -25,15 +27,21 @@ final class RiddlePlayerPanelRenderer {
     public function render(int $riddleId, int $userId, string $responseHtml = ''): string
     {
         $solved = est_enigme_resolue_par_utilisateur($userId, $riddleId);
-        $content = $this->response($riddleId, $userId, $solved, $responseHtml);
+        $response = $this->response($riddleId, $userId, $solved, $responseHtml);
         $hints = $this->participation->hints($riddleId, $userId);
+        $hintHtml = '';
 
         if ($hints['riddle'] !== [] || $hints['hunt'] !== []) {
-            $content .= '<hr class="reponse-indices-separator" /><div class="zone-indices">';
-            $content .= $this->hintGroup($hints['riddle'], __('Indices énigme', 'chassesautresor-com'));
-            $content .= $this->hintGroup($hints['hunt'], __('Indices chasse', 'chassesautresor-com'));
-            $content .= '<div class="indice-display"></div></div>';
+            $hintHtml = '<div class="zone-indices" data-hint-display="'
+                . esc_attr(self::HINT_DISPLAY_GLOBAL) . '">';
+            $hintHtml .= $this->hintGroup($hints['riddle'], __('Indices énigme', 'chassesautresor-com'));
+            $hintHtml .= $this->hintGroup($hints['hunt'], __('Indices chasse', 'chassesautresor-com'));
+            $hintHtml .= '<div class="indice-display"></div></div>';
         }
+
+        $content = ($response !== '' || $hintHtml !== '')
+            ? '<div class="participation-dock">' . $response . $hintHtml . '</div>'
+            : '';
 
         $information = $this->information->build($riddleId, $userId, $solved);
         $content .= $this->information($information);

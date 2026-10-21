@@ -14,8 +14,7 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
 | Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
 | Image | `etape_image` | Page BD facultative (A4). Une fois débloquée, elle s’ajoute à la galerie de l’énigme. |
-| Affichage widget | `etape_widget_affichage` | `always` (défaut) ou `hotspot` (révélation au clic sur une zone de la page BD). |
-| Zone cliquable | `etape_hotspot_zone` | Pourcentages `x,y,largeur,hauteur` relatifs à l’image. |
+| Affichage du widget | Imposé | Le joueur ouvre le widget avec « Répondre ». L’organisateur ne choisit pas de mode. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
 Une étape enregistrée exige toujours un nom interne. Simple clic et Réponse texte exigent également au moins un texte
@@ -39,10 +38,8 @@ l’étape par AJAX, puis restaure la liste sans ouvrir ni recharger une page d�
 
 Le sélecteur d’image réutilise la médiathèque déjà autorisée aux organisateurs. Les opérations AJAX vérifient le nonce,
 le droit de modifier l’énigme, l’appartenance de l’étape et la validité du média.
-Après le choix du type de widget, la présentation peut rester classique (`always`) ou passer en point & click
-(`hotspot`) : l’organisateur dessine une zone sur l’image. Côté joueur, la page BD garde le zoom plein clic ; la zone
-invisible n’est active que dans la lightbox taille originale. Sans image ou sans zone valide, le mode hotspot est
-refusé à l’enregistrement et bloque la complétude.
+Le type de widget reste au choix. Son affichage est imposé : un bouton « Répondre » ouvre le widget dans un volet.
+Les indices restent à part, dans un groupe à côté de ce bouton.
 Le serveur valide le contenu et toute la configuration du widget avant de créer ou modifier l’étape. Les codes
 directionnels, de couleurs, numériques et de coffre-fort contenant un symbole inconnu sont refusés au lieu d’être
 corrigés silencieusement. Une erreur de configuration ne peut donc pas laisser une étape publiée partiellement.
