@@ -1,7 +1,7 @@
 <?php
 /**
  * Template : single-enigme.php (version propre et encapsulée)
- * Affiche uniquement le header organisateur et le panneau d'édition
+ * Affiche la fiche énigme. L'édition se fait dans le dashboard.
  */
 
 defined('ABSPATH') || exit;
