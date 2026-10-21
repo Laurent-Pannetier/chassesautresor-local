@@ -226,3 +226,172 @@ describe('enigme image viewer', () => {
     );
   });
 });
+
+describe('comic reader', () => {
+  class TestPointerEvent extends MouseEvent {
+    constructor(type, init = {}) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 1;
+      this.pointerType = init.pointerType || 'touch';
+    }
+  }
+
+  const point = (type, x, y, pointerId = 1) => {
+    document.querySelector('.enigme-media-zoom').dispatchEvent(
+      new TestPointerEvent(type, {
+        bubbles: true,
+        pointerId,
+        pointerType: 'touch',
+        clientX: x,
+        clientY: y,
+        button: 0,
+      })
+    );
+  };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    document.body.innerHTML = `
+      <div class="page-enigme page-enigme--reader">
+        <header class="bloc-titre"><h1>Titre</h1></header>
+        <div class="galerie-enigme-wrapper" data-enigme-gallery data-comic-reader id="galerie-enigme-9" data-gallery-page-count="2">
+          <div class="galerie-enigme__stage">
+            <button type="button" class="galerie-enigme__nav galerie-enigme__nav--prev" data-gallery-step="-1">‹</button>
+            <figure class="galerie-enigme__slide is-active" data-gallery-index="0">
+              <button type="button" class="enigme-media-zoom" data-enigme-lightbox-src="full-1.jpg" data-enigme-lightbox-alt="One">
+                <img class="image-active" id="image-enigme-active" src="preview-1.jpg" alt="One">
+              </button>
+            </figure>
+            <figure class="galerie-enigme__slide" data-gallery-index="1" hidden>
+              <button type="button" class="enigme-media-zoom" data-enigme-lightbox-src="full-2.jpg" data-enigme-lightbox-alt="Two">
+                <img src="preview-2.jpg" alt="Two">
+              </button>
+            </figure>
+            <button type="button" class="galerie-enigme__nav galerie-enigme__nav--next" data-gallery-step="1">›</button>
+          </div>
+          <div class="galerie-enigme__pager" aria-live="polite">
+            <span class="galerie-enigme__page-label">Page 1 / 2</span>
+          </div>
+        </div>
+        <article class="contenu-principal"><div class="enigme-texte">Un texte</div></article>
+      </div>
+      <section class="participation">
+        <div class="participation-dock">
+          <div class="zone-reponse">
+            <div class="reponse-launcher">
+              <button type="button" class="reponse-launcher__open" data-riddle-open-widget>Répondre</button>
+            </div>
+          </div>
+          <div class="zone-indices" data-hint-display="global">
+            <a href="#" class="indice-link indice-link--locked" data-indice-id="4" data-unlocked="0">
+              <i class="fa-solid fa-lightbulb"></i>
+              <span class="indice-link__label">Indice</span>
+            </a>
+            <div class="indice-display"></div>
+          </div>
+        </div>
+      </section>
+    `;
+    document.body.className = '';
+    window.sessionStorage.clear();
+    window.EnigmeImageViewer = {
+      closeLabel: 'Fermer',
+      nativeSizeLabel: 'Image en taille originale',
+      pageLabel: 'Page %1$d / %2$d',
+    };
+    eval(source);
+  });
+
+  afterEach(() => {
+    window.__comicReaderTeardown?.();
+    document.body.innerHTML = '';
+    document.body.className = '';
+    jest.useRealTimers();
+  });
+
+  test('shows the hud on the first visit, then hides it', () => {
+    expect(document.body.classList.contains('comic-reader')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    expect(document.querySelector('.comic-hud__controls .reponse-launcher__open')).not.toBeNull();
+    expect(document.querySelector('.comic-hud__controls .galerie-enigme__pager')).not.toBeNull();
+    expect(document.querySelector('.comic-hud__sheet .enigme-texte')).not.toBeNull();
+
+    jest.advanceTimersByTime(2900);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
+  test('single tap toggles the hud and does not open the loupe', () => {
+    jest.advanceTimersByTime(2900);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    point('pointerdown', 40, 40);
+    point('pointerup', 42, 41);
+    document.querySelector('.enigme-media-zoom').click();
+
+    expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
+    jest.advanceTimersByTime(TAP_WAIT);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
+  test('double tap opens the native-size loupe', () => {
+    jest.advanceTimersByTime(2900);
+
+    point('pointerdown', 40, 40);
+    point('pointerup', 41, 40);
+    jest.advanceTimersByTime(120);
+    point('pointerdown', 42, 41);
+    point('pointerup', 43, 41);
+
+    const image = document.querySelector('.enigme-lightbox__image');
+    expect(image).not.toBeNull();
+    expect(image.getAttribute('src')).toBe('full-1.jpg');
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
+  test('swipe left turns to the next page and does not wrap past the end', () => {
+    jest.advanceTimersByTime(2900);
+
+    point('pointerdown', 220, 80);
+    point('pointermove', 80, 82);
+    point('pointerup', 30, 84);
+
+    expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(
+      true
+    );
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 2 / 2');
+    expect(document.querySelector('.galerie-enigme__nav--next').disabled).toBe(true);
+
+    point('pointerdown', 220, 80);
+    point('pointermove', 40, 80);
+    point('pointerup', 20, 80);
+    expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(
+      true
+    );
+  });
+
+  test('reveals the hud again when a hint becomes available', async () => {
+    jest.advanceTimersByTime(2900);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    const link = document.querySelector('.indice-link');
+    link.classList.remove('indice-link--locked');
+    link.classList.add('indice-link--unlocked');
+    link.dataset.unlocked = '1';
+    await Promise.resolve();
+
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
+  test('leaves the reader when edition mode starts', async () => {
+    expect(document.querySelector('.participation .reponse-launcher')).not.toBeNull();
+    document.body.classList.add('edition-active-enigme');
+    await Promise.resolve();
+
+    expect(document.body.classList.contains('comic-reader')).toBe(false);
+    expect(document.querySelector('.galerie-enigme-wrapper .galerie-enigme__pager')).not.toBeNull();
+    expect(document.querySelector('.participation .reponse-launcher')).not.toBeNull();
+    expect(document.querySelector('.page-enigme .contenu-principal')).not.toBeNull();
+  });
+});
+
+const TAP_WAIT = 320;

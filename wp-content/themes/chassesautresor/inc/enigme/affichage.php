@@ -302,7 +302,7 @@ require_once __DIR__ . '/indices.php';
             echo '</div>';
         }
 
-        $page_class = 'page-enigme enigme-style-' . $style;
+        $page_class = 'page-enigme page-enigme--reader enigme-style-' . $style;
         if ($compact_experience) {
             $page_class .= ' page-enigme--compact';
         }

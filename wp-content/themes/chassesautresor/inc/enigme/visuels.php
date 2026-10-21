@@ -304,11 +304,11 @@ function enigme_collect_step_comic_pages(int $enigme_id, int $user_id): array
 /**
  * Affiche une galerie d’images d’une énigme si l’utilisateur y a droit.
  *
- * Une seule page est visible à la fois (format BD / A4). Les vignettes et
- * le feuilletage permettent de basculer. Les images d’étapes débloquées
- * s’ajoutent comme pages supplémentaires après celles de l’énigme.
- * Un clic ouvre l’image en taille d’origine. Le widget de réponse s’ouvre
- * depuis le bouton « Répondre », pas depuis l’image.
+ * Une seule page 16:9 (1920 × 1080) est visible à la fois, plein cadre.
+ * Le feuilletage se fait au glissement, au clavier, ou avec les flèches
+ * au survol. Un tap affiche le bandeau (Répondre, indices, numéro de page).
+ * Un double tap ou un pincement ouvre l’image en taille d’origine.
+ * Les images d’étapes débloquées s’ajoutent comme pages suivantes.
  *
  * Les images sont servies via proxy (/voir-image-enigme) avec tailles adaptées.
  *
@@ -364,7 +364,7 @@ function afficher_visuels_enigme(
     $activeIndex = 0;
     $gallery_id = 'galerie-enigme-' . $enigme_id;
 
-    echo '<div class="galerie-enigme-wrapper" data-enigme-gallery'
+    echo '<div class="galerie-enigme-wrapper" data-enigme-gallery data-comic-reader'
         . ' id="' . esc_attr($gallery_id) . '"'
         . ' data-gallery-page-count="' . esc_attr((string) $pageCount) . '">';
     echo '<div class="galerie-enigme__stage">';
@@ -401,7 +401,7 @@ function afficher_visuels_enigme(
 
         $attrs = [
             'class' => $classes,
-            'sizes' => '(min-width:1025px) 920px, 100vw',
+            'sizes' => '100vw',
         ];
 
         if ($is_active) {

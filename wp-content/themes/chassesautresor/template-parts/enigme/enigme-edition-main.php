@@ -153,6 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                           'label' => function () {
                               ?>
                               <label><?= esc_html__('Illustrations', 'chassesautresor-com'); ?> <span class="champ-obligatoire">*</span></label>
+                              <p class="edition-format-hint"><?= esc_html__(
+                                  'Format BD : 1920 × 1080 px (16:9), une image par page.',
+                                  'chassesautresor-com'
+                              ); ?></p>
                               <?php
                           },
                           'content' => function () use ($has_images_utiles, $images_ids, $peut_editer, $enigme_id) {

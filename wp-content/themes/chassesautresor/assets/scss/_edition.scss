@@ -934,6 +934,14 @@ body[class*="edition-active"] .champ-modifier:not(.bouton-cta) {
   align-items: center;
 }
 
+.edition-format-hint {
+  margin: 0.2rem 0 0;
+  color: var(--color-text-secondary, rgba(255, 255, 255, 0.72));
+  font-size: 0.8rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
 /* Harmonisation de l'alignement pour le champ sous-titre dans le panneau Énigme */
 .single-enigme-main [data-champ="enigme_visuel_legende"] {
   display: inline-flex;

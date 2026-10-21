@@ -13,7 +13,7 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Nom interne | `post_title` | Repère obligatoire réservé à l’organisateur, jamais affiché au joueur. |
 | Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
 | Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
-| Image | `etape_image` | Page BD facultative (A4). Une fois débloquée, elle s’ajoute à la galerie de l’énigme. |
+| Image | `etape_image` | Page BD facultative, 1920 × 1080 px (16:9). Une fois débloquée, elle s’ajoute à la galerie de l’énigme. |
 | Affichage du widget | Imposé | Le joueur ouvre le widget avec « Répondre ». L’organisateur ne choisit pas de mode. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
