@@ -29,6 +29,47 @@ final class SommaireEnigmesLoopTest extends TestCase
         self::assertFalse(cat_single_hunt_request_returns_home('open', true));
     }
 
+    public function testPlayerSeesAnEditionNoticeOnlyWhileTheHuntIsBeingEdited(): void
+    {
+        require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/single-hunt-home.php';
+
+        self::assertTrue(cat_player_should_see_hunt_edition_notice(false, 'pending', 'correction', 'revision'));
+        self::assertTrue(cat_player_should_see_hunt_edition_notice(false, 'pending', 'creation', 'revision'));
+        self::assertTrue(cat_player_should_see_hunt_edition_notice(false, 'pending', 'en_attente', 'revision'));
+        self::assertTrue(cat_player_should_see_hunt_edition_notice(false, 'draft', '', 'revision'));
+        self::assertFalse(cat_player_should_see_hunt_edition_notice(true, 'pending', 'correction', 'revision'));
+        self::assertFalse(cat_player_should_see_hunt_edition_notice(false, 'publish', 'valide', 'en_cours'));
+        self::assertFalse(cat_player_should_see_hunt_edition_notice(false, 'publish', 'valide', 'a_venir'));
+        self::assertFalse(cat_player_should_see_hunt_edition_notice(false, 'publish', 'valide', 'termine'));
+        self::assertFalse(cat_player_should_see_hunt_edition_notice(false, 'draft', 'banni', 'revision'));
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testEditionNoticeMatchesTheDashboardCardCopy(): void
+    {
+        if (!function_exists('__')) {
+            eval('function __($text, $domain = null) { return $text; }');
+        }
+        if (!function_exists('esc_html')) {
+            eval('function esc_html($text) { return htmlspecialchars((string) $text, ENT_QUOTES, "UTF-8"); }');
+        }
+
+        require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/single-hunt-home.php';
+
+        ob_start();
+        cat_render_hunt_edition_notice();
+        $html = (string) ob_get_clean();
+
+        self::assertStringContainsString('id="enigmes"', $html);
+        self::assertStringContainsString('class="hunt-edition-notice"', $html);
+        self::assertStringContainsString('Chasse en cours d’édition', $html);
+        self::assertStringContainsString('dès que l’édition sera terminée', $html);
+        self::assertStringNotContainsString('home-enigmas-preserve', $html);
+    }
+
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
