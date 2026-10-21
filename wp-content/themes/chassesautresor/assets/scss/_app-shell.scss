@@ -7,7 +7,7 @@ html {
   --shell-sidebar: #10151c;
   --shell-surface: #171d27;
   --shell-surface-2: #1e2633;
-  --shell-topbar: rgba(16, 21, 28, 0.94);
+  --shell-topbar: rgba(16, 21, 28, 0.55);
   --shell-text: #e7eef6;
   --shell-muted: #93a0b3;
   --shell-border: rgba(255, 255, 255, 0.08);
@@ -34,7 +34,7 @@ html[data-theme="day"] {
   --shell-sidebar: #ffffff;
   --shell-surface: #ffffff;
   --shell-surface-2: #eef3f8;
-  --shell-topbar: rgba(255, 255, 255, 0.94);
+  --shell-topbar: rgba(255, 255, 255, 0.62);
   --shell-text: #152033;
   --shell-muted: #5d6b7e;
   --shell-border: rgba(21, 32, 51, 0.1);
@@ -97,7 +97,7 @@ body.app-shell-active #masthead {
   padding: 0 0.7rem;
   background: var(--shell-topbar);
   border-bottom: 1px solid var(--shell-border);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
 }
 
 .app-nav-toggle {
