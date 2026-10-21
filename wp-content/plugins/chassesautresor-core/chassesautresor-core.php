@@ -430,6 +430,19 @@ require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
 require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';
 require_once __DIR__ . '/src/Messages/LegacySiteMessageCleanup.php';
 require_once __DIR__ . '/src/Messages/AccountLegacyRouteHandler.php';
+require_once __DIR__ . '/src/Teams/TeamResult.php';
+require_once __DIR__ . '/src/Teams/TeamActor.php';
+require_once __DIR__ . '/src/Teams/TeamStore.php';
+require_once __DIR__ . '/src/Teams/TeamTable.php';
+require_once __DIR__ . '/src/Teams/TeamSettings.php';
+require_once __DIR__ . '/src/Teams/TeamInviteCode.php';
+require_once __DIR__ . '/src/Teams/TeamRepository.php';
+require_once __DIR__ . '/src/Teams/TeamService.php';
+require_once __DIR__ . '/src/Teams/TeamPageRenderer.php';
+require_once __DIR__ . '/src/Teams/TeamJoinThrottle.php';
+require_once __DIR__ . '/src/Teams/TeamImageUploader.php';
+require_once __DIR__ . '/src/Teams/team-functions.php';
+require_once __DIR__ . '/src/Teams/TeamRequestHandler.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
@@ -544,6 +557,7 @@ ChassesAuTresor\Core\Progress\HuntStatisticsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\HintUnlockAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Teams\TeamRequestHandler::register('add_action');
 
 register_activation_hook(
     __FILE__,
@@ -623,6 +637,11 @@ register_activation_hook(
 register_activation_hook(
     __FILE__,
     [ChassesAuTresor\Core\Progress\RiddleRetryTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Teams\TeamTable::class, 'install']
 );
 
 register_activation_hook(
@@ -782,6 +801,11 @@ add_action(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Progress\RiddleRetryTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Teams\TeamTable::class, 'maybeUpgrade']
 );
 
 add_action(

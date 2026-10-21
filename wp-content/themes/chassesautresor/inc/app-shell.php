@@ -71,6 +71,9 @@ function cta_shell_icon(string $name): string
         'points' => '<path fill="currentColor" d="M12 2.5a9.5 9.5 0 1 0 9.5 9.5A9.5 9.5 0 0 0 12'
             . ' 2.5zm0 4.1 1.5 3.1 3.4.5-2.5 2.4.6 3.4L12 14.4 8.9 16l.6-3.4-2.4-2.4'
             . ' 3.4-.5L12 6.6z"/>',
+        'team' => '<path fill="currentColor" d="M8 11.1a2.6 2.6 0 1 0-2.6-2.6A2.6 2.6 0 0 0 8 11.1zm8 0a2.6'
+            . ' 2.6 0 1 0-2.6-2.6A2.6 2.6 0 0 0 16 11.1zM4.1 18.8c.25-2.15 2.05-3.5 3.9-3.5s3.65 1.35 3.9'
+            . ' 3.5H4.1zm8.15 0c.2-1.15.75-2.1 1.55-2.8.85.35 1.85.55 2.85.55 1.85 0 3.65 1.35 3.9 3.5h-8.3z"/>',
         'notifications' => '<path fill="currentColor" d="M12 22a2.3 2.3 0 0 0 2.2-1.8H9.8A2.3 2.3'
             . ' 0 0 0 12 22zm6.5-6.2V11a6.5 6.5 0 0 0-5-6.3V3.5a1.5 1.5 0 0 0-3 0v1.2'
             . 'a6.5 6.5 0 0 0-5 6.3v4.8L4 18v1.2h16V18l-1.5-2.2z"/>',
@@ -119,6 +122,7 @@ function cta_shell_page_titles(): array
         'trophees'       => __('Trophées', 'chassesautresor-com'),
         'outils'         => __('Outils', 'chassesautresor-com'),
         'points'         => __('Points', 'chassesautresor-com'),
+        'equipe'         => __('Équipe', 'chassesautresor-com'),
         'notifications'  => __('Notifications', 'chassesautresor-com'),
     ];
 }

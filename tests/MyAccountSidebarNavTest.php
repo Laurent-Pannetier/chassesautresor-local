@@ -60,9 +60,11 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Trophées', 'Points', 'Profil', 'Règlement', 'Notifications'],
+            ['Accueil', 'Progression', 'Trophées', 'Points', 'Équipe', 'Profil', 'Règlement', 'Notifications'],
             $labels
         );
+        $this->assertSame('equipe', $items[4]['key']);
+        $this->assertSame('primary', $items[4]['group']);
         $this->assertSame('primary', $items[3]['group']);
         $this->assertSame('personal', $items[5]['group']);
         $this->assertFalse(in_array('Statistiques', $labels, true));
@@ -94,9 +96,10 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Trophées', 'Points', 'Outils', 'Profil', 'Règlement', 'Notifications'],
+            ['Accueil', 'Progression', 'Trophées', 'Points', 'Équipe', 'Outils', 'Profil', 'Règlement', 'Notifications'],
             $labels
         );
+        $this->assertSame('equipe', $items[4]['key']);
         $this->assertSame('primary', $items[3]['group']);
         $this->assertSame('personal', $items[6]['group']);
         $this->assertFalse(in_array('Statistiques', $labels, true));
