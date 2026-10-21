@@ -596,4 +596,15 @@ class EnigmeMenuRenderingTest extends TestCase
         $output = ob_get_clean();
         $this->assertStringNotContainsString('<section class="participation">', $output);
     }
+
+    public function test_enigme_page_omits_back_link_icon(): void
+    {
+        ob_start();
+        afficher_enigme_stylisee(101);
+        $output = ob_get_clean();
+
+        $this->assertStringNotContainsString('enigme-hunt-back', $output);
+        $this->assertStringNotContainsString('enigme-hunt-context', $output);
+        $this->assertStringNotContainsString('Retour à la chasse', $output);
+    }
 }

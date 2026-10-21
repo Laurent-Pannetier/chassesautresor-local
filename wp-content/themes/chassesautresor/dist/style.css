@@ -7591,23 +7591,6 @@ li.active .enigme-menu__edit {
   gap: var(--space-xl);
   text-align: left;
 }
-.page-enigme--compact .enigme-hunt-context {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: var(--space-xs);
-  min-height: 44px;
-  padding: var(--space-xs) var(--space-sm);
-  color: var(--color-text-secondary);
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 6px;
-}
-.page-enigme--compact .enigme-hunt-context:hover,
-.page-enigme--compact .enigme-hunt-context:focus-visible {
-  color: var(--color-primary);
-  background: rgba(255, 255, 255, 0.06);
-}
 .page-enigme--compact .enigme-header {
   width: 100%;
   max-width: 920px;
@@ -8247,41 +8230,6 @@ li.active .enigme-menu__edit {
   display: none;
 }
 
-.enigme-hunt-back {
-  position: relative;
-  width: 3rem;
-  height: 3rem;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--color-white);
-  box-shadow: 0 2px 8px rgba(var(--color-black-rgb, 0, 0, 0), 0.2);
-}
-
-.enigme-hunt-back__image {
-  display: block;
-  width: 100%;
-  height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
-}
-
-.enigme-hunt-back__icon {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--color-black-rgb, 0, 0, 0), 0.28);
-}
-
-.enigme-hunt-back__icon svg {
-  width: 1.25rem;
-  height: 1.25rem;
-  filter: drop-shadow(0 1px 2px rgba(var(--color-black-rgb, 0, 0, 0), 0.6));
-}
-
 .enigme-edit-toggle--desktop {
   position: fixed;
   top: calc(var(--space-md) + var(--space-4xl));
@@ -8334,13 +8282,6 @@ li.active .enigme-menu__edit {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .enigme-mobile-header .enigme-hunt-back {
-    width: 3rem;
-    height: 3rem;
-    padding: 0;
-    color: var(--color-white);
-    border-color: rgba(255, 255, 255, 0.45);
   }
   .enigme-mobile-header svg {
     width: 1rem;
@@ -9522,7 +9463,6 @@ body.comic-reader .page-enigme--reader .galerie-enigme__nav:focus-visible {
   }
 }
 body.comic-reader .enigme-mobile-header,
-body.comic-reader .enigme-hunt-context,
 body.comic-reader .enigme-edit-toggle--desktop {
   z-index: 45;
   transition: opacity 0.28s ease;
@@ -9542,15 +9482,8 @@ body.comic-reader .enigme-mobile-header {
   padding: calc(0.4rem + env(safe-area-inset-top, 0px)) 0.75rem 0.4rem;
 }
 
-body.comic-reader .enigme-hunt-context {
-  position: fixed;
-  top: calc(0.45rem + env(safe-area-inset-top, 0px));
-  left: 0.75rem;
-}
-
 body.comic-reader:not(.is-hud-visible) .enigme-mobile-header,
-body.comic-reader:not(.is-hud-visible) .enigme-edit-toggle--desktop,
-body.comic-reader:not(.is-hud-visible) .enigme-hunt-context {
+body.comic-reader:not(.is-hud-visible) .enigme-edit-toggle--desktop {
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -9698,8 +9631,7 @@ body.comic-reader .is-comic-hud .participation-infos {
 
 @media (prefers-reduced-motion: reduce) {
   body.comic-reader .is-comic-hud,
-  body.comic-reader .enigme-mobile-header,
-  body.comic-reader .enigme-hunt-context {
+  body.comic-reader .enigme-mobile-header {
     transition: none;
   }
 }

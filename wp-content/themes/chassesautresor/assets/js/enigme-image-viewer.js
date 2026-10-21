@@ -631,7 +631,7 @@
       if (!readerActive) {
         return;
       }
-      if (event.target.closest?.('.is-comic-hud, .enigme-mobile-header, .enigme-hunt-context')) {
+      if (event.target.closest?.('.is-comic-hud, .enigme-mobile-header')) {
         showHud();
         clearHide();
       }
