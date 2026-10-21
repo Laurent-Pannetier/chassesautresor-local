@@ -279,19 +279,19 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
             'primary'
         ),
         cta_shell_nav_item(
-            'reglement',
-            __('Règlement', 'chassesautresor-com'),
-            'rules',
-            cta_shell_location_url('reglement'),
-            cta_shell_location_is_current('reglement'),
-            'primary'
-        ),
-        cta_shell_nav_item(
             'trophees',
             __('Trophées', 'chassesautresor-com'),
             'trophy',
             cta_shell_location_url('trophees'),
             cta_shell_location_is_current('trophees'),
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'points',
+            __('Points', 'chassesautresor-com'),
+            'points',
+            cta_shell_location_url('points'),
+            cta_shell_location_is_current('points'),
             'primary'
         ),
     ];
@@ -319,11 +319,11 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
         'personal'
     );
     $items[] = cta_shell_nav_item(
-        'points',
-        __('Points', 'chassesautresor-com'),
-        'points',
-        cta_shell_location_url('points'),
-        cta_shell_location_is_current('points'),
+        'reglement',
+        __('Règlement', 'chassesautresor-com'),
+        'rules',
+        cta_shell_location_url('reglement'),
+        cta_shell_location_is_current('reglement'),
         'personal'
     );
     $items[] = cta_shell_nav_item(
