@@ -235,7 +235,36 @@ function cta_shell_hunt_image_url(int $huntId): string
 }
 
 /**
- * Renders the hunt image header. An empty frame is used when no image exists.
+ * Loads the rotating hunt sphere used by the home banner.
+ */
+function cta_shell_enqueue_hunt_sphere(): void
+{
+    if (
+        !function_exists('wp_enqueue_script')
+        || !function_exists('get_stylesheet_directory')
+        || !function_exists('get_stylesheet_directory_uri')
+    ) {
+        return;
+    }
+
+    $relative = '/assets/js/hunt-banner-sphere.js';
+    $path = get_stylesheet_directory() . $relative;
+    if (!is_readable($path)) {
+        return;
+    }
+
+    wp_enqueue_script(
+        'cta-hunt-sphere',
+        get_stylesheet_directory_uri() . $relative,
+        [],
+        (string) filemtime($path),
+        true
+    );
+}
+
+/**
+ * Renders the hunt header. The image is mapped onto a rotating sphere.
+ * An empty frame is used when no image exists.
  */
 function cta_shell_render_hunt_banner(): void
 {
@@ -246,9 +275,17 @@ function cta_shell_render_hunt_banner(): void
         $alt = (string) get_the_title($huntId);
     }
 
-    echo '<section class="hunt-banner" aria-label="' . esc_attr__('Image de la chasse', 'chassesautresor-com') . '">';
+    $label = esc_attr__('Image de la chasse', 'chassesautresor-com');
+    echo '<section class="hunt-banner" aria-label="' . $label . '">';
     if ($url !== '') {
-        echo '<img src="' . esc_url($url) . '" alt="' . esc_attr($alt) . '">';
+        cta_shell_enqueue_hunt_sphere();
+        $src = esc_url($url);
+        echo '<div class="hunt-banner__sphere" data-hunt-sphere data-image="' . $src . '">';
+        echo '<canvas class="hunt-banner__canvas" aria-hidden="true"></canvas>';
+        echo '<img class="hunt-banner__fallback" src="' . $src . '" alt="' . esc_attr($alt) . '">';
+        echo '</div>';
+        echo '<script>(function(){var s=document.currentScript,n=s&&s.previousElementSibling;';
+        echo 'if(n){n.classList.add("is-pending");}})();</script>';
     } else {
         echo '<p class="hunt-banner__empty">';
         echo esc_html__('Emplacement de l’image de la chasse', 'chassesautresor-com');

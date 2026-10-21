@@ -676,11 +676,70 @@ img.avatar-pirate {
   background: var(--shell-surface);
 }
 
-.hunt-banner img {
+.hunt-banner__sphere {
+  position: relative;
+  height: 12.5rem;
+  background:
+    radial-gradient(circle at 50% 46%, var(--shell-accent-soft), transparent 28rem),
+    var(--shell-bg);
+}
+
+.hunt-banner__sphere::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  bottom: 7%;
+  width: 22%;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transform: translateX(-50%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.hunt-banner__canvas {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
   display: block;
   width: 100%;
-  height: 12.5rem;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hunt-banner__fallback {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.hunt-banner__sphere.is-ready .hunt-banner__canvas,
+.hunt-banner__sphere.is-ready::after {
+  opacity: 1;
+}
+
+.hunt-banner__sphere.is-pending .hunt-banner__fallback,
+.hunt-banner__sphere.is-ready .hunt-banner__fallback {
+  visibility: hidden;
+}
+
+.hunt-banner__sphere.is-fallback .hunt-banner__canvas {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hunt-banner__canvas,
+  .hunt-banner__sphere::after {
+    transition: opacity 0.35s ease;
+  }
 }
 
 .hunt-banner__empty {
@@ -1106,7 +1165,7 @@ html[data-theme="day"] .home-enigmas-preserve {
     display: inline;
   }
 
-  .hunt-banner img {
+  .hunt-banner__sphere {
     height: 15rem;
   }
 }
@@ -1261,7 +1320,7 @@ html[data-theme="day"] .home-enigmas-preserve {
     gap: 0.75rem;
   }
 
-  .hunt-banner img {
+  .hunt-banner__sphere {
     height: 18rem;
   }
 }
@@ -1293,7 +1352,7 @@ html[data-theme="day"] .home-enigmas-preserve {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  .hunt-banner img {
+  .hunt-banner__sphere {
     height: 22rem;
   }
 }

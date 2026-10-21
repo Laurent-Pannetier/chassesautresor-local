@@ -43,6 +43,61 @@ class AppShellPresentationTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_hunt_banner_maps_the_hunt_image_onto_a_sphere(): void
+    {
+        $this->bootShell();
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $GLOBALS['cat_theme_dir'] = $theme;
+        $GLOBALS['cat_enqueued_scripts'] = [];
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_the_post_thumbnail_url($id, $size = "full"){
+            return "https://example.test/chasse.jpg";
+        }');
+        eval('function get_stylesheet_directory(){return $GLOBALS["cat_theme_dir"];}');
+        eval('function get_stylesheet_directory_uri(){return "https://example.test/theme";}');
+        eval('function wp_enqueue_script($handle, $src = "", $deps = [], $ver = false, $in_footer = false){
+            $GLOBALS["cat_enqueued_scripts"][] = [
+                "handle" => $handle,
+                "src" => $src,
+                "footer" => $in_footer,
+            ];
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('data-hunt-sphere', $html);
+        $this->assertStringContainsString('data-image="https://example.test/chasse.jpg"', $html);
+        $this->assertStringContainsString('hunt-banner__canvas', $html);
+        $this->assertStringContainsString('hunt-banner__fallback', $html);
+        $this->assertStringContainsString('is-pending', $html);
+        $this->assertStringContainsString('alt="Antre de feu"', $html);
+        $this->assertStringNotContainsString('hunt-banner__empty', $html);
+
+        $enqueued = $GLOBALS['cat_enqueued_scripts'];
+        $this->assertCount(1, $enqueued);
+        $this->assertSame('cta-hunt-sphere', $enqueued[0]['handle']);
+        $this->assertStringContainsString('/assets/js/hunt-banner-sphere.js', $enqueued[0]['src']);
+        $this->assertTrue($enqueued[0]['footer']);
+
+        $source = (string) file_get_contents($theme . '/assets/js/src/hunt-banner-sphere.js');
+        $this->assertStringContainsString('SphereGeometry', $source);
+        $this->assertStringContainsString('prefers-reduced-motion', $source);
+        $this->assertStringContainsString('quaternion.slerp', $source);
+        $this->assertStringContainsString('turnSpeed = 0.0034', $source);
+        $this->assertStringNotContainsString('rotation.y += 0.0042', $source);
+        $bundle = (string) file_get_contents($theme . '/assets/js/hunt-banner-sphere.js');
+        $this->assertGreaterThan(50000, strlen($bundle));
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_virtual_pages_are_not_left_as_an_empty_singular_query(): void
     {
         $this->bootShell();
