@@ -135,7 +135,15 @@ function cta_shell_request_slug(): string
             $path = trim(substr($path, strlen($homePath)), '/');
         }
     }
-    $allowed = ['progression', 'reglement', 'trophees', 'outils', 'points', 'notifications'];
+    $allowed = [
+        'progression',
+        'reglement',
+        'trophees',
+        'statistiques',
+        'outils',
+        'points',
+        'notifications',
+    ];
 
     return in_array($path, $allowed, true) ? $path : '';
 }
@@ -289,6 +297,14 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
             'trophy',
             cta_shell_location_url('trophees'),
             cta_shell_location_is_current('trophees'),
+            'primary'
+        ),
+        cta_shell_nav_item(
+            'statistiques',
+            __('Statistiques', 'chassesautresor-com'),
+            'stats',
+            cta_shell_location_url('statistiques'),
+            cta_shell_location_is_current('statistiques'),
             'primary'
         ),
     ];

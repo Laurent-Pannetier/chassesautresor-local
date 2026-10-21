@@ -36,6 +36,8 @@ function cta_shell_icon(string $name): string
     $icons = [
         'home' => '<path fill="currentColor" d="M12 3.2 3 11h2v9h5.5v-5.5h3V20H19v-9h2L12 3.2z"/>',
         'progression' => '<path fill="currentColor" d="M4 13h3.2v7H4v-7zm6.4-4h3.2v11h-3.2V9zM16.8 5H20v15h-3.2V5z"/>',
+        'stats' => '<path fill="currentColor" d="M4 19.2h16v1.6H4v-1.6zM5.2 15h2.5v3.4H5.2V15zm4.1-4.2h2.5'
+            . 'v7.6H9.3v-7.6zm4.1-3.6h2.5V18.4h-2.5V7.2zm4.1-3h2.5v14.2h-2.5V4.2z"/>',
         'rules' => '<path fill="currentColor" d="M7 2.5h7.2L19 7.3V21.5H7V2.5zm7 1.6V8h3.9'
             . 'L14 4.1zM9.2 12h6.2v1.6H9.2V12zm0 3.4h6.2v1.6H9.2v-1.6z"/>',
         'flame' => '<path fill="currentColor" d="'
@@ -117,6 +119,7 @@ function cta_shell_page_titles(): array
         'progression'    => __('Progression', 'chassesautresor-com'),
         'reglement'      => __('Règlement', 'chassesautresor-com'),
         'trophees'       => __('Trophées', 'chassesautresor-com'),
+        'statistiques'   => __('Statistiques', 'chassesautresor-com'),
         'outils'         => __('Outils', 'chassesautresor-com'),
         'points'         => __('Points', 'chassesautresor-com'),
         'notifications'  => __('Notifications', 'chassesautresor-com'),
