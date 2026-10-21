@@ -473,6 +473,12 @@ class easyFancyBox_Admin { // phpcs:ignore
 	 * Add setting sections and fields to options page.
 	 */
 	public static function add_settings_fields() {
+		// Settings fields are only used to render the settings page.
+		// admin_init also fires on admin-ajax.php, so skip the work there.
+		if ( wp_doing_ajax() ) {
+			return;
+		}
+
 		// Add general settings fields.
 		add_settings_field(
 			'fancybox_version',
@@ -606,7 +612,7 @@ class easyFancyBox_Admin { // phpcs:ignore
 						is_array( $option )
 						&& array_key_exists( 'options', $option )
 						// Exclude select inputs, which have options key.
-						&& 'select' !== $option['input']
+						&& 'select' !== ( $option['input'] ?? '' )
 					) {
 						foreach ( $option['options'] as $sub_option_key => $suboption ) {
 							if ( is_array( $suboption ) && array_key_exists( 'id', $suboption ) ) {
