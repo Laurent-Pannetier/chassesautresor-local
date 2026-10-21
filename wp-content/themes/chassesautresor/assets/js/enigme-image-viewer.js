@@ -697,6 +697,29 @@
       lastHints = hints;
     };
 
+    let headerOffsetObserver = null;
+    const syncSiteHeaderOffset = () => {
+      const header = document.querySelector('header.site-header, #masthead');
+      const bottom = header ? header.getBoundingClientRect().bottom : 0;
+      const offset = Math.max(0, Math.ceil(bottom));
+      document.body.style.setProperty('--comic-header-offset', offset + 'px');
+    };
+    const watchSiteHeader = () => {
+      syncSiteHeaderOffset();
+      window.addEventListener('resize', syncSiteHeaderOffset);
+      const header = document.querySelector('header.site-header, #masthead');
+      if (header && typeof ResizeObserver !== 'undefined') {
+        headerOffsetObserver = new ResizeObserver(syncSiteHeaderOffset);
+        headerOffsetObserver.observe(header);
+      }
+    };
+    const unwatchSiteHeader = () => {
+      window.removeEventListener('resize', syncSiteHeaderOffset);
+      headerOffsetObserver?.disconnect();
+      headerOffsetObserver = null;
+      document.body.style.removeProperty('--comic-header-offset');
+    };
+
     const activate = () => {
       if (readerActive || !gallery.isConnected || editionActive()) {
         return;
@@ -706,6 +729,7 @@
       watchHints();
       watchStructure();
       document.body.classList.add('comic-reader');
+      watchSiteHeader();
       gallery.classList.add('is-comic-active');
       playIntro();
     };
@@ -732,6 +756,7 @@
       hud = null;
       gallery.classList.remove('is-comic-active');
       document.body.classList.remove('comic-reader', 'is-hud-visible');
+      unwatchSiteHeader();
     };
 
     const syncEdition = () => {
