@@ -11,7 +11,6 @@ defined('ABSPATH') || exit;
 
 $content_template      = $GLOBALS['myaccount_content_template'] ?? null;
 $current_user          = wp_get_current_user();
-$display_name          = $current_user->ID ? $current_user->display_name : get_bloginfo('name');
 $last_active_formatted = '';
 
 if ($current_user->ID) {
@@ -41,8 +40,7 @@ get_header();
 <div class="myaccount-layout">
     <div class="myaccount-main">
         <?php
-        $page_title    = '';
-        $page_greeting = '';
+        $page_title = '';
         $single_hunt_home = function_exists('cat_is_single_hunt_mode') && cat_is_single_hunt_mode();
         $is_profile_root = $single_hunt_home
             && function_exists('is_account_page')
@@ -50,9 +48,15 @@ get_header();
             && function_exists('is_wc_endpoint_url')
             && !is_wc_endpoint_url()
             && empty($_GET['section']);
-        $is_player_front_home = !empty($GLOBALS['cat_account_home_on_front'])
-            && function_exists('cat_single_hunt_home_audience')
-            && cat_single_hunt_home_audience() === 'joueur';
+        $is_home_screen = !empty($GLOBALS['cat_account_home_on_front'])
+            || (
+                function_exists('is_account_page')
+                && is_account_page()
+                && function_exists('is_wc_endpoint_url')
+                && !is_wc_endpoint_url()
+                && empty($_GET['section'])
+                && !$is_profile_root
+            );
         if (
             $is_profile_root
             || is_wc_endpoint_url('edit-account')
@@ -62,21 +66,12 @@ get_header();
             $page_title = __('Profil', 'chassesautresor-com');
         } elseif (is_wc_endpoint_url('tentatives')) {
             $page_title = __('Tentatives', 'chassesautresor-com');
-        } elseif (!empty($GLOBALS['cat_account_home_on_front'])) {
-            $page_greeting = __('Bienvenue', 'chassesautresor-com');
-            $page_title    = $display_name;
-        } elseif (is_account_page() && empty($_GET['section'])) {
-            $page_greeting = __('Bienvenue', 'chassesautresor-com');
-            $page_title    = $display_name;
         }
-        if (!$is_player_front_home && ($page_title || $last_active_formatted)) :
+        if (!$is_home_screen && ($page_title || $last_active_formatted)) :
             ?>
             <header class="myaccount-header">
                 <?php if ($page_title) : ?>
                     <h1 class="myaccount-title">
-                        <?php if ($page_greeting) : ?>
-                            <span class="myaccount-title-greeting"><?php echo esc_html($page_greeting); ?></span>
-                        <?php endif; ?>
                         <span class="myaccount-title-text"><?php echo esc_html($page_title); ?></span>
                     </h1>
                 <?php endif; ?>

@@ -1502,7 +1502,11 @@ final class ThemeCoreBoundaryTest extends TestCase
             'new ChassesAuTresor\\Core\\Messages\\AccountHuntRiddleStatisticsRenderer',
             $orgDashboard
         );
-        self::assertStringContainsString('renderProtectionCard', $adminDashboard);
+        $outils = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/shell/outils.php'
+        );
+        self::assertStringContainsString('renderProtectionCard', $outils);
+        self::assertStringNotContainsString('renderProtectionCard', $adminDashboard);
         self::assertStringContainsString('class AccountHuntRiddleStatisticsRenderer', $renderer);
         self::assertStringNotContainsString('RiddleStatisticsApplicationService', $adminDashboard);
         self::assertStringNotContainsString('RiddleStatisticsApplicationService', $orgDashboard);

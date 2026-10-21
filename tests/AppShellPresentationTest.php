@@ -39,6 +39,52 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringNotContainsString('<img', $html);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_virtual_pages_are_not_left_as_an_empty_singular_query(): void
+    {
+        $this->bootShell();
+
+        $query = new stdClass();
+        $query->is_404 = true;
+        $query->is_single = true;
+        $query->is_singular = true;
+        $query->is_page = false;
+        $query->queried_object = null;
+        $query->queried_object_id = null;
+        $query->post = null;
+        $query->posts = [];
+        $query->post_count = 0;
+        $GLOBALS['post'] = null;
+
+        cta_shell_normalize_virtual_query($query);
+
+        $this->assertFalse($query->is_404);
+        $this->assertFalse($query->is_single);
+        $this->assertFalse($query->is_singular);
+        $this->assertNull($query->queried_object);
+        $this->assertNull($GLOBALS['post']);
+    }
+
+    public function test_home_pages_drop_the_welcome_and_tools_leave_the_home(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $layout = (string) file_get_contents($theme . '/templates/myaccount/layout.php');
+        $organizer = (string) file_get_contents($theme . '/template-parts/myaccount/dashboard-organisateur.php');
+        $admin = (string) file_get_contents($theme . '/template-parts/myaccount/dashboard-admin.php');
+        $outils = (string) file_get_contents($theme . '/template-parts/shell/outils.php');
+
+        $this->assertStringNotContainsString('Bienvenue', $layout);
+        $this->assertStringNotContainsString('Accès rapide édition', $organizer);
+        $this->assertStringNotContainsString('Accès rapide édition', $admin);
+        $this->assertStringNotContainsString('cat_render_hunt_quick_edit_card', $outils);
+        $this->assertStringContainsString('Pilotage de la chasse', $outils);
+        $this->assertStringContainsString('renderProtectionCard', $outils);
+        $this->assertStringContainsString('Taux de conversion', $outils);
+    }
+
     public function test_trophy_icon_is_shared_by_the_menu_and_the_top_bar(): void
     {
         $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';

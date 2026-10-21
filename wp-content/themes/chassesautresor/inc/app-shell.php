@@ -44,6 +44,8 @@ function cta_shell_icon(string $name): string
             . ' 8 10.1V7zm8 0v3.1a2.1 2.1 0 0 0 1.9-2V7H16z"/>',
         'profile' => '<path fill="currentColor" d="M12 12.2a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm0 2c-3.4'
             . ' 0-8 1.7-8 5v1.3h16V19.2c0-3.3-4.6-5-8-5z"/>',
+        'tools' => '<path fill="currentColor" d="M14.2 3.2a4.4 4.4 0 0 0-4.1 6.1L4.4 15a2.2 2.2 0 0 0'
+            . ' 3.1 3.1l5.7-5.7a4.4 4.4 0 0 0 6.1-4.1l-2.6 2.6-2.3-2.3 2.6-2.6a4.4 4.4 0 0 0-2.8-.8z"/>',
         'points' => '<path fill="currentColor" d="M12 2.5a9.5 9.5 0 1 0 9.5 9.5A9.5 9.5 0 0 0 12'
             . ' 2.5zm0 4.1 1.5 3.1 3.4.5-2.5 2.4.6 3.4L12 14.4 8.9 16l.6-3.4-2.4-2.4'
             . ' 3.4-.5L12 6.6z"/>',
@@ -92,6 +94,7 @@ function cta_shell_page_titles(): array
         'progression'    => __('Progression', 'chassesautresor-com'),
         'reglement'      => __('Règlement', 'chassesautresor-com'),
         'trophees'       => __('Trophées', 'chassesautresor-com'),
+        'outils'         => __('Outils', 'chassesautresor-com'),
         'points'         => __('Points', 'chassesautresor-com'),
         'notifications'  => __('Notifications', 'chassesautresor-com'),
     ];
@@ -289,15 +292,55 @@ add_action('wp_enqueue_scripts', 'cta_shell_enqueue');
  * @param bool     $preempt  Whether to short-circuit 404 handling.
  * @param WP_Query $wp_query Current query.
  */
+function cta_shell_normalize_virtual_query($wp_query): void
+{
+    if (!is_object($wp_query)) {
+        return;
+    }
+
+    $flags = [
+        'is_404',
+        'is_single',
+        'is_singular',
+        'is_page',
+        'is_attachment',
+        'is_preview',
+        'is_home',
+        'is_posts_page',
+        'is_archive',
+        'is_category',
+        'is_tag',
+        'is_tax',
+        'is_author',
+        'is_date',
+        'is_search',
+        'is_feed',
+        'is_embed',
+    ];
+    foreach ($flags as $flag) {
+        $wp_query->{$flag} = false;
+    }
+
+    $wp_query->queried_object = null;
+    $wp_query->queried_object_id = 0;
+    $wp_query->post = null;
+    $wp_query->posts = [];
+    $wp_query->post_count = 0;
+    $GLOBALS['post'] = null;
+}
+
+/**
+ * @param bool     $preempt  Whether to short-circuit 404 handling.
+ * @param WP_Query $wp_query Current query.
+ */
 function cta_shell_pre_handle_404($preempt, $wp_query)
 {
     if (!cta_shell_is_virtual_request()) {
         return $preempt;
     }
 
-    if ($wp_query instanceof WP_Query) {
-        $wp_query->is_404 = false;
-    }
+    // A missing public path is otherwise left singular, with no post object.
+    cta_shell_normalize_virtual_query($wp_query);
 
     return true;
 }

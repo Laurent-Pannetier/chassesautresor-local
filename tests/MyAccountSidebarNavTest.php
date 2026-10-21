@@ -91,7 +91,7 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Règlement', 'Trophées', 'Profil', 'Points', 'Notifications'],
+            ['Accueil', 'Progression', 'Règlement', 'Trophées', 'Outils', 'Profil', 'Points', 'Notifications'],
             $labels
         );
         $this->assertFalse(in_array('Tentatives', $labels, true));

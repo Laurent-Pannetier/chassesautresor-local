@@ -37,6 +37,31 @@ function myaccount_user_is_player(?WP_User $user = null): bool
 }
 
 /**
+ * Organizers and administrators get the Outils entry. Players do not.
+ */
+function cta_shell_user_sees_outils(?WP_User $user = null): bool
+{
+    $user = $user instanceof WP_User ? $user : wp_get_current_user();
+
+    return $user instanceof WP_User
+        && (int) $user->ID > 0
+        && !myaccount_user_is_player($user);
+}
+
+/**
+ * Whether the current account user is an administrator.
+ */
+function cta_shell_user_is_administrator(?WP_User $user = null): bool
+{
+    $user = $user instanceof WP_User ? $user : wp_get_current_user();
+    if (!$user instanceof WP_User || (int) $user->ID <= 0) {
+        return false;
+    }
+
+    return in_array('administrator', (array) $user->roles, true);
+}
+
+/**
  * Register the Tentatives WooCommerce account endpoint.
  */
 function myaccount_register_account_endpoints(): void
@@ -110,7 +135,7 @@ function cta_shell_request_slug(): string
             $path = trim(substr($path, strlen($homePath)), '/');
         }
     }
-    $allowed = ['progression', 'reglement', 'trophees', 'points', 'notifications'];
+    $allowed = ['progression', 'reglement', 'trophees', 'outils', 'points', 'notifications'];
 
     return in_array($path, $allowed, true) ? $path : '';
 }
@@ -233,7 +258,7 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
         ? wc_get_account_endpoint_url('dashboard')
         : wc_get_account_endpoint_url('edit-account');
 
-    return [
+    $items = [
         cta_shell_nav_item(
             'accueil',
             __('Accueil', 'chassesautresor-com'),
@@ -266,31 +291,45 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
             cta_shell_location_is_current('trophees'),
             'primary'
         ),
-        cta_shell_nav_item(
-            'profil',
-            __('Profil', 'chassesautresor-com'),
-            'profile',
-            $profileUrl,
-            $is_settings,
-            'personal'
-        ),
-        cta_shell_nav_item(
-            'points',
-            __('Points', 'chassesautresor-com'),
-            'points',
-            cta_shell_location_url('points'),
-            cta_shell_location_is_current('points'),
-            'personal'
-        ),
-        cta_shell_nav_item(
-            'notifications',
-            __('Notifications', 'chassesautresor-com'),
-            'notifications',
-            cta_shell_location_url('notifications'),
-            cta_shell_location_is_current('notifications'),
-            'personal'
-        ),
     ];
+
+    if (cta_shell_user_sees_outils($user)) {
+        $items[] = cta_shell_nav_item(
+            'outils',
+            __('Outils', 'chassesautresor-com'),
+            'tools',
+            cta_shell_location_url('outils'),
+            cta_shell_location_is_current('outils'),
+            'primary'
+        );
+    }
+
+    $items[] = cta_shell_nav_item(
+        'profil',
+        __('Profil', 'chassesautresor-com'),
+        'profile',
+        $profileUrl,
+        $is_settings,
+        'personal'
+    );
+    $items[] = cta_shell_nav_item(
+        'points',
+        __('Points', 'chassesautresor-com'),
+        'points',
+        cta_shell_location_url('points'),
+        cta_shell_location_is_current('points'),
+        'personal'
+    );
+    $items[] = cta_shell_nav_item(
+        'notifications',
+        __('Notifications', 'chassesautresor-com'),
+        'notifications',
+        cta_shell_location_url('notifications'),
+        cta_shell_location_is_current('notifications'),
+        'personal'
+    );
+
+    return $items;
 }
 
 /**
@@ -338,6 +377,14 @@ function myaccount_hunt_lifecycle_switch_is_needed(): bool
 {
     if (!is_user_logged_in()) {
         return false;
+    }
+
+    if (
+        function_exists('cta_shell_request_slug')
+        && cta_shell_request_slug() === 'outils'
+        && cta_shell_user_sees_outils()
+    ) {
+        return true;
     }
 
     if (function_exists('is_account_page') && is_account_page()) {

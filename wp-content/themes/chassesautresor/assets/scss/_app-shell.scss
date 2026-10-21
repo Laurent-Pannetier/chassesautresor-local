@@ -25,6 +25,7 @@ html {
   --shell-icon-profile: #7eb6ff;
   --shell-icon-points: #f0c14a;
   --shell-icon-notifications: #ff8b7b;
+  --shell-icon-tools: #f0a05a;
 }
 
 html[data-theme="day"] {
@@ -378,6 +379,7 @@ body.app-shell-active #masthead {
 .app-nav__icon--profile { color: var(--shell-icon-profile); }
 .app-nav__icon--points { color: var(--shell-icon-points); }
 .app-nav__icon--notifications { color: var(--shell-icon-notifications); }
+.app-nav__icon--tools { color: var(--shell-icon-tools); }
 
 .app-sidebar__foot {
   display: flex;
