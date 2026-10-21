@@ -61,17 +61,41 @@ $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
         </span>
         <span class="screen-reader-text"><?php esc_html_e('Menu', 'chassesautresor-com'); ?></span>
     </button>
-    <div class="app-topbar__brand">
-        <?php if (function_exists('has_custom_logo') && has_custom_logo() && function_exists('the_custom_logo')) : ?>
-            <?php the_custom_logo(); ?>
-        <?php else : ?>
-            <a class="app-topbar__brand-link" href="<?php echo esc_url($home); ?>">
-                <img
-                    src="<?php echo esc_url(get_stylesheet_directory_uri() . '/assets/images/logo-cat_hz-txt.png'); ?>"
-                    alt="<?php echo esc_attr($brand); ?>"
-                >
-            </a>
-        <?php endif; ?>
+    <div class="app-topbar__lead">
+        <div class="app-topbar__brand">
+            <?php if (
+                function_exists('has_custom_logo')
+                && has_custom_logo()
+                && function_exists('the_custom_logo')
+            ) : ?>
+                <?php the_custom_logo(); ?>
+            <?php else : ?>
+                <a class="app-topbar__brand-link" href="<?php echo esc_url($home); ?>">
+                    <img
+                        src="<?php echo esc_url(
+                            get_stylesheet_directory_uri() . '/assets/images/logo-cat_hz-txt.png'
+                        ); ?>"
+                        alt="<?php echo esc_attr($brand); ?>"
+                    >
+                </a>
+            <?php endif; ?>
+        </div>
+        <div class="app-topbar__hunt">
+            <span class="app-topbar__hunt-mark" aria-hidden="true">
+                <?php
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo cta_shell_icon('shield');
+                ?>
+            </span>
+            <span class="app-topbar__hunt-copy">
+                <span class="app-topbar__hunt-label">
+                    <?php esc_html_e('Chasse au trésor', 'chassesautresor-com'); ?>
+                </span>
+                <span class="app-topbar__hunt-title">
+                    <?php esc_html_e('Antre de feu', 'chassesautresor-com'); ?>
+                </span>
+            </span>
+        </div>
     </div>
     <?php if ($logged_in) : ?>
         <div class="app-topbar__meta">

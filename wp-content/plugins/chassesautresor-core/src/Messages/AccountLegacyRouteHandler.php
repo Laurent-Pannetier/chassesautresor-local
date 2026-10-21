@@ -34,23 +34,50 @@ final class AccountLegacyRouteHandler {
         }
 
         $path = self::requestPath();
-        $section = isset($_GET['section']) ? sanitize_key(wp_unslash($_GET['section'])) : '';
-        if ($path === 'mon-compte/chasses' || ($path === 'mon-compte' && $section === 'chasses')) {
-            self::redirect('/mon-compte/');
-        }
-
-        $legacySection = str_replace('mon-compte/', '', $path);
-        if (!in_array($legacySection, self::SECTIONS, true)) {
+        $rawSection = isset($_GET['section']) ? (string) $_GET['section'] : '';
+        $section = function_exists('sanitize_key') ? sanitize_key(wp_unslash($rawSection)) : $rawSection;
+        $isAdministrator = function_exists('current_user_can') && current_user_can('administrator');
+        $target = self::legacyTarget($path, $section, $isAdministrator);
+        if ($target === null) {
             return $template;
         }
 
-        $target = '/mon-compte/';
-        if (current_user_can('administrator')) {
-            $target .= '?section=' . $legacySection;
-        }
         self::redirect($target);
 
         return $template;
+    }
+
+    /**
+     * Destination of a legacy account URL.
+     *
+     * Only real /mon-compte/ sections are legacy. The public /outils/ page
+     * stays in place and shows the shell tools.
+     */
+    public static function legacyTarget(string $path, string $section, bool $isAdministrator): ?string {
+        if ($path === 'mon-compte/chasses' || ($path === 'mon-compte' && $section === 'chasses')) {
+            return '/mon-compte/';
+        }
+
+        if ($path === 'mon-compte/outils' || ($path === 'mon-compte' && $section === 'outils')) {
+            return '/outils/';
+        }
+
+        $prefix = 'mon-compte/';
+        if (strpos($path, $prefix) !== 0) {
+            return null;
+        }
+
+        $legacySection = substr($path, strlen($prefix));
+        if (!in_array($legacySection, self::SECTIONS, true) || $legacySection === 'outils') {
+            return null;
+        }
+
+        $target = '/mon-compte/';
+        if ($isAdministrator) {
+            $target .= '?section=' . $legacySection;
+        }
+
+        return $target;
     }
 
     private static function requestPath(): string {

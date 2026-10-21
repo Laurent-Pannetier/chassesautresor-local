@@ -92,7 +92,10 @@ class AppShellPresentationTest extends TestCase
         $topbar = (string) file_get_contents($theme . '/template-parts/shell/topbar.php');
 
         $this->assertStringContainsString("cta_shell_icon(", $sidebar);
+        $this->assertStringNotContainsString('organizer-nav', $sidebar);
         $this->assertStringContainsString("cta_shell_icon('trophy')", $topbar);
+        $this->assertStringContainsString('Chasse au trésor', $topbar);
+        $this->assertStringContainsString('Antre de feu', $topbar);
         $this->assertStringNotContainsString('customer-logout', $topbar);
     }
 

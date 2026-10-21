@@ -46,7 +46,6 @@ $render_link = static function (array $item): void {
             <?php $render_link($item); ?>
         <?php endforeach; ?>
     </nav>
-    <?php get_template_part('template-parts/shell/organizer-nav'); ?>
     <div class="app-sidebar__foot">
         <div class="app-theme" role="group" aria-label="<?php esc_attr_e('Thème', 'chassesautresor-com'); ?>">
             <button
