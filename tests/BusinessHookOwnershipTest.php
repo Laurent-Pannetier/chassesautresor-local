@@ -185,15 +185,23 @@ final class BusinessHookOwnershipTest extends TestCase
     }
 
     public function testBackOfficeAccessPolicyIsRegisteredByCore(): void {
-        $hooks = [];
+        $actions = [];
+        $filters = [];
 
         BackOfficeAccessHookHandler::register(
-            static function (...$arguments) use (&$hooks): void {
-                $hooks[] = $arguments;
+            static function (...$arguments) use (&$actions): void {
+                $actions[] = $arguments;
+            },
+            static function (...$arguments) use (&$filters): void {
+                $filters[] = $arguments;
             }
         );
 
-        self::assertSame([['admin_init', [BackOfficeAccessHookHandler::class, 'handle']]], $hooks);
+        self::assertSame([['admin_init', [BackOfficeAccessHookHandler::class, 'handle']]], $actions);
+        self::assertSame(
+            [['show_admin_bar', [BackOfficeAccessHookHandler::class, 'hideForOrganizers'], 999]],
+            $filters
+        );
     }
 
     public function testWordPressAccessPoliciesAreRegisteredByCore(): void {
