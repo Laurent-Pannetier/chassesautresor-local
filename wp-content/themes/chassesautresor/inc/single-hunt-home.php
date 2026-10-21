@@ -159,7 +159,7 @@ function cat_render_single_hunt_home_enigmas(): void
         && function_exists('chasse_has_validatable_enigme')
         && !chasse_has_validatable_enigme($huntId);
 
-    // The paper sommaire sits on the previous enigmas canvas, away from the shell palette.
+    // Night keeps the paper sommaire on the previous canvas. Day follows the shell background.
     echo '<div class="home-enigmas-preserve">';
     echo '<section id="enigmes" class="home-enigmas" aria-labelledby="home-enigmas-title">';
     echo '<h2 id="home-enigmas-title" class="screen-reader-text">';

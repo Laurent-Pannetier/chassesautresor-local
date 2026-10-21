@@ -15581,7 +15581,8 @@ a.bouton-edition-attention {
 }
 
 /* Shell: top bar, left menu, day and night surfaces.
-   The enigmas loop keeps its own canvas via .home-enigmas-preserve. */
+   Night keeps the enigmas loop on its previous canvas via .home-enigmas-preserve.
+   Day uses the same light page background as the rest of the shell. */
 html {
   --shell-bg: #0c1016;
   --shell-sidebar: #10151c;
@@ -16282,6 +16283,12 @@ img.avatar-pirate {
   background-repeat: repeat;
   background-size: 600px 600px;
   color: #f5f5dc;
+}
+
+html[data-theme=day] .home-enigmas-preserve {
+  background-color: var(--shell-bg);
+  background-image: none;
+  color: var(--shell-text);
 }
 
 .team-stats {

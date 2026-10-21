@@ -121,6 +121,21 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringNotContainsString('Déconnexion', $script);
     }
 
+    public function test_day_theme_uses_the_light_shell_background_for_the_enigmas_canvas(): void
+    {
+        $scss = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/assets/scss/_app-shell.scss'
+        );
+
+        $this->assertMatchesRegularExpression(
+            '/html\[data-theme="day"\] \.home-enigmas-preserve \{\s*'
+            . 'background-color:\s*var\(--shell-bg\);\s*'
+            . 'background-image:\s*none;\s*'
+            . 'color:\s*var\(--shell-text\);/s',
+            $scss
+        );
+    }
+
     public function test_player_home_keeps_enigmas_and_moves_team_stats_off_home(): void
     {
         $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
