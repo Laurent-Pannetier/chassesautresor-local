@@ -134,6 +134,68 @@ function cat_sommaire_enigme_est_visible(string $etatSysteme, bool $privileged):
 }
 
 /**
+ * Whether a player home should explain that the hunt is being edited.
+ *
+ * Organizers and administrators keep the album. A validated hunt that is not
+ * in revision stays on the sommaire. Every other revision state (creation,
+ * correction, waiting for validation) hides that empty canvas.
+ */
+function cat_player_should_see_hunt_edition_notice(
+    bool $privileged,
+    string $publicationStatus,
+    string $validationStatus,
+    string $businessStatus
+): bool {
+    if ($privileged || $validationStatus === 'banni') {
+        return false;
+    }
+
+    if ($validationStatus === 'valide' && $businessStatus !== 'revision') {
+        return false;
+    }
+
+    if ($businessStatus === 'revision') {
+        return true;
+    }
+
+    if (in_array($validationStatus, ['creation', 'correction', 'en_attente'], true)) {
+        return true;
+    }
+
+    return in_array($publicationStatus, ['pending', 'draft'], true)
+        && $validationStatus !== 'valide';
+}
+
+/**
+ * Dashboard card shown to a player while the hunt is being edited.
+ */
+function cat_render_hunt_edition_notice(): void
+{
+    $title = __('Chasse en cours d’édition', 'chassesautresor-com');
+    $note = __(
+        'Les énigmes seront de nouveau accessibles dès que l’édition sera terminée.',
+        'chassesautresor-com'
+    );
+    $icon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">'
+        . '<path d="M4.5 19.5h3.2L19 8.2a1.8 1.8 0 0 0-2.5-2.5L5.2 17v2.5z" '
+        . 'stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>'
+        . '<path d="M14.2 6.5l3.3 3.3" stroke="currentColor" stroke-width="1.6" '
+        . 'stroke-linecap="round"/>'
+        . '</svg>';
+
+    echo '<section id="enigmes" class="hunt-edition-notice" role="status"';
+    echo ' aria-labelledby="hunt-edition-notice-title">';
+    echo '<div class="hunt-edition-notice__head">';
+    echo '<h2 id="hunt-edition-notice-title" class="hunt-edition-notice__title">';
+    echo esc_html($title);
+    echo '</h2>';
+    echo '<span class="hunt-edition-notice__icon" aria-hidden="true">' . $icon . '</span>';
+    echo '</div>';
+    echo '<p class="hunt-edition-notice__text">' . esc_html($note) . '</p>';
+    echo '</section>';
+}
+
+/**
  * Album table of contents and hunt solutions at the top of engaged, organizer and admin homes.
  */
 function cat_render_single_hunt_home_enigmas(): void
@@ -154,6 +216,14 @@ function cat_render_single_hunt_home_enigmas(): void
     $isOrganizer = function_exists('utilisateur_est_organisateur_associe_a_chasse')
         && utilisateur_est_organisateur_associe_a_chasse($userId, $huntId);
     $status = (string) ($infos['statut'] ?? '');
+    $privileged = (function_exists('user_can') && user_can($userId, 'manage_options')) || $isOrganizer;
+    $publication = function_exists('get_post_status') ? (string) get_post_status($huntId) : '';
+    $validation = (string) ($infos['statut_validation'] ?? '');
+    if (cat_player_should_see_hunt_edition_notice($privileged, $publication, $validation, $status)) {
+        cat_render_hunt_edition_notice();
+        return;
+    }
+
     $showHelp = $isOrganizer
         && $status === 'revision'
         && function_exists('chasse_has_validatable_enigme')
