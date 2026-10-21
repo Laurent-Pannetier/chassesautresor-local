@@ -17904,6 +17904,12 @@ body.admin-bar .app-sidebar {
   gap: 0.45rem;
 }
 
+.app-equipe label,
+.equipe-field,
+.equipe-check {
+  color: var(--shell-text);
+}
+
 .equipe-field {
   font-size: 0.85rem;
   font-weight: 700;
