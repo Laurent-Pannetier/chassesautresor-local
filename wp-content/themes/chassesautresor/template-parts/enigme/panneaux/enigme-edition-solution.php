@@ -18,14 +18,17 @@ if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
       $mode_field = acf_get_field('enigme_solution_mode');
       $mode_key   = $mode_field['key'] ?? '';
 
-      $return_url = add_query_arg(
-        [
-          'maj'     => 'solution',
-          'edition' => 'open',
-          'tab'     => 'solution',
-        ],
-        get_permalink($enigme_id)
-      );
+      $return_url = function_exists('cta_shell_edition_url')
+        ? add_query_arg('maj', 'solution', cta_shell_edition_url('enigme', (int) $enigme_id, 'parametres'))
+            . '#panneau-solution-enigme'
+        : add_query_arg(
+            [
+              'maj'     => 'solution',
+              'edition' => 'open',
+              'tab'     => 'solution',
+            ],
+            get_permalink($enigme_id)
+        );
 
       acf_form([
         'post_id'         => $enigme_id,

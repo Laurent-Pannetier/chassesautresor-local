@@ -13,12 +13,38 @@ class RiddleOrderingService {
      * @param int[] $huntRiddleIds
      */
     public function apply(array $submittedIds, array $huntRiddleIds, callable $persist): int {
-        $orderedIds = (new RiddleManagementService())->getReorderUpdates($submittedIds, $huntRiddleIds);
+        $submitted = (new RiddleManagementService())->getReorderUpdates($submittedIds, $huntRiddleIds);
+        if ($submitted === []) {
+            return 0;
+        }
 
-        foreach ($orderedIds as $menuOrder => $riddleId) {
+        foreach ($submitted as $menuOrder => $riddleId) {
             $persist($riddleId, $menuOrder);
         }
 
-        return count($orderedIds);
+        return count($submitted);
+    }
+
+    /**
+     * Full hunt order after a drag: submitted riddles first, then any riddle left out.
+     *
+     * @param int[] $submittedIds
+     * @param int[] $huntRiddleIds
+     * @return int[]
+     */
+    public function cacheOrder(array $submittedIds, array $huntRiddleIds): array {
+        $orderedIds = array_values(
+            (new RiddleManagementService())->getReorderUpdates($submittedIds, $huntRiddleIds)
+        );
+        $seen = array_fill_keys($orderedIds, true);
+        foreach ($huntRiddleIds as $riddleId) {
+            $riddleId = (int) $riddleId;
+            if ($riddleId > 0 && !isset($seen[$riddleId])) {
+                $orderedIds[] = $riddleId;
+                $seen[$riddleId] = true;
+            }
+        }
+
+        return $orderedIds;
     }
 }

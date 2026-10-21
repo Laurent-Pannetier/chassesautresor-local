@@ -36,7 +36,9 @@ if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
         // automatiquement le panneau principal grâce au paramètre
         // ?edition=open. L'ancre #images-enigme permet de scroller
         // directement sur le panneau images.
-        'return'             => add_query_arg('edition', 'open', get_permalink()) . '#images-enigme',
+        'return'             => function_exists('cta_shell_edition_return_url')
+            ? cta_shell_edition_return_url('enigme', (int) $enigme_id, 'parametres', 'images-enigme')
+            : add_query_arg('edition', 'open', get_permalink()) . '#images-enigme',
         'updated_message'    => __('Images mises à jour.', 'chassesautresor-com'),
     ]);
 

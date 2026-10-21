@@ -34,7 +34,13 @@ if (!$enigme_id || get_post_type($enigme_id) !== 'enigme') return;
         'html_submit_button' => '<div class="panneau-lateral__actions"><button type="submit" class="bouton-enregistrer-description bouton-enregistrer-liens">%s</button></div>',
         'html_before_fields' => '<div class="champ-wrapper">',
         'html_after_fields'  => '</div>',
-        'return'             => add_query_arg('panneau', 'description-enigme', get_permalink()),
+        'return'             => add_query_arg(
+            'panneau',
+            'description-enigme',
+            function_exists('cta_shell_edition_url')
+                ? cta_shell_edition_url('enigme', (int) $enigme_id, 'parametres')
+                : (string) get_permalink()
+        ),
         'updated_message'    => __('Texte de l’énigme mis à jour.', 'chassesautresor-com'),
     ]);
 

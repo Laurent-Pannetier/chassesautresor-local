@@ -38,10 +38,12 @@ add_filter('acf/prepare_field/name=chasse_principale_description', $hide_label);
       'html_submit_button' => '<div class="panneau-lateral__actions"><button type="submit" class="bouton-enregistrer-description bouton-enregistrer-liens">%s</button></div>',
       'html_before_fields' => '<div class="champ-wrapper">',
       'html_after_fields'  => '</div>',
-      'return'             => add_query_arg(
-          ['edition' => 'open', 'tab' => 'param'],
-          get_permalink()
-      ) . '#chasse-description',
+      'return'             => function_exists('cta_shell_edition_return_url')
+          ? cta_shell_edition_return_url('chasse', (int) $chasse_id, 'parametres', 'chasse-description')
+          : add_query_arg(
+              ['edition' => 'open', 'tab' => 'param'],
+              get_permalink()
+          ) . '#chasse-description',
       'updated_message'    => __( 'Description mise à jour.', 'chassesautresor-com' ),
   ]);
   remove_filter('acf/prepare_field/name=chasse_principale_description', $hide_label);

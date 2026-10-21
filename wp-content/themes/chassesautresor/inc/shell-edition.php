@@ -220,50 +220,57 @@ function cta_shell_render_edition(array $target): void
 }
 
 /**
- * Riddles of the managed hunt, in the drag-and-drop order stored as menu_order.
+ * Address used after an editor form is saved, staying on the dashboard page.
+ */
+function cta_shell_edition_return_url(
+    string $type,
+    int $id,
+    string $section = 'parametres',
+    string $fragment = ''
+): string {
+    $url = cta_shell_edition_url($type, $id, $section);
+    $fragment = ltrim($fragment, '#');
+    if ($fragment !== '') {
+        $url .= '#' . $fragment;
+    }
+
+    return $url;
+}
+
+/**
+ * Riddles of the managed hunt, in the sommaire order (drag-and-drop).
  *
  * @return WP_Post[]
  */
 function cta_shell_ordered_riddle_posts(int $huntId): array
 {
-    if (
-        $huntId <= 0
-        || !class_exists(ChassesAuTresor\Core\Relationships\HuntRiddleQueryService::class)
-        || !function_exists('get_posts')
-    ) {
+    if ($huntId <= 0 || !function_exists('get_posts') || !function_exists('recuperer_enigmes_associees')) {
         return [];
     }
 
-    $args = (new ChassesAuTresor\Core\Relationships\HuntRiddleQueryService())->getRiddleIdsQueryArgs($huntId);
-    if ($args === []) {
+    $ids = array_values(array_filter(
+        array_map('intval', recuperer_enigmes_associees($huntId)),
+        static fn (int $id): bool => $id > 0
+    ));
+    if ($ids === []) {
         return [];
     }
 
-    $args['fields'] = 'all';
-    $args['orderby'] = 'menu_order';
-    $args['order'] = 'ASC';
-    $posts = get_posts($args);
+    $posts = get_posts([
+        'post_type' => 'enigme',
+        'post_status' => ['publish', 'pending', 'draft', 'private'],
+        'posts_per_page' => count($ids),
+        'post__in' => $ids,
+        'orderby' => 'post__in',
+    ]);
     if (!is_array($posts)) {
         return [];
     }
 
-    $riddles = array_values(array_filter(
+    return array_values(array_filter(
         $posts,
         static fn ($post): bool => $post instanceof WP_Post
     ));
-    usort(
-        $riddles,
-        static function (WP_Post $left, WP_Post $right): int {
-            $order = (int) $left->menu_order <=> (int) $right->menu_order;
-            if ($order !== 0) {
-                return $order;
-            }
-
-            return (int) $left->ID <=> (int) $right->ID;
-        }
-    );
-
-    return $riddles;
 }
 
 /**

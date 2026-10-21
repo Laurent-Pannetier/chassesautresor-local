@@ -63,6 +63,9 @@ final class ShellEditionUrlTest extends TestCase
         $hunt = (string) file_get_contents($theme . '/template-parts/chasse/chasse-affichage-complet.php');
         $outils = (string) file_get_contents($theme . '/template-parts/shell/outils.php');
         $sidebar = (string) file_get_contents($theme . '/template-parts/shell/sidebar.php');
+        $sommaire = (string) file_get_contents(
+            $theme . '/template-parts/enigme/chasse-partial-sommaire-enigmes.php'
+        );
 
         self::assertStringContainsString('cta_shell_edition_url', $fiche);
         self::assertStringNotContainsString('toggle-mode-edition-enigme', $fiche);
@@ -72,5 +75,6 @@ final class ShellEditionUrlTest extends TestCase
         self::assertStringNotContainsString('toggle-mode-edition-chasse', $hunt);
         self::assertStringContainsString('cta_shell_render_hunt_edit_card', $outils);
         self::assertStringContainsString('cta_shell_render_outils_submenu', $sidebar);
+        self::assertStringContainsString('cta_shell_edition_url', $sommaire);
     }
 }
