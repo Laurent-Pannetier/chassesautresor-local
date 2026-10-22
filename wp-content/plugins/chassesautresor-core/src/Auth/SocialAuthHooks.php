@@ -15,6 +15,10 @@ final class SocialAuthHooks
         SocialAuthRouteHandler::register($addAction);
         $addFilter('login_url', [self::class, 'filterLoginUrl'], 10, 3);
         $addFilter('register_url', [self::class, 'filterRegisterUrl']);
+        $addFilter('login_redirect', [self::class, 'filterAccountLanding'], 40, 3);
+        $addFilter('woocommerce_login_redirect', [self::class, 'filterAccountLanding'], 40, 2);
+        $addFilter('registration_redirect', [self::class, 'filterAccountLanding'], 40, 1);
+        $addFilter('woocommerce_registration_redirect', [self::class, 'filterAccountLanding'], 40, 1);
         $addAction('login_init', [self::class, 'redirectPublicLogin']);
         $addAction('wp_login_failed', [self::class, 'redirectFailedLogin'], 10, 2);
         $addFilter('allow_password_reset', [self::class, 'filterPasswordReset'], 10, 2);
@@ -35,6 +39,21 @@ final class SocialAuthHooks
         $target = is_string($redirect) ? $redirect : '';
 
         return cat_social_auth_page_url($target);
+    }
+
+    /**
+     * L'accueil remplace la page profil après une connexion ou une inscription.
+     *
+     * @param mixed $redirectTo
+     * @param mixed $requested
+     * @param mixed $user
+     */
+    public static function filterAccountLanding($redirectTo, $requested = '', $user = null): string
+    {
+        unset($requested, $user);
+        $target = is_string($redirectTo) ? $redirectTo : '';
+
+        return (new SocialAuthRedirect())->accept($target, home_url('/'));
     }
 
     /**
