@@ -36,6 +36,12 @@ require_once __DIR__ . '/src/Email/forgot-password.php';
 require_once __DIR__ . '/src/Email/woocommerce.php';
 require_once __DIR__ . '/src/Points/PointsRepository.php';
 require_once __DIR__ . '/src/Admin/AdminStatisticsResetService.php';
+require_once __DIR__ . '/src/Admin/StatisticsFixtureAccess.php';
+require_once __DIR__ . '/src/Admin/StatisticsFixtureService.php';
+require_once __DIR__ . '/src/Admin/StatisticsFixtureGateway.php';
+require_once __DIR__ . '/src/Admin/StatisticsFixtureAjaxHandler.php';
+require_once __DIR__ . '/src/Admin/StatisticsFixtureHookHandler.php';
+require_once __DIR__ . '/src/Admin/statistics-fixture-functions.php';
 require_once __DIR__ . '/src/Admin/AdminPaymentRenderer.php';
 require_once __DIR__ . '/src/Admin/admin-payment-functions.php';
 require_once __DIR__ . '/src/Admin/admin-ajax-functions.php';
@@ -449,6 +455,8 @@ if (!class_exists('PointsRepository', false)) {
 }
 
 ChassesAuTresor\Core\Admin\AdminAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Admin\StatisticsFixtureAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Admin\StatisticsFixtureHookHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Site\SiteExperienceSettingsPage::register('add_action');
 ChassesAuTresor\Core\Site\SingleHuntPublicAccessHandler::register('add_action');
 ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::register('add_action', 'add_filter');
