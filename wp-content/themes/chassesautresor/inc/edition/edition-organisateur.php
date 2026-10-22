@@ -28,17 +28,15 @@ function organisateur_get_liens_actifs(int $organisateur_id): array
 
 
 /**
- * Charge les scripts JS pour l’édition frontale d’un organisateur (header + panneau).
- *
- * Chargé uniquement si l’utilisateur peut modifier l’organisateur lié.
+ * Charge les scripts JS de l’éditeur organisateur sur la page Outils.
  *
  * @hook wp_enqueue_scripts
  */
 function enqueue_script_organisateur_edit()
 {
-  if (!is_singular('organisateur')) return;
-
-  $organisateur_id = (int) get_the_ID();
+  $organisateur_id = function_exists('cta_shell_edition_post_id')
+      ? (int) cta_shell_edition_post_id('organisateur')
+      : 0;
 
   if ($organisateur_id && utilisateur_peut_modifier_post($organisateur_id)) {
     // 📦 Modules JS partagés + script organisateur

@@ -82,7 +82,15 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
         if ($showOrganizerLink) {
             $links[] = [
                 'label' => __('Organisateur', 'chassesautresor-com'),
-                'url' => add_query_arg(['edition' => 'open'], get_permalink($organizerId)),
+                'url' => function_exists('cta_shell_edition_url')
+                    ? cta_shell_edition_url('organisateur', $organizerId, 'parametres')
+                    : add_query_arg(
+                        [
+                            'organisateur' => $organizerId,
+                            'section' => 'parametres',
+                        ],
+                        home_url('/outils/')
+                    ),
             ];
         }
 

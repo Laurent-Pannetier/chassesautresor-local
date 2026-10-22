@@ -5456,32 +5456,6 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
   pointer-events: none;
 }
 
-body.edition-active .panneau-organisateur {
-  height: 90vh;
-  max-height: 90vh;
-  opacity: 1;
-  transform: translateY(0);
-  background-color: var(--color-editor-background);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  padding: var(--space-md);
-  pointer-events: auto;
-  border-bottom: 1px solid var(--color-editor-border);
-  overflow-y: auto;
-  color: var(--color-editor-text);
-}
-
-body.edition-active .panneau-organisateur.edition-panel-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 95%;
-  height: 90vh;
-  max-height: 90vh;
-  border-radius: 8px;
-  z-index: 10000;
-}
-
 body.shell-edition.mode-edition {
   --color-editor-background: var(--shell-surface);
   --color-editor-border: var(--shell-border);
@@ -5741,7 +5715,8 @@ body.shell-edition .champ-cout-points:has(#enigme-cout-toggle:checked) .toggle-o
 }
 
 body.shell-edition .edition-panel-enigme,
-body.shell-edition .edition-panel-chasse {
+body.shell-edition .edition-panel-chasse,
+body.shell-edition .edition-panel-organisateur {
   position: relative;
   width: 100%;
   height: auto;
@@ -5928,20 +5903,27 @@ body.shell-edition .champ-images-editeur .acf-hide-label > .acf-label {
 }
 
 body.shell-edition .champ-recompense-editeur,
-body.shell-edition .champ-liens-editeur {
+body.shell-edition .champ-liens-editeur,
+body.shell-edition .champ-coordonnees-editeur {
   width: 100%;
   margin-top: 0.75rem;
 }
 
-body.shell-edition .champ-recompense-editeur {
+body.shell-edition .champ-recompense-editeur,
+body.shell-edition .champ-coordonnees-editeur {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+body.shell-edition .champ-coordonnees-editeur[hidden] {
+  display: none;
+}
+
 body.shell-edition .champ-recompense-editeur input,
 body.shell-edition .champ-recompense-editeur textarea,
-body.shell-edition .champ-liens-editeur input {
+body.shell-edition .champ-liens-editeur input,
+body.shell-edition .champ-coordonnees-editeur input {
   width: 100%;
 }
 

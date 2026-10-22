@@ -27,7 +27,7 @@ defined('ABSPATH') || exit;
 // 🔹 enqueue_core_edit_scripts() → Enfile les JS mutualisés
 
 /**
- * Charge les scripts ACF sur la page d’édition Outils (chasse ou énigme).
+ * Charge les scripts ACF sur la page d’édition Outils (chasse, énigme ou organisateur).
  *
  * Les formulaires ACF (description, galerie) ne sont plus rendus sur la fiche publique.
  *
@@ -41,6 +41,9 @@ function forcer_chargement_acf_scripts_chasse()
       $shellId = cta_shell_edition_post_id('chasse');
       if ($shellId <= 0) {
           $shellId = cta_shell_edition_post_id('enigme');
+      }
+      if ($shellId <= 0) {
+          $shellId = cta_shell_edition_post_id('organisateur');
       }
   }
   if ($shellId <= 0) {
@@ -403,12 +406,8 @@ add_action('admin_head', 'ajouter_barre_progression_top');
 /**
  * Injecte automatiquement la classe CSS "edition-active" dans le <body> si l'utilisateur peut éditer le contenu.
  *
- * Cette classe active l'interface d'édition frontale (boutons, panneaux...).
- * Elle s'applique au CPT "organisateur" en attente, lorsque l'auteur
- * possède le rôle "organisateur_creation".
- *
- * L'édition chasse et énigme vit sur la page Outils : elle n'active plus
- * ce mode sur la fiche publique.
+ * Le mode d'édition des fiches vit sur la page Outils.
+ * Ici, la classe ne sert plus que le tableau de bord /mon-compte.
  *
  * @hook body_class
  * @param array $classes Liste actuelle des classes du <body>
@@ -424,30 +423,6 @@ function injection_classe_edition_active( array $classes ): array
     $uri = $_SERVER['REQUEST_URI'] ?? '';
     if ( preg_match( '#^/mon-compte(?:/|$|\?)#', $uri ) ) {
         $classes[] = 'mode-edition';
-    }
-
-    global $post;
-    if ( ! $post || ! isset( $post->post_type ) ) {
-        return $classes;
-    }
-
-    $user_id = get_current_user_id();
-    $roles   = wp_get_current_user()->roles;
-
-    // === ORGANISATEUR ===
-    if (
-        $post->post_type === 'organisateur' &&
-        (int) get_post_field( 'post_author', $post->ID ) === $user_id &&
-        in_array( ROLE_ORGANISATEUR_CREATION, $roles, true ) &&
-        ! get_field( 'organisateur_cache_complet', $post->ID )
-    ) {
-        if (
-            get_post_status( $post ) === 'pending' &&
-            ! get_field( 'organisateur_cache_complet', $post->ID )
-        ) {
-            $classes[] = 'edition-active';
-            $classes[] = 'mode-edition';
-        }
     }
 
     return $classes;

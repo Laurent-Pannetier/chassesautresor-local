@@ -237,13 +237,15 @@ function myaccount_get_important_messages(): string {
         if (!empty($pendingOwn)) {
             $conversion_url = $organisateur_id
                 ? esc_url(
-                    add_query_arg(
-                        [
-                            'edition' => 'open',
-                            'onglet'  => 'revenus',
-                        ],
-                        get_permalink($organisateur_id)
-                    )
+                    function_exists('cta_shell_edition_url')
+                        ? cta_shell_edition_url('organisateur', (int) $organisateur_id, 'revenus')
+                        : add_query_arg(
+                            [
+                                'organisateur' => (int) $organisateur_id,
+                                'section' => 'revenus',
+                            ],
+                            home_url('/outils/')
+                        )
                 )
                 : esc_url(home_url('/mon-compte/'));
 
