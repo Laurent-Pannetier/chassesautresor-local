@@ -264,8 +264,10 @@ final class PlayerProgressionRenderer
         $this->renderHuntSwitcher($hunts, $currentHuntId);
         echo '<section class="progression-leaderboard progression-table-card player-ranking__board"'
             . ' aria-labelledby="player-ranking-title">';
+        echo '<header class="player-ranking__heading">';
         echo '<h2 id="player-ranking-title">'
             . esc_html__('Classement de la chasse', 'chassesautresor-com') . '</h2>';
+        echo '</header>';
         echo '<div data-progression-leaderboard>';
         echo $this->leaderboard((array) ($view['leaderboard'] ?? []));
         echo '</div></section>';
@@ -276,9 +278,14 @@ final class PlayerProgressionRenderer
                 $title = __('Énigme', 'chassesautresor-com');
             }
             $headingId = 'player-ranking-riddle-' . $riddleId;
-            echo '<section class="progression-leaderboard progression-table-card player-ranking__board"'
-                . ' aria-labelledby="' . esc_attr($headingId) . '">';
-            echo '<h2 id="' . esc_attr($headingId) . '">' . esc_html($title) . '</h2>';
+            echo '<section class="progression-leaderboard progression-table-card player-ranking__board'
+                . ' player-ranking__board--riddle" aria-labelledby="' . esc_attr($headingId) . '">';
+            echo '<header class="player-ranking__heading player-ranking__heading--riddle">';
+            echo '<h2 id="' . esc_attr($headingId) . '">';
+            echo '<span class="player-ranking__kicker">' . esc_html__('Énigme', 'chassesautresor-com')
+                . '</span>';
+            echo esc_html($title);
+            echo '</h2></header>';
             echo '<div data-riddle-ranking data-riddle-id="' . esc_attr((string) $riddleId) . '">';
             echo $this->riddleRanking((array) ($riddle['ranking'] ?? []));
             echo '</div></section>';

@@ -197,6 +197,9 @@ final class PlayerProgressionRendererTest extends TestCase
         ]);
 
         self::assertStringContainsString('Classement de la chasse', $ranking);
+        self::assertStringContainsString('player-ranking__heading--riddle', $ranking);
+        self::assertStringContainsString('player-ranking__kicker', $ranking);
+        self::assertStringContainsString('>Énigme</span>', $ranking);
         self::assertStringContainsString('Capitaine', $ranking);
         self::assertStringContainsString('Solo', $ranking);
         self::assertStringContainsString('Pas encore de classement.', $ranking);
