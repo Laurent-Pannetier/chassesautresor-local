@@ -487,6 +487,19 @@ img.avatar-pirate {
   color: inherit;
 }
 
+.app-nav__badge {
+  min-width: 1.35rem;
+  margin-left: auto;
+  padding: 0.12rem 0.35rem;
+  border-radius: 999px;
+  background: var(--shell-icon-notifications);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
+
 .app-nav__icon--home { color: var(--shell-icon-home); }
 .app-nav__icon--progression { color: var(--shell-icon-progression); }
 .app-nav__icon--rules { color: var(--shell-icon-rules); }
@@ -1958,6 +1971,212 @@ body.admin-bar.shell-edition .app-sidebar {
   letter-spacing: 0.08em;
 }
 
+.app-trophies,
+.app-notifications {
+  max-width: 58rem;
+  padding: 0.25rem 0 2rem;
+}
+
+.trophies-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.trophy-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1.15rem;
+  background: var(--shell-surface);
+  color: var(--shell-text);
+}
+
+.trophy-card__image,
+.trophy-card__fallback {
+  width: 5rem;
+  height: 5rem;
+  flex: 0 0 auto;
+  border-radius: 1rem;
+  object-fit: cover;
+  background: var(--shell-surface-2);
+}
+
+.trophy-card__fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.25rem;
+}
+
+.trophy-card__content {
+  min-width: 0;
+}
+
+.trophy-card__content h2,
+.notifications-list__content h2 {
+  margin: 0.15rem 0 0.35rem;
+  color: var(--shell-text);
+  font-size: 1.1rem;
+}
+
+.trophy-card__content p,
+.notifications-list__content p {
+  margin: 0;
+  color: var(--shell-muted);
+  line-height: 1.45;
+}
+
+.trophy-card__scope,
+.notifications-list__type {
+  color: var(--shell-accent);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.trophy-card__date {
+  margin-top: 0.55rem !important;
+  font-size: 0.8rem;
+}
+
+.trophies-page__empty,
+.notifications-center__empty {
+  color: var(--shell-muted);
+}
+
+.notifications-center__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.notifications-center__header p {
+  margin: 0;
+  color: var(--shell-muted);
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notifications-list__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  padding: 1rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1rem;
+  background: var(--shell-surface);
+}
+
+.notifications-list__item.is-unread {
+  border-color: var(--shell-icon-notifications);
+  box-shadow: inset 0.25rem 0 0 var(--shell-icon-notifications);
+}
+
+.notifications-list__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--shell-surface-2);
+  font-size: 1.25rem;
+}
+
+.notifications-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.notifications-list__meta time {
+  color: var(--shell-muted);
+  font-size: 0.75rem;
+}
+
+.notifications-list__read {
+  grid-column: 2;
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--shell-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.notification-overlay {
+  position: fixed;
+  z-index: 100000;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(7, 10, 18, 0.82);
+  backdrop-filter: blur(0.35rem);
+}
+
+.notification-overlay__card {
+  width: min(100%, 28rem);
+  padding: 1.5rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1.5rem;
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
+  color: var(--shell-text);
+  text-align: center;
+}
+
+.notification-overlay__card--trophy {
+  border-color: var(--shell-icon-trophy);
+  box-shadow: 0 0 2.5rem rgba(245, 196, 81, 0.3);
+}
+
+.notification-overlay__image {
+  width: 8rem;
+  height: 8rem;
+  margin-bottom: 0.9rem;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 0 1rem rgba(245, 196, 81, 0.45));
+}
+
+.notification-overlay__eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--shell-icon-trophy);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.notification-overlay__card h2 {
+  margin: 0 0 0.65rem;
+  color: var(--shell-text);
+}
+
+.notification-overlay__body {
+  margin: 0 0 1.25rem;
+  color: var(--shell-muted);
+  line-height: 1.5;
+}
+
 @media (--bp-small) {
   .equipe-grid--split {
     grid-template-columns: 1fr 1fr;
@@ -1965,5 +2184,25 @@ body.admin-bar.shell-edition .app-sidebar {
 
   .equipe-hero {
     flex-direction: row;
+  }
+
+  .trophies-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .notifications-center__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .notifications-list__item {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .notifications-list__read {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center;
   }
 }

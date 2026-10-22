@@ -45,6 +45,9 @@ if ($logged_in) {
     }
 }
 $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
+$trophy_count = $logged_in && function_exists('cat_user_trophy_count')
+    ? cat_user_trophy_count((int) $current_user->ID)
+    : 0;
 ?>
 <header class="app-topbar">
     <?php if (!function_exists('cta_shell_shows_sidebar') || cta_shell_shows_sidebar()) : ?>
@@ -110,7 +113,7 @@ $login_url = function_exists('wp_login_url') ? wp_login_url($home) : $home;
                     echo cta_shell_icon('trophy');
                     ?>
                 </span>
-                <span class="app-topbar__trophy-count">0</span>
+                <span class="app-topbar__trophy-count"><?php echo esc_html((string) $trophy_count); ?></span>
             </a>
             <?php if ($profile_url !== '') : ?>
                 <a class="app-topbar__profile" href="<?php echo esc_url($profile_url); ?>">

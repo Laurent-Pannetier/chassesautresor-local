@@ -334,6 +334,9 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
         cta_shell_location_is_current('notifications'),
         'personal'
     );
+    if (function_exists('cat_notification_unread_count')) {
+        $items[array_key_last($items)]['badge'] = cat_notification_unread_count((int) $user->ID);
+    }
 
     return $items;
 }
