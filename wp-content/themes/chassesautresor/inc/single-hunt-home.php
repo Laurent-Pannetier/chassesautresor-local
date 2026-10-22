@@ -110,6 +110,62 @@ function cat_primary_hunt_start_line(int $huntId): string
 }
 
 /**
+ * Recalculate a hunt before it is shown, so a manual winner announcement
+ * does not leave a stale "terminée" status on screen.
+ */
+function cat_refresh_hunt_status_if_stale(int $huntId): void
+{
+    if ($huntId <= 0 || !class_exists(\ChassesAuTresor\Core\Progress\HuntStatusUpdater::class)) {
+        return;
+    }
+
+    (new \ChassesAuTresor\Core\Progress\HuntStatusUpdater())->refreshIfStale($huntId);
+}
+
+/**
+ * Sentence shown once a winner has been named.
+ *
+ * Manual hunts stay open. Automatic hunts, and hunts past their end date, do not.
+ */
+function cat_format_hunt_winner_notice(string $formattedDate, string $winners, bool $huntContinues): string
+{
+    $won = sprintf(
+        /* translators: 1: date and time, 2: winner names. */
+        __('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'),
+        $formattedDate,
+        $winners
+    );
+    if (!$huntContinues) {
+        return $won;
+    }
+
+    return $won . ' ' . __('La chasse continue.', 'chassesautresor-com');
+}
+
+/**
+ * Status line for a hunt that already has a winner. Empty when none was announced.
+ */
+function cat_hunt_winner_notice_html(int $huntId, string $className = 'hunt-winner-notice'): string
+{
+    if ($huntId <= 0 || !function_exists('get_field')) {
+        return '';
+    }
+
+    $winners = trim((string) get_field('chasse_cache_gagnants', $huntId));
+    $date = get_field('chasse_cache_date_decouverte', $huntId);
+    if ($winners === '' || $date === null || $date === '' || $date === false) {
+        return '';
+    }
+
+    $formatted = function_exists('formater_date_heure') ? formater_date_heure($date) : (string) $date;
+    $status = (string) get_field('chasse_cache_statut', $huntId);
+    $mode = (string) (get_field('chasse_mode_fin', $huntId) ?: 'automatique');
+    $text = cat_format_hunt_winner_notice($formatted, $winners, $mode === 'manuelle' && $status !== 'termine');
+
+    return '<p class="' . esc_attr($className) . '" role="status">' . esc_html($text) . '</p>';
+}
+
+/**
  * Anchor used by enigmas links once the hunt page redirects home.
  */
 function cat_single_hunt_enigmas_url(): string
@@ -210,6 +266,9 @@ function cat_render_single_hunt_home_enigmas(): void
     }
 
     $userId = (int) get_current_user_id();
+    if (function_exists('cat_refresh_hunt_status_if_stale')) {
+        cat_refresh_hunt_status_if_stale($huntId);
+    }
     $infos = function_exists('preparer_infos_affichage_chasse')
         ? preparer_infos_affichage_chasse($huntId, $userId)
         : [];
@@ -235,6 +294,9 @@ function cat_render_single_hunt_home_enigmas(): void
     echo '<h2 id="home-enigmas-title" class="screen-reader-text">';
     echo esc_html__('Les énigmes', 'chassesautresor-com');
     echo '</h2>';
+    if (function_exists('cat_hunt_winner_notice_html')) {
+        echo cat_hunt_winner_notice_html($huntId);
+    }
     echo '<div id="liste-enigmes" class="chasse-enigmes-liste">';
     get_template_part(
         'template-parts/enigme/chasse-partial-sommaire-enigmes',

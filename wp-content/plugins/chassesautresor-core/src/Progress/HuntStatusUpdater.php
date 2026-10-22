@@ -30,7 +30,8 @@ class HuntStatusUpdater {
             $calculation[3],
             $calculation[4],
             $calculation[5],
-            $calculation[6]
+            $calculation[6],
+            (bool) ($calculation[8] ?? true)
         )) {
             return false;
         }
@@ -58,6 +59,9 @@ class HuntStatusUpdater {
         (new HuntRiddleCacheSynchronizer())->synchronize($huntId, true, true);
         (new RiddleSystemStateUpdater())->refreshHunt($huntId, $status);
         do_action('chassesautresor_hunt_display_cache_clear_requested', $huntId);
+        if (class_exists(\ChassesAuTresor\Core\Content\SolutionPublicationPlanner::class)) {
+            \ChassesAuTresor\Core\Content\SolutionPublicationPlanner::releaseWaiting($huntId);
+        }
 
         return $status;
     }
@@ -83,10 +87,17 @@ class HuntStatusUpdater {
         return !is_wp_error($result);
     }
 
-    /** @return array{validation:string,current:string,calculation:array{string,?int,?int,?int,int,bool,int,string}} */
+    /**
+     * @return array{
+     *   validation:string,
+     *   current:string,
+     *   calculation:array{string,?int,?int,?int,int,bool,int,string,bool}
+     * }
+     */
     private function read(int $huntId): array {
         $validation = (string) get_field('chasse_cache_statut_validation', $huntId);
         $current = (string) get_field('chasse_cache_statut', $huntId);
+        $endMode = (string) (get_field('chasse_mode_fin', $huntId) ?: 'automatique');
         return [
             'validation' => $validation,
             'current' => $current !== '' ? $current : 'revision',
@@ -99,6 +110,7 @@ class HuntStatusUpdater {
                 !empty(get_field('chasse_infos_duree_illimitee', $huntId)),
                 (int) current_time('timestamp'),
                 $current !== '' ? $current : 'revision',
+                $endMode !== 'manuelle',
             ],
         ];
     }

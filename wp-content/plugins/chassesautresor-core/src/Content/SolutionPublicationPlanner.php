@@ -58,7 +58,8 @@ class SolutionPublicationPlanner {
             (string) $availability,
             (int) get_field('solution_decalage_jours', $solutionId),
             (string) $publicationTime,
-            (int) current_time('timestamp')
+            (int) current_time('timestamp'),
+            self::winnerAnnounced($huntId)
         );
 
         wp_clear_scheduled_hook(self::PUBLICATION_HOOK, [$solutionId]);
@@ -84,5 +85,72 @@ class SolutionPublicationPlanner {
             self::PUBLICATION_HOOK,
             [$solutionId]
         );
+    }
+
+    /**
+     * Publish solutions still waiting for the hunt end once a winner is announced
+     * or the hunt is actually finished. Already scheduled solutions are left as-is.
+     */
+    public static function releaseWaiting(int $huntId): void
+    {
+        if ($huntId <= 0 || get_post_type($huntId) !== 'chasse') {
+            return;
+        }
+        $finished = (string) get_field('chasse_cache_statut', $huntId) === 'termine';
+        if (!$finished && !self::winnerAnnounced($huntId)) {
+            return;
+        }
+
+        foreach (self::solutionIds($huntId) as $solutionId) {
+            $state = (string) get_field('solution_cache_etat_systeme', $solutionId);
+            if (!in_array($state, ['', 'FIN_CHASSE', 'FIN_CHASSE_DIFFERE'], true)) {
+                continue;
+            }
+            self::plan($solutionId);
+        }
+    }
+
+    public static function winnerAnnounced(int $huntId): bool
+    {
+        $value = get_field('chasse_cache_date_decouverte', $huntId);
+        if ($value instanceof \DateTimeInterface) {
+            return true;
+        }
+        if (is_array($value)) {
+            $value = $value['date'] ?? '';
+        }
+
+        return trim((string) $value) !== '';
+    }
+
+    /** @return int[] */
+    private static function solutionIds(int $huntId): array
+    {
+        $ids = self::idsForTarget($huntId, 'chasse');
+        $riddleIds = array_map(
+            'intval',
+            (array) get_posts(
+                (new \ChassesAuTresor\Core\Relationships\HuntRiddleQueryService())
+                    ->getRiddleIdsQueryArgs($huntId)
+            )
+        );
+        foreach ($riddleIds as $riddleId) {
+            if ($riddleId > 0) {
+                $ids = array_merge($ids, self::idsForTarget($riddleId, 'enigme'));
+            }
+        }
+
+        return array_values(array_unique(array_filter($ids)));
+    }
+
+    /** @return int[] */
+    private static function idsForTarget(int $targetId, string $targetType): array
+    {
+        $query = (new SolutionQueryService())->getExistingSolutionIdsQueryArgs($targetId, $targetType);
+        if ($query === []) {
+            return [];
+        }
+
+        return array_map('intval', (array) get_posts($query));
     }
 }

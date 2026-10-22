@@ -430,7 +430,10 @@ function utilisateur_peut_voir_solution_enigme(int $post_id, int $user_id): bool
     }
 
     $chasse_id = recuperer_id_chasse_associee($post_id);
-    $is_hunt_finished = $chasse_id && get_field('chasse_cache_statut', $chasse_id) === 'termine';
+    $is_hunt_finished = $chasse_id && (
+        get_field('chasse_cache_statut', $chasse_id) === 'termine'
+        || \ChassesAuTresor\Core\Content\SolutionPublicationPlanner::winnerAnnounced($chasse_id)
+    );
     $is_engaged = $is_hunt_finished
         && function_exists('utilisateur_est_engage_dans_enigme')
         && utilisateur_est_engage_dans_enigme($user_id, $post_id);

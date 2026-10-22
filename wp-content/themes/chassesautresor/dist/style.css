@@ -12156,10 +12156,20 @@ body.accueil-fullscreen {
 }
 
 .single-hunt-home__demo-notice,
-.single-hunt-home__join-notice {
+.single-hunt-home__join-notice,
+.single-hunt-home__winner-notice {
   border-block: 1px solid rgba(255, 215, 0, 0.3);
   background: rgba(255, 215, 0, 0.1);
   color: var(--color-primary);
+}
+
+.single-hunt-home__winner-notice {
+  margin: 0;
+  padding-block: var(--space-sm);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
 }
 
 .single-hunt-home__access-error {
@@ -17543,6 +17553,15 @@ h2.hunt-edition-notice__title {
   color: var(--shell-muted);
   font-size: 0.95rem;
   line-height: 1.5;
+}
+
+.hunt-winner-notice {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
 }
 
 .home-enigmas-preserve {
