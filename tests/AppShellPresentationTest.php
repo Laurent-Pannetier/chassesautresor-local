@@ -202,6 +202,29 @@ class AppShellPresentationTest extends TestCase
         );
     }
 
+    public function test_tools_cards_use_theme_aware_contrast_colors(): void
+    {
+        $scss = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/assets/scss/_app-shell.scss'
+        );
+
+        $this->assertMatchesRegularExpression(
+            '/html\[data-theme="day"\]\s*\{[^}]*'
+            . '--shell-state-active-text:\s*#146c3c;[^}]*'
+            . '--shell-state-blocked-text:\s*#a42a20;/s',
+            $scss
+        );
+        $this->assertStringContainsString(
+            '.app-shell .hunt-lifecycle-card__label-on.is-action',
+            $scss
+        );
+        $this->assertStringContainsString('color: var(--shell-muted);', $scss);
+        $this->assertStringContainsString('background: var(--shell-primary-button-bg);', $scss);
+        $this->assertStringContainsString('color: var(--shell-primary-button-text);', $scss);
+        $this->assertStringContainsString('background: var(--shell-danger-button-bg);', $scss);
+        $this->assertStringContainsString('color: var(--shell-danger-button-text);', $scss);
+    }
+
     public function test_player_home_keeps_enigmas_and_moves_team_stats_off_home(): void
     {
         $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';

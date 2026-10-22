@@ -15,6 +15,29 @@ html {
   --shell-accent-strong: #7eebf8;
   --shell-accent-text: #042229;
   --shell-accent-soft: rgba(46, 200, 230, 0.2);
+  --shell-state-neutral-bg: rgba(255, 255, 255, 0.12);
+  --shell-state-neutral-text: #ffffff;
+  --shell-state-neutral-border: rgba(255, 255, 255, 0.22);
+  --shell-state-editable-bg: rgba(225, 169, 95, 0.28);
+  --shell-state-editable-text: #ffe2b0;
+  --shell-state-editable-border: rgba(225, 169, 95, 0.55);
+  --shell-state-pending-bg: rgba(255, 193, 7, 0.22);
+  --shell-state-pending-text: #ffe082;
+  --shell-state-pending-border: rgba(255, 193, 7, 0.5);
+  --shell-state-active-bg: rgba(46, 204, 113, 0.22);
+  --shell-state-active-text: #9af0c0;
+  --shell-state-active-border: rgba(46, 204, 113, 0.5);
+  --shell-state-blocked-bg: rgba(231, 76, 60, 0.22);
+  --shell-state-blocked-text: #ffb3aa;
+  --shell-state-blocked-border: rgba(231, 76, 60, 0.5);
+  --shell-primary-button-bg: #ffd700;
+  --shell-primary-button-hover: #e6c200;
+  --shell-primary-button-text: #152033;
+  --shell-secondary-button-bg: #a45d16;
+  --shell-secondary-button-hover: #82470f;
+  --shell-secondary-button-text: #ffffff;
+  --shell-danger-button-bg: #b42318;
+  --shell-danger-button-text: #ffffff;
   --shell-card-background:
     radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
     var(--shell-surface);
@@ -46,6 +69,21 @@ html[data-theme="day"] {
   --shell-accent-strong: #0e8fa3;
   --shell-accent-text: #042229;
   --shell-accent-soft: rgba(20, 180, 204, 0.16);
+  --shell-state-neutral-bg: #eef3f8;
+  --shell-state-neutral-text: #39485d;
+  --shell-state-neutral-border: #aab6c5;
+  --shell-state-editable-bg: #fff2dc;
+  --shell-state-editable-text: #795000;
+  --shell-state-editable-border: #d8a448;
+  --shell-state-pending-bg: #fff5cc;
+  --shell-state-pending-text: #735c00;
+  --shell-state-pending-border: #cdb33f;
+  --shell-state-active-bg: #def7e8;
+  --shell-state-active-text: #146c3c;
+  --shell-state-active-border: #58b781;
+  --shell-state-blocked-bg: #fde5e2;
+  --shell-state-blocked-text: #a42a20;
+  --shell-state-blocked-border: #dc766d;
   --shell-track: #e7eef5;
   --shell-shadow: 0 10px 24px rgba(21, 32, 51, 0.08);
 }
@@ -1776,6 +1814,85 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .app-shell .myaccount-main .dashboard-card-content {
   color: var(--shell-muted);
+}
+
+.app-shell .hunt-lifecycle-card__state-badge {
+  background: var(--shell-state-neutral-bg);
+  border-color: var(--shell-state-neutral-border);
+  color: var(--shell-state-neutral-text);
+}
+
+.app-shell .hunt-lifecycle-card[data-state='editable'] .hunt-lifecycle-card__state-badge {
+  background: var(--shell-state-editable-bg);
+  border-color: var(--shell-state-editable-border);
+  color: var(--shell-state-editable-text);
+}
+
+.app-shell .hunt-lifecycle-card[data-state='pending'] .hunt-lifecycle-card__state-badge {
+  background: var(--shell-state-pending-bg);
+  border-color: var(--shell-state-pending-border);
+  color: var(--shell-state-pending-text);
+}
+
+.app-shell .hunt-lifecycle-card[data-state='active'] .hunt-lifecycle-card__state-badge {
+  background: var(--shell-state-active-bg);
+  border-color: var(--shell-state-active-border);
+  color: var(--shell-state-active-text);
+}
+
+.app-shell .hunt-lifecycle-card[data-state='blocked'] .hunt-lifecycle-card__state-badge {
+  background: var(--shell-state-blocked-bg);
+  border-color: var(--shell-state-blocked-border);
+  color: var(--shell-state-blocked-text);
+}
+
+.app-shell .hunt-lifecycle-card__label-off,
+.app-shell .hunt-lifecycle-card__label-on,
+.app-shell .hunt-lifecycle-card__help {
+  color: var(--shell-muted);
+}
+
+.app-shell .hunt-lifecycle-card__label-on.is-action {
+  color: var(--shell-state-active-text);
+}
+
+.app-shell .hunt-lifecycle-card__label-off.is-action {
+  color: var(--shell-state-editable-text);
+}
+
+.app-shell .switch-control--lifecycle input:checked + .switch-slider {
+  background-color: var(--shell-accent-soft);
+  border-color: var(--shell-accent);
+}
+
+.app-shell .myaccount-main .dashboard-card .bouton-primaire {
+  background: var(--shell-primary-button-bg);
+  border-color: var(--shell-primary-button-bg);
+  color: var(--shell-primary-button-text);
+}
+
+.app-shell .myaccount-main .dashboard-card .bouton-primaire:hover {
+  background: var(--shell-primary-button-hover);
+  border-color: var(--shell-primary-button-hover);
+  color: var(--shell-primary-button-text);
+}
+
+.app-shell .myaccount-main .dashboard-card .bouton-secondaire {
+  background: var(--shell-secondary-button-bg);
+  border-color: var(--shell-secondary-button-bg);
+  color: var(--shell-secondary-button-text);
+}
+
+.app-shell .myaccount-main .dashboard-card .bouton-secondaire:hover {
+  background: var(--shell-secondary-button-hover);
+  border-color: var(--shell-secondary-button-hover);
+  color: var(--shell-secondary-button-text);
+}
+
+.app-shell .myaccount-main .dashboard-card .btn-danger {
+  background: var(--shell-danger-button-bg);
+  border-color: var(--shell-danger-button-bg);
+  color: var(--shell-danger-button-text);
 }
 
 .app-shell .myaccount-main .dashboard-placeholder {
