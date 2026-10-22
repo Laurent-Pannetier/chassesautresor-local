@@ -180,4 +180,14 @@ final class SocialAuthTest extends TestCase
         self::assertSame('inactif', $settings->gap([], 'discord'));
         self::assertSame('', $settings->gap($clean, 'discord'));
     }
+
+    public function testSettingsPagePointsToTheProviderPortals(): void
+    {
+        $page = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core/src/Auth/SocialAuthSettingsPage.php'
+        );
+
+        self::assertStringContainsString('https://discord.com/developers/applications', $page);
+        self::assertStringContainsString('https://console.cloud.google.com/apis/credentials', $page);
+    }
 }

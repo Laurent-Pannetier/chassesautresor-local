@@ -17,3 +17,5 @@ Un compte créé par Discord ou Google n'a pas de mot de passe choisi. « Mot de
 `wp_login_url()` et `wp_registration_url()` pointent vers cet écran. `wp-login.php` reste utilisé pour la déconnexion, la saisie d'un nouveau mot de passe, et la confirmation d'e-mail administrateur.
 
 L'URI de redirection à déclarer chez Discord et Google est affichée sur l'écran de réglages. Elle doit être copiée telle quelle.
+
+Les identifiants se créent sur le [portail Discord](https://discord.com/developers/applications) (OAuth2, Client ID et Client Secret) et dans la [console Google](https://console.cloud.google.com/apis/credentials) (client OAuth de type application Web). Une même application peut lister l'URI locale et celle du site en ligne.

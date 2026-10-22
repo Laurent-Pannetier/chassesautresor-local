@@ -85,6 +85,7 @@ final class SocialAuthSettingsPage
                     'chassesautresor-com'
                 ); ?>
             </p>
+            <?php self::sourceHelp(); ?>
             <form method="post" action="options.php">
                 <?php settings_fields('chassesautresor_social_auth'); ?>
                 <table class="form-table" role="presentation">
@@ -221,6 +222,46 @@ final class SocialAuthSettingsPage
         echo ' <a href="' . esc_url($url) . '">';
         esc_html_e('Ouvrir Connexion sociale', 'chassesautresor-com');
         echo '</a></p></div>';
+    }
+
+    private static function sourceHelp(): void
+    {
+        echo '<h2>' . esc_html__('Où trouver ces informations', 'chassesautresor-com') . '</h2>';
+        echo '<ol>';
+        echo '<li>';
+        esc_html_e(
+            'Discord : créez une application, ouvrez OAuth2, copiez Client ID et Client Secret.',
+            'chassesautresor-com'
+        );
+        echo ' ';
+        self::sourceLink(
+            'https://discord.com/developers/applications',
+            __('Portail Discord', 'chassesautresor-com')
+        );
+        echo '</li><li>';
+        esc_html_e(
+            'Google : projet Cloud, écran de consentement, puis un client OAuth « Application Web ».',
+            'chassesautresor-com'
+        );
+        echo ' ';
+        self::sourceLink(
+            'https://console.cloud.google.com/apis/credentials',
+            __('Identifiants Google', 'chassesautresor-com')
+        );
+        echo '</li></ol>';
+        echo '<p class="description">';
+        esc_html_e(
+            'Collez l’URI telle quelle. En mode Test, ajoutez votre compte Google comme utilisateur test.',
+            'chassesautresor-com'
+        );
+        echo '</p>';
+    }
+
+    private static function sourceLink(string $url, string $label): void
+    {
+        echo '<a href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">';
+        echo esc_html($label);
+        echo '</a>';
     }
 
     /**
