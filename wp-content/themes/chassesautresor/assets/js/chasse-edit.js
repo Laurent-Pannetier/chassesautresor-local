@@ -481,7 +481,7 @@ window.rafraichirCarteSolutions = rafraichirCarteSolutions;
       const noticeTemplate =
         (window.ChasseModeFinI18n && ChasseModeFinI18n.winnerNotice) ||
         wp.i18n.__(
-          'Chasse gagnée le %1$s par %2$s. La chasse continue.',
+          '🏆 Chasse gagnée le %1$s par %2$s.',
           'chassesautresor-com'
         );
       const formatNotice = typeof wp.i18n.sprintf === 'function'

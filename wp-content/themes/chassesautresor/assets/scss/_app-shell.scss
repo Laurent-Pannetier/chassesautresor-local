@@ -809,12 +809,15 @@ h2.hunt-edition-notice__title {
 }
 
 .hunt-winner-notice {
-  margin: 0 0 1rem;
+  box-sizing: border-box;
+  max-width: 42rem;
+  margin: 1rem auto 0;
   padding: 0.85rem 1rem;
   border: 1px solid currentColor;
   border-radius: 1rem;
   font-size: 0.95rem;
   line-height: 1.45;
+  text-align: center;
 }
 
 .home-enigmas-preserve {

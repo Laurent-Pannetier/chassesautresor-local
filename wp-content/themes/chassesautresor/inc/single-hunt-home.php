@@ -124,22 +124,15 @@ function cat_refresh_hunt_status_if_stale(int $huntId): void
 
 /**
  * Sentence shown once a winner has been named.
- *
- * Manual hunts stay open. Automatic hunts, and hunts past their end date, do not.
  */
-function cat_format_hunt_winner_notice(string $formattedDate, string $winners, bool $huntContinues): string
+function cat_format_hunt_winner_notice(string $formattedDate, string $winners): string
 {
-    $won = sprintf(
+    return sprintf(
         /* translators: 1: date and time, 2: winner names. */
-        __('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'),
+        __('🏆 Chasse gagnée le %1$s par %2$s.', 'chassesautresor-com'),
         $formattedDate,
         $winners
     );
-    if (!$huntContinues) {
-        return $won;
-    }
-
-    return $won . ' ' . __('La chasse continue.', 'chassesautresor-com');
 }
 
 /**
@@ -158,9 +151,7 @@ function cat_hunt_winner_notice_html(int $huntId, string $className = 'hunt-winn
     }
 
     $formatted = function_exists('formater_date_heure') ? formater_date_heure($date) : (string) $date;
-    $status = (string) get_field('chasse_cache_statut', $huntId);
-    $mode = (string) (get_field('chasse_mode_fin', $huntId) ?: 'automatique');
-    $text = cat_format_hunt_winner_notice($formatted, $winners, $mode === 'manuelle' && $status !== 'termine');
+    $text = cat_format_hunt_winner_notice($formatted, $winners);
 
     return '<p class="' . esc_attr($className) . '" role="status">' . esc_html($text) . '</p>';
 }

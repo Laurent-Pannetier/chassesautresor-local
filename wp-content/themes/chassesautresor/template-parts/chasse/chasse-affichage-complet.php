@@ -370,11 +370,10 @@ if ($edition_active && !$est_complet) {
             $phrase_gagnant = function_exists('cat_format_hunt_winner_notice')
                 ? cat_format_hunt_winner_notice(
                     (string) $date_decouverte_formatee,
-                    (string) $gagnants,
-                    $mode_fin === 'manuelle' && $statut !== 'termine'
+                    (string) $gagnants
                 )
                 : sprintf(
-                    __('Chasse gagnée le %1$s par %2$s', 'chassesautresor-com'),
+                    __('🏆 Chasse gagnée le %1$s par %2$s.', 'chassesautresor-com'),
                     $date_decouverte_formatee,
                     $gagnants
                 );

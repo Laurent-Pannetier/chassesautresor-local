@@ -236,7 +236,6 @@ if ($objet_type === 'chasse') {
           <?php if ($objet_type === 'chasse') : ?>
             <?php
             $gagnant_annonce = trim((string) $gagnants) !== '' && trim((string) $date_decouverte) !== '';
-            $chasse_continue = $mode_fin === 'manuelle' && $statut_metier !== 'termine';
             $masquer_carte_gagnant = $statut_metier !== 'termine'
                 && $mode_fin !== 'manuelle'
                 && !$gagnant_annonce;
@@ -250,8 +249,7 @@ if ($objet_type === 'chasse') {
                   <p class="message-chasse-terminee">
                     <?= esc_html(cat_format_hunt_winner_notice(
                         (string) $date_decouverte,
-                        (string) $gagnants,
-                        $chasse_continue
+                        (string) $gagnants
                     )); ?>
                   </p>
                 <?php elseif ($mode_fin === 'manuelle') : ?>

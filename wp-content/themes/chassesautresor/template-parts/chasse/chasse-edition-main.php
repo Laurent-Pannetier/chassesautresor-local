@@ -550,8 +550,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         <p class="message-chasse-terminee">
                                             <?= esc_html(cat_format_hunt_winner_notice(
                                                 $date_decouverte_formatee,
-                                                (string) $gagnants,
-                                                $mode_fin === 'manuelle' && $statut_metier !== 'termine'
+                                                (string) $gagnants
                                             )); ?>
                                         </p>
                                     <?php endif; ?>
