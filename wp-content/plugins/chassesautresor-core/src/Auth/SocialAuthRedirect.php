@@ -21,7 +21,8 @@ final class SocialAuthRedirect
         }
         if (str_starts_with($candidate, '/')) {
             $local = $this->origin($home) . $candidate;
-            return $this->isAuthScreen($local) ? $home : $local;
+
+            return $this->isAuthScreen($local) || $this->isProfileLanding($local) ? $home : $local;
         }
 
         $parts = parse_url($candidate);
@@ -37,6 +38,9 @@ final class SocialAuthRedirect
             return $home;
         }
         if ($this->isAuthScreen($candidate)) {
+            return $home;
+        }
+        if ($this->isProfileLanding($candidate)) {
             return $home;
         }
 
@@ -90,5 +94,30 @@ final class SocialAuthRedirect
         $query = (string) ($parts['query'] ?? '');
 
         return str_contains($query, 'cat_connexion=') || str_contains($query, 'cat_oauth=');
+    }
+
+    private function isProfileLanding(string $url): bool
+    {
+        $parts = parse_url($url);
+        if (!is_array($parts)) {
+            return false;
+        }
+
+        $path = strtolower(rtrim((string) ($parts['path'] ?? ''), '/'));
+        if ($path === '' || $path === '/') {
+            return false;
+        }
+        if ($path === '/wp-admin/profile.php') {
+            return true;
+        }
+
+        $roots = ['/mon-compte', '/my-account'];
+        foreach ($roots as $root) {
+            if ($path === $root || $path === $root . '/edit-account' || $path === $root . '/modifier-compte') {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

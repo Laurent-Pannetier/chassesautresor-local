@@ -133,6 +133,16 @@ final class SocialAuthTest extends TestCase
             'https://chassesautresor.test/equipe/',
             $redirects->accept('/equipe/', $home)
         );
+        self::assertSame($home, $redirects->accept('https://chassesautresor.test/mon-compte/', $home));
+        self::assertSame(
+            $home,
+            $redirects->accept('https://chassesautresor.test/mon-compte/modifier-compte/', $home)
+        );
+        self::assertSame($home, $redirects->accept('/wp-admin/profile.php', $home));
+        self::assertSame(
+            'https://chassesautresor.test/mon-compte/points/',
+            $redirects->accept('https://chassesautresor.test/mon-compte/points/', $home)
+        );
     }
 
     public function testAuthorizeUrlsStayOnTheProviderAndOmitTheSecret(): void
