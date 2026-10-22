@@ -60,13 +60,13 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Trophées', 'Points', 'Équipe', 'Profil', 'Règlement', 'Notifications'],
+            ['Accueil', 'Progression', 'Trophées', 'Équipe', 'Profil', 'Règlement', 'Notifications'],
             $labels
         );
-        $this->assertSame('equipe', $items[4]['key']);
-        $this->assertSame('primary', $items[4]['group']);
+        $this->assertSame('equipe', $items[3]['key']);
         $this->assertSame('primary', $items[3]['group']);
-        $this->assertSame('personal', $items[5]['group']);
+        $this->assertSame('personal', $items[4]['group']);
+        $this->assertFalse(in_array('Points', $labels, true));
         $this->assertFalse(in_array('Statistiques', $labels, true));
         $this->assertFalse(in_array('Tentatives', $labels, true));
         $this->assertFalse(in_array('Commandes', $labels, true));
@@ -96,12 +96,13 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Trophées', 'Points', 'Équipe', 'Outils', 'Profil', 'Règlement', 'Notifications'],
+            ['Accueil', 'Progression', 'Trophées', 'Équipe', 'Outils', 'Profil', 'Règlement', 'Notifications'],
             $labels
         );
-        $this->assertSame('equipe', $items[4]['key']);
+        $this->assertSame('equipe', $items[3]['key']);
         $this->assertSame('primary', $items[3]['group']);
-        $this->assertSame('personal', $items[6]['group']);
+        $this->assertSame('personal', $items[5]['group']);
+        $this->assertFalse(in_array('Points', $labels, true));
         $this->assertFalse(in_array('Statistiques', $labels, true));
         $this->assertFalse(in_array('Tentatives', $labels, true));
         $this->assertFalse(in_array('Déconnexion', $labels, true));

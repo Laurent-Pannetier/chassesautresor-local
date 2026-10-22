@@ -1624,6 +1624,16 @@ body.admin-bar.shell-edition .app-sidebar {
   min-width: 0;
 }
 
+.app-nav__subitem--hunt {
+  margin-bottom: 0.1rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--shell-border);
+}
+
+.app-nav__subitem--riddle {
+  margin-left: 0.4rem;
+}
+
 .app-nav__sublink,
 .app-nav__add {
   display: flex;
@@ -1642,6 +1652,35 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .app-nav__sublink {
   flex: 1;
+}
+
+.app-nav__sublink--hunt {
+  align-items: flex-start;
+  font-weight: 700;
+}
+
+.app-nav__subheading {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-nav__subtype {
+  color: var(--shell-muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.app-nav__sublink--hunt.is-active .app-nav__subtype {
+  color: inherit;
+  opacity: 0.72;
+}
+
+.app-nav__subitem--riddle .app-nav__sublink {
+  font-weight: 500;
 }
 
 .app-nav__sublabel {
