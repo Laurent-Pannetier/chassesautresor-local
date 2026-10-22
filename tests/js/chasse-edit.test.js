@@ -329,6 +329,59 @@ describe('chasse-edit UI', () => {
   });
 });
 
+describe('terminer la chasse quand la récompense n’est pas éditable', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <section class="edition-panel edition-panel-chasse" data-cpt="chasse" data-post-id="1">
+        <ul class="resume-infos">
+          <li class="edition-row champ-chasse champ-recompense champ-rempli champ-desactive"
+            data-champ="chasse_infos_recompense_valeur" data-cpt="chasse" data-post-id="1" data-no-icon="1">
+            <div class="champ-texte"><span class="champ-texte-contenu">Lot</span></div>
+          </li>
+        </ul>
+        <div id="chasse-tab-animation">
+          <div class="dashboard-card carte-orgy champ-chasse carte-arret-chasse">
+            <div class="stat-value fin-chasse-actions">
+              <button type="button" class="terminer-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse">Terminer la chasse</button>
+              <div class="zone-validation-fin" style="display:none;">
+                <label for="chasse-gagnants">Gagnants</label>
+                <textarea id="chasse-gagnants"></textarea>
+                <button type="button" class="valider-fin-chasse-btn bouton-cta" data-post-id="1" data-cpt="chasse" disabled>Valider la fin de chasse</button>
+                <button type="button" class="annuler-fin-chasse-btn bouton-secondaire">Annuler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+    global.ajaxurl = '/ajax';
+    global.initZonesClicEdition = jest.fn();
+    global.initChampImage = jest.fn();
+    global.initLiensChasse = jest.fn();
+    global.initChampTexte = jest.fn();
+    global.initChampDeclencheur = jest.fn();
+    global.wp = { i18n: { __: (s) => s, _n: (s, p, n) => (n > 1 ? p : s) } };
+    delete global.mettreAJourResumeInfos;
+    delete window.mettreAJourResumeInfos;
+    jest.resetModules();
+    require('../../wp-content/themes/chassesautresor/assets/js/core/resume.js');
+    require('../../wp-content/themes/chassesautresor/assets/js/chasse-edit.js');
+  });
+
+  test('le bouton révèle le formulaire des gagnants', () => {
+    const ligne = document.querySelector('[data-champ="chasse_infos_recompense_valeur"]');
+    expect(ligne.classList.contains('champ-rempli')).toBe(true);
+    expect(ligne.querySelector('.champ-modifier')).toBeNull();
+
+    const btn = document.querySelector('.terminer-chasse-btn');
+    btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    const zone = document.querySelector('.zone-validation-fin');
+    expect(zone.style.display).toBe('block');
+    expect(btn.style.display).toBe('none');
+  });
+});
+
 describe('date message utils', () => {
   beforeEach(() => {
     document.body.innerHTML = '<span id="message-date">Initial</span>';

@@ -75,11 +75,16 @@ window.mettreAJourResumeInfos = function () {
       }
 
       if (champ === 'chasse_infos_recompense_valeur') {
-        const titre = document.getElementById('champ-recompense-titre')?.value.trim();
-        const texte = document.getElementById('champ-recompense-texte')?.value.trim();
-        const valeur = parseFloat(document.getElementById('champ-recompense-valeur')?.value || '0');
-
-        estRempli = (titre.length > 0) && (texte.length > 0) && (valeur > 0);
+        const titreInput = document.getElementById('champ-recompense-titre');
+        const texteInput = document.getElementById('champ-recompense-texte');
+        const valeurInput = document.getElementById('champ-recompense-valeur');
+        // Chasse verrouillée (en cours) : les champs inline ne sont pas rendus.
+        if (titreInput && texteInput && valeurInput) {
+          const titre = titreInput.value.trim();
+          const texte = texteInput.value.trim();
+          const valeur = parseFloat(valeurInput.value || '0');
+          estRempli = titre.length > 0 && texte.length > 0 && valeur > 0;
+        }
       }
 
       // Mise à jour visuelle + marquage obligatoire
@@ -366,6 +371,7 @@ function mettreAJourLigneResume(ligne, champ, estRempli, type) {
   const dejaBouton = ligne.querySelector('.champ-modifier');
   const pasDEdition =
     ligne.dataset.noEdit !== undefined ||
+    ligne.classList.contains('champ-desactive') ||
     (champ === 'enigme_visuel_texte' && !estRempli);
 
   if (pasDEdition) {
