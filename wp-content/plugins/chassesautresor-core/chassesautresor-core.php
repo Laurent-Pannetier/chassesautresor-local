@@ -484,6 +484,7 @@ require_once __DIR__ . '/src/Trophies/TrophyDefinitionRepository.php';
 require_once __DIR__ . '/src/Trophies/TrophyAwardService.php';
 require_once __DIR__ . '/src/Trophies/TrophyEventDispatcher.php';
 require_once __DIR__ . '/src/Trophies/trophy-functions.php';
+require_once __DIR__ . '/src/Trophies/FirstParticipationTrophyHook.php';
 require_once __DIR__ . '/src/Trophies/TrophyPageRenderer.php';
 
 if (!class_exists('PointsRepository', false)) {
@@ -607,6 +608,7 @@ ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Teams\TeamRequestHandler::register('add_action');
 ChassesAuTresor\Core\Trophies\TrophyPostTypeRegistrar::register('add_action');
 ChassesAuTresor\Core\Trophies\TrophyFieldGroupRegistrar::register('add_action');
+ChassesAuTresor\Core\Trophies\FirstParticipationTrophyHook::register('add_action');
 
 register_activation_hook(
     __FILE__,

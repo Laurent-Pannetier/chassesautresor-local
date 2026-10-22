@@ -113,7 +113,7 @@ function enregistrer_engagement_chasse(int $userId, int $huntId): bool
 
     $inserted = cat_get_hunt_engagement_service()->engage($userId, $huntId, current_time('mysql', true));
     if ($inserted) {
-        do_action('chasse_engagement_created', $huntId);
+        do_action('chasse_engagement_created', $huntId, $userId);
     }
 
     return (bool) $inserted;

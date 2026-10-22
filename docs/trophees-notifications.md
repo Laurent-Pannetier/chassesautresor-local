@@ -17,7 +17,9 @@ La fiche utilise :
 - le titre WordPress ;
 - les champs ACF locaux pour l’image, le texte court, l’état, le déclencheur, la portée et la notification.
 
-Le seul déclencheur livré initialement est `code_event`. Il n’active aucun scénario métier à lui seul.
+Le seul déclencheur livré initialement est `code_event`.
+La participation à une chasse envoie la clé `bienvenue` au joueur qui vient de s’engager.
+Le trophée correspondant doit être publié, actif, et porter exactement cette clé.
 Son champ « Clé de l’événement » doit correspondre à la clé envoyée par le code :
 
 ```php
