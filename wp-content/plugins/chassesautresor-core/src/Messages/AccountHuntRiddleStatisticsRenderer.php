@@ -96,7 +96,8 @@ final class AccountHuntRiddleStatisticsRenderer
     private function periodNote(): string
     {
         return '<p class="progression-note">' . esc_html(__(
-            'Les taux et les tentatives suivent la période. L’entonnoir décrit l’état actuel.',
+            'Les tentatives, le rendement, la file d’attente et la courbe suivent la période. '
+            . 'Les joueurs résolus, en validation ou dans les étapes décrivent l’état actuel.',
             'chassesautresor-com'
         )) . '</p>';
     }
@@ -190,42 +191,33 @@ final class AccountHuntRiddleStatisticsRenderer
     /** @param array<string, mixed> $row */
     private function riddleItem(array $row): string
     {
+        $stepCount = (int) ($row['steps'] ?? 0);
+        if ($stepCount <= 0 && is_array($row['steps_detail'] ?? null)) {
+            $stepCount = count($row['steps_detail']);
+        }
+        $engaged = (int) ($row['funnel']['engaged'] ?? $row['participants'] ?? 0);
+        $solved = (int) ($row['funnel']['solved'] ?? $row['trouves'] ?? 0);
+        $submitted = (int) ($row['funnel']['submitted'] ?? 0);
+        $withStep = $this->withStepCount($row, $stepCount);
+
         $html = '<li class="progression-riddle">';
         $html .= '<div class="progression-riddle__main">';
         $html .= '<h3 class="progression-riddle__title">'
             . esc_html((string) ($row['title'] ?? '')) . '</h3>';
         $html .= '</div>';
-        if (is_array($row['funnel'] ?? null)) {
-            $html .= $this->funnel((array) $row['funnel']);
-        }
-        $html .= '<dl class="progression-riddle__metrics progression-riddle__metrics--organizer">';
-        $html .= $this->metric(
-            __('Participants', 'chassesautresor-com'),
-            (string) (int) ($row['participants'] ?? 0)
+        $html .= '<p class="progression-story">' . esc_html($this->story(
+            $row,
+            $engaged,
+            $solved,
+            $submitted,
+            $withStep,
+            $stepCount
+        )) . '</p>';
+        $html .= $this->distributionBar(
+            $this->distribution($engaged, (int) $withStep, $submitted, $solved),
+            $withStep !== null
         );
-        $html .= $this->metric(
-            __('Trouvées', 'chassesautresor-com'),
-            (string) (int) ($row['trouves'] ?? 0)
-        );
-        $html .= $this->metric(
-            __('Tentatives', 'chassesautresor-com'),
-            (string) (int) ($row['tentatives'] ?? 0)
-        );
-        $html .= $this->stepsMetric($row);
-        if (is_array($row['yield'] ?? null)) {
-            $html .= $this->metric(__('Rendement', 'chassesautresor-com'), $this->yieldLabel((array) $row['yield']));
-        }
-        if (array_key_exists('pending', $row)) {
-            $html .= $this->metric(__('En attente', 'chassesautresor-com'), (string) (int) $row['pending']);
-        }
-        if (array_key_exists('median_attempts', $row)) {
-            $median = $row['median_attempts'];
-            $html .= $this->metric(
-                __('Médiane pour résoudre', 'chassesautresor-com'),
-                $median === null ? '—' : (string) (int) $median
-            );
-        }
-        $html .= '</dl>';
+        $html .= $this->keyFigures($row);
         if (is_array($row['top_hint'] ?? null)) {
             $hint = (array) $row['top_hint'];
             $html .= '<p class="progression-hint">' . esc_html(sprintf(
@@ -235,66 +227,470 @@ final class AccountHuntRiddleStatisticsRenderer
                 (int) ($hint['unlocks'] ?? 0)
             )) . '</p>';
         }
-        $html .= $this->stepsDetail((array) ($row['steps_detail'] ?? []));
-        $html .= '<p class="progression-ranking"><span>'
-            . esc_html(__('Classement', 'chassesautresor-com')) . '</span> '
-            . esc_html($this->rankingLabel((array) ($row['ranking'] ?? []))) . '</p>';
+        $html .= $this->stepsBlock($row, $engaged);
+        $html .= $this->seriesChart($row);
+        $ranking = $this->rankingLabel((array) ($row['ranking'] ?? []));
+        if ($ranking !== '—') {
+            $html .= '<p class="progression-ranking"><span>'
+                . esc_html(__('Classement', 'chassesautresor-com')) . '</span> '
+                . esc_html($ranking) . '</p>';
+        }
         $html .= '</li>';
 
         return $html;
     }
 
-    /** @param array<string, mixed> $funnel */
-    private function funnel(array $funnel): string
+    /** @param array<string, mixed> $row */
+    private function withStepCount(array $row, int $stepCount): ?int
     {
-        $steps = [
-            __('Engagés', 'chassesautresor-com') => (int) ($funnel['engaged'] ?? 0),
-        ];
-        if ($funnel['with_step'] !== null && array_key_exists('with_step', $funnel)) {
-            $steps[__('Une étape', 'chassesautresor-com')] = (int) $funnel['with_step'];
-        }
-        $steps[__('Soumis', 'chassesautresor-com')] = (int) ($funnel['submitted'] ?? 0);
-        $steps[__('Résolus', 'chassesautresor-com')] = (int) ($funnel['solved'] ?? 0);
-
-        $html = '<ol class="progression-funnel">';
-        foreach ($steps as $label => $value) {
-            $html .= '<li><span>' . esc_html((string) $label) . '</span><strong>'
-                . esc_html((string) $value) . '</strong></li>';
+        if (is_array($row['funnel'] ?? null) && array_key_exists('with_step', $row['funnel'])) {
+            return $row['funnel']['with_step'] === null ? null : (int) $row['funnel']['with_step'];
         }
 
-        return $html . '</ol>';
+        return $stepCount > 0 ? (int) ($row['step_players'] ?? 0) : null;
     }
 
-    /** @param array<int, array<string, mixed>> $steps */
-    private function stepsDetail(array $steps): string
+    /** @param array<string, mixed> $row */
+    private function story(
+        array $row,
+        int $engaged,
+        int $solved,
+        int $submitted,
+        ?int $withStep,
+        int $stepCount
+    ): string {
+        $sentences = [];
+        if ($engaged === 0) {
+            $sentences[] = __('Aucun joueur engagé sur la période.', 'chassesautresor-com');
+        } else {
+            $sentences[] = sprintf(
+                /* translators: %d: number of engaged players */
+                _n('%d joueur engagé.', '%d joueurs engagés.', $engaged, 'chassesautresor-com'),
+                $engaged
+            );
+        }
+
+        if ($withStep === 0 && $stepCount > 0) {
+            $sentences[] = sprintf(
+                /* translators: %d: number of intermediate steps */
+                _n(
+                    'L’étape n’a pas été franchie.',
+                    'Aucune des %d étapes n’a été franchie.',
+                    $stepCount,
+                    'chassesautresor-com'
+                ),
+                $stepCount
+            );
+        } elseif ($withStep !== null && $withStep > 0) {
+            $sentences[] = sprintf(
+                /* translators: %d: number of players who cleared an intermediate step */
+                _n(
+                    '%d joueur a franchi au moins une étape.',
+                    '%d joueurs ont franchi au moins une étape.',
+                    $withStep,
+                    'chassesautresor-com'
+                ),
+                $withStep
+            );
+        }
+
+        $finalAttempts = is_array($row['yield'] ?? null)
+            ? (int) ($row['yield']['total'] ?? 0)
+            : (int) ($row['tentatives'] ?? 0);
+        if ($solved > 0) {
+            $sentences[] = sprintf(
+                /* translators: %d: number of players who solved the riddle */
+                _n(
+                    '%d joueur a résolu l’énigme.',
+                    '%d joueurs ont résolu l’énigme.',
+                    $solved,
+                    'chassesautresor-com'
+                ),
+                $solved
+            );
+        } elseif ($finalAttempts > 0 || $submitted > 0) {
+            $sentences[] = __('Personne n’a encore résolu l’énigme.', 'chassesautresor-com');
+        } else {
+            $sentences[] = __('Aucune réponse finale n’a été envoyée.', 'chassesautresor-com');
+        }
+
+        if ($submitted > 0) {
+            $sentences[] = sprintf(
+                /* translators: %d: number of players waiting for a manual validation */
+                _n(
+                    '%d joueur attend une validation.',
+                    '%d joueurs attendent une validation.',
+                    $submitted,
+                    'chassesautresor-com'
+                ),
+                $submitted
+            );
+        }
+
+        return implode(' ', $sentences);
+    }
+
+    /**
+     * Partition of the engaged players. Counts that describe another time
+     * scope are clamped so the bar never exceeds the engaged total.
+     *
+     * @return array{engaged:int,solved:int,review:int,in_steps:int,not_started:int}
+     */
+    private function distribution(int $engaged, int $withStep, int $submitted, int $solved): array
     {
+        $engaged = max(0, $engaged);
+        $review = min(max(0, $submitted), $engaged);
+        $remaining = $engaged - $review;
+        $solvedIn = min(max(0, $solved), $remaining);
+        $remaining -= $solvedIn;
+        $stillInSteps = max(0, $withStep - max(0, $solved) - max(0, $submitted));
+        $inSteps = min($stillInSteps, $remaining);
+
+        return [
+            'engaged' => $engaged,
+            'solved' => $solvedIn,
+            'review' => $review,
+            'in_steps' => $inSteps,
+            'not_started' => $remaining - $inSteps,
+        ];
+    }
+
+    /** @param array{engaged:int,solved:int,review:int,in_steps:int,not_started:int} $distribution */
+    private function distributionBar(array $distribution, bool $hasSteps): string
+    {
+        if ($distribution['engaged'] <= 0) {
+            return '';
+        }
+
+        $notStarted = $hasSteps
+            ? __('Pas encore d’étape', 'chassesautresor-com')
+            : __('En cours', 'chassesautresor-com');
+        $segments = [
+            'solved' => [__('Résolus', 'chassesautresor-com'), $distribution['solved']],
+            'review' => [__('En validation', 'chassesautresor-com'), $distribution['review']],
+            'in_steps' => [__('Dans les étapes', 'chassesautresor-com'), $distribution['in_steps']],
+            'not_started' => [$notStarted, $distribution['not_started']],
+        ];
+        $visible = array_filter(
+            $segments,
+            static fn (array $segment): bool => $segment[1] > 0
+        );
+        if ($visible === []) {
+            return '';
+        }
+
+        $html = '<figure class="progression-mix">';
+        $html .= '<div class="progression-mix__bar" aria-hidden="true">';
+        foreach ($visible as $key => $segment) {
+            $html .= '<span class="progression-mix__segment progression-mix__segment--' . esc_attr((string) $key)
+                . '" style="flex:' . (int) $segment[1] . ' 1 0"></span>';
+        }
+        $html .= '</div><ul class="progression-mix__legend">';
+        foreach ($visible as $key => $segment) {
+            $html .= '<li><i class="progression-mix__swatch progression-mix__segment--' . esc_attr((string) $key)
+                . '" aria-hidden="true"></i> ' . esc_html((string) $segment[0]) . ' <strong>'
+                . esc_html((string) $segment[1]) . '</strong></li>';
+        }
+
+        return $html . '</ul></figure>';
+    }
+
+    /** @param array<string, mixed> $row */
+    private function keyFigures(array $row): string
+    {
+        $items = [];
+        if (is_array($row['yield'] ?? null)) {
+            $yield = $this->yieldLabel((array) $row['yield']);
+            if ($yield !== '—') {
+                $items[] = [__('Rendement', 'chassesautresor-com'), $yield];
+            }
+        }
+        $pending = (int) ($row['pending'] ?? 0);
+        if ($pending > 0) {
+            $items[] = [
+                __('En attente', 'chassesautresor-com'),
+                sprintf(
+                    /* translators: %d: final answers still waiting for review */
+                    _n('%d réponse', '%d réponses', $pending, 'chassesautresor-com'),
+                    $pending
+                ),
+            ];
+        }
+        if (array_key_exists('median_attempts', $row) && $row['median_attempts'] !== null) {
+            $median = (int) $row['median_attempts'];
+            $items[] = [
+                __('Médiane pour résoudre', 'chassesautresor-com'),
+                sprintf(
+                    /* translators: %d: median number of final attempts needed to solve */
+                    _n('%d tentative', '%d tentatives', $median, 'chassesautresor-com'),
+                    $median
+                ),
+            ];
+        }
+        if ($items === []) {
+            return '';
+        }
+
+        $html = '<dl class="progression-figures">';
+        foreach ($items as $item) {
+            $html .= '<div><dt>' . esc_html($item[0]) . '</dt><dd>' . esc_html($item[1]) . '</dd></div>';
+        }
+
+        return $html . '</dl>';
+    }
+
+    /** @param array<string, mixed> $row */
+    private function stepsBlock(array $row, int $engaged): string
+    {
+        $steps = [];
+        foreach ((array) ($row['steps_detail'] ?? []) as $step) {
+            if (is_array($step)) {
+                $steps[] = $step;
+            }
+        }
         if ($steps === []) {
             return '';
         }
 
-        $html = '<details class="progression-steps"><summary>'
-            . esc_html(__('Étapes', 'chassesautresor-com')) . '</summary><ul>';
+        $anyReached = false;
+        $anyAttempts = false;
         foreach ($steps as $step) {
-            $title = trim((string) ($step['title'] ?? ''));
-            if ($title === '') {
-                $title = __('Étape', 'chassesautresor-com');
+            if ((int) ($step['reached'] ?? 0) > 0) {
+                $anyReached = true;
             }
-            $attempts = (int) ($step['attempts'] ?? 0);
-            $meta = sprintf(
-                /* translators: 1: players who reached the step, 2: engaged players, 3: attempts on the step */
-                __('%1$d/%2$d joueurs · %3$s', 'chassesautresor-com'),
-                (int) ($step['reached'] ?? 0),
-                (int) ($step['engaged'] ?? 0),
-                sprintf(
-                    _n('%d tentative', '%d tentatives', $attempts, 'chassesautresor-com'),
-                    $attempts
-                )
-            );
-            $html .= '<li><span class="progression-steps__title">' . esc_html($title) . '</span>'
-                . '<span class="progression-steps__meta">' . esc_html($meta) . '</span></li>';
+            if ((int) ($step['attempts'] ?? 0) > 0) {
+                $anyAttempts = true;
+            }
+        }
+        if (!$anyReached && !$anyAttempts) {
+            return '';
         }
 
-        return $html . '</ul></details>';
+        $title = $anyReached
+            ? __('Joueurs arrivés à chaque étape', 'chassesautresor-com')
+            : __('Tentatives par étape', 'chassesautresor-com');
+        $html = '<section class="progression-dropoff">';
+        $html .= '<h4>' . esc_html($title) . '</h4>';
+        if ($anyReached) {
+            $html .= $this->stepsChart($steps, $engaged);
+        }
+        $html .= $this->stepsTable($steps, $engaged);
+
+        return $html . '</section>';
+    }
+
+    /** @param array<int, array<string, mixed>> $steps */
+    private function stepsChart(array $steps, int $engaged): string
+    {
+        $scale = max(1, $engaged);
+        foreach ($steps as $step) {
+            $scale = max($scale, (int) ($step['reached'] ?? 0));
+        }
+
+        $html = '<ul class="progression-steps-chart">';
+        foreach ($steps as $step) {
+            $reached = (int) ($step['reached'] ?? 0);
+            $percent = (int) round((100 * $reached) / $scale);
+            $label = $this->stepTitle($step);
+            $html .= '<li class="progression-steps-chart__row">';
+            $html .= '<span class="progression-steps-chart__label">' . esc_html($label) . '</span>';
+            $html .= '<span class="progression-steps-chart__track" aria-hidden="true">';
+            $html .= '<span class="progression-steps-chart__fill" style="width:' . $percent . '%"></span>';
+            $html .= '</span>';
+            $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $reached) . '</span>';
+            $html .= '</li>';
+        }
+        $html .= '</ul>';
+        $html .= '<p class="progression-note">' . esc_html(sprintf(
+            /* translators: %d: number of players represented by a full bar */
+            _n(
+                'La barre pleine représente %d joueur.',
+                'La barre pleine représente %d joueurs.',
+                $scale,
+                'chassesautresor-com'
+            ),
+            $scale
+        )) . '</p>';
+
+        return $html;
+    }
+
+    /** @param array<int, array<string, mixed>> $steps */
+    private function stepsTable(array $steps, int $engaged): string
+    {
+        $breakIndex = $this->steepestDropIndex($steps);
+        $html = '<div class="progression-dropoff__scroll"><table class="progression-dropoff__table">';
+        $html .= '<thead><tr>';
+        foreach ([
+            __('Étape', 'chassesautresor-com'),
+            __('Joueurs', 'chassesautresor-com'),
+            __('Part des engagés', 'chassesautresor-com'),
+            __('Tentatives', 'chassesautresor-com'),
+        ] as $header) {
+            $html .= '<th scope="col">' . esc_html($header) . '</th>';
+        }
+        $html .= '</tr></thead><tbody>';
+        foreach ($steps as $index => $step) {
+            $reached = (int) ($step['reached'] ?? 0);
+            $attempts = (int) ($step['attempts'] ?? 0);
+            $share = $engaged > 0 ? (int) round((100 * $reached) / $engaged) . ' %' : '—';
+            $class = $index === $breakIndex ? ' class="progression-dropoff__break"' : '';
+            $html .= '<tr' . $class . '><th scope="row">' . esc_html($this->stepTitle($step)) . '</th>';
+            $html .= '<td>' . esc_html((string) $reached) . '</td>';
+            $html .= '<td>' . esc_html($share) . '</td>';
+            $html .= '<td>' . esc_html((string) $attempts) . '</td></tr>';
+        }
+        $html .= '</tbody></table></div>';
+        if ($breakIndex !== null) {
+            $html .= '<p class="progression-note">' . esc_html(sprintf(
+                /* translators: %s: step title where the largest drop happens */
+                __('La plus forte chute de joueurs est à « %s ».', 'chassesautresor-com'),
+                $this->stepTitle($steps[$breakIndex])
+            )) . '</p>';
+        }
+
+        return $html;
+    }
+
+    /** @param array<int, array<string, mixed>> $steps */
+    private function steepestDropIndex(array $steps): ?int
+    {
+        $breakIndex = null;
+        $largestDrop = 1;
+        $previous = null;
+        foreach ($steps as $index => $step) {
+            $reached = (int) ($step['reached'] ?? 0);
+            if ($previous !== null && ($previous - $reached) > $largestDrop) {
+                $largestDrop = $previous - $reached;
+                $breakIndex = $index;
+            }
+            $previous = $reached;
+        }
+
+        return $breakIndex;
+    }
+
+    /** @param array<string, mixed> $step */
+    private function stepTitle(array $step): string
+    {
+        $title = trim((string) ($step['title'] ?? ''));
+
+        return $title !== '' ? $title : __('Étape', 'chassesautresor-com');
+    }
+
+    /** @param array<string, mixed> $row */
+    private function seriesChart(array $row): string
+    {
+        $series = [];
+        foreach ((array) ($row['attempt_series'] ?? []) as $point) {
+            if (!is_array($point)) {
+                continue;
+            }
+            $series[] = [
+                'label' => (string) ($point['label'] ?? ''),
+                'total' => (int) ($point['total'] ?? 0),
+                'success' => (int) ($point['success'] ?? 0),
+            ];
+        }
+        if (count($series) < 2) {
+            return '';
+        }
+
+        $totals = array_map(static fn (array $point): int => $point['total'], $series);
+        $successes = array_map(static fn (array $point): int => $point['success'], $series);
+        $max = max(1, max($totals));
+        $left = 36.0;
+        $right = 628.0;
+        $top = 16.0;
+        $bottom = 132.0;
+        $chartId = 'progression-series-' . max(0, (int) ($row['id'] ?? 0));
+        $grain = (string) ($row['attempt_series_grain'] ?? 'week');
+        $caption = $grain === 'day'
+            ? __('Réponses finales par jour', 'chassesautresor-com')
+            : __('Réponses finales par semaine', 'chassesautresor-com');
+        $summary = sprintf(
+            /* translators: 1: number of points, 2: final attempts, 3: correct final answers */
+            __(
+                'Courbe des réponses finales : %1$d points, %2$d tentatives, %3$d bonnes réponses.',
+                'chassesautresor-com'
+            ),
+            count($series),
+            array_sum($totals),
+            array_sum($successes)
+        );
+
+        $html = '<figure class="progression-series">';
+        $html .= '<figcaption>' . esc_html($caption) . '</figcaption>';
+        $html .= '<svg viewBox="0 0 640 176" role="img" aria-labelledby="' . esc_attr($chartId) . '">';
+        $html .= '<title id="' . esc_attr($chartId) . '">' . esc_html($summary) . '</title>';
+        $html .= '<line class="progression-series__grid" x1="' . $left . '" y1="' . $bottom
+            . '" x2="' . $right . '" y2="' . $bottom . '"></line>';
+        $html .= '<line class="progression-series__grid" x1="' . $left . '" y1="' . $top
+            . '" x2="' . $right . '" y2="' . $top . '"></line>';
+        $html .= '<text x="0" y="20">' . esc_html((string) $max) . '</text>';
+        $html .= '<text x="0" y="130">0</text>';
+        $html .= '<polyline class="progression-series__line progression-series__line--total" points="'
+            . esc_attr($this->chartPoints($totals, $max, $left, $right, $top, $bottom)) . '"></polyline>';
+        $html .= '<polyline class="progression-series__line progression-series__line--success" points="'
+            . esc_attr($this->chartPoints($successes, $max, $left, $right, $top, $bottom)) . '"></polyline>';
+        $html .= $this->seriesLabels($series, $left, $right);
+        $html .= '</svg>';
+        $html .= '<ul class="progression-series__legend">';
+        $html .= '<li><i class="progression-series__swatch progression-series__swatch--total" aria-hidden="true"></i> '
+            . esc_html(__('Tentatives finales', 'chassesautresor-com')) . '</li>';
+        $html .= '<li><i class="progression-series__swatch progression-series__swatch--success"'
+            . ' aria-hidden="true"></i> '
+            . esc_html(__('Bonnes réponses', 'chassesautresor-com')) . '</li>';
+        $html .= '</ul>';
+        $html .= '<p class="progression-note">' . esc_html(__(
+            'La courbe suit la période choisie. Les essais sur les étapes n’y entrent pas.',
+            'chassesautresor-com'
+        )) . '</p></figure>';
+
+        return $html;
+    }
+
+    /**
+     * @param int[] $values
+     */
+    private function chartPoints(
+        array $values,
+        int $max,
+        float $left,
+        float $right,
+        float $top,
+        float $bottom
+    ): string {
+        $span = max(1, count($values) - 1);
+        $coords = [];
+        foreach (array_values($values) as $index => $value) {
+            $x = $left + ($right - $left) * ($index / $span);
+            $y = $bottom - ($bottom - $top) * ($value / max(1, $max));
+            $coords[] = round($x, 1) . ',' . round($y, 1);
+        }
+
+        return implode(' ', $coords);
+    }
+
+    /** @param array<int, array{label:string,total:int,success:int}> $series */
+    private function seriesLabels(array $series, float $left, float $right): string
+    {
+        $count = count($series);
+        $step = (int) max(1, ceil($count / 8));
+        $span = max(1, $count - 1);
+        $html = '';
+        foreach ($series as $index => $point) {
+            $isLast = $index === $count - 1;
+            if ($index % $step !== 0 && !$isLast) {
+                continue;
+            }
+            $x = round($left + ($right - $left) * ($index / $span), 1);
+            $anchor = $index === 0 ? 'start' : ($isLast ? 'end' : 'middle');
+            $html .= '<text x="' . $x . '" y="152" text-anchor="' . $anchor . '">'
+                . esc_html($point['label']) . '</text>';
+        }
+
+        return $html;
     }
 
     /** @param array<string, mixed> $yield */
@@ -309,36 +705,6 @@ final class AccountHuntRiddleStatisticsRenderer
         $percent = (int) round((100 * $success) / $total);
 
         return $success . '/' . $total . ' · ' . $percent . ' %';
-    }
-
-    private function metric(string $label, string $value): string
-    {
-        return '<div>'
-            . '<dt>' . esc_html($label) . '</dt>'
-            . '<dd>' . esc_html($value) . '</dd>'
-            . '</div>';
-    }
-
-    /** @param array<string, mixed> $row */
-    private function stepsMetric(array $row): string
-    {
-        $steps = (int) ($row['steps'] ?? 0);
-        if ($steps <= 0) {
-            return $this->metric(__('Étapes', 'chassesautresor-com'), '—');
-        }
-
-        $players = (int) ($row['step_players'] ?? 0);
-        $caption = sprintf(
-            /* translators: %d: number of players who completed at least one intermediate step */
-            _n('%d joueur', '%d joueurs', $players, 'chassesautresor-com'),
-            $players
-        );
-
-        return '<div>'
-            . '<dt>' . esc_html(__('Étapes', 'chassesautresor-com')) . '</dt>'
-            . '<dd>' . esc_html((string) $steps) . '</dd>'
-            . '<p class="progression-riddle__caption">' . esc_html($caption) . '</p>'
-            . '</div>';
     }
 
     /** @param array<int, array<string, mixed>> $ranking */

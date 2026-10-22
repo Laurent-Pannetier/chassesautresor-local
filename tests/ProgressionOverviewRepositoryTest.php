@@ -106,4 +106,35 @@ final class ProgressionOverviewRepositoryTest extends TestCase
         self::assertSame('2026-10-01 08:00:00', $activity[40]['last_at']);
         self::assertStringContainsString('etape_id IS NULL', $database->lastQuery);
     }
+
+    public function testFinalAttemptsAreBucketedWithoutIntermediateSteps(): void
+    {
+        $database = new ProgressionOverviewDatabaseStub();
+        $repository = new ProgressionOverviewRepository($database);
+        $database->lastQuery = 'untouched';
+
+        self::assertSame([], $repository->finalAttemptBuckets(40, 'hour'));
+        self::assertSame('untouched', $database->lastQuery);
+
+        $database->results = [
+            ['bucket' => '2026-10-05', 'total' => '4', 'success' => '1'],
+        ];
+        $series = $repository->finalAttemptBuckets(
+            40,
+            'week',
+            '2026-07-06 00:00:00',
+            '2026-10-22 15:00:00',
+            [3]
+        );
+
+        self::assertSame([['bucket' => '2026-10-05', 'total' => 4, 'success' => 1]], $series);
+        self::assertStringContainsString('etape_id IS NULL', $database->lastQuery);
+        self::assertStringContainsString('WEEKDAY(date_tentative)', $database->lastQuery);
+        self::assertStringContainsString("resultat = 'bon'", $database->lastQuery);
+        self::assertStringContainsString('user_id NOT IN (%d)', $database->lastQuery);
+
+        $repository->finalAttemptBuckets(40, 'day', '2026-10-01 00:00:00', '2026-10-22 15:00:00');
+        self::assertStringContainsString('DATE(date_tentative)', $database->lastQuery);
+        self::assertStringNotContainsString('WEEKDAY(date_tentative)', $database->lastQuery);
+    }
 }
