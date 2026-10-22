@@ -688,16 +688,28 @@ img.avatar-pirate {
   content: "";
   position: absolute;
   z-index: 0;
-  left: 50%;
-  bottom: 7%;
-  width: 22%;
-  height: 0.7rem;
+  left: var(--hunt-sphere-x, 50%);
+  bottom: 5%;
+  width: var(--hunt-sphere-shadow, 28%);
+  height: 7%;
+  min-height: 0.55rem;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.28);
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.4) 46%, transparent 70%),
+    radial-gradient(ellipse at center, transparent 42%, rgba(231, 238, 246, 0.16) 64%, transparent 78%);
   opacity: 0;
   transform: translateX(-50%);
-  filter: blur(6px);
+  filter: blur(7px);
   pointer-events: none;
+}
+
+html[data-theme="day"] .hunt-banner__sphere::after {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(21, 32, 51, 0.42) 0%,
+    rgba(21, 32, 51, 0.16) 50%,
+    transparent 74%
+  );
 }
 
 .hunt-banner__canvas {
