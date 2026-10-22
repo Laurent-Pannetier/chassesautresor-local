@@ -107,6 +107,21 @@ echo (new ChassesAuTresor\Core\Teams\TeamPageRenderer())->render(
             done();
         });
     });
+    document.querySelectorAll('.equipe-image-picker__input').forEach(function (input) {
+        input.addEventListener('change', function () {
+            var picker = input.closest('.equipe-image-picker');
+            var file = input.files && input.files[0];
+            if (!picker) {
+                return;
+            }
+            picker.classList.toggle('has-file', !!file);
+            if (file) {
+                picker.setAttribute('title', file.name);
+                return;
+            }
+            picker.removeAttribute('title');
+        });
+    });
     document.querySelectorAll('form[data-equipe-confirm]').forEach(function (form) {
         form.addEventListener('submit', function (event) {
             var message = form.getAttribute('data-equipe-confirm') || '';

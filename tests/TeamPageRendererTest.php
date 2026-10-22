@@ -60,6 +60,8 @@ final class TeamPageRendererTest extends TestCase
         $html = $this->render(new TeamActor(1, false), '');
 
         self::assertStringContainsString('Créer une équipe', $html);
+        self::assertStringContainsString('equipe-identity', $html);
+        self::assertStringContainsString('name="equipe_image"', $html);
         self::assertStringContainsString('Rejoindre une équipe', $html);
         self::assertStringNotContainsString('Exclure', $html);
         self::assertStringNotContainsString('Gestion des équipes', $html);

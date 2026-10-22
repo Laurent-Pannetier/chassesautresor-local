@@ -16533,6 +16533,7 @@ html {
   --shell-secondary-button-text: #ffffff;
   --shell-danger-button-bg: #b42318;
   --shell-danger-button-text: #ffffff;
+  --shell-danger: #ffb3aa;
   --shell-card-background:
     radial-gradient(8rem 5rem at 100% 0%, var(--shell-accent-soft), transparent 70%),
     var(--shell-surface);
@@ -16579,6 +16580,7 @@ html[data-theme=day] {
   --shell-state-blocked-bg: #fde5e2;
   --shell-state-blocked-text: #a42a20;
   --shell-state-blocked-border: #dc766d;
+  --shell-danger: #9f2c22;
   --shell-track: #e7eef5;
   --shell-shadow: 0 10px 24px rgba(21, 32, 51, 0.08);
 }
@@ -19211,6 +19213,130 @@ body.admin-bar.shell-edition .app-sidebar {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.45rem;
+  width: 100%;
+}
+
+.equipe-grid--split .equipe-form {
+  flex: 1;
+}
+
+.equipe-grid--split .equipe-note {
+  min-height: 2.9rem;
+}
+
+.equipe-grid--split .equipe-form .bouton-secondaire {
+  margin-top: auto;
+}
+
+.equipe-grid--split .equipe-form input[type=text] {
+  max-width: none;
+}
+
+.equipe-identity {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.equipe-identity__name,
+.equipe-identity__image {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.equipe-identity__name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.equipe-identity__image {
+  flex: 0 0 auto;
+  align-items: flex-start;
+  cursor: pointer;
+}
+
+.equipe-identity__image .equipe-field {
+  white-space: nowrap;
+}
+
+.equipe-image-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 0.7rem;
+  background: var(--shell-surface-2);
+  color: var(--shell-muted);
+}
+
+.equipe-image-picker:focus-within,
+.equipe-image-picker.has-file {
+  border-color: var(--shell-accent);
+  color: var(--shell-accent-strong);
+}
+
+.equipe-image-picker__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.equipe-image-picker__glyph {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.equipe-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-equipe .btn-danger,
+.app-equipe .btn-danger:hover,
+.app-equipe .btn-danger:focus {
+  margin: 0;
+  padding: 0.1rem 0.15rem;
+  border: 0;
+  background: transparent;
+  color: var(--shell-danger);
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  transform: none;
+  filter: none;
+}
+
+.app-equipe .bouton-tertiaire,
+.app-equipe .bouton-tertiaire:hover,
+.app-equipe .bouton-tertiaire:focus {
+  margin: 0;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  transform: none;
 }
 
 .app-equipe label,
@@ -19226,9 +19352,11 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .equipe-form input[type=text],
 .equipe-form input[type=number],
-.equipe-form input[type=file] {
+.equipe-form input[type=file]:not(.equipe-image-picker__input) {
+  box-sizing: border-box;
   width: 100%;
   min-width: 0;
+  min-height: 2.6rem;
   max-width: 24rem;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--shell-border);

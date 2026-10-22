@@ -119,13 +119,7 @@ final class TeamPageRenderer
         echo '</p>';
         $this->openForm(true);
         $this->hidden('cat_equipe_action', 'create');
-        $this->field(
-            'equipe_nom',
-            __('Nom', 'chassesautresor-com'),
-            'text',
-            ['required' => 'required', 'maxlength' => '40']
-        );
-        $this->fileField('create');
+        $this->identityFields('equipe_nom', ['required' => 'required', 'maxlength' => '40'], 'create');
         $this->submit(__('Créer', 'chassesautresor-com'), 'bouton-secondaire');
         echo '</form></section>';
 
@@ -457,13 +451,11 @@ final class TeamPageRenderer
         $this->openForm(true);
         $this->hidden('cat_equipe_action', 'update');
         $this->hidden('equipe_id', (string) (int) $team['id']);
-        $this->field(
+        $this->identityFields(
             'equipe_nom_' . (int) $team['id'],
-            __('Nom', 'chassesautresor-com'),
-            'text',
-            ['required' => 'required', 'maxlength' => '40', 'value' => (string) $team['name']]
+            ['required' => 'required', 'maxlength' => '40', 'value' => (string) $team['name']],
+            'equipe-' . (int) $team['id']
         );
-        $this->fileField('equipe-' . (int) $team['id']);
         echo '<label class="equipe-check">';
         echo '<input type="checkbox" name="equipe_remove_image" value="1"> ';
         echo esc_html__('Retirer l’image', 'chassesautresor-com');
@@ -524,14 +516,30 @@ final class TeamPageRenderer
         echo '>';
     }
 
-    private function fileField(string $suffix): void
+    /** @param array<string, string> $nameAttributes */
+    private function identityFields(string $nameId, array $nameAttributes, string $imageSuffix): void
+    {
+        echo '<div class="equipe-identity">';
+        echo '<div class="equipe-identity__name">';
+        $this->field($nameId, __('Nom', 'chassesautresor-com'), 'text', $nameAttributes);
+        echo '</div>';
+        $this->imagePicker($imageSuffix);
+        echo '</div>';
+    }
+
+    private function imagePicker(string $suffix): void
     {
         $id = 'equipe-image-' . $suffix;
-        echo '<label class="equipe-field" for="' . esc_attr($id) . '">';
-        echo esc_html__('Image (facultative)', 'chassesautresor-com');
-        echo '</label>';
-        echo '<input id="' . esc_attr($id) . '" name="equipe_image" type="file"';
-        echo ' accept="image/jpeg,image/png,image/gif,image/webp">';
+        echo '<label class="equipe-identity__image">';
+        echo '<span class="equipe-field">' . esc_html__('Image', 'chassesautresor-com');
+        echo '<span class="equipe-sr"> ' . esc_html__('facultative', 'chassesautresor-com') . '</span>';
+        echo '</span>';
+        echo '<span class="equipe-image-picker">';
+        echo '<input id="' . esc_attr($id) . '" class="equipe-image-picker__input" name="equipe_image"';
+        echo ' type="file" accept="image/jpeg,image/png,image/gif,image/webp">';
+        echo '<svg class="equipe-image-picker__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">';
+        echo '<path fill="currentColor" d="M11 5h2v14h-2zM5 11h14v2H5z"/>';
+        echo '</svg></span></label>';
     }
 
     private function userAvatar(int $userId, int $size): string
