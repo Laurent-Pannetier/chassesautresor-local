@@ -245,6 +245,7 @@ require_once __DIR__ . '/src/Media/UserAvatarHookHandler.php';
 require_once __DIR__ . '/src/Media/ProtectedAssetRouteHandler.php';
 require_once __DIR__ . '/src/Media/ProtectedRiddleAssetService.php';
 require_once __DIR__ . '/src/Media/ProtectedRiddleImageDeliveryService.php';
+require_once __DIR__ . '/src/Media/ProtectedThumbnailInlineService.php';
 require_once __DIR__ . '/src/Media/ProtectedRiddleImageSignedUrlService.php';
 require_once __DIR__ . '/src/Media/ProtectedRiddleImageRequestPolicy.php';
 require_once __DIR__ . '/src/Media/RiddleStepImageStorageService.php';

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use ChassesAuTresor\Core\Media\ProtectedImagePathService;
+use ChassesAuTresor\Core\Media\ProtectedRiddleImageDeliveryService;
 use ChassesAuTresor\Core\Media\ProtectedRiddleImageSignedUrlService;
+use ChassesAuTresor\Core\Media\ProtectedThumbnailInlineService;
 
 if (!function_exists('trouver_chemin_image')) {
     /**
@@ -36,5 +38,25 @@ if (!function_exists('cta_voir_image_enigme_url')) {
             null,
             $format
         );
+    }
+}
+
+if (!function_exists('cta_inline_riddle_thumbnail')) {
+    /**
+     * Inline HTML for a sommaire thumbnail.
+     *
+     * Empty when the file must stay on the signed proxy. This does not decide
+     * whether the viewer may see the enigma: the page that calls it already has.
+     */
+    function cta_inline_riddle_thumbnail(int $imageId, string $alt = ''): string
+    {
+        $service = new ProtectedThumbnailInlineService(
+            static function (int $id, string $size, string $format): ?array {
+                return (new ProtectedImagePathService())->find($id, $size, $format);
+            },
+            new ProtectedRiddleImageDeliveryService()
+        );
+
+        return $service->html($imageId, $alt);
     }
 }

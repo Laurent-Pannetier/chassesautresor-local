@@ -111,6 +111,24 @@ final class SommaireEnigmesLoopTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function testSommairePaintsTheInlineThumbnailWhenTheHelperExists(): void
+    {
+        if (!function_exists('enigme_sommaire_vignette_html')) {
+            eval('function enigme_sommaire_vignette_html($image_id, $alt = "") {'
+                . ' return "<img data-inline=\"" . (int) $image_id . "\" alt=\"\">"; }');
+        }
+
+        $html = $this->renderSommaire(false);
+
+        self::assertStringContainsString('data-inline="501"', $html);
+        self::assertStringNotContainsString('data-image="501"', $html);
+        self::assertStringContainsString('sommaire-bd__case', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testPrivilegedSommaireKeepsLockedChapters(): void
     {
         $html = $this->renderSommaire(true);
