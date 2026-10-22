@@ -287,14 +287,6 @@ function myaccount_get_sidebar_nav_items(?WP_User $user = null): array
             'primary'
         ),
         cta_shell_nav_item(
-            'points',
-            __('Points', 'chassesautresor-com'),
-            'points',
-            cta_shell_location_url('points'),
-            cta_shell_location_is_current('points'),
-            'primary'
-        ),
-        cta_shell_nav_item(
             'equipe',
             __('Équipe', 'chassesautresor-com'),
             'team',

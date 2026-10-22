@@ -98,7 +98,7 @@ final class TeamPageRendererTest extends TestCase
         self::assertStringNotContainsString('nope', $html);
     }
 
-    public function testTheShellOpensTheTeamPageAfterPoints(): void
+    public function testTheShellOpensTheTeamPageAfterTrophies(): void
     {
         $root = dirname(__DIR__);
         $placeholder = (string) file_get_contents(
@@ -107,13 +107,13 @@ final class TeamPageRendererTest extends TestCase
         $navigation = (string) file_get_contents(
             $root . '/wp-content/themes/chassesautresor/inc/myaccount-functions.php'
         );
-        $points = strpos($navigation, "'points'");
+        $trophies = strpos($navigation, "'trophees'");
         $team = strpos($navigation, "'equipe'");
 
         self::assertStringContainsString("get_template_part('template-parts/shell/equipe')", $placeholder);
-        self::assertNotFalse($points);
+        self::assertNotFalse($trophies);
         self::assertNotFalse($team);
-        self::assertLessThan($team, $points);
+        self::assertLessThan($team, $trophies);
     }
 
     private function render(TeamActor $actor, string $notice): string
