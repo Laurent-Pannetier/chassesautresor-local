@@ -1,8 +1,15 @@
 <?php
 // 🔒 Vérification minimale
+$refuse_image = static function (int $status, string $message): void {
+    http_response_code($status);
+    do_action('litespeed_control_set_nocache', 'protected riddle image denied');
+    header('Cache-Control: private, max-age=0, must-revalidate', true);
+    header('X-LiteSpeed-Cache-Control: no-cache', true);
+    exit($message);
+};
+
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
-    http_response_code(400);
-    exit(__('ID manquant ou invalide', 'chassesautresor-com'));
+    $refuse_image(400, __('ID manquant ou invalide', 'chassesautresor-com'));
 }
 
 $image_id = (int) $_GET['id'];
@@ -14,8 +21,7 @@ $sizes = function_exists('get_intermediate_image_sizes')
 $sizes[] = 'full';
 
 if (!in_array($taille, $sizes, true)) {
-    http_response_code(400);
-    exit(__('Taille d\'image invalide', 'chassesautresor-com'));
+    $refuse_image(400, __('Taille d\'image invalide', 'chassesautresor-com'));
 }
 
 $signer = new ChassesAuTresor\Core\Media\ProtectedRiddleImageSignedUrlService();
@@ -26,16 +32,16 @@ $format = isset($_GET['fmt']) ? strtolower((string) $_GET['fmt']) : '';
 $current_user_id = get_current_user_id();
 
 if ($format !== '' && $format !== 'webp') {
-    http_response_code(400);
-    exit(__('Format d\'image invalide', 'chassesautresor-com'));
+    $refuse_image(400, __('Format d\'image invalide', 'chassesautresor-com'));
 }
 
-if (
-    $uid !== $current_user_id
-    || !$signer->verify($image_id, $taille, $uid, $exp, $sig, null, $format)
-) {
-    http_response_code(403);
-    exit(__('Lien image invalide ou expiré', 'chassesautresor-com'));
+// The signature stays tied to the viewer embedded in the URL. A shared cache of
+// the homepage can replay that URL for someone else; access is checked next
+// for the current session, so a won hunt does not blank every sommaire vignette.
+$signature_policy = new ChassesAuTresor\Core\Media\ProtectedRiddleImageRequestPolicy();
+$signature_valid = $signer->verify($image_id, $taille, $uid, $exp, $sig, null, $format);
+if (!$signature_policy->acceptsSignature($signature_valid, $uid, $current_user_id)) {
+    $refuse_image(403, __('Lien image invalide ou expiré', 'chassesautresor-com'));
 }
 
 // 🧩 Récupération de l'énigme / étape associée à cette image
@@ -47,8 +53,7 @@ $enigme_id = $image_service->findRiddleId($image_id);
 $step_context = $step_image_service->findContext($image_id);
 
 if (!$enigme_id && !$step_context) {
-    http_response_code(403);
-    exit(__('Image non autorisée', 'chassesautresor-com'));
+    $refuse_image(403, __('Image non autorisée', 'chassesautresor-com'));
 }
 
 // 🔐 Vérification d'accès — une image peut être liée à une énigme ET/OU une étape ;
@@ -62,8 +67,7 @@ if (!$can_view && $step_context) {
     $can_view = $step_image_service->canView($image_id, $current_user_id);
 }
 if (!$can_view) {
-    http_response_code(403);
-    exit(__('Accès refusé', 'chassesautresor-com'));
+    $refuse_image(403, __('Accès refusé', 'chassesautresor-com'));
 }
 
 // 📦 Récupération du chemin de l'image
@@ -79,21 +83,18 @@ if (!$path && $taille !== 'full') {
 }
 
 if (!$path) {
-    http_response_code(404);
-    exit(__('Fichier introuvable', 'chassesautresor-com'));
+    $refuse_image(404, __('Fichier introuvable', 'chassesautresor-com'));
 }
 
 $allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 if (!in_array($mime, $allowed_mimes, true)) {
-    http_response_code(415);
-    exit(__('Format d\'image invalide', 'chassesautresor-com'));
+    $refuse_image(415, __('Format d\'image invalide', 'chassesautresor-com'));
 }
 
 $delivery = new ChassesAuTresor\Core\Media\ProtectedRiddleImageDeliveryService();
 $safe_path = is_string($path) ? $delivery->confineToUploads($path) : null;
 if ($safe_path === null) {
-    http_response_code(404);
-    exit(__('Fichier introuvable', 'chassesautresor-com'));
+    $refuse_image(404, __('Fichier introuvable', 'chassesautresor-com'));
 }
 $path = $safe_path;
 

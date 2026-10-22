@@ -6,6 +6,14 @@ use PHPUnit\Framework\TestCase;
 
 final class SommaireEnigmesLoopTest extends TestCase
 {
+    public function testFinishedHuntCockpitIsNotStoredInASharedCache(): void
+    {
+        require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/single-hunt-home.php';
+
+        self::assertTrue(cat_single_hunt_cockpit_must_not_be_shared(true));
+        self::assertFalse(cat_single_hunt_cockpit_must_not_be_shared(false));
+    }
+
     public function testPlayerFilterKeepsOnlyTheAccessibleState(): void
     {
         require_once dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/single-hunt-home.php';

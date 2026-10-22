@@ -30,6 +30,15 @@ final class RiddleStepProtectedImageTest extends TestCase {
         self::assertStringContainsString('http_response_code(304)', $source);
         self::assertStringContainsString('tryLiteSpeedSend', $source);
         self::assertStringContainsString('ProtectedRiddleImageSignedUrlService', $source);
+        self::assertStringContainsString('ProtectedRiddleImageRequestPolicy', $source);
+        self::assertStringContainsString(
+            '$signer->verify($image_id, $taille, $uid, $exp, $sig, null, $format)',
+            $source
+        );
+        self::assertStringContainsString('acceptsSignature($signature_valid, $uid, $current_user_id)', $source);
+        self::assertStringNotContainsString('$uid !== $current_user_id', $source);
+        self::assertStringContainsString('canViewRiddle($enigme_id, $current_user_id)', $source);
+        self::assertStringContainsString('private, max-age=0, must-revalidate', $source);
         self::assertStringContainsString('Lien image invalide ou expiré', $source);
         self::assertStringContainsString('findContext($image_id)', $source);
         self::assertStringContainsString('canView($image_id, $current_user_id)', $source);
