@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Chasses au Tresor Core
  * Description: Fonctionnalites metier de chassesautresor.com.
- * Version: 0.1.0
+ * Version: 0.2.0
  * Text Domain: chassesautresor-com
  */
 
@@ -451,6 +451,14 @@ require_once __DIR__ . '/src/Messages/UserMessagesTable.php';
 require_once __DIR__ . '/src/Messages/UserMessagesCleanup.php';
 require_once __DIR__ . '/src/Messages/LegacySiteMessageCleanup.php';
 require_once __DIR__ . '/src/Messages/AccountLegacyRouteHandler.php';
+require_once __DIR__ . '/src/Notifications/NotificationsTable.php';
+require_once __DIR__ . '/src/Notifications/NotificationStore.php';
+require_once __DIR__ . '/src/Notifications/NotificationRepository.php';
+require_once __DIR__ . '/src/Notifications/NotificationService.php';
+require_once __DIR__ . '/src/Notifications/notification-functions.php';
+require_once __DIR__ . '/src/Notifications/NotificationsPageRenderer.php';
+require_once __DIR__ . '/src/Notifications/NotificationReadAjaxHandler.php';
+require_once __DIR__ . '/src/Notifications/NotificationOverlayAjaxHandler.php';
 require_once __DIR__ . '/src/Teams/TeamResult.php';
 require_once __DIR__ . '/src/Teams/TeamActor.php';
 require_once __DIR__ . '/src/Teams/TeamStore.php';
@@ -467,6 +475,22 @@ require_once __DIR__ . '/src/Teams/TeamJoinThrottle.php';
 require_once __DIR__ . '/src/Teams/TeamImageUploader.php';
 require_once __DIR__ . '/src/Teams/team-functions.php';
 require_once __DIR__ . '/src/Teams/TeamRequestHandler.php';
+require_once __DIR__ . '/src/Trophies/TrophyAttributionsTable.php';
+require_once __DIR__ . '/src/Trophies/TrophyAwardStore.php';
+require_once __DIR__ . '/src/Trophies/TrophyAwardRepository.php';
+require_once __DIR__ . '/src/Trophies/TrophyDefinition.php';
+require_once __DIR__ . '/src/Trophies/TrophyPostTypeRegistrar.php';
+require_once __DIR__ . '/src/Trophies/TrophyEvent.php';
+require_once __DIR__ . '/src/Trophies/TrophyTriggerProvider.php';
+require_once __DIR__ . '/src/Trophies/CodeEventTrophyTrigger.php';
+require_once __DIR__ . '/src/Trophies/TrophyTriggerRegistry.php';
+require_once __DIR__ . '/src/Trophies/TrophyFieldGroupRegistrar.php';
+require_once __DIR__ . '/src/Trophies/TrophyDefinitionRepository.php';
+require_once __DIR__ . '/src/Trophies/TrophyAwardService.php';
+require_once __DIR__ . '/src/Trophies/TrophyEventDispatcher.php';
+require_once __DIR__ . '/src/Trophies/trophy-functions.php';
+require_once __DIR__ . '/src/Trophies/FirstParticipationTrophyHook.php';
+require_once __DIR__ . '/src/Trophies/TrophyPageRenderer.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
@@ -568,6 +592,8 @@ ChassesAuTresor\Core\Messages\AccountMessageDismissalAjaxHandler::register('add_
 ChassesAuTresor\Core\Messages\HuntValidationMessageHookHandler::register('add_action');
 ChassesAuTresor\Core\Messages\AccountSectionAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Messages\AccountLegacyRouteHandler::register('add_action', 'add_filter');
+ChassesAuTresor\Core\Notifications\NotificationReadAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Notifications\NotificationOverlayAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\PointsHistoryAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionHistoryAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Points\ConversionModalAjaxHandler::register('add_action');
@@ -587,6 +613,9 @@ ChassesAuTresor\Core\Progress\RiddleStatisticsAjaxHandler::register('add_action'
 ChassesAuTresor\Core\Progress\HintUnlockAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Teams\TeamRequestHandler::register('add_action');
+ChassesAuTresor\Core\Trophies\TrophyPostTypeRegistrar::register('add_action');
+ChassesAuTresor\Core\Trophies\TrophyFieldGroupRegistrar::register('add_action');
+ChassesAuTresor\Core\Trophies\FirstParticipationTrophyHook::register('add_action');
 
 register_activation_hook(
     __FILE__,
@@ -676,6 +705,16 @@ register_activation_hook(
 register_activation_hook(
     __FILE__,
     [ChassesAuTresor\Core\Teams\TeamTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Notifications\NotificationsTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Trophies\TrophyAttributionsTable::class, 'install']
 );
 
 register_activation_hook(
@@ -840,6 +879,16 @@ add_action(
 add_action(
     'plugins_loaded',
     [ChassesAuTresor\Core\Teams\TeamTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Notifications\NotificationsTable::class, 'maybeUpgrade']
+);
+
+add_action(
+    'plugins_loaded',
+    [ChassesAuTresor\Core\Trophies\TrophyAttributionsTable::class, 'maybeUpgrade']
 );
 
 add_action(

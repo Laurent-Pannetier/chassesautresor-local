@@ -80,9 +80,12 @@ final class AdminStatisticsResetServiceTest extends TestCase
             }
         ))->reset();
 
-        self::assertSame(['deleted' => 13, 'error' => ''], $result);
+        self::assertSame(['deleted' => 16, 'error' => ''], $result);
         self::assertContains('DELETE FROM wp_enigme_etapes_progression', $database->queries);
         self::assertContains('DELETE FROM wp_enigme_delais_soumission', $database->queries);
+        self::assertContains('DELETE FROM wp_trophy_attributions', $database->queries);
+        self::assertContains('DELETE FROM wp_notification_recipients', $database->queries);
+        self::assertContains('DELETE FROM wp_notifications', $database->queries);
         self::assertSame(['user', 0, '_myaccount_messages', '', true], $GLOBALS['admin_reset_deleted_metadata']);
         self::assertSame([4, 7], $GLOBALS['admin_reset_cleaned_users']);
         self::assertSame([10, 20], $clearedHunts);

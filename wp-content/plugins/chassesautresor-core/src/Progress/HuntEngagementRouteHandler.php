@@ -36,7 +36,7 @@ final class HuntEngagementRouteHandler
             static function (int $targetUserId, int $targetHuntId) use ($engagements): bool {
                 $inserted = $engagements->engage($targetUserId, $targetHuntId, current_time('mysql', true));
                 if ($inserted) {
-                    do_action('chasse_engagement_created', $targetHuntId);
+                    do_action('chasse_engagement_created', $targetHuntId, $targetUserId);
                 }
                 return $inserted;
             },

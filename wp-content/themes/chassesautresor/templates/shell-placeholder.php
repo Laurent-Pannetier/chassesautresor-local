@@ -65,6 +65,26 @@ if ($slug === 'progression') :
     get_footer();
     return;
 endif;
+if ($slug === 'trophees') :
+    ?>
+    <main class="app-trophies" id="app-trophies">
+        <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
+        <?php get_template_part('template-parts/shell/trophees'); ?>
+    </main>
+    <?php
+    get_footer();
+    return;
+endif;
+if ($slug === 'notifications') :
+    ?>
+    <main class="app-notifications" id="app-notifications">
+        <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
+        <?php get_template_part('template-parts/shell/notifications'); ?>
+    </main>
+    <?php
+    get_footer();
+    return;
+endif;
 ?>
 <main class="app-placeholder" id="app-placeholder">
     <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>

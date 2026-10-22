@@ -173,7 +173,8 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringNotContainsString('Chasse au trésor', $topbar);
         $this->assertStringContainsString('Antre de feu', $topbar);
         $this->assertStringContainsString('solo', $topbar);
-        $this->assertStringContainsString('>0<', $topbar);
+        $this->assertStringContainsString('cat_user_trophy_count', $topbar);
+        $this->assertStringNotContainsString('app-topbar__trophy-count">0', $topbar);
         $this->assertStringNotContainsString('customer-logout', $topbar);
     }
 
