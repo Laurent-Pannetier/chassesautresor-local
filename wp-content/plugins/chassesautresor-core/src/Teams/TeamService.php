@@ -21,7 +21,7 @@ final class TeamService
 
     public function create(TeamActor $actor, string $rawName, ?int $imageId): TeamResult
     {
-        if ($actor->userId <= 0) {
+        if ($actor->userId <= 0 || $actor->manager) {
             return TeamResult::error('forbidden');
         }
 
@@ -55,7 +55,7 @@ final class TeamService
 
     public function join(TeamActor $actor, string $rawCode): TeamResult
     {
-        if ($actor->userId <= 0) {
+        if ($actor->userId <= 0 || $actor->manager) {
             return TeamResult::error('forbidden');
         }
 

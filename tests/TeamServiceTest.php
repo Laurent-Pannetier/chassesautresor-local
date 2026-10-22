@@ -11,6 +11,37 @@ require_once __DIR__ . '/MemoryTeamStore.php';
 
 final class TeamServiceTest extends TestCase
 {
+    public function testAMemberCannotCreateOrJoinAnotherTeam(): void
+    {
+        [$service] = $this->service();
+        $service->create(new TeamActor(1, false), 'Alpha', null);
+        $code = $service->describe(new TeamActor(1, false))['team']['code'];
+        $member = new TeamActor(2, false);
+
+        self::assertSame('joined', $service->join($member, $code)->code);
+        self::assertSame('already_member', $service->create($member, 'Beta', null)->code);
+        self::assertSame('already_member', $service->join($member, 'EFGH6789')->code);
+        self::assertSame('Alpha', $service->describe($member)['team']['name']);
+    }
+
+    public function testAManagerCannotCreateOrJoinButCanLeave(): void
+    {
+        [$service] = $this->service();
+        $player = new TeamActor(9, false);
+        $manager = new TeamActor(9, true);
+        $service->create(new TeamActor(1, false), 'Alpha', null);
+        $code = $service->describe(new TeamActor(1, false))['team']['code'];
+
+        self::assertSame('forbidden', $service->create($manager, 'Staff', null)->code);
+        self::assertSame('forbidden', $service->join($manager, $code)->code);
+        self::assertSame('joined', $service->join($player, $code)->code);
+        self::assertSame('forbidden', $service->create($manager, 'Staff', null)->code);
+        self::assertSame('Alpha', $service->describe($manager)['team']['name']);
+        self::assertSame('left', $service->leave($manager)->code);
+        self::assertNull($service->describe($manager)['team']);
+        self::assertSame('forbidden', $service->join($manager, $code)->code);
+    }
+
     public function testCreateJoinsTheCreatorAndRefusesASecondTeam(): void
     {
         [$service, $store] = $this->service();

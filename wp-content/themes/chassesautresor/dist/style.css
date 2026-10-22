@@ -19310,6 +19310,23 @@ body.admin-bar.shell-edition .app-sidebar {
   border: 0;
 }
 
+.app-equipe .equipe-leave,
+.app-equipe .equipe-leave:hover,
+.app-equipe .equipe-leave:focus {
+  margin-top: 0.35rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: var(--shell-danger-button-bg);
+  color: var(--shell-danger-button-text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transform: none;
+  cursor: pointer;
+}
+
 .app-equipe .btn-danger,
 .app-equipe .btn-danger:hover,
 .app-equipe .btn-danger:focus {

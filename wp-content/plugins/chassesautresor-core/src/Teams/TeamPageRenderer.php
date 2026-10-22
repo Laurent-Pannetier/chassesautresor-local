@@ -34,10 +34,10 @@ final class TeamPageRenderer
 
         ob_start();
         $this->notice($notice);
-        if (!is_array($team)) {
-            $this->entryForms((int) ($view['max'] ?? TeamSettings::DEFAULT));
-        } else {
+        if (is_array($team)) {
             $this->personalCard($team);
+        } elseif (empty($view['manager'])) {
+            $this->entryForms((int) ($view['max'] ?? TeamSettings::DEFAULT));
         }
         if (is_array($view['performance'] ?? null)) {
             $this->performance((array) $view['performance']);
@@ -165,7 +165,7 @@ final class TeamPageRenderer
         }
         $this->openForm(false, __('Quitter cette équipe ?', 'chassesautresor-com'));
         $this->hidden('cat_equipe_action', 'leave');
-        echo '<button type="submit" class="btn-danger">';
+        echo '<button type="submit" class="equipe-leave">';
         echo esc_html__('Quitter', 'chassesautresor-com');
         echo '</button></form>';
         echo '</div></section>';
