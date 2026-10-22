@@ -91,7 +91,13 @@ if ($is_admin && class_exists(ChassesAuTresor\Core\Messages\AccountToolsRenderer
                         </p>
                         <p>
                             <?php esc_html_e(
-                                'Chaque énigme, étape et indice reçoit des joueurs.',
+                                'Chaque énigme, étape et indice reçoit des joueurs, des soumissions et des dates variées.',
+                                'chassesautresor-com'
+                            ); ?>
+                        </p>
+                        <p>
+                            <?php esc_html_e(
+                                'Huit équipes de quatre joueurs sont créées ; les autres joueurs restent en solo.',
                                 'chassesautresor-com'
                             ); ?>
                         </p>

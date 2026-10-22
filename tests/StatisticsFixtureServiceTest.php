@@ -26,6 +26,9 @@ final class StatisticsFixtureServiceTest extends TestCase
         self::assertSame(StatisticsFixtureService::PLAYER_COUNT, $result['users']);
         self::assertGreaterThan(0, $result['rows']);
         self::assertSame([[7, [10, 11, 12]]], $cleared);
+        self::assertCount(StatisticsFixtureService::TEAM_COUNT, $this->inserted($database, 'equipes'));
+        self::assertCount(32, $this->inserted($database, 'equipe_membres'));
+        self::assertCount(32, $this->inserted($database, 'equipe_places'));
         self::assertCount(48, $this->inserted($database, 'engagements', static function (array $row): bool {
             return (int) ($row['chasse_id'] ?? 0) === 7 && ($row['enigme_id'] ?? null) === null;
         }));
@@ -46,6 +49,8 @@ final class StatisticsFixtureServiceTest extends TestCase
         });
         self::assertSame([0], array_values(array_unique(array_column($pending, 'traitee'))));
         self::assertSame([2], array_values(array_unique(array_column($finals, 'points_utilises'))));
+        self::assertGreaterThan(4, count(array_unique(array_column($finals, 'date_tentative'))));
+        self::assertStringStartsWith('Proposition test ', (string) $finals[0]['reponse_saisie']);
         self::assertSame([], $this->inserted($database, 'enigme_tentatives', static function (array $row): bool {
             return (int) $row['enigme_id'] === 12;
         }));
@@ -145,11 +150,15 @@ final class StatisticsFixtureServiceTest extends TestCase
 
         $result = $service->purge();
 
-        self::assertSame(['users' => 2, 'rows' => 8, 'error' => ''], $result);
+        self::assertSame(['users' => 2, 'rows' => 11, 'error' => ''], $result);
         self::assertSame([4, 9], $deleted);
         self::assertSame([[7, []]], $cleared);
         self::assertStringContainsString('4,9', $database->queries[0]);
         self::assertStringNotContainsString('999', $database->queries[0]);
+        self::assertStringContainsString('wp_equipe_places', $database->queries[0]);
+        self::assertStringContainsString('wp_equipe_membres', $database->queries[1]);
+        self::assertStringContainsString('wp_equipes', $database->queries[2]);
+        self::assertStringContainsString('created_by', $database->queries[2]);
     }
 
     public function testPurgeWithNobodyIsANoOp(): void
@@ -205,7 +214,7 @@ final class StatisticsFixtureServiceTest extends TestCase
         [$weekStart, $weekEnd] = $periods->range('semaine', $now);
         [$monthStart, $monthEnd] = $periods->range('mois', $now);
 
-        self::assertCount(4, $dates);
+        self::assertGreaterThanOrEqual(4, count($dates));
         self::assertTrue($this->hasDateIn($dates, $dayStart, $dayEnd));
         self::assertTrue($this->hasDateOutside($dates, $dayStart, $dayEnd, $weekStart, $weekEnd));
         self::assertTrue($this->hasDateOutside($dates, $weekStart, $weekEnd, $monthStart, $monthEnd));
@@ -329,6 +338,7 @@ final class StatisticsFixtureServiceTest extends TestCase
             public string $prefix = 'wp_';
             public string $last_error = '';
             public int $rows_affected = 1;
+            public int $insert_id = 0;
             public array $inserts = [];
             public array $queries = [];
             public bool $failAttempts = false;
@@ -341,6 +351,7 @@ final class StatisticsFixtureServiceTest extends TestCase
                 }
 
                 $this->last_error = '';
+                $this->insert_id++;
                 $this->inserts[] = [$table, $data];
                 return 1;
             }
