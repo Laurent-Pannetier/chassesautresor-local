@@ -318,6 +318,7 @@ describe('comic reader', () => {
     expect(document.querySelector('.comic-hud__controls .reponse-launcher__open')).not.toBeNull();
     expect(document.querySelector('.comic-hud__controls .galerie-enigme__pager')).not.toBeNull();
     expect(document.querySelector('.comic-hud__sheet .enigme-texte')).not.toBeNull();
+    expect(document.querySelectorAll('.comic-hud__controls .galerie-enigme__dot')).toHaveLength(2);
 
     jest.advanceTimersByTime(2900);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
@@ -349,6 +350,54 @@ describe('comic reader', () => {
     expect(image).not.toBeNull();
     expect(image.getAttribute('src')).toBe('full-1.jpg');
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
+  test('turns pages from the hud dots and chevrons', () => {
+    const dots = document.querySelectorAll('.galerie-enigme__dot');
+    const prev = document.querySelector('.galerie-enigme__pager-nav--prev');
+    const next = document.querySelector('.galerie-enigme__pager-nav--next');
+
+    expect(dots[0].classList.contains('is-active')).toBe(true);
+    expect(dots[0].getAttribute('aria-selected')).toBe('true');
+    expect(prev.disabled).toBe(true);
+    expect(next.disabled).toBe(false);
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 1 / 2');
+
+    dots[1].click();
+    expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(
+      true
+    );
+    expect(dots[1].getAttribute('aria-selected')).toBe('true');
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 2 / 2');
+    expect(next.disabled).toBe(true);
+
+    prev.click();
+    expect(document.querySelector('[data-gallery-index="0"]').classList.contains('is-active')).toBe(
+      true
+    );
+    expect(prev.disabled).toBe(true);
+    expect(dots[0].classList.contains('is-active')).toBe(true);
+  });
+
+  test('uses the text counter above six pages', () => {
+    const stage = document.querySelector('.galerie-enigme__stage');
+    const stageNext = stage.querySelector('.galerie-enigme__nav--next');
+    for (let index = 2; index < 7; index += 1) {
+      const figure = document.createElement('figure');
+      figure.className = 'galerie-enigme__slide';
+      figure.dataset.galleryIndex = String(index);
+      figure.hidden = true;
+      stage.insertBefore(figure, stageNext);
+    }
+
+    window.EnigmeGallery.selectSlide(document.querySelector('[data-enigme-gallery]'), 3);
+
+    const pager = document.querySelector('.galerie-enigme__pager');
+    expect(pager.classList.contains('is-counter-only')).toBe(true);
+    expect(pager.querySelector('.galerie-enigme__dot')).toBeNull();
+    expect(pager.querySelector('.galerie-enigme__pager-nav--prev').disabled).toBe(false);
+    expect(pager.querySelector('.galerie-enigme__pager-nav--next').disabled).toBe(false);
+    expect(pager.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 4 / 7');
   });
 
   test('turns a comic page with a short slide instead of a hard cut', () => {
@@ -482,6 +531,8 @@ describe('comic reader', () => {
 
     expect(document.body.classList.contains('comic-reader')).toBe(false);
     expect(document.querySelector('.galerie-enigme-wrapper .galerie-enigme__pager')).not.toBeNull();
+    expect(document.querySelector('.galerie-enigme__dot')).toBeNull();
+    expect(document.querySelector('.galerie-enigme__track')).toBeNull();
     expect(document.querySelector('.participation .reponse-launcher')).not.toBeNull();
     expect(document.querySelector('.page-enigme .contenu-principal')).not.toBeNull();
   });
