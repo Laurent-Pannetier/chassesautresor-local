@@ -31,6 +31,9 @@ final class AdminStatisticsResetService
             $this->database->prefix . 'indices_deblocages',
             $this->database->prefix . 'enigme_etapes_progression',
             $this->database->prefix . 'enigme_delais_soumission',
+            $this->database->prefix . 'trophy_attributions',
+            $this->database->prefix . 'notification_recipients',
+            $this->database->prefix . 'notifications',
         ];
         $deleted = 0;
 

@@ -45,6 +45,7 @@ De futurs fournisseurs implémentent `TrophyTriggerProvider` puis s’enregistre
 l’état propre à chaque utilisateur : lecture et présentation de l’overlay.
 
 Les tables sont installées à l’activation du plugin et mises à niveau sur `plugins_loaded`.
+Le reset global efface les attributions et les notifications reçues. Les fiches trophées restent en place.
 
 ## Interfaces joueur
 
