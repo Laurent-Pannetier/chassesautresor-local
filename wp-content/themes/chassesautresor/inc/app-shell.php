@@ -235,7 +235,7 @@ function cta_shell_hunt_image_url(int $huntId): string
 }
 
 /**
- * Loads the rotating hunt sphere used by the home banner.
+ * Loads the rolling hunt sphere used by the home banner.
  */
 function cta_shell_enqueue_hunt_sphere(): void
 {
@@ -263,7 +263,7 @@ function cta_shell_enqueue_hunt_sphere(): void
 }
 
 /**
- * Renders the hunt header. The image is mapped onto a rotating sphere.
+ * Renders the hunt header. The image is mapped onto a sphere that rolls sideways.
  * An empty frame is used when no image exists.
  */
 function cta_shell_render_hunt_banner(): void

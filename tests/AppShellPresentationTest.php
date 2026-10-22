@@ -85,11 +85,22 @@ class AppShellPresentationTest extends TestCase
         $this->assertTrue($enqueued[0]['footer']);
 
         $source = (string) file_get_contents($theme . '/assets/js/src/hunt-banner-sphere.js');
+        $motion = (string) file_get_contents($theme . '/assets/js/src/hunt-banner-sphere-motion.js');
+        $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
         $this->assertStringContainsString('SphereGeometry', $source);
         $this->assertStringContainsString('prefers-reduced-motion', $source);
-        $this->assertStringContainsString('quaternion.slerp', $source);
-        $this->assertStringContainsString('turnSpeed = 0.0034', $source);
+        $this->assertStringContainsString('stepSphere', $source);
+        $this->assertStringContainsString('travelLimit(viewHalfWidth, camera.position.z)', $source);
+        $this->assertStringContainsString('IntersectionObserver', $source);
+        $this->assertStringContainsString('--hunt-sphere-x', $source);
+        $this->assertStringNotContainsString('kickAngle', $source);
         $this->assertStringNotContainsString('rotation.y += 0.0042', $source);
+        $this->assertStringNotContainsString('quaternion.slerp', $source);
+        $this->assertStringContainsString('bounced', $motion);
+        $this->assertStringContainsString('velocityX', $motion);
+        $this->assertStringContainsString('--hunt-sphere-x', $scss);
+        $this->assertStringContainsString('--hunt-sphere-shadow', $scss);
+        $this->assertStringContainsString('html[data-theme="day"] .hunt-banner__sphere::after', $scss);
         $bundle = (string) file_get_contents($theme . '/assets/js/hunt-banner-sphere.js');
         $this->assertGreaterThan(50000, strlen($bundle));
     }
