@@ -76,6 +76,33 @@ function cat_single_hunt_front_is_cockpit(): bool
 }
 
 /**
+ * The cockpit embeds image URLs signed for one viewer. Sharing that HTML
+ * makes every sommaire vignette fail for the next visitor.
+ */
+function cat_single_hunt_cockpit_must_not_be_shared(bool $isCockpit): bool
+{
+    return $isCockpit;
+}
+
+/**
+ * Keep the single-hunt cockpit out of shared caches.
+ */
+function cat_prevent_shared_cache_of_single_hunt_cockpit(): void
+{
+    if (!cat_single_hunt_cockpit_must_not_be_shared(cat_single_hunt_front_is_cockpit())) {
+        return;
+    }
+
+    if (!defined('DONOTCACHEPAGE')) {
+        define('DONOTCACHEPAGE', true);
+    }
+
+    nocache_headers();
+    do_action('litespeed_control_set_nocache', 'single hunt cockpit');
+}
+add_action('wp', 'cat_prevent_shared_cache_of_single_hunt_cockpit', 0);
+
+/**
  * Single line shown over the hunt visual. Uses only the start date.
  */
 function cat_primary_hunt_start_line(int $huntId): string

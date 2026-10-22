@@ -212,6 +212,9 @@ final class SingleHuntHomepageTemplateTest extends TestCase
             $home
         );
         self::assertStringContainsString('cat_sommaire_enigme_est_visible', $home);
+        self::assertStringContainsString('DONOTCACHEPAGE', $home);
+        self::assertStringContainsString('litespeed_control_set_nocache', $home);
+        self::assertStringContainsString('cat_prevent_shared_cache_of_single_hunt_cockpit', $home);
         self::assertStringContainsString('sommaire-bd__vignette', $partial);
         self::assertStringContainsString('sommaire-bd__pointilles', $partial);
         self::assertStringContainsString('sommaire-bd__numero', $partial);
