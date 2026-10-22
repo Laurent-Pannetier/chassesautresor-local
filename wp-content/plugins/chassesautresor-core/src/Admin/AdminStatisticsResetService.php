@@ -80,10 +80,10 @@ final class AdminStatisticsResetService
         ]);
         foreach ($finishedHunts as $huntId) {
             update_field('chasse_cache_statut', 'en_cours', $huntId);
-            delete_field('chasse_cache_gagnants', $huntId);
-            delete_field('chasse_cache_date_decouverte', $huntId);
         }
 
+        // A manual finish only stores the winner announcement and leaves the
+        // hunt open, so those fields must be cleared on every hunt.
         $allHunts = get_posts([
             'post_type' => 'chasse',
             'post_status' => 'any',
@@ -91,6 +91,8 @@ final class AdminStatisticsResetService
             'nopaging' => true,
         ]);
         foreach ($allHunts as $huntId) {
+            delete_field('chasse_cache_gagnants', $huntId);
+            delete_field('chasse_cache_date_decouverte', $huntId);
             ($this->huntCacheClearer)((int) $huntId);
         }
 
