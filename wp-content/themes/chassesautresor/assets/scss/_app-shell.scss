@@ -1456,13 +1456,45 @@ html[data-theme="day"] .home-enigmas-preserve {
   margin-top: 0;
 }
 
-.progression-leaderboard > h2,
+.player-ranking__heading,
+.progression-table-card > h2,
+.progression-table-card > h3,
 .equipe-ranking > h3,
 .equipe-contributions > h3 {
   margin: 0;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--shell-border);
-  font-size: 0.95rem;
+  padding: 0.75rem 1rem 0.7rem 1.1rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--shell-accent) 42%, var(--shell-border));
+  background:
+    linear-gradient(90deg, var(--shell-accent), var(--shell-accent)) left / 0.28rem 100% no-repeat,
+    color-mix(in srgb, var(--shell-accent) 16%, var(--shell-surface-2));
+  color: var(--shell-text);
+  font-size: 1.12rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.player-ranking__heading h2,
+.player-ranking__heading h3 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.player-ranking__kicker {
+  display: block;
+  margin: 0 0 0.2rem;
+  color: var(--shell-accent-strong);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .progression-table-scroll {
@@ -1477,8 +1509,10 @@ html[data-theme="day"] .home-enigmas-preserve {
   color: var(--shell-text);
 }
 
-.progression-data-table thead {
-  background: var(--shell-surface-2);
+.progression-data-table thead,
+.progression-dropoff__table thead,
+.progression-attempts__table thead {
+  background: color-mix(in srgb, var(--shell-bg) 42%, var(--shell-surface));
 }
 
 .progression-data-table th,
@@ -1490,11 +1524,15 @@ html[data-theme="day"] .home-enigmas-preserve {
   text-align: left;
 }
 
-.progression-data-table thead th {
+.progression-data-table thead th,
+.progression-dropoff__table thead th,
+.progression-attempts__table thead th {
+  padding-top: 0.48rem;
+  padding-bottom: 0.42rem;
   color: var(--shell-muted);
-  font-size: 0.7rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
@@ -1927,12 +1965,6 @@ html[data-theme="day"] .home-enigmas-preserve {
   border-bottom: 1px solid var(--shell-border);
   font-weight: 400;
   text-align: left;
-}
-
-.progression-dropoff__table thead th {
-  color: var(--shell-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
 }
 
 .progression-dropoff__table thead th:not(:first-child),
