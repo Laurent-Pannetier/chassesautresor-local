@@ -99,6 +99,8 @@ final class TeamPageRendererTest extends TestCase
         );
 
         self::assertStringContainsString('Gestion des équipes', $html);
+        self::assertStringContainsString('equipe-manage__settings', $html);
+        self::assertStringContainsString('class="equipe-grid"', $html);
         self::assertStringContainsString('Exclure', $html);
         self::assertStringContainsString('name="equipe_max"', $html);
         self::assertStringNotContainsString('nope', $html);

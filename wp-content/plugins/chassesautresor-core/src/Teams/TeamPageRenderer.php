@@ -330,6 +330,7 @@ final class TeamPageRenderer
     private function management(array $directory, int $max, int $ownId): void
     {
         echo '<section class="equipe-manage">';
+        echo '<div class="equipe-manage__settings">';
         echo '<h2>' . esc_html__('Gestion des équipes', 'chassesautresor-com') . '</h2>';
         echo '<p class="equipe-note">';
         echo esc_html__(
@@ -350,12 +351,12 @@ final class TeamPageRenderer
 
         if ($directory === []) {
             echo '<p class="equipe-note">' . esc_html__('Aucune équipe active.', 'chassesautresor-com') . '</p>';
-            echo '</section>';
+            echo '</div></section>';
 
             return;
         }
 
-        echo '<div class="equipe-grid">';
+        echo '</div><div class="equipe-grid">';
         foreach ($directory as $team) {
             if (!is_array($team)) {
                 continue;

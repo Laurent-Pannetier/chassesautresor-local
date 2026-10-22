@@ -19092,18 +19092,26 @@ body.admin-bar.shell-edition .app-sidebar {
 }
 
 .app-equipe {
-  max-width: 74rem;
+  width: 100%;
+  max-width: none;
   padding: 0.25rem 0 2rem;
+}
+
+.equipe-grid--split,
+.equipe-hero,
+.equipe-performance {
+  max-width: 74rem;
 }
 
 .equipe-grid {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
   margin-top: 1rem;
 }
 
 .equipe-card,
-.equipe-manage {
+.equipe-manage__settings {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -19115,8 +19123,24 @@ body.admin-bar.shell-edition .app-sidebar {
   color: var(--shell-text);
 }
 
+.equipe-manage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 96rem;
+  margin-top: 1rem;
+  color: var(--shell-text);
+}
+
+.equipe-manage__settings,
+.equipe-manage .equipe-grid {
+  margin-top: 0;
+}
+
 .equipe-grid .equipe-card {
   margin-top: 0;
+  min-width: 0;
 }
 
 .equipe-card h2,
@@ -19204,6 +19228,7 @@ body.admin-bar.shell-edition .app-sidebar {
 .equipe-form input[type=number],
 .equipe-form input[type=file] {
   width: 100%;
+  min-width: 0;
   max-width: 24rem;
   padding: 0.55rem 0.7rem;
   border: 1px solid var(--shell-border);
@@ -19227,6 +19252,7 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .equipe-member {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
@@ -19234,7 +19260,12 @@ body.admin-bar.shell-edition .app-sidebar {
   border-bottom: 1px solid var(--shell-border);
 }
 
+.equipe-member > span {
+  min-width: 0;
+}
+
 .equipe-member form {
+  flex: 0 0 auto;
   margin: 0;
 }
 
@@ -19532,7 +19563,7 @@ body.admin-bar.shell-edition .app-sidebar {
 
 @media (min-width: 480px) {
   .equipe-grid--split {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .equipe-hero {
     flex-direction: row;
@@ -19555,6 +19586,11 @@ body.admin-bar.shell-edition .app-sidebar {
     grid-column: 3;
     grid-row: 1;
     align-self: center;
+  }
+}
+@media (min-width: 1024px) {
+  .equipe-manage .equipe-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 /* Écran de connexion. Le cadre photo est 16/9 : l'image de chasse n'est pas étirée en portrait. */
