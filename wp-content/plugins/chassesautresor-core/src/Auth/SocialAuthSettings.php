@@ -61,14 +61,30 @@ final class SocialAuthSettings
      */
     public function ready(array $settings, string $provider): bool
     {
+        return $this->gap($settings, $provider) === '';
+    }
+
+    /**
+     * Vide si le fournisseur peut démarrer, sinon id, secret ou inactif.
+     *
+     * @param array<string, mixed> $settings
+     */
+    public function gap(array $settings, string $provider): string
+    {
         if (!in_array($provider, ['discord', 'google'], true)) {
-            return false;
+            return 'inactif';
         }
 
         $id = trim((string) ($settings[$provider . '_client_id'] ?? ''));
         $secret = trim((string) ($settings[$provider . '_client_secret'] ?? ''));
+        if ($id !== '' && $secret !== '') {
+            return '';
+        }
+        if ($id === '' && $secret === '') {
+            return 'inactif';
+        }
 
-        return $id !== '' && $secret !== '';
+        return $secret === '' ? 'secret' : 'id';
     }
 
     private function clientId(string $value): string

@@ -76,6 +76,30 @@ function cat_social_auth_error_message(string $code): string
             'Cette connexion n’est pas encore activée. Utilisez l’e-mail en attendant.',
             'chassesautresor-com'
         ),
+        'discord_inactif' => __(
+            'Discord n’est pas relié. Ajoutez l’identifiant et le secret : Réglages → Connexion sociale.',
+            'chassesautresor-com'
+        ),
+        'google_inactif' => __(
+            'Google n’est pas relié. Ajoutez l’identifiant et le secret : Réglages → Connexion sociale.',
+            'chassesautresor-com'
+        ),
+        'discord_secret' => __(
+            'Le secret Discord n’est pas enregistré. Collez-le dans Réglages, puis Connexion sociale.',
+            'chassesautresor-com'
+        ),
+        'google_secret' => __(
+            'Le secret Google n’est pas enregistré. Collez-le dans Réglages, puis Connexion sociale.',
+            'chassesautresor-com'
+        ),
+        'discord_id' => __(
+            'L’identifiant Discord n’est pas enregistré. Collez-le dans Réglages, puis Connexion sociale.',
+            'chassesautresor-com'
+        ),
+        'google_id' => __(
+            'L’identifiant Google n’est pas enregistré. Collez-le dans Réglages, puis Connexion sociale.',
+            'chassesautresor-com'
+        ),
         'provider_id' => __('Le compte du service est incomplet.', 'chassesautresor-com'),
         'email_missing' => __(
             'Ce compte n’a pas fourni d’e-mail. Autorisez l’e-mail, ou utilisez l’autre service.',

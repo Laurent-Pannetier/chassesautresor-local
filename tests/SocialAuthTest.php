@@ -175,5 +175,9 @@ final class SocialAuthTest extends TestCase
         self::assertSame('GOCSPX-nouveau', $clean['google_client_secret']);
         self::assertTrue($settings->ready($clean, 'discord'));
         self::assertFalse($settings->ready(['discord_client_id' => '1'], 'discord'));
+        self::assertSame('secret', $settings->gap(['discord_client_id' => '1'], 'discord'));
+        self::assertSame('id', $settings->gap(['google_client_secret' => 'secret'], 'google'));
+        self::assertSame('inactif', $settings->gap([], 'discord'));
+        self::assertSame('', $settings->gap($clean, 'discord'));
     }
 }

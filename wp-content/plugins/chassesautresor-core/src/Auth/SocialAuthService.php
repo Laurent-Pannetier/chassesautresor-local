@@ -74,8 +74,9 @@ final class SocialAuthService
         if ($provider === '') {
             return ['ok' => false, 'url' => '', 'error' => 'provider'];
         }
-        if (!$this->settings->ready($settings, $provider)) {
-            return ['ok' => false, 'url' => '', 'error' => 'provider_inactif'];
+        $gap = $this->settings->gap($settings, $provider);
+        if ($gap !== '') {
+            return ['ok' => false, 'url' => '', 'error' => $provider . '_' . $gap];
         }
 
         $state = bin2hex(random_bytes(32));

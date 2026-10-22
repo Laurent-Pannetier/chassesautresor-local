@@ -13,6 +13,7 @@ final class SocialAuthSettingsPage
     {
         $addAction('admin_menu', [self::class, 'addPage']);
         $addAction('admin_init', [self::class, 'registerSettings']);
+        $addAction('admin_notices', [self::class, 'notice']);
     }
 
     public static function addPage(): void
@@ -60,12 +61,27 @@ final class SocialAuthSettingsPage
         $option = SocialAuthSettings::OPTION;
         $settings = (new SocialAuthService())->storedSettings();
         $callback = cat_social_auth_callback_url();
+        $gate = new SocialAuthSettings();
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Connexion Discord et Google', 'chassesautresor-com'); ?></h1>
             <p>
                 <?php esc_html_e(
-                    'Les boutons s’affichent dès que l’identifiant et le secret sont enregistrés.',
+                    'Sans identifiant et secret, le clic s’arrête avant Discord ou Google.',
+                    'chassesautresor-com'
+                ); ?>
+            </p>
+            <ul>
+                <li>
+                    <?php echo esc_html(self::statusLine($gate, $settings, 'discord', 'Discord')); ?>
+                </li>
+                <li>
+                    <?php echo esc_html(self::statusLine($gate, $settings, 'google', 'Google')); ?>
+                </li>
+            </ul>
+            <p>
+                <?php esc_html_e(
+                    'Après l’enregistrement, le champ secret reste vide. Le secret sauvé n’est pas réaffiché.',
                     'chassesautresor-com'
                 ); ?>
             </p>
@@ -78,7 +94,7 @@ final class SocialAuthSettingsPage
                             <code><?php echo esc_html($callback); ?></code>
                             <p class="description">
                                 <?php esc_html_e(
-                                    'À copier telle quelle dans l’application Discord et dans le client OAuth Google.',
+                                    'À copier telle quelle chez Discord et dans le client OAuth Google.',
                                     'chassesautresor-com'
                                 ); ?>
                             </p>
@@ -171,5 +187,78 @@ final class SocialAuthSettingsPage
             </form>
         </div>
         <?php
+    }
+
+    public static function notice(): void
+    {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        $page = isset($_GET['page']) ? sanitize_key((string) wp_unslash($_GET['page'])) : '';
+        if ($page === 'chassesautresor-social-auth') {
+            return;
+        }
+
+        $settings = (new SocialAuthService())->storedSettings();
+        $gate = new SocialAuthSettings();
+        $missing = [];
+        foreach (['discord' => 'Discord', 'google' => 'Google'] as $provider => $label) {
+            if (!$gate->ready($settings, $provider)) {
+                $missing[] = $label;
+            }
+        }
+        if ($missing === []) {
+            return;
+        }
+
+        $url = admin_url('options-general.php?page=chassesautresor-social-auth');
+        echo '<div class="notice notice-warning"><p>';
+        echo esc_html(sprintf(
+            /* translators: %s: Discord, Google, or both. */
+            __('La connexion %s ne peut pas démarrer : identifiant ou secret manquant.', 'chassesautresor-com'),
+            implode(' et ', $missing)
+        ));
+        echo ' <a href="' . esc_url($url) . '">';
+        esc_html_e('Ouvrir Connexion sociale', 'chassesautresor-com');
+        echo '</a></p></div>';
+    }
+
+    /**
+     * @param array<string, string> $settings
+     */
+    private static function statusLine(
+        SocialAuthSettings $gate,
+        array $settings,
+        string $provider,
+        string $label
+    ): string {
+        $gap = $gate->gap($settings, $provider);
+        if ($gap === '') {
+            return sprintf(
+                /* translators: %s: Discord or Google. */
+                __('%s : prêt, identifiant et secret enregistrés.', 'chassesautresor-com'),
+                $label
+            );
+        }
+        if ($gap === 'secret') {
+            return sprintf(
+                /* translators: %s: Discord or Google. */
+                __('%s : identifiant enregistré, secret manquant.', 'chassesautresor-com'),
+                $label
+            );
+        }
+        if ($gap === 'id') {
+            return sprintf(
+                /* translators: %s: Discord or Google. */
+                __('%s : secret enregistré, identifiant manquant.', 'chassesautresor-com'),
+                $label
+            );
+        }
+
+        return sprintf(
+            /* translators: %s: Discord or Google. */
+            __('%s : identifiant et secret manquants.', 'chassesautresor-com'),
+            $label
+        );
     }
 }

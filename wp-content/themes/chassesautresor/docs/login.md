@@ -2,7 +2,7 @@
 
 L'écran public est `/connexion/`. Il reprend les couleurs du dashboard (thème nuit) et montre l'image de la chasse dans un cadre 16/9.
 
-Discord est le premier bouton, Google le second, l'e-mail le repli. Les deux boutons sont visibles sur la connexion et sur la création de compte. Le clic atteint Discord ou Google une fois l'identifiant et le secret enregistrés dans Réglages → Connexion sociale.
+Discord est le premier bouton, Google le second, l'e-mail le repli. Les deux boutons sont visibles sur la connexion et sur la création de compte. Le clic ouvre Discord ou Google seulement après l'enregistrement de l'identifiant et du secret dans Réglages → Connexion sociale. Tant que ces valeurs manquent, l'écran le dit.
 
 Le parcours OAuth, la création de compte et la liaison vivent dans le plugin `chassesautresor-core`. Le thème ne dessine que la page.
 
