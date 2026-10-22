@@ -15,6 +15,8 @@ interface NotificationStore
     /** @return array<int, array<string, mixed>> */
     public function listForUser(int $userId, int $limit = 50, int $offset = 0): array;
 
+    public function countForUser(int $userId): int;
+
     public function unreadCount(int $userId): int;
 
     public function markRead(int $notificationId, int $userId): bool;
@@ -24,5 +26,7 @@ interface NotificationStore
     /** @return array<string, mixed>|null */
     public function nextOverlay(int $userId): ?array;
 
-    public function markOverlaySeen(int $notificationId, int $userId): bool;
+    public function renewOverlayClaim(int $notificationId, int $userId, string $claimToken): bool;
+
+    public function markOverlaySeen(int $notificationId, int $userId, string $claimToken): bool;
 }

@@ -51,7 +51,7 @@ final class NotificationService
             'body' => $this->plainText($body, 2000),
             'priority' => max(0, min(100, $priority)),
             'channel' => $channel,
-            'event_key' => substr($eventKey, 0, 190),
+            'event_key' => $this->eventKey($eventKey),
             'created_at' => $this->now(),
         ]);
         foreach ($recipients as $userId) {
@@ -77,6 +77,11 @@ final class NotificationService
         $value = trim((string) preg_replace('/\s+/u', ' ', $value));
 
         return function_exists('mb_substr') ? mb_substr($value, 0, $limit) : substr($value, 0, $limit);
+    }
+
+    private function eventKey(string $eventKey): string
+    {
+        return 'sha256:' . hash('sha256', $eventKey);
     }
 
     private function now(): string

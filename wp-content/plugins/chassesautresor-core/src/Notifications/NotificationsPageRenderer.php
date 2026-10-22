@@ -8,8 +8,13 @@ namespace ChassesAuTresor\Core\Notifications;
 final class NotificationsPageRenderer
 {
     /** @param array<int, array<string, mixed>> $notifications */
-    public function render(array $notifications): string
-    {
+    public function render(
+        array $notifications,
+        int $currentPage = 1,
+        int $totalPages = 1,
+        string $baseUrl = '',
+        ?bool $hasUnread = null
+    ): string {
         ob_start();
         echo '<div class="notifications-center" data-notifications-center>';
         echo '<div class="notifications-center__header">';
@@ -17,7 +22,7 @@ final class NotificationsPageRenderer
             'Retrouvez ici les trophées, indices et messages importants reçus sur le site.',
             'chassesautresor-com'
         ) . '</p>';
-        if ($this->hasUnread($notifications)) {
+        if ($hasUnread ?? $this->hasUnread($notifications)) {
             echo '<button type="button" class="bouton-texte secondaire" data-notifications-read-all>';
             echo esc_html__('Tout marquer comme lu', 'chassesautresor-com');
             echo '</button>';
@@ -36,7 +41,9 @@ final class NotificationsPageRenderer
         foreach ($notifications as $notification) {
             $this->item($notification);
         }
-        echo '</ol></div>';
+        echo '</ol>';
+        $this->pager($currentPage, $totalPages, $baseUrl);
+        echo '</div>';
 
         return trim((string) ob_get_clean());
     }
@@ -113,5 +120,43 @@ final class NotificationsPageRenderer
         return function_exists('mysql2date')
             ? (string) mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $date)
             : $date;
+    }
+
+    private function pager(int $currentPage, int $totalPages, string $baseUrl): void
+    {
+        if ($totalPages <= 1 || $baseUrl === '') {
+            return;
+        }
+
+        $currentPage = max(1, min($totalPages, $currentPage));
+        echo '<nav class="notifications-pagination" aria-label="';
+        echo esc_attr__('Pagination des notifications', 'chassesautresor-com') . '">';
+        if ($currentPage > 1) {
+            echo '<a class="bouton-texte secondaire" href="';
+            echo esc_url($this->pageUrl($baseUrl, $currentPage - 1)) . '">';
+            echo esc_html__('Précédentes', 'chassesautresor-com') . '</a>';
+        }
+        echo '<span>';
+        echo esc_html(sprintf(
+            __('Page %1$d sur %2$d', 'chassesautresor-com'),
+            $currentPage,
+            $totalPages
+        ));
+        echo '</span>';
+        if ($currentPage < $totalPages) {
+            echo '<a class="bouton-texte secondaire" href="';
+            echo esc_url($this->pageUrl($baseUrl, $currentPage + 1)) . '">';
+            echo esc_html__('Suivantes', 'chassesautresor-com') . '</a>';
+        }
+        echo '</nav>';
+    }
+
+    private function pageUrl(string $baseUrl, int $page): string
+    {
+        if (function_exists('add_query_arg')) {
+            return (string) add_query_arg('notification_page', $page, $baseUrl);
+        }
+
+        return $baseUrl . (str_contains($baseUrl, '?') ? '&' : '?') . 'notification_page=' . $page;
     }
 }

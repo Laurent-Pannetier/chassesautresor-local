@@ -26,6 +26,19 @@ if (
     return;
 }
 
+$user_id = get_current_user_id();
+$per_page = 20;
+$page = isset($_GET['notification_page'])
+    ? max(1, absint(wp_unslash((string) $_GET['notification_page'])))
+    : 1;
+$total = function_exists('cat_user_notification_count') ? cat_user_notification_count($user_id) : 0;
+$total_pages = max(1, (int) ceil($total / $per_page));
+$page = min($page, $total_pages);
+
 echo (new ChassesAuTresor\Core\Notifications\NotificationsPageRenderer())->render(
-    cat_user_notifications(get_current_user_id())
+    cat_user_notifications($user_id, $per_page, ($page - 1) * $per_page),
+    $page,
+    $total_pages,
+    home_url('/notifications/'),
+    cat_notification_unread_count($user_id) > 0
 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

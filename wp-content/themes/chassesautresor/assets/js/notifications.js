@@ -2,6 +2,10 @@
     'use strict';
 
     var config = window.catNotifications || {};
+    var overlayLoading = false;
+    var overlayOpen = false;
+    var overlayHeartbeatTimer = null;
+    var overlayRetryTimer = null;
 
     function request(action, data) {
         var body = new URLSearchParams();
@@ -68,12 +72,62 @@
         });
     }
 
-    function acknowledge(id) {
-        return request('cat_notification_overlay_seen', {notification_id: id});
+    function claimData(notification) {
+        return {
+            notification_id: notification.id,
+            claim_token: notification.claimToken
+        };
+    }
+
+    function acknowledge(notification) {
+        return request('cat_notification_overlay_seen', claimData(notification));
+    }
+
+    function stopOverlayHeartbeat() {
+        if (!overlayHeartbeatTimer) {
+            return;
+        }
+        window.clearTimeout(overlayHeartbeatTimer);
+        overlayHeartbeatTimer = null;
+    }
+
+    function abandonOverlay() {
+        stopOverlayHeartbeat();
+        var overlay = document.querySelector('.notification-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+        overlayOpen = false;
+        loadNextOverlay();
+    }
+
+    function startOverlayHeartbeat(notification) {
+        stopOverlayHeartbeat();
+        overlayHeartbeatTimer = window.setTimeout(function renewClaim() {
+            overlayHeartbeatTimer = null;
+            request('cat_notification_overlay_heartbeat', claimData(notification)).then(function (payload) {
+                if (payload.success && overlayOpen) {
+                    startOverlayHeartbeat(notification);
+                    return;
+                }
+                if (overlayOpen) {
+                    abandonOverlay();
+                }
+            }).catch(function () {
+                if (overlayOpen) {
+                    startOverlayHeartbeat(notification);
+                }
+            });
+        }, 45000);
     }
 
     function showOverlay(notification) {
-        var seenRequest = acknowledge(notification.id);
+        if (overlayRetryTimer) {
+            window.clearTimeout(overlayRetryTimer);
+            overlayRetryTimer = null;
+        }
+        overlayOpen = true;
+        startOverlayHeartbeat(notification);
         var overlay = document.createElement('div');
         overlay.className = 'notification-overlay';
         overlay.setAttribute('role', 'dialog');
@@ -118,8 +172,10 @@
         close.className = 'bouton-principal';
         close.textContent = config.labels.close || '';
         close.addEventListener('click', function () {
+            stopOverlayHeartbeat();
             overlay.remove();
-            seenRequest.finally(loadNextOverlay);
+            overlayOpen = false;
+            acknowledge(notification).finally(loadNextOverlay);
         });
         card.appendChild(close);
         overlay.appendChild(card);
@@ -127,12 +183,31 @@
         close.focus();
     }
 
+    function scheduleOverlayRetry() {
+        if (overlayRetryTimer) {
+            window.clearTimeout(overlayRetryTimer);
+        }
+        overlayRetryTimer = window.setTimeout(function () {
+            overlayRetryTimer = null;
+            loadNextOverlay();
+        }, 125000);
+    }
+
     function loadNextOverlay() {
+        if (document.visibilityState === 'hidden' || overlayLoading || overlayOpen) {
+            return;
+        }
+        overlayLoading = true;
         request('cat_notification_overlay_next', {}).then(function (payload) {
             if (!payload.success || !payload.data.notification) {
+                scheduleOverlayRetry();
                 return;
             }
             showOverlay(payload.data.notification);
+        }).catch(function () {
+            scheduleOverlayRetry();
+        }).finally(function () {
+            overlayLoading = false;
         });
     }
 
@@ -141,4 +216,5 @@
     }
     bindCenter();
     loadNextOverlay();
+    document.addEventListener('visibilitychange', loadNextOverlay);
 })();

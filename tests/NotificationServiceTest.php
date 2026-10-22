@@ -52,6 +52,11 @@ final class MemoryNotificationStore implements NotificationStore
         return $count;
     }
 
+    public function countForUser(int $userId): int
+    {
+        return $this->unreadCount($userId);
+    }
+
     public function markRead(int $notificationId, int $userId): bool
     {
         if (!isset($this->recipients[$notificationId][$userId])) {
@@ -71,7 +76,12 @@ final class MemoryNotificationStore implements NotificationStore
         return null;
     }
 
-    public function markOverlaySeen(int $notificationId, int $userId): bool
+    public function renewOverlayClaim(int $notificationId, int $userId, string $claimToken): bool
+    {
+        return isset($this->recipients[$notificationId][$userId]);
+    }
+
+    public function markOverlaySeen(int $notificationId, int $userId, string $claimToken): bool
     {
         return isset($this->recipients[$notificationId][$userId]);
     }
@@ -111,5 +121,22 @@ final class NotificationServiceTest extends TestCase
         self::assertCount(1, $store->notifications);
         self::assertSame([4, 8], array_keys($store->recipients[$first]));
         self::assertSame(1, $store->unreadCount(4));
+    }
+
+    public function testLongEventKeysUseTheirFullContentForIdentity(): void
+    {
+        $store = new MemoryNotificationStore();
+        $service = new NotificationService($store);
+        $prefix = str_repeat('a', 200);
+
+        $first = $service->notify('system', 'system', 0, 'A', '', 0, 'center', $prefix . '1', [4]);
+        $second = $service->notify('system', 'system', 0, 'B', '', 0, 'center', $prefix . '2', [4]);
+
+        self::assertNotSame($first, $second);
+        self::assertCount(2, $store->notifications);
+        self::assertNotSame(
+            $store->notifications[$first]['event_key'],
+            $store->notifications[$second]['event_key']
+        );
     }
 }

@@ -7,7 +7,7 @@ namespace ChassesAuTresor\Core\Notifications;
 /** Install and upgrade notification events and their per-user delivery state. */
 final class NotificationsTable
 {
-    public const SCHEMA_VERSION = '1';
+    public const SCHEMA_VERSION = '3';
 
     private const VERSION_OPTION = 'cat_notifications_schema_version';
 
@@ -39,6 +39,8 @@ final class NotificationsTable
             notification_id BIGINT UNSIGNED NOT NULL,
             user_id BIGINT UNSIGNED NOT NULL,
             read_at DATETIME NULL,
+            overlay_claimed_at DATETIME NULL,
+            overlay_claim_token VARCHAR(64) NULL,
             overlay_seen_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY  (id),

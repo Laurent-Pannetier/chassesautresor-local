@@ -37,3 +37,10 @@ if (!function_exists('cat_user_notifications')) {
             : [];
     }
 }
+
+if (!function_exists('cat_user_notification_count')) {
+    function cat_user_notification_count(int $userId): int
+    {
+        return $userId > 0 ? cat_notification_repository()->countForUser($userId) : 0;
+    }
+}

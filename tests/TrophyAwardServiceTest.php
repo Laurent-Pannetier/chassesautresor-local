@@ -100,6 +100,11 @@ final class TrophyNotificationStore implements NotificationStore
         return 0;
     }
 
+    public function countForUser(int $userId): int
+    {
+        return 0;
+    }
+
     public function markRead(int $notificationId, int $userId): bool
     {
         return false;
@@ -114,7 +119,12 @@ final class TrophyNotificationStore implements NotificationStore
         return null;
     }
 
-    public function markOverlaySeen(int $notificationId, int $userId): bool
+    public function renewOverlayClaim(int $notificationId, int $userId, string $claimToken): bool
+    {
+        return false;
+    }
+
+    public function markOverlaySeen(int $notificationId, int $userId, string $claimToken): bool
     {
         return false;
     }

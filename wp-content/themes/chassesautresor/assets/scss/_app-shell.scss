@@ -2120,6 +2120,16 @@ body.admin-bar.shell-edition .app-sidebar {
   cursor: pointer;
 }
 
+.notifications-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  color: var(--shell-muted);
+  font-size: 0.85rem;
+}
+
 .notification-overlay {
   position: fixed;
   z-index: 100000;

@@ -51,7 +51,10 @@ final class NotificationsAndTrophiesTableTest extends TestCase
             'UNIQUE KEY notification_user (notification_id, user_id)',
             $dbDeltaSql
         );
+        self::assertStringContainsString('overlay_claimed_at DATETIME NULL', $dbDeltaSql);
+        self::assertStringContainsString('overlay_claim_token VARCHAR(64) NULL', $dbDeltaSql);
         self::assertStringContainsString('overlay_seen_at DATETIME NULL', $dbDeltaSql);
+        self::assertSame('3', NotificationsTable::SCHEMA_VERSION);
     }
 
     public function testTrophyLedgerEnforcesOneAwardPerRecipient(): void

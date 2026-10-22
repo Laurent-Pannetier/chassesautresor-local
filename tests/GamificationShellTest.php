@@ -27,6 +27,10 @@ final class GamificationShellTest extends TestCase
             $hooks['wp_ajax_cat_notification_overlay_next']
         );
         self::assertSame(
+            [NotificationOverlayAjaxHandler::class, 'heartbeat'],
+            $hooks['wp_ajax_cat_notification_overlay_heartbeat']
+        );
+        self::assertSame(
             [NotificationOverlayAjaxHandler::class, 'seen'],
             $hooks['wp_ajax_cat_notification_overlay_seen']
         );

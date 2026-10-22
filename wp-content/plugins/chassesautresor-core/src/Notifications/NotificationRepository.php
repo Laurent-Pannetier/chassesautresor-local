@@ -107,6 +107,21 @@ final class NotificationRepository implements NotificationStore
         ));
     }
 
+    public function countForUser(int $userId): int
+    {
+        if ($userId <= 0) {
+            return 0;
+        }
+
+        return (int) $this->wpdb->get_var($this->wpdb->prepare(
+            "SELECT COUNT(*)
+            FROM {$this->recipients()} r
+            INNER JOIN {$this->notifications()} n ON n.id = r.notification_id
+            WHERE r.user_id = %d AND n.channel IN ('center', 'both')",
+            $userId
+        ));
+    }
+
     public function markRead(int $notificationId, int $userId): bool
     {
         if ($notificationId <= 0 || $userId <= 0) {
@@ -143,41 +158,118 @@ final class NotificationRepository implements NotificationStore
             return null;
         }
 
-        $row = $this->wpdb->get_row(
-            $this->wpdb->prepare(
-                "SELECT n.id, n.type, n.source_type, n.source_id, n.title, n.body,
-                    n.priority, n.channel, n.created_at, r.read_at, r.overlay_seen_at
-                FROM {$this->notifications()} n
-                INNER JOIN {$this->recipients()} r ON r.notification_id = n.id
-                WHERE r.user_id = %d
-                    AND r.overlay_seen_at IS NULL
-                    AND n.channel IN ('overlay', 'both')
-                ORDER BY n.priority DESC, n.created_at ASC, n.id ASC
-                LIMIT 1",
-                $userId
-            ),
-            ARRAY_A
-        );
+        $lock = $this->wpdb->prefix . 'cat_notification_overlay_' . $userId;
+        $got = $this->wpdb->get_var($this->wpdb->prepare('SELECT GET_LOCK(%s, 5)', $lock));
+        if ((string) $got !== '1') {
+            return null;
+        }
 
-        return is_array($row) ? $row : null;
+        try {
+            $now = $this->now();
+            $activeClaim = $this->wpdb->get_var($this->wpdb->prepare(
+                "SELECT 1 FROM {$this->recipients()}
+                WHERE user_id = %d
+                    AND overlay_seen_at IS NULL
+                    AND overlay_claimed_at >= DATE_SUB(%s, INTERVAL 2 MINUTE)
+                LIMIT 1",
+                $userId,
+                $now
+            ));
+            if ((string) $activeClaim === '1') {
+                return null;
+            }
+
+            $row = $this->wpdb->get_row(
+                $this->wpdb->prepare(
+                    "SELECT n.id, n.type, n.source_type, n.source_id, n.title, n.body,
+                        n.priority, n.channel, n.created_at, r.read_at, r.overlay_seen_at
+                    FROM {$this->notifications()} n
+                    INNER JOIN {$this->recipients()} r ON r.notification_id = n.id
+                    WHERE r.user_id = %d
+                        AND r.overlay_seen_at IS NULL
+                        AND (
+                            r.overlay_claimed_at IS NULL
+                            OR r.overlay_claimed_at < DATE_SUB(%s, INTERVAL 2 MINUTE)
+                        )
+                        AND n.channel IN ('overlay', 'both')
+                    ORDER BY n.priority DESC, n.created_at ASC, n.id ASC
+                    LIMIT 1",
+                    $userId,
+                    $now
+                ),
+                ARRAY_A
+            );
+            if (!is_array($row)) {
+                return null;
+            }
+            $claimToken = bin2hex(random_bytes(16));
+            $claimed = $this->wpdb->query($this->wpdb->prepare(
+                "UPDATE {$this->recipients()}
+                SET overlay_claimed_at = %s, overlay_claim_token = %s
+                WHERE notification_id = %d
+                    AND user_id = %d
+                    AND overlay_seen_at IS NULL
+                    AND (
+                        overlay_claimed_at IS NULL
+                        OR overlay_claimed_at < DATE_SUB(%s, INTERVAL 2 MINUTE)
+                    )",
+                $now,
+                $claimToken,
+                (int) $row['id'],
+                $userId,
+                $now
+            ));
+            if ($claimed !== 1) {
+                return null;
+            }
+            $row['claim_token'] = $claimToken;
+
+            return $row;
+        } finally {
+            $this->wpdb->query($this->wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock));
+        }
     }
 
-    public function markOverlaySeen(int $notificationId, int $userId): bool
+    public function renewOverlayClaim(int $notificationId, int $userId, string $claimToken): bool
     {
-        if ($notificationId <= 0 || $userId <= 0) {
+        if ($notificationId <= 0 || $userId <= 0 || !$this->claimTokenIsValid($claimToken)) {
+            return false;
+        }
+
+        $updated = $this->wpdb->query($this->wpdb->prepare(
+            "UPDATE {$this->recipients()} SET overlay_claimed_at = %s
+            WHERE notification_id = %d
+                AND user_id = %d
+                AND overlay_claim_token = %s
+                AND overlay_seen_at IS NULL",
+            $this->now(),
+            $notificationId,
+            $userId,
+            $claimToken
+        ));
+
+        return $updated !== false && $updated > 0;
+    }
+
+    public function markOverlaySeen(int $notificationId, int $userId, string $claimToken): bool
+    {
+        if ($notificationId <= 0 || $userId <= 0 || !$this->claimTokenIsValid($claimToken)) {
             return false;
         }
 
         $updated = $this->wpdb->query($this->wpdb->prepare(
             "UPDATE {$this->recipients()}
-            SET overlay_seen_at = COALESCE(overlay_seen_at, %s)
-            WHERE notification_id = %d AND user_id = %d",
+            SET overlay_seen_at = COALESCE(overlay_seen_at, %s),
+                overlay_claimed_at = NULL,
+                overlay_claim_token = NULL
+            WHERE notification_id = %d AND user_id = %d AND overlay_claim_token = %s",
             $this->now(),
             $notificationId,
-            $userId
+            $userId,
+            $claimToken
         ));
 
-        return $updated !== false && $this->recipientExists($notificationId, $userId);
+        return $updated !== false && $updated > 0;
     }
 
     private function idByEventKey(string $eventKey): int
@@ -200,6 +292,11 @@ final class NotificationRepository implements NotificationStore
             $notificationId,
             $userId
         ));
+    }
+
+    private function claimTokenIsValid(string $claimToken): bool
+    {
+        return preg_match('/\A[a-f0-9]{32}\z/', $claimToken) === 1;
     }
 
     private function notifications(): string
