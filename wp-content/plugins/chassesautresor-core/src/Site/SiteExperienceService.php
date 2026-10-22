@@ -65,11 +65,21 @@ final class SiteExperienceService
     }
 
     /**
+     * The site-wide wipe stays with administrators, and with organizers while the site is in demo.
+     *
      * @param array<string, mixed> $settings
      */
-    public function canResetStatistics(bool $administrator, bool $loggedIn, array $settings): bool
-    {
-        return $administrator || ($loggedIn && $this->isDemoMode($settings));
+    public function canResetStatistics(
+        bool $administrator,
+        bool $loggedIn,
+        array $settings,
+        bool $organizer = false
+    ): bool {
+        if ($administrator) {
+            return true;
+        }
+
+        return $loggedIn && $organizer && $this->isDemoMode($settings);
     }
 
     /**

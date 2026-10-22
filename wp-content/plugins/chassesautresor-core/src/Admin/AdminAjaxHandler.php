@@ -137,10 +137,12 @@ final class AdminAjaxHandler
         $settings = function_exists('cat_get_site_experience_settings')
             ? cat_get_site_experience_settings()
             : [];
+        $organizer = current_user_can('organisateur') || current_user_can('organisateur_creation');
         $canReset = (new SiteExperienceService())->canResetStatistics(
             current_user_can('administrator'),
             is_user_logged_in(),
-            $settings
+            $settings,
+            $organizer
         );
 
         if (!$canReset) {

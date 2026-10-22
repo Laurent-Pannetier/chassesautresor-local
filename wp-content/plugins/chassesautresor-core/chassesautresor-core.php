@@ -139,6 +139,8 @@ require_once __DIR__ . '/src/Progress/ManualAttemptReviewService.php';
 require_once __DIR__ . '/src/Progress/ManualAttemptReviewHandler.php';
 require_once __DIR__ . '/src/Progress/HuntWinnerRepository.php';
 require_once __DIR__ . '/src/Progress/HuntWinnersTable.php';
+require_once __DIR__ . '/src/Progress/PlayerProgressResetService.php';
+require_once __DIR__ . '/src/Progress/PlayerProgressResetAjaxHandler.php';
 require_once __DIR__ . '/src/Progress/EngagementsTable.php';
 require_once __DIR__ . '/src/Progress/HintUnlocksTable.php';
 require_once __DIR__ . '/src/Progress/RiddleAttemptsTable.php';
@@ -498,6 +500,7 @@ if (!class_exists('PointsRepository', false)) {
 }
 
 ChassesAuTresor\Core\Admin\AdminAjaxHandler::register('add_action');
+ChassesAuTresor\Core\Progress\PlayerProgressResetAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Admin\StatisticsFixtureAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Admin\StatisticsFixtureHookHandler::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Teams\TeamPerformanceAjaxHandler::register('add_action');
