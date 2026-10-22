@@ -50,6 +50,32 @@ final class TrophyFieldGroupRegistrar
         $registry = new TrophyTriggerRegistry();
         $fields = [
             [
+                'key' => 'field_trophee_image',
+                'label' => __('Image', 'chassesautresor-com'),
+                'name' => 'trophee_image',
+                'type' => 'image',
+                'instructions' => __(
+                    'Image affichée avec le trophée et dans l’overlay.',
+                    'chassesautresor-com'
+                ),
+                'return_format' => 'id',
+                'preview_size' => 'medium',
+                'library' => 'all',
+                'mime_types' => 'jpg, jpeg, png, gif, webp',
+            ],
+            [
+                'key' => 'field_trophee_description',
+                'label' => __('Texte court', 'chassesautresor-com'),
+                'name' => 'trophee_description',
+                'type' => 'textarea',
+                'instructions' => __(
+                    'Courte explication du trophée, affichée sur la page Trophées.',
+                    'chassesautresor-com'
+                ),
+                'rows' => 3,
+                'maxlength' => 300,
+            ],
+            [
                 'key' => 'field_trophee_active',
                 'label' => __('Trophée actif', 'chassesautresor-com'),
                 'name' => 'trophee_active',

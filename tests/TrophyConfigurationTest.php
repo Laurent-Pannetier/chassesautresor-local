@@ -26,8 +26,7 @@ final class TrophyConfigurationTest extends TestCase
         self::assertFalse($args['publicly_queryable']);
         self::assertTrue($args['show_ui']);
         self::assertSame('manage_options', $args['capabilities']['edit_posts']);
-        self::assertContains('thumbnail', $args['supports']);
-        self::assertContains('excerpt', $args['supports']);
+        self::assertSame(['title'], $args['supports']);
     }
 
     public function testFieldGroupOffersOneTriggerAndRecipientScope(): void
@@ -41,6 +40,8 @@ final class TrophyConfigurationTest extends TestCase
         self::assertArrayHasKey('trophee_trigger_type', $fields);
         self::assertArrayHasKey('trophee_scope', $fields);
         self::assertArrayHasKey('trophee_notification_channel', $fields);
+        self::assertSame('image', $fields['trophee_image']['type']);
+        self::assertSame('textarea', $fields['trophee_description']['type']);
         self::assertSame(['user', 'team', 'both'], array_keys($fields['trophee_scope']['choices']));
     }
 

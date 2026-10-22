@@ -29,9 +29,11 @@ final class CodeEventTrophyTrigger implements TrophyTriggerProvider
                 'name' => self::FIELD,
                 'type' => 'text',
                 'instructions' => __(
-                    'Identifiant stable envoyé par le code. Aucun scénario n’est activé automatiquement.',
+                    'Nom choisi pour ce trophée, par exemple bienvenue. '
+                    . 'Le code devra envoyer exactement ce nom. Aucun scénario n’est activé automatiquement.',
                     'chassesautresor-com'
                 ),
+                'placeholder' => 'bienvenue',
                 'required' => true,
                 'maxlength' => 120,
                 'conditional_logic' => [

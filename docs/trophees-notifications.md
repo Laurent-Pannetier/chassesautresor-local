@@ -15,9 +15,7 @@ Le CPT privé `trophee` est enregistré par le plugin Core et réservé aux admi
 La fiche utilise :
 
 - le titre WordPress ;
-- l’image mise en avant ;
-- l’extrait comme texte court ;
-- les champs ACF locaux pour l’état, le déclencheur, la portée et la notification.
+- les champs ACF locaux pour l’image, le texte court, l’état, le déclencheur, la portée et la notification.
 
 Le seul déclencheur livré initialement est `code_event`. Il n’active aucun scénario métier à lui seul.
 Son champ « Clé de l’événement » doit correspondre à la clé envoyée par le code :

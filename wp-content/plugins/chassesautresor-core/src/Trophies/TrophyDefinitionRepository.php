@@ -59,7 +59,10 @@ final class TrophyDefinitionRepository
     private function hydrate(int $trophyId): TrophyDefinition
     {
         $title = (string) get_the_title($trophyId);
-        $description = (string) get_post_field('post_excerpt', $trophyId);
+        $description = trim((string) $this->field('trophee_description', $trophyId, ''));
+        if ($description === '') {
+            $description = trim((string) get_post_field('post_excerpt', $trophyId));
+        }
         $triggerType = (string) $this->field(
             'trophee_trigger_type',
             $trophyId,
@@ -78,7 +81,7 @@ final class TrophyDefinitionRepository
             $trophyId,
             $title,
             $description,
-            (int) get_post_thumbnail_id($trophyId),
+            $this->imageId($trophyId),
             $scope,
             $triggerType,
             $this->triggerConfiguration($triggerType, $trophyId),
@@ -89,6 +92,20 @@ final class TrophyDefinitionRepository
             (int) $this->field('trophee_notification_priority', $trophyId, 100),
             $channel
         );
+    }
+
+    private function imageId(int $trophyId): int
+    {
+        $image = $this->field('trophee_image', $trophyId, 0);
+        if (is_array($image)) {
+            $image = $image['ID'] ?? $image['id'] ?? 0;
+        }
+        $imageId = (int) $image;
+        if ($imageId > 0) {
+            return $imageId;
+        }
+
+        return function_exists('get_post_thumbnail_id') ? (int) get_post_thumbnail_id($trophyId) : 0;
     }
 
     /** @return array<string, mixed> */

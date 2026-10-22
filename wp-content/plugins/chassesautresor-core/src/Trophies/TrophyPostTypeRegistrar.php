@@ -41,7 +41,7 @@ final class TrophyPostTypeRegistrar
             'query_var' => false,
             'has_archive' => false,
             'menu_icon' => 'dashicons-awards',
-            'supports' => ['title', 'thumbnail', 'excerpt'],
+            'supports' => ['title'],
             'capabilities' => self::capabilities(),
             'map_meta_cap' => false,
         ];

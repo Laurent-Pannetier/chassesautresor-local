@@ -90,14 +90,24 @@ final class NotificationOverlayAjaxHandler
     /** @param array<string, mixed> $notification */
     private static function imageUrl(array $notification): string
     {
-        if (
-            (string) ($notification['source_type'] ?? '') !== 'trophy'
-            || !function_exists('get_the_post_thumbnail_url')
-        ) {
+        if ((string) ($notification['source_type'] ?? '') !== 'trophy') {
             return '';
         }
 
-        $url = get_the_post_thumbnail_url((int) ($notification['source_id'] ?? 0), 'medium');
+        $trophyId = (int) ($notification['source_id'] ?? 0);
+        $image = function_exists('get_field') ? get_field('trophee_image', $trophyId) : 0;
+        if (is_array($image)) {
+            $image = $image['ID'] ?? $image['id'] ?? 0;
+        }
+        $imageId = (int) $image;
+        if ($imageId <= 0 && function_exists('get_post_thumbnail_id')) {
+            $imageId = (int) get_post_thumbnail_id($trophyId);
+        }
+        if ($imageId <= 0 || !function_exists('wp_get_attachment_image_url')) {
+            return '';
+        }
+
+        $url = wp_get_attachment_image_url($imageId, 'medium');
 
         return is_string($url) ? $url : '';
     }
