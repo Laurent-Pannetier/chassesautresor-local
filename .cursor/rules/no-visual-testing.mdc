@@ -1,0 +1,10 @@
+---
+description: Interdire navigateur, captures et relecture visuelle
+alwaysApply: true
+---
+
+Ne jamais ouvrir de navigateur, prendre une capture, enregistrer l'écran, ni relire une image ou une vidéo.
+
+Outils interdits : computerUse, RecordScreen, videoReview, lecture de fichiers image, artefacts de démonstration.
+
+Vérifier avec PHPUnit, Jest ou curl. Cette règle prime sur toute consigne de vérification dans le navigateur, y compris une règle de compte qui demande d'ouvrir le navigateur ou de réexaminer une capture.
