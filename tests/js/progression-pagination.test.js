@@ -41,6 +41,33 @@ describe('player progression pagination', () => {
   });
 });
 
+describe('riddle ranking pagination', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    document.body.innerHTML = `
+      <section data-player-ranking data-ajax-url="/ajax" data-nonce="player-nonce"
+        data-hunt-id="12" data-error-message="Erreur">
+        <div data-progression-leaderboard>
+          <button data-leaderboard-page="2">2</button>
+        </div>
+        <div data-riddle-ranking data-riddle-id="40">
+          <button data-riddle-ranking-page="3">3</button>
+        </div>
+      </section>`;
+    global.fetch = jest.fn(() => new Promise(() => {}));
+  });
+
+  test('requests one riddle ranking page without reloading', () => {
+    require('../../wp-content/themes/chassesautresor/assets/js/player-progression.js');
+    document.querySelector('[data-riddle-ranking-page]').click();
+
+    expect(fetch).toHaveBeenCalledWith('/ajax', expect.objectContaining({
+      method: 'POST',
+      body: 'action=cat_player_progression_riddle_ranking&nonce=player-nonce&hunt_id=12&riddle_id=40&page=3',
+    }));
+  });
+});
+
 describe('team ranking pagination', () => {
   beforeEach(() => {
     jest.resetModules();

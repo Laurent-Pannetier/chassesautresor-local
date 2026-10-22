@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Messages;
 
-/** Render a player's progress, hunt leaderboard and per-riddle activity. */
+/** Render a player's progress and the hunt rankings shown on Classement. */
 final class PlayerProgressionRenderer
 {
     /**
@@ -30,13 +30,6 @@ final class PlayerProgressionRenderer
         echo '>';
         $this->renderHuntSwitcher($hunts, $currentHuntId);
         $this->renderCards($overview);
-        echo '<section class="progression-leaderboard progression-table-card"'
-            . ' aria-labelledby="progression-leaderboard-title">';
-        echo '<h2 id="progression-leaderboard-title">'
-            . esc_html__('Classement de la chasse', 'chassesautresor-com') . '</h2>';
-        echo '<div data-progression-leaderboard>';
-        echo $this->leaderboard((array) ($overview['leaderboard'] ?? []));
-        echo '</div></section>';
         $this->renderRiddles((array) ($overview['riddles'] ?? []));
         echo '</section>';
 
@@ -135,9 +128,9 @@ final class PlayerProgressionRenderer
         }
         if ($position > 0 && ($position < (($page - 1) * 10 + 1) || $position > $page * 10)) {
             echo '<p class="progression-leaderboard__position">' . esc_html(sprintf(
-                /* translators: %d: current player's rank */
-                __('Votre position : %de', 'chassesautresor-com'),
-                $position
+                /* translators: %s: current player's rank, such as 1er or 2e */
+                __('Votre position : %s', 'chassesautresor-com'),
+                $this->ordinal($position)
             )) . '</p>';
         }
         echo $this->numberedPager($page, $pages);
@@ -166,7 +159,8 @@ final class PlayerProgressionRenderer
         echo '<th scope="col">' . esc_html__('Étapes franchies', 'chassesautresor-com') . '</th>';
         echo '<th scope="col">' . esc_html__('Tentatives', 'chassesautresor-com') . '</th>';
         echo '<th scope="col">' . esc_html__('Dernière activité', 'chassesautresor-com') . '</th>';
-        echo '<th scope="col">' . esc_html__('Soumissions', 'chassesautresor-com') . '</th></tr></thead>';
+        echo '<th scope="col">' . esc_html__('Soumissions', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Classement', 'chassesautresor-com') . '</th></tr></thead>';
         foreach ($riddles as $riddle) {
             $this->renderRiddle($riddle);
         }
@@ -243,40 +237,133 @@ final class PlayerProgressionRenderer
         } else {
             echo '<span aria-hidden="true">—</span>';
         }
-        echo '</td></tr>';
-        echo '<tr class="progression-riddle__leaders-row"><td colspan="6">';
-        $this->renderRiddleLeaders((array) ($riddle['leaders'] ?? []));
-        echo '</td></tr>';
-        echo '<tr class="progression-riddle__attempts-row" data-riddle-attempts-row hidden><td colspan="6">';
+        echo '</td>';
+        echo '<td data-label="' . esc_attr__('Classement', 'chassesautresor-com')
+            . '" class="progression-riddle__rank">' . $this->rankLabel((int) ($riddle['rank'] ?? 0))
+            . '</td></tr>';
+        echo '<tr class="progression-riddle__attempts-row" data-riddle-attempts-row hidden><td colspan="7">';
         echo '<div class="progression-riddle__attempts" data-riddle-attempts-panel></div>';
         echo '</td></tr></tbody>';
     }
 
-    /** @param array<int, array<string, mixed>> $leaders */
-    private function renderRiddleLeaders(array $leaders): void
+    /**
+     * @param array<string, mixed> $view
+     * @param array<int, array{id:int,title:string,url:string}> $hunts
+     * @param array<string, string> $ajax
+     */
+    public function renderRanking(
+        array $view,
+        array $hunts = [],
+        int $currentHuntId = 0,
+        array $ajax = []
+    ): string {
+        ob_start();
+        echo '<section class="player-ranking"';
+        if ($ajax !== []) {
+            echo ' data-player-ranking data-ajax-url="' . esc_url((string) ($ajax['url'] ?? '')) . '"';
+            echo ' data-nonce="' . esc_attr((string) ($ajax['nonce'] ?? '')) . '"';
+            echo ' data-hunt-id="' . esc_attr((string) $currentHuntId) . '"';
+            echo ' data-error-message="'
+                . esc_attr__('Impossible de charger ces données.', 'chassesautresor-com') . '"';
+        }
+        echo '>';
+        $this->renderHuntSwitcher($hunts, $currentHuntId);
+        echo '<section class="progression-leaderboard progression-table-card player-ranking__board"'
+            . ' aria-labelledby="player-ranking-title">';
+        echo '<h2 id="player-ranking-title">'
+            . esc_html__('Classement de la chasse', 'chassesautresor-com') . '</h2>';
+        echo '<div data-progression-leaderboard>';
+        echo $this->leaderboard((array) ($view['leaderboard'] ?? []));
+        echo '</div></section>';
+        foreach ((array) ($view['riddles'] ?? []) as $riddle) {
+            $riddleId = (int) ($riddle['id'] ?? 0);
+            $title = trim((string) ($riddle['title'] ?? ''));
+            if ($title === '') {
+                $title = __('Énigme', 'chassesautresor-com');
+            }
+            $headingId = 'player-ranking-riddle-' . $riddleId;
+            echo '<section class="progression-leaderboard progression-table-card player-ranking__board"'
+                . ' aria-labelledby="' . esc_attr($headingId) . '">';
+            echo '<h2 id="' . esc_attr($headingId) . '">' . esc_html($title) . '</h2>';
+            echo '<div data-riddle-ranking data-riddle-id="' . esc_attr((string) $riddleId) . '">';
+            echo $this->riddleRanking((array) ($riddle['ranking'] ?? []));
+            echo '</div></section>';
+        }
+        echo '</section>';
+
+        return trim((string) ob_get_clean());
+    }
+
+    /** @param array<string, mixed> $view */
+    public function riddleRanking(array $view): string
     {
-        echo '<section class="progression-riddle__leaders" aria-label="'
-            . esc_attr__('En tête sur cette énigme', 'chassesautresor-com') . '">';
-        echo '<h4>' . esc_html__('En tête sur cette énigme', 'chassesautresor-com') . '</h4>';
-        if ($leaders === []) {
-            echo '<p>' . esc_html__('Aucun joueur classé pour le moment.', 'chassesautresor-com')
-                . '</p></section>';
-            return;
+        $rows = (array) ($view['rows'] ?? []);
+        $page = max(1, (int) ($view['page'] ?? 1));
+        $pages = max(1, (int) ($view['pages'] ?? 1));
+        $currentUserId = (int) ($view['current_user_id'] ?? 0);
+        ob_start();
+        if ($rows === []) {
+            echo '<p class="progression-leaderboard__empty">'
+                . esc_html__('Pas encore de classement.', 'chassesautresor-com') . '</p>';
+        } else {
+            echo '<div class="progression-table-scroll"><table class="progression-data-table'
+                . ' progression-data-table--ranking progression-data-table--player-ranking'
+                . ' progression-data-table--riddle-ranking">';
+            echo '<thead><tr><th scope="col">' . esc_html__('Rang', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Joueur', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Équipe', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Avancement', 'chassesautresor-com')
+                . '</th></tr></thead><tbody>';
+            foreach ($rows as $index => $row) {
+                $userId = (int) ($row['user_id'] ?? 0);
+                $rank = (($page - 1) * 10) + $index + 1;
+                $class = $userId === $currentUserId ? ' class="is-current"' : '';
+                $solved = !empty($row['solved']);
+                $badgeClass = $solved
+                    ? 'progression-riddle__status progression-riddle__status--resolue'
+                    : 'progression-riddle__status progression-riddle__status--en_cours';
+                echo '<tr' . $class . '>';
+                echo '<td class="progression-data-table__rank">' . esc_html((string) $rank) . '</td>';
+                echo '<td><span class="progression-table-identity">' . $this->avatar($userId, 40);
+                echo '<strong>' . esc_html((string) ($row['username'] ?? '')) . '</strong>';
+                echo '<small>' . esc_html($this->teamLabel((string) ($row['team_name'] ?? '')))
+                    . '</small></span></td>';
+                echo '<td class="progression-data-table__team">'
+                    . esc_html($this->teamLabel((string) ($row['team_name'] ?? ''))) . '</td>';
+                echo '<td><span class="' . esc_attr($badgeClass) . '">' . esc_html(
+                    $solved
+                        ? __('Résolue', 'chassesautresor-com')
+                        : __('En progression', 'chassesautresor-com')
+                ) . '</span></td></tr>';
+            }
+            echo '</tbody></table></div>';
         }
-        echo '<ol>';
-        foreach (array_values($leaders) as $index => $leader) {
-            $userId = (int) ($leader['user_id'] ?? 0);
-            echo '<li><span class="progression-riddle__leader-rank">'
-                . esc_html((string) ($index + 1)) . '</span>' . $this->avatar($userId, 34);
-            echo '<span><strong>' . esc_html((string) ($leader['username'] ?? '')) . '</strong><small>'
-                . esc_html($this->teamLabel((string) ($leader['team_name'] ?? ''))) . '</small></span>';
-            echo '<em>' . esc_html(
-                !empty($leader['solved'])
-                    ? __('Résolue', 'chassesautresor-com')
-                    : __('En progression', 'chassesautresor-com')
-            ) . '</em></li>';
+        echo $this->numberedPager($page, $pages, 'data-riddle-ranking-page');
+
+        return trim((string) ob_get_clean());
+    }
+
+    private function rankLabel(int $rank): string
+    {
+        if ($rank <= 0) {
+            return '<span aria-hidden="true">—</span><span class="screen-reader-text">'
+                . esc_html__('Pas de classement', 'chassesautresor-com') . '</span>';
         }
-        echo '</ol></section>';
+
+        return esc_html($this->ordinal($rank));
+    }
+
+    private function ordinal(int $rank): string
+    {
+        if ($rank === 1) {
+            return __('1er', 'chassesautresor-com');
+        }
+
+        return sprintf(
+            /* translators: %d: rank from 2 upward */
+            __('%de', 'chassesautresor-com'),
+            $rank
+        );
     }
 
     /** @param array<string, mixed> $view */
@@ -356,7 +443,7 @@ final class PlayerProgressionRenderer
         return $team !== '' ? $team : __('Solo', 'chassesautresor-com');
     }
 
-    private function numberedPager(int $page, int $pages): string
+    private function numberedPager(int $page, int $pages, string $attribute = 'data-leaderboard-page'): string
     {
         if ($pages <= 1) {
             return '';
@@ -364,36 +451,36 @@ final class PlayerProgressionRenderer
 
         $html = '<nav class="progression-leaderboard__pager" aria-label="'
             . esc_attr__('Pages du classement', 'chassesautresor-com') . '">';
-        $html .= '<button type="button" data-leaderboard-page="' . esc_attr((string) max(1, $page - 1))
+        $html .= '<button type="button" ' . $attribute . '="' . esc_attr((string) max(1, $page - 1))
             . '" aria-label="' . esc_attr__('Page précédente', 'chassesautresor-com') . '"'
             . ($page <= 1 ? ' disabled' : '') . '>&lsaquo;</button>';
         $start = max(1, $page - 2);
         $end = min($pages, $page + 2);
         if ($start > 1) {
-            $html .= $this->pageButton(1, $page);
+            $html .= $this->pageButton(1, $page, $attribute);
             if ($start > 2) {
                 $html .= '<span aria-hidden="true">…</span>';
             }
         }
         for ($number = $start; $number <= $end; $number++) {
-            $html .= $this->pageButton($number, $page);
+            $html .= $this->pageButton($number, $page, $attribute);
         }
         if ($end < $pages) {
             if ($end < $pages - 1) {
                 $html .= '<span aria-hidden="true">…</span>';
             }
-            $html .= $this->pageButton($pages, $page);
+            $html .= $this->pageButton($pages, $page, $attribute);
         }
-        $html .= '<button type="button" data-leaderboard-page="' . esc_attr((string) min($pages, $page + 1))
+        $html .= '<button type="button" ' . $attribute . '="' . esc_attr((string) min($pages, $page + 1))
             . '" aria-label="' . esc_attr__('Page suivante', 'chassesautresor-com') . '"'
             . ($page >= $pages ? ' disabled' : '') . '>&rsaquo;</button></nav>';
 
         return $html;
     }
 
-    private function pageButton(int $number, int $current): string
+    private function pageButton(int $number, int $current, string $attribute): string
     {
-        return '<button type="button" data-leaderboard-page="' . esc_attr((string) $number) . '"'
+        return '<button type="button" ' . $attribute . '="' . esc_attr((string) $number) . '"'
             . ($number === $current ? ' aria-current="page"' : '') . '>'
             . esc_html((string) $number) . '</button>';
     }

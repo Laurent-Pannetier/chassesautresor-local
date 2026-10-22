@@ -936,6 +936,10 @@ html[data-theme="day"] .home-enigmas-preserve {
   color: var(--shell-accent-text);
 }
 
+.progression-riddles {
+  margin-top: 1rem;
+}
+
 .progression-riddles__title {
   margin: 0 0 0.75rem;
   font-size: 1.05rem;
@@ -1110,15 +1114,13 @@ html[data-theme="day"] .home-enigmas-preserve {
 
 .progression-leaderboard h2,
 .equipe-ranking h3,
-.equipe-contributions h3,
-.progression-riddle__leaders h4 {
+.equipe-contributions h3 {
   margin: 0 0 0.75rem;
   color: var(--shell-text);
   font-size: 1rem;
 }
 
 .progression-ranking-list,
-.progression-riddle__leaders ol,
 .equipe-ranking__list,
 .equipe-contributions ul {
   margin: 0;
@@ -1174,7 +1176,6 @@ html[data-theme="day"] .home-enigmas-preserve {
 
 .progression-ranking-list__identity,
 .equipe-ranking__identity,
-.progression-riddle__leaders li > span,
 .equipe-contributions li > strong {
   min-width: 0;
 }
@@ -1182,9 +1183,7 @@ html[data-theme="day"] .home-enigmas-preserve {
 .progression-ranking-list__identity strong,
 .progression-ranking-list__identity small,
 .equipe-ranking__identity strong,
-.equipe-ranking__identity small,
-.progression-riddle__leaders strong,
-.progression-riddle__leaders small {
+.equipe-ranking__identity small {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1192,15 +1191,13 @@ html[data-theme="day"] .home-enigmas-preserve {
 }
 
 .progression-ranking-list__identity strong,
-.equipe-ranking__identity strong,
-.progression-riddle__leaders strong {
+.equipe-ranking__identity strong {
   color: var(--shell-text);
   font-size: 0.86rem;
 }
 
 .progression-ranking-list__identity small,
-.equipe-ranking__identity small,
-.progression-riddle__leaders small {
+.equipe-ranking__identity small {
   margin-top: 0.1rem;
   color: var(--shell-muted);
   font-size: 0.7rem;
@@ -1302,33 +1299,8 @@ html[data-theme="day"] .home-enigmas-preserve {
   color: var(--shell-accent-strong);
 }
 
-.progression-riddle__leaders {
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--shell-border);
-}
-
-.progression-riddle__leaders ol {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.progression-riddle__leaders li {
-  display: grid;
-  grid-template-columns: 2.15rem minmax(0, 1fr) auto;
-  gap: 0.55rem;
-  align-items: center;
-}
-
-.progression-riddle__leaders .progression-avatar {
-  width: 2.15rem;
-  height: 2.15rem;
-}
-
-.progression-riddle__leaders em {
-  color: var(--shell-muted);
-  font-size: 0.7rem;
-  font-style: normal;
-  font-weight: 700;
+.progression-riddle__rank {
+  font-weight: 800;
 }
 
 .progression-riddle__attempts {
@@ -1484,6 +1456,17 @@ html[data-theme="day"] .home-enigmas-preserve {
   text-align: right;
 }
 
+.progression-data-table--riddle-ranking th:last-child,
+.progression-data-table--riddle-ranking td:last-child {
+  width: 9.5rem;
+  text-align: left;
+}
+
+.player-ranking {
+  display: grid;
+  gap: 1rem;
+}
+
 .progression-data-table__rank {
   color: var(--shell-muted);
   font-size: 0.82rem;
@@ -1631,54 +1614,13 @@ html[data-theme="day"] .home-enigmas-preserve {
   white-space: nowrap;
 }
 
-.progression-riddle__leaders-row,
 .progression-riddle__attempts-row {
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
-.progression-riddle__leaders-row > td,
 .progression-riddle__attempts-row > td {
   grid-column: 1 / -1;
   padding: 0 !important;
-}
-
-.progression-riddle__leaders {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.65rem 0.85rem;
-  border-top: 0;
-  background: color-mix(in srgb, var(--shell-surface-2) 65%, transparent);
-}
-
-.progression-riddle__leaders h4,
-.progression-riddle__leaders p {
-  margin: 0;
-  font-size: 0.72rem;
-  white-space: nowrap;
-}
-
-.progression-riddle__leaders ol {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.45rem;
-}
-
-.progression-riddle__leaders li {
-  grid-template-columns: 1rem 1.85rem minmax(0, 1fr) auto;
-}
-
-.progression-riddle__leaders .progression-avatar {
-  width: 1.85rem;
-  height: 1.85rem;
-}
-
-.progression-riddle__leader-rank {
-  color: var(--shell-muted);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-align: center;
 }
 
 .progression-riddle__attempts-row[hidden] {
@@ -2194,7 +2136,6 @@ html[data-theme="day"] .home-enigmas-preserve {
     display: table-cell;
   }
 
-  .progression-data-table--riddles .progression-riddle__leaders-row > td,
   .progression-data-table--riddles .progression-riddle__attempts-row > td {
     display: table-cell;
   }
@@ -2217,7 +2158,7 @@ html[data-theme="day"] .home-enigmas-preserve {
   }
 
   .progression-data-table--riddles th:first-child {
-    width: 30%;
+    width: 24%;
   }
 
   .progression-data-table--riddles th:nth-child(2) {
@@ -2225,26 +2166,24 @@ html[data-theme="day"] .home-enigmas-preserve {
   }
 
   .progression-data-table--riddles th:nth-child(3),
-  .progression-data-table--riddles th:nth-child(4) {
-    width: 8%;
+  .progression-data-table--riddles th:nth-child(4),
+  .progression-data-table--riddles th:nth-child(7) {
+    width: 9%;
     text-align: center;
   }
 
   .progression-data-table--riddles td:nth-child(3),
-  .progression-data-table--riddles td:nth-child(4) {
+  .progression-data-table--riddles td:nth-child(4),
+  .progression-data-table--riddles td:nth-child(7) {
     text-align: center;
   }
 
   .progression-data-table--riddles th:nth-child(5) {
-    width: 16%;
+    width: 15%;
   }
 
   .progression-data-table--riddles th:nth-child(6) {
-    width: 24%;
-  }
-
-  .progression-riddle__leaders ol {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 20%;
   }
 
   .progression-steps-chart__row {

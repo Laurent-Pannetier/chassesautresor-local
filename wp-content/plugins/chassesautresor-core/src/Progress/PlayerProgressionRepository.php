@@ -45,7 +45,7 @@ class PlayerProgressionRepository
             . " LEFT JOIN ({$scoresSql}) sc ON sc.user_id = p.user_id"
             . " LEFT JOIN {$places} ep ON ep.user_id = p.user_id"
             . " LEFT JOIN {$teams} e ON e.id = ep.equipe_id AND e.dissolved_at IS NULL"
-            . " WHERE 1 = 1{$excludeSql}"
+            . " WHERE COALESCE(sc.resolved, 0) > 0{$excludeSql}"
             . " ORDER BY COALESCE(sc.resolved, 0) DESC,"
             . " CASE WHEN COALESCE(sc.resolved, 0) > 0 THEN sc.reached_at END ASC,"
             . " LOWER(COALESCE(NULLIF(u.display_name, ''), u.user_login)) ASC, p.user_id ASC"
@@ -72,11 +72,14 @@ class PlayerProgressionRepository
         }
 
         [$participantsSql, $participantsParams] = $this->participantsSql($huntId, $riddleIds);
+        [$scoresSql, $scoresParams] = $this->scoresSql($riddleIds);
         [$excludeSql, $excludeParams] = $this->excludeClause('p.user_id', $excludedUserIds);
 
         return $this->value(
-            "SELECT COUNT(*) FROM ({$participantsSql}) p WHERE 1 = 1{$excludeSql}",
-            array_merge($participantsParams, $excludeParams)
+            "SELECT COUNT(*) FROM ({$participantsSql}) p"
+            . " LEFT JOIN ({$scoresSql}) sc ON sc.user_id = p.user_id"
+            . " WHERE COALESCE(sc.resolved, 0) > 0{$excludeSql}",
+            array_merge($participantsParams, $scoresParams, $excludeParams)
         );
     }
 
@@ -111,14 +114,39 @@ class PlayerProgressionRepository
     }
 
     /**
-     * Solved players come first by elapsed time. Other players are ordered by
-     * completed steps and the time taken to reach their current depth.
+     * Eligible players solved the riddle, found a step, or submitted a final
+     * answer that is correct, an accepted variant, or still pending.
+     *
+     * @param int[] $excludedUserIds
+     */
+    public function countEligibleRiddlePlayers(int $riddleId, array $excludedUserIds): int
+    {
+        if ($riddleId <= 0) {
+            return 0;
+        }
+
+        [$eligibleSql, $eligibleParams] = $this->eligibleRiddlePlayersSql($riddleId);
+        [$excludeSql, $excludeParams] = $this->excludeClause('user_id', $excludedUserIds);
+
+        return $this->value(
+            "SELECT COUNT(*) FROM ({$eligibleSql}) eligible WHERE 1 = 1{$excludeSql}",
+            array_merge($eligibleParams, $excludeParams)
+        );
+    }
+
+    /**
+     * Solved players come first by elapsed time. Others are ordered by completed
+     * steps, then by the time taken to reach that depth. Sort keys stay internal.
      *
      * @param int[] $excludedUserIds
      * @return array<int, array<string, mixed>>
      */
-    public function riddleLeaders(int $riddleId, array $excludedUserIds, int $limit = 3): array
-    {
+    public function riddleRanking(
+        int $riddleId,
+        array $excludedUserIds,
+        int $limit,
+        int $offset
+    ): array {
         if ($riddleId <= 0) {
             return [];
         }
@@ -130,38 +158,88 @@ class PlayerProgressionRepository
         $places = $this->wpdb->prefix . 'equipe_places';
         $teams = $this->wpdb->prefix . 'equipes';
         $users = $this->wpdb->users;
-        [$excludeSql, $excludeParams] = $this->excludeClause('p.user_id', $excludedUserIds);
-        $sql = "SELECT p.user_id, COALESCE(NULLIF(u.display_name, ''), u.user_login) AS username,"
+        [$eligibleSql, $eligibleParams] = $this->eligibleRiddlePlayersSql($riddleId);
+        [$excludeSql, $excludeParams] = $this->excludeClause('base.user_id', $excludedUserIds);
+        $started = 'COALESCE(eng.engaged_at, st.first_step_at, qa.first_at, s.date_mise_a_jour)';
+        $reached = 'COALESCE(fc.solved_at, s.date_mise_a_jour, st.last_step_at, qa.first_at, eng.engaged_at)';
+        $sql = "SELECT base.user_id, COALESCE(NULLIF(u.display_name, ''), u.user_login) AS username,"
             . " COALESCE(e.nom, '') AS team_name,"
             . " CASE WHEN s.statut IN ('resolue', 'terminee', 'terminée') THEN 1 ELSE 0 END AS solved,"
-            . " COALESCE(st.steps_done, 0) AS steps_done,"
-            . " TIMESTAMPDIFF(SECOND, p.engaged_at,"
-            . " COALESCE(fc.solved_at, s.date_mise_a_jour, st.last_step_at, p.engaged_at)) AS elapsed"
-            . " FROM (SELECT user_id, MIN(date_engagement) AS engaged_at FROM {$engagements}"
-            . " WHERE enigme_id = %d GROUP BY user_id) p"
-            . " JOIN {$users} u ON u.ID = p.user_id"
-            . " LEFT JOIN {$statuses} s ON s.user_id = p.user_id AND s.enigme_id = %d"
+            . " TIMESTAMPDIFF(SECOND, {$started}, {$reached}) AS elapsed"
+            . " FROM ({$eligibleSql}) base"
+            . " JOIN {$users} u ON u.ID = base.user_id"
+            . " LEFT JOIN (SELECT user_id, MIN(date_engagement) AS engaged_at FROM {$engagements}"
+            . " WHERE enigme_id = %d GROUP BY user_id) eng ON eng.user_id = base.user_id"
+            . " LEFT JOIN {$statuses} s ON s.user_id = base.user_id AND s.enigme_id = %d"
             . " LEFT JOIN (SELECT user_id, MIN(date_tentative) AS solved_at FROM {$attempts}"
             . " WHERE enigme_id = %d AND etape_id IS NULL AND resultat = 'bon' GROUP BY user_id) fc"
-            . " ON fc.user_id = p.user_id"
-            . " LEFT JOIN (SELECT user_id, COUNT(*) AS steps_done, MAX(date_decouverte) AS last_step_at"
-            . " FROM {$steps} WHERE enigme_id = %d AND statut = 'trouvee' GROUP BY user_id) st"
-            . " ON st.user_id = p.user_id"
-            . " LEFT JOIN {$places} ep ON ep.user_id = p.user_id"
+            . " ON fc.user_id = base.user_id"
+            . " LEFT JOIN (SELECT user_id, COUNT(*) AS steps_done, MIN(date_decouverte) AS first_step_at,"
+            . " MAX(date_decouverte) AS last_step_at FROM {$steps}"
+            . " WHERE enigme_id = %d AND statut = 'trouvee' GROUP BY user_id) st"
+            . " ON st.user_id = base.user_id"
+            . " LEFT JOIN (SELECT user_id, MIN(date_tentative) AS first_at FROM {$attempts}"
+            . " WHERE enigme_id = %d AND etape_id IS NULL"
+            . " AND resultat IN ('bon', 'variante', 'attente') GROUP BY user_id) qa"
+            . " ON qa.user_id = base.user_id"
+            . " LEFT JOIN {$places} ep ON ep.user_id = base.user_id"
             . " LEFT JOIN {$teams} e ON e.id = ep.equipe_id AND e.dissolved_at IS NULL"
             . " WHERE 1 = 1{$excludeSql}"
-            . " ORDER BY solved DESC,"
-            . " CASE WHEN solved = 1 THEN elapsed END ASC,"
+            . " ORDER BY solved DESC, CASE WHEN solved = 1 THEN elapsed END ASC,"
             . " CASE WHEN solved = 0 THEN COALESCE(st.steps_done, 0) END DESC,"
             . " CASE WHEN solved = 0 THEN elapsed END ASC,"
-            . " LOWER(COALESCE(NULLIF(u.display_name, ''), u.user_login)) ASC, p.user_id ASC LIMIT %d";
+            . " LOWER(COALESCE(NULLIF(u.display_name, ''), u.user_login)) ASC, base.user_id ASC"
+            . ' LIMIT %d OFFSET %d';
         $params = array_merge(
-            [$riddleId, $riddleId, $riddleId, $riddleId],
+            $eligibleParams,
+            [$riddleId, $riddleId, $riddleId, $riddleId, $riddleId],
             $excludeParams,
-            [max(1, $limit)]
+            [max(1, $limit), max(0, $offset)]
         );
+        $rows = $this->rows($sql, $params);
+        foreach ($rows as $index => $row) {
+            unset($rows[$index]['elapsed']);
+        }
 
-        return $this->rows($sql, $params);
+        return $rows;
+    }
+
+    /**
+     * A rank exists only when the player is eligible and at least one other player is too.
+     *
+     * @param int[] $excludedUserIds
+     */
+    public function riddleRank(int $userId, int $riddleId, array $excludedUserIds): int
+    {
+        if ($userId <= 0 || $this->countEligibleRiddlePlayers($riddleId, $excludedUserIds) < 2) {
+            return 0;
+        }
+
+        $rows = $this->riddleRanking($riddleId, $excludedUserIds, PHP_INT_MAX, 0);
+        foreach ($rows as $index => $row) {
+            if ((int) ($row['user_id'] ?? 0) === $userId) {
+                return $index + 1;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return array{0:string,1:int[]}
+     */
+    private function eligibleRiddlePlayersSql(int $riddleId): array
+    {
+        $statuses = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $attempts = $this->wpdb->prefix . 'enigme_tentatives';
+        $steps = $this->wpdb->prefix . 'enigme_etapes_progression';
+        $sql = "SELECT user_id FROM {$statuses} WHERE enigme_id = %d"
+            . " AND statut IN ('resolue', 'terminee', 'terminée')"
+            . " UNION SELECT user_id FROM {$steps} WHERE enigme_id = %d AND statut = 'trouvee'"
+            . " UNION SELECT user_id FROM {$attempts} WHERE enigme_id = %d AND etape_id IS NULL"
+            . " AND resultat IN ('bon', 'variante', 'attente')";
+
+        return [$sql, [$riddleId, $riddleId, $riddleId]];
     }
 
     /** @return array<int, array<string, mixed>> */

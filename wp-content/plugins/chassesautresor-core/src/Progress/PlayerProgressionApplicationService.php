@@ -32,7 +32,6 @@ final class PlayerProgressionApplicationService
      *     attempts_total:int,
      *     attempts_pending:int,
      *     hints:int,
-     *     leaderboard:array<string, mixed>,
      *     riddles:array<int, array<string, mixed>>
      * }
      */
@@ -88,12 +87,9 @@ final class PlayerProgressionApplicationService
                 'steps_total' => (int) ($catalog['steps_total'] ?? 0),
                 'attempts' => (int) ($activity[$riddleId]['attempts'] ?? 0),
                 'last_activity' => $dates[0] ?? '',
-                'leaders' => $playerData->riddleLeaders($riddleId, $excluded, 3),
+                'rank' => $playerData->riddleRank($userId, $riddleId, $excluded),
             ];
         }
-
-        $leaderboardTotal = $playerData->countHuntLeaderboardPlayers($huntId, $riddleIds, $excluded);
-        $leaderboardPages = max(1, (int) ceil($leaderboardTotal / 10));
 
         return [
             'hunt_id' => $huntId,
@@ -105,22 +101,48 @@ final class PlayerProgressionApplicationService
             'attempts_total' => (int) ($attempts['total'] ?? 0),
             'attempts_pending' => (int) ($attempts['pending'] ?? 0),
             'hints' => $this->dashboard->countUnlockedHints($userId, $huntId, $riddleIds),
-            'leaderboard' => [
-                'rows' => $playerData->huntLeaderboard($huntId, $riddleIds, $excluded, 10, 0),
-                'page' => 1,
-                'pages' => $leaderboardPages,
-                'total' => $leaderboardTotal,
-                'current_user_id' => $userId,
-                'current_position' => $playerData->huntPosition($userId, $huntId, $riddleIds, $excluded),
-            ],
             'riddles' => $riddles,
         ];
     }
 
-    /** @return array<string, mixed> */
-    public function leaderboard(int $userId, int $huntId, int $page): array
+    /**
+     * General hunt ranking, then one ranking per riddle.
+     *
+     * @param callable(int):int[]|null $riddleIdsProvider
+     * @return array{hunt_id:int,leaderboard:array<string,mixed>,riddles:array<int,array<string,mixed>>}
+     */
+    public function rankingPage(int $userId, int $huntId, ?callable $riddleIdsProvider = null): array
     {
-        $riddleIds = $this->positiveIds($this->defaultRiddleIds($huntId));
+        $riddleIdsProvider = $riddleIdsProvider ?? [$this, 'defaultRiddleIds'];
+        $riddleIds = $this->positiveIds((array) $riddleIdsProvider($huntId));
+        $riddles = [];
+        foreach ($riddleIds as $riddleId) {
+            $riddles[] = [
+                'id' => $riddleId,
+                'title' => $this->riddleTitle($riddleId),
+                'ranking' => $this->riddleRanking($userId, $huntId, $riddleId, 1, $riddleIdsProvider),
+            ];
+        }
+
+        return [
+            'hunt_id' => $huntId,
+            'leaderboard' => $this->leaderboard($userId, $huntId, 1, $riddleIdsProvider),
+            'riddles' => $riddles,
+        ];
+    }
+
+    /**
+     * @param callable(int):int[]|null $riddleIdsProvider
+     * @return array<string, mixed>
+     */
+    public function leaderboard(
+        int $userId,
+        int $huntId,
+        int $page,
+        ?callable $riddleIdsProvider = null
+    ): array {
+        $riddleIdsProvider = $riddleIdsProvider ?? [$this, 'defaultRiddleIds'];
+        $riddleIds = $this->positiveIds((array) $riddleIdsProvider($huntId));
         $excluded = $this->excludedUserIds($huntId);
         $total = $this->playerData()->countHuntLeaderboardPlayers($huntId, $riddleIds, $excluded);
         $pages = max(1, (int) ceil($total / 10));
@@ -144,6 +166,55 @@ final class PlayerProgressionApplicationService
                 $riddleIds,
                 $excluded
             ),
+        ];
+    }
+
+    /**
+     * A riddle ranking is published only when at least two players are eligible.
+     *
+     * @param callable(int):int[]|null $riddleIdsProvider
+     * @return array<string, mixed>
+     */
+    public function riddleRanking(
+        int $userId,
+        int $huntId,
+        int $riddleId,
+        int $page,
+        ?callable $riddleIdsProvider = null
+    ): array {
+        $empty = [
+            'rows' => [],
+            'page' => 1,
+            'pages' => 1,
+            'total' => 0,
+            'current_user_id' => $userId,
+        ];
+        $riddleIdsProvider = $riddleIdsProvider ?? [$this, 'defaultRiddleIds'];
+        $riddleIds = $this->positiveIds((array) $riddleIdsProvider($huntId));
+        if (!in_array($riddleId, $riddleIds, true)) {
+            return $empty;
+        }
+
+        $excluded = $this->excludedUserIds($huntId);
+        $total = $this->playerData()->countEligibleRiddlePlayers($riddleId, $excluded);
+        if ($total < 2) {
+            return $empty;
+        }
+
+        $pages = max(1, (int) ceil($total / 10));
+        $page = max(1, min($pages, $page));
+
+        return [
+            'rows' => $this->playerData()->riddleRanking(
+                $riddleId,
+                $excluded,
+                10,
+                ($page - 1) * 10
+            ),
+            'page' => $page,
+            'pages' => $pages,
+            'total' => $total,
+            'current_user_id' => $userId,
         ];
     }
 
@@ -180,14 +251,6 @@ final class PlayerProgressionApplicationService
             'attempts_total' => 0,
             'attempts_pending' => 0,
             'hints' => 0,
-            'leaderboard' => [
-                'rows' => [],
-                'page' => 1,
-                'pages' => 1,
-                'total' => 0,
-                'current_user_id' => 0,
-                'current_position' => 0,
-            ],
             'riddles' => [],
         ];
     }
@@ -210,6 +273,11 @@ final class PlayerProgressionApplicationService
         }
 
         return chasse_calculer_progression_utilisateur($huntId, $userId);
+    }
+
+    private function riddleTitle(int $riddleId): string
+    {
+        return function_exists('get_the_title') ? (string) get_the_title($riddleId) : '';
     }
 
     /** @return array{title:string,url:string,thumbnail_url:string,steps_total:int} */

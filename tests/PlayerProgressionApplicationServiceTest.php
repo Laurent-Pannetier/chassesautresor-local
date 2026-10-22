@@ -52,11 +52,26 @@ final class PlayerProgressionDataStub extends PlayerProgressionRepository
     {
     }
 
-    public function riddleLeaders(int $riddleId, array $excludedUserIds, int $limit = 3): array
+    public int $eligible = 1;
+
+    public function riddleRank(int $userId, int $riddleId, array $excludedUserIds): int
     {
-        return $riddleId === 40
-            ? [['user_id' => 8, 'username' => 'Alice', 'team_name' => 'Corsaires', 'solved' => 1]]
-            : [];
+        return $riddleId === 40 ? 2 : 0;
+    }
+
+    public function countEligibleRiddlePlayers(int $riddleId, array $excludedUserIds): int
+    {
+        return $this->eligible;
+    }
+
+    public function riddleRanking(int $riddleId, array $excludedUserIds, int $limit, int $offset): array
+    {
+        return [[
+            'user_id' => 8,
+            'username' => 'Alice',
+            'team_name' => 'Corsaires',
+            'solved' => 1,
+        ]];
     }
 
     public function countHuntLeaderboardPlayers(int $huntId, array $riddleIds, array $excludedUserIds): int
@@ -118,8 +133,34 @@ final class PlayerProgressionApplicationServiceTest extends TestCase
         self::assertSame('2026-10-03 09:00:00', $overview['riddles'][0]['last_activity']);
         self::assertSame('non_commencee', $overview['riddles'][1]['status']);
         self::assertSame(0, $overview['riddles'][1]['attempts']);
-        self::assertSame('Alice', $overview['riddles'][0]['leaders'][0]['username']);
-        self::assertSame('Bob', $overview['leaderboard']['rows'][0]['username']);
+        self::assertSame(2, $overview['riddles'][0]['rank']);
+        self::assertSame(0, $overview['riddles'][1]['rank']);
+        self::assertArrayNotHasKey('leaders', $overview['riddles'][0]);
+        self::assertArrayNotHasKey('leaderboard', $overview);
+    }
+
+    public function testRiddleRankingRequiresTwoEligiblePlayers(): void
+    {
+        $data = new PlayerProgressionDataStub();
+        $service = new PlayerProgressionApplicationService(
+            new PlayerProgressionDashboardStub(),
+            $data
+        );
+        $provider = static fn (int $huntId): array => [40];
+
+        $hidden = $service->riddleRanking(7, 12, 40, 1, $provider);
+        self::assertSame([], $hidden['rows']);
+        self::assertSame(0, $hidden['total']);
+
+        $data->eligible = 3;
+        $shown = $service->riddleRanking(7, 12, 40, 1, $provider);
+        self::assertSame('Alice', $shown['rows'][0]['username']);
+        self::assertArrayNotHasKey('steps_done', $shown['rows'][0]);
+        self::assertArrayNotHasKey('elapsed', $shown['rows'][0]);
+
+        $page = $service->rankingPage(7, 12, $provider);
+        self::assertSame('Bob', $page['leaderboard']['rows'][0]['username']);
+        self::assertSame('Alice', $page['riddles'][0]['ranking']['rows'][0]['username']);
     }
 
     public function testMissingPlayerOrHuntStaysEmpty(): void
