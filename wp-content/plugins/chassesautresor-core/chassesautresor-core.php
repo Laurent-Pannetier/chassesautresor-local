@@ -22,6 +22,18 @@ require_once __DIR__ . '/src/Site/PlayerEnigmasAccessPolicy.php';
 require_once __DIR__ . '/src/Site/PlayerEnigmasAccessHandler.php';
 require_once __DIR__ . '/src/Users/UserProfileCompletionService.php';
 require_once __DIR__ . '/src/Users/profile-functions.php';
+require_once __DIR__ . '/src/Auth/SocialAuthAccountPlan.php';
+require_once __DIR__ . '/src/Auth/SocialAuthIdentity.php';
+require_once __DIR__ . '/src/Auth/SocialAuthUsername.php';
+require_once __DIR__ . '/src/Auth/SocialAuthRedirect.php';
+require_once __DIR__ . '/src/Auth/SocialAuthEndpoints.php';
+require_once __DIR__ . '/src/Auth/SocialAuthSettings.php';
+require_once __DIR__ . '/src/Auth/SocialAuthHttpClient.php';
+require_once __DIR__ . '/src/Auth/auth-functions.php';
+require_once __DIR__ . '/src/Auth/SocialAuthService.php';
+require_once __DIR__ . '/src/Auth/SocialAuthSettingsPage.php';
+require_once __DIR__ . '/src/Auth/SocialAuthRouteHandler.php';
+require_once __DIR__ . '/src/Auth/SocialAuthHooks.php';
 require_once __DIR__ . '/src/Users/AccountOrdersRenderer.php';
 require_once __DIR__ . '/src/Users/account-order-functions.php';
 require_once __DIR__ . '/src/Users/AccountPresentationHookHandler.php';
@@ -450,6 +462,7 @@ if (!class_exists('PointsRepository', false)) {
 
 ChassesAuTresor\Core\Admin\AdminAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Site\SiteExperienceSettingsPage::register('add_action');
+ChassesAuTresor\Core\Auth\SocialAuthHooks::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Site\SingleHuntPublicAccessHandler::register('add_action');
 ChassesAuTresor\Core\Site\PlayerEnigmasAccessHandler::register('add_action', 'add_filter');
 
@@ -597,6 +610,11 @@ register_activation_hook(
 register_activation_hook(
     __FILE__,
     [ChassesAuTresor\Core\Points\PointsTable::class, 'install']
+);
+
+register_activation_hook(
+    __FILE__,
+    [ChassesAuTresor\Core\Auth\SocialAuthRouteHandler::class, 'flush']
 );
 
 register_activation_hook(
