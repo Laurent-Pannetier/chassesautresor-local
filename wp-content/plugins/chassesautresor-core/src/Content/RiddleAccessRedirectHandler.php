@@ -142,16 +142,14 @@ final class RiddleAccessRedirectHandler {
             return cta_shell_edition_url('enigme', $riddleId, $section);
         }
 
-        if ($tab === 'param') {
-            return add_query_arg('edition', 'open', get_permalink($riddleId));
-        }
+        $section = $tab === 'soumission' ? 'tentatives' : ($tab === 'stats' ? 'stats' : 'parametres');
 
         return add_query_arg(
             [
-                'edition' => 'open',
-                'tab' => $tab,
+                'enigme' => $riddleId,
+                'section' => $section,
             ],
-            get_permalink($riddleId)
+            home_url('/outils/')
         );
     }
 

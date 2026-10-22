@@ -77,4 +77,39 @@ final class ShellEditionUrlTest extends TestCase
         self::assertStringContainsString('cta_shell_render_outils_submenu', $sidebar);
         self::assertStringContainsString('cta_shell_edition_url', $sommaire);
     }
+
+    public function testPublicPagesNoLongerBootTheOverlayEditor(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $plugin = dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core';
+        $chasseEnqueue = (string) file_get_contents($theme . '/inc/edition/edition-chasse.php');
+        $enigmeEnqueue = (string) file_get_contents($theme . '/inc/edition/edition-enigme.php');
+        $core = (string) file_get_contents($theme . '/inc/edition/edition-core.php');
+        $functions = (string) file_get_contents($theme . '/functions.php');
+        $chasseJs = (string) file_get_contents($theme . '/assets/js/chasse-edit.js');
+        $enigmeJs = (string) file_get_contents($theme . '/assets/js/enigme-edit.js');
+        $styles = (string) file_get_contents($theme . '/assets/scss/_edition.scss');
+        $navigation = (string) file_get_contents(
+            $plugin . '/src/Progress/hunt-navigation-functions.php'
+        );
+
+        $headStart = strpos($functions, 'function forcer_acf_form_head_chasse');
+        $headEnd = strpos($functions, 'TÂCHES QUOTIDIENNES', $headStart ?: 0);
+        $head = ($headStart !== false && $headEnd !== false)
+            ? substr($functions, $headStart, $headEnd - $headStart)
+            : '';
+
+        self::assertStringNotContainsString("is_singular('chasse')", $chasseEnqueue);
+        self::assertStringNotContainsString("is_singular('enigme')", $enigmeEnqueue);
+        self::assertStringNotContainsString('organisateur-edit', $enigmeEnqueue);
+        self::assertStringNotContainsString('scroll-to-enigmes', $core);
+        self::assertNotSame('', $head);
+        self::assertStringNotContainsString("is_singular('chasse')", $head);
+        self::assertStringNotContainsString('toggle-mode-edition-chasse', $chasseJs);
+        self::assertStringNotContainsString('bouton-enregistrer-recompense', $chasseJs);
+        self::assertStringNotContainsString('toggle-mode-edition-enigme', $enigmeJs);
+        self::assertStringNotContainsString('panneau-variantes-enigme', $enigmeJs);
+        self::assertStringNotContainsString('edition-active-indice', $styles);
+        self::assertStringNotContainsString("'edition' => 'open'", $navigation);
+    }
 }

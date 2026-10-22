@@ -90,7 +90,10 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
             'label' => __('Chasse', 'chassesautresor-com'),
             'url' => function_exists('cta_shell_edition_url')
                 ? cta_shell_edition_url('chasse', $huntId, 'parametres')
-                : add_query_arg(['edition' => 'open', 'tab' => 'param'], get_permalink($huntId)),
+                : add_query_arg(
+                    ['chasse' => $huntId, 'section' => 'parametres'],
+                    home_url('/outils/')
+                ),
         ];
 
         $riddleIds = array_map(
@@ -103,7 +106,10 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
                 'label' => $title !== '' ? $title : __('Énigme', 'chassesautresor-com'),
                 'url' => function_exists('cta_shell_edition_url')
                     ? cta_shell_edition_url('enigme', $riddleId, 'parametres')
-                    : add_query_arg(['edition' => 'open', 'tab' => 'param'], get_permalink($riddleId)),
+                    : add_query_arg(
+                        ['enigme' => $riddleId, 'section' => 'parametres'],
+                        home_url('/outils/')
+                    ),
             ];
         }
 

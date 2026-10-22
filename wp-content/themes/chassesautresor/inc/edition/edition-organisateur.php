@@ -36,23 +36,9 @@ function organisateur_get_liens_actifs(int $organisateur_id): array
  */
 function enqueue_script_organisateur_edit()
 {
-  $cpts = ['organisateur', 'chasse'];
+  if (!is_singular('organisateur')) return;
 
-  if (!is_singular($cpts)) return;
-
-  $post_id = get_the_ID();
-  $type = get_post_type($post_id);
-  $organisateur_id = null;
-
-  if ($type === 'organisateur') {
-    $organisateur_id = $post_id;
-  } elseif ($type === 'chasse') {
-    $organisateur_id = get_organisateur_from_chasse($post_id);
-
-    if (!$organisateur_id && get_post_status($post_id) === 'pending') {
-      $organisateur_id = get_organisateur_from_user(get_current_user_id());
-    }
-  }
+  $organisateur_id = (int) get_the_ID();
 
   if ($organisateur_id && utilisateur_peut_modifier_post($organisateur_id)) {
     // 📦 Modules JS partagés + script organisateur

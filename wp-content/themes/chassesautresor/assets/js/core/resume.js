@@ -136,11 +136,6 @@ window.mettreAJourResumeInfos = function () {
         }
       }
 
-      if (champ === 'enigme_reponse_variantes') {
-        const nbVar = blocEdition?.querySelectorAll('.variantes-table .variante-resume')?.length || 0;
-        estRempli = nbVar > 0;
-      }
-
       if (champ === 'enigme_acces_condition') {
         const checked = document.querySelector('input[name="acf[enigme_acces_condition]"]:checked');
         estRempli = !!checked;

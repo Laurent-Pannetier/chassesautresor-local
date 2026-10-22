@@ -62,6 +62,7 @@
   max-width: calc(var(--carte-enigme-poster-max-width) * 2 + var(--space-xl));
   margin-inline: auto;
   justify-content: center;
+  /* Pastille statut déjà présente : éviter le double check à droite. */
 }
 @media (min-width: 768px) {
   .page-chasse-wrapper--compact .cards-grid,
@@ -217,10 +218,6 @@
   border-radius: 50%;
   font-size: 1rem;
   box-shadow: 0 3px 12px rgba(var(--color-black-rgb), 0.38);
-}
-.page-chasse-wrapper--compact .cards-grid,
-.cards-grid--poster {
-  /* Pastille statut déjà présente : éviter le double check à droite. */
 }
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-resolue .carte-icons .validation-icon,
 .page-chasse-wrapper--compact .cards-grid .carte-enigme--statut-terminee .carte-icons .validation-icon,
@@ -4913,22 +4910,17 @@ section.enigme-wrapper {
 }
 
 /* ========== 🖼️ IMAGE MODIFIABLE ========== */
-body:not(.edition-active-chasse) .chasse-fiche-container .champ-img .champ-modifier .icone-modif,
 body:not(.edition-active) .header-organisateur .champ-img .champ-modifier .icone-modif {
   display: none;
 }
 
-body:not(.edition-active-chasse) .chasse-fiche-container .champ-img .champ-modifier,
 body:not(.edition-active) .header-organisateur .champ-img .champ-modifier {
   opacity: 1;
   filter: none;
   pointer-events: none;
-  /* empêche les clics accidentels */
 }
 
-body.edition-active-chasse .chasse-fiche-container .champ-img .champ-modifier,
-body.edition-active .header-organisateur .champ-img .champ-modifier,
-body.edition-active-enigme .single-enigme-main .champ-img .champ-modifier {
+body.edition-active .header-organisateur .champ-img .champ-modifier {
   transform: translateY(0);
 }
 
@@ -5287,16 +5279,6 @@ body[class*=edition-active] .champ-modifier:not(.bouton-cta) {
   line-height: 1.35;
 }
 
-/* Harmonisation de l'alignement pour le champ sous-titre dans le panneau Énigme */
-.single-enigme-main [data-champ=enigme_visuel_legende] {
-  display: inline-flex;
-  align-items: center;
-}
-
-.single-enigme-main [data-champ=enigme_visuel_legende] .champ-affichage {
-  padding-left: 5px;
-}
-
 body.edition-active-enigme .champ-modifier .icone-modif {
   display: unset;
 }
@@ -5474,8 +5456,7 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
   pointer-events: none;
 }
 
-body.edition-active .panneau-organisateur,
-body.edition-active-indice .edition-panel-indice {
+body.edition-active .panneau-organisateur {
   height: 90vh;
   max-height: 90vh;
   opacity: 1;
@@ -5489,8 +5470,7 @@ body.edition-active-indice .edition-panel-indice {
   color: var(--color-editor-text);
 }
 
-body.edition-active .panneau-organisateur.edition-panel-modal,
-body.edition-active-indice .edition-panel-indice.edition-panel-modal {
+body.edition-active .panneau-organisateur.edition-panel-modal {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -6357,48 +6337,6 @@ body.panneau-ouvert::before {
   color: var(--color-text-fond-clair);
 }
 
-#bouton-ajouter-variante {
-  background-color: var(--color-editor-button);
-  color: var(--color-white);
-}
-
-#bouton-ajouter-variante:hover {
-  background-color: var(--color-editor-button-hover);
-}
-
-.champ-variantes-resume {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.champ-variantes-resume .variantes-table {
-  margin: 0;
-  width: auto;
-  display: inline-table;
-  border-collapse: collapse;
-  font-size: 0.85em;
-}
-
-.champ-variantes-resume .variantes-table th,
-.champ-variantes-resume .variantes-table td {
-  padding: 0 4px 0 0;
-  font-weight: normal;
-  border: none;
-}
-
-.champ-variantes-resume .variantes-table th {
-  color: var(--color-editor-text-muted);
-}
-
-.champ-variantes-resume .variantes-table .variante-texte {
-  color: var(--color-editor-text);
-}
-
-.champ-variantes-resume .variantes-table .variante-message {
-  color: var(--color-editor-text-muted);
-}
-
 /* Alignement commun des headers dans les panneaux */
 .panneau-lateral__header {
   display: flex;
@@ -6455,10 +6393,6 @@ body.panneau-ouvert::before {
 }
 
 /* 🧭 Affichage propre des labels */
-#panneau-recompense-chasse label {
-  margin-bottom: -13px;
-}
-
 .panneau-lateral__contenu label {
   font-size: unset;
   color: var(--color-editor-text-muted);
@@ -16596,7 +16530,7 @@ a.bouton-edition-attention {
 /* Legacy aliases */
 :root {
   /* Typographie et breakpoints */
-  --font-main: 'Poppins', sans-serif; /* Police principale */
+  --font-main: "Poppins", sans-serif; /* Police principale */
   --bp-xs: 374px;
   --bp-small: 480px;
   --bp-mobile: 600px;
