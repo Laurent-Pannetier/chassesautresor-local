@@ -67,6 +67,8 @@ final class ShellEditionUrlTest extends TestCase
         $hunt = (string) file_get_contents($theme . '/template-parts/chasse/chasse-affichage-complet.php');
         $outils = (string) file_get_contents($theme . '/template-parts/shell/outils.php');
         $sidebar = (string) file_get_contents($theme . '/template-parts/shell/sidebar.php');
+        $shellEdition = (string) file_get_contents($theme . '/inc/shell-edition.php');
+        $shellStyles = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
         $sommaire = (string) file_get_contents(
             $theme . '/template-parts/enigme/chasse-partial-sommaire-enigmes.php'
         );
@@ -77,7 +79,11 @@ final class ShellEditionUrlTest extends TestCase
         self::assertStringNotContainsString('toggle-mode-edition-enigme', $cards);
         self::assertStringContainsString('cta_shell_edition_url', $hunt);
         self::assertStringNotContainsString('toggle-mode-edition-chasse', $hunt);
-        self::assertStringContainsString('cta_shell_render_hunt_edit_card', $outils);
+        self::assertStringNotContainsString('cta_shell_render_hunt_edit_card', $outils);
+        self::assertStringNotContainsString('function cta_shell_render_hunt_edit_card', $shellEdition);
+        self::assertStringContainsString('app-nav__subitem--hunt', $shellEdition);
+        self::assertStringContainsString('app-nav__sublink--hunt', $shellEdition);
+        self::assertStringContainsString('.app-nav__subitem--riddle', $shellStyles);
         self::assertStringContainsString('cta_shell_render_organizer_edit_card', $outils);
         self::assertStringContainsString('cta_shell_render_outils_submenu', $sidebar);
         self::assertStringContainsString('cta_shell_edition_url', $sommaire);
