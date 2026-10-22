@@ -179,17 +179,21 @@ body.app-shell-active #masthead {
   background: currentColor;
 }
 
+.app-topbar__lead,
+.app-topbar__meta {
+  flex: 1 1 0%;
+}
+
 .app-topbar__lead {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.55rem;
-  min-width: 0;
-  flex: 1 1 auto;
 }
 
 .app-topbar__brand {
   min-width: 0;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   overflow: hidden;
 }
 
@@ -217,46 +221,67 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
 }
 
 .app-topbar__hunt {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-width: 0;
-  max-width: 11rem;
-  min-height: 2.2rem;
-  padding: 0.2rem 0.55rem 0.2rem 0.3rem;
-  border: 1px solid var(--shell-border);
-  border-radius: 0.85rem;
-  background: var(--shell-surface);
-  color: var(--shell-text);
-}
-
-.app-topbar__hunt-mark {
-  display: inline-flex;
-  flex: 0 0 auto;
+  --hunt-gold: #e5c07b;
+  --hunt-gold-bright: #fff6d4;
+  --hunt-gold-mid: #f0d48a;
+  --hunt-gold-deep: #c4922a;
+  --hunt-gold-shade: #a87412;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 1.55rem;
-  height: 1.55rem;
-  border-radius: 0.45rem;
-  background: rgba(255, 138, 61, 0.16);
-  color: #ff8a3d;
+  gap: 0.28rem;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--hunt-gold-deep);
 }
 
-.app-topbar__hunt-mark svg {
-  display: block;
-  width: 0.95rem;
-  height: 0.95rem;
+html[data-theme="day"] .app-topbar__hunt {
+  --hunt-gold: #7a5614;
+  --hunt-gold-bright: #8d6416;
+  --hunt-gold-mid: #6e4a0c;
+  --hunt-gold-deep: #5c3d0a;
+  --hunt-gold-shade: #3f2807;
+}
+
+.app-topbar__hunt::after {
+  content: "";
+  width: min(4.25rem, 72%);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hunt-gold), transparent);
 }
 
 .app-topbar__hunt-title {
+  display: block;
+  max-width: 100%;
   overflow: hidden;
-  color: var(--shell-text);
-  font-family: var(--font-main);
-  font-size: 0.92rem;
+  font-family: "Cinzel", Palatino, "Palatino Linotype", serif;
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-align: center;
+  text-indent: 0.14em;
   text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
+  color: var(--hunt-gold-deep);
+}
+
+@supports (background-clip: text) {
+  .app-topbar__hunt-title {
+    background-image: linear-gradient(
+      180deg,
+      var(--hunt-gold-bright) 0%,
+      var(--hunt-gold-mid) 34%,
+      var(--hunt-gold-deep) 52%,
+      var(--hunt-gold) 74%,
+      var(--hunt-gold-shade) 100%
+    );
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 .app-topbar .screen-reader-text,
@@ -280,8 +305,7 @@ html[data-theme="day"] .app-topbar__brand .custom-logo {
   align-items: center;
   justify-content: flex-end;
   gap: 0.4rem;
-  min-width: 0;
-  margin-left: auto;
+  margin-left: 0;
 }
 
 .app-topbar__team,
@@ -2127,26 +2151,17 @@ html[data-theme="day"] .home-enigmas-preserve {
   }
 
   .app-topbar__hunt {
-    gap: 0.6rem;
-    max-width: 18rem;
-    min-height: 2.85rem;
-    padding: 0.35rem 0.95rem 0.35rem 0.4rem;
-    border-radius: 1rem;
+    gap: 0.34rem;
   }
 
-  .app-topbar__hunt-mark {
-    width: 2.15rem;
-    height: 2.15rem;
-    border-radius: 0.55rem;
-  }
-
-  .app-topbar__hunt-mark svg {
-    width: 1.2rem;
-    height: 1.2rem;
+  .app-topbar__hunt::after {
+    width: min(6.5rem, 72%);
   }
 
   .app-topbar__hunt-title {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
+    letter-spacing: 0.2em;
+    text-indent: 0.2em;
   }
 
   .app-topbar__meta {
@@ -2317,6 +2332,12 @@ html[data-theme="day"] .home-enigmas-preserve {
 
   .app-topbar__meta {
     gap: 1.35rem;
+  }
+
+  .app-topbar__hunt-title {
+    font-size: 1.35rem;
+    letter-spacing: 0.22em;
+    text-indent: 0.22em;
   }
 
   .app-topbar__team {
