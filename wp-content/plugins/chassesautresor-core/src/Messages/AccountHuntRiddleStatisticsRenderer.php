@@ -229,12 +229,6 @@ final class AccountHuntRiddleStatisticsRenderer
         }
         $html .= $this->stepsBlock($row, $engaged);
         $html .= $this->seriesChart($row);
-        $ranking = $this->rankingLabel((array) ($row['ranking'] ?? []));
-        if ($ranking !== '—') {
-            $html .= '<p class="progression-ranking"><span>'
-                . esc_html(__('Classement', 'chassesautresor-com')) . '</span> '
-                . esc_html($ranking) . '</p>';
-        }
         $html .= '</li>';
 
         return $html;
@@ -705,60 +699,6 @@ final class AccountHuntRiddleStatisticsRenderer
         $percent = (int) round((100 * $success) / $total);
 
         return $success . '/' . $total . ' · ' . $percent . ' %';
-    }
-
-    /** @param array<int, array<string, mixed>> $ranking */
-    private function rankingLabel(array $ranking): string
-    {
-        if ($ranking === []) {
-            return '—';
-        }
-
-        $parts = [];
-        foreach (array_values($ranking) as $index => $solver) {
-            $name = trim((string) ($solver['username'] ?? ''));
-            if ($name === '') {
-                continue;
-            }
-            $label = ($index + 1) . '. ' . $name;
-            $details = [];
-            if (array_key_exists('tentatives', $solver)) {
-                $attempts = (int) $solver['tentatives'];
-                $details[] = sprintf(
-                    _n('%d tentative', '%d tentatives', $attempts, 'chassesautresor-com'),
-                    $attempts
-                );
-            }
-            $date = $this->formatDate((string) ($solver['date'] ?? ''));
-            if ($date !== '') {
-                $details[] = $date;
-            }
-            if ($details !== []) {
-                $label .= ' (' . implode(', ', $details) . ')';
-            }
-            $parts[] = $label;
-        }
-
-        return $parts === [] ? '—' : implode(' · ', $parts);
-    }
-
-    private function formatDate(string $value): string
-    {
-        $value = trim($value);
-        if ($value === '') {
-            return '';
-        }
-
-        $timestamp = strtotime($value);
-        if ($timestamp === false) {
-            return '';
-        }
-
-        if (function_exists('wp_date')) {
-            return (string) wp_date('d/m/Y', $timestamp);
-        }
-
-        return date('d/m/Y', $timestamp);
     }
 
     private function emptyCard(string $title, string $message): string

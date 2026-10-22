@@ -7,6 +7,14 @@ namespace ChassesAuTresor\Core\Teams;
 /** HTML of the Équipe page. Machine codes from the service become sentences here. */
 final class TeamPageRenderer
 {
+    public function __construct(?callable $imageUrl = null, string $icon = '')
+    {
+        if ($imageUrl !== null) {
+            $this->imageUrl = $imageUrl;
+        }
+        $this->icon = str_contains($icon, '<svg') ? $icon : '';
+    }
+
     /**
      * @param array<string, mixed> $view
      * @param callable(int): string $imageUrl
@@ -30,6 +38,9 @@ final class TeamPageRenderer
             $this->entryForms((int) ($view['max'] ?? TeamSettings::DEFAULT));
         } else {
             $this->personalCard($team);
+            if (is_array($view['performance'] ?? null)) {
+                $this->performance((array) $view['performance']);
+            }
         }
         if (!empty($view['manager'])) {
             $directory = is_array($view['directory'] ?? null) ? $view['directory'] : [];
@@ -164,6 +175,134 @@ final class TeamPageRenderer
         echo esc_html__('Quitter', 'chassesautresor-com');
         echo '</button></form>';
         echo '</div></section>';
+    }
+
+    /** @param array<string, mixed> $performance */
+    private function performance(array $performance): void
+    {
+        $ajax = is_array($performance['ajax'] ?? null) ? (array) $performance['ajax'] : [];
+        echo '<section class="equipe-performance" aria-labelledby="equipe-performance-title"';
+        if ($ajax !== []) {
+            echo ' data-team-performance data-ajax-url="' . esc_url((string) ($ajax['url'] ?? '')) . '"';
+            echo ' data-nonce="' . esc_attr((string) ($ajax['nonce'] ?? '')) . '"';
+            echo ' data-hunt-id="' . esc_attr((string) (int) ($performance['hunt_id'] ?? 0)) . '"';
+            echo ' data-error-message="'
+                . esc_attr__('Impossible de charger le classement.', 'chassesautresor-com') . '"';
+        }
+        echo '>';
+        echo '<h2 id="equipe-performance-title">'
+            . esc_html__('Progression de l’équipe', 'chassesautresor-com') . '</h2>';
+        $hunts = (array) ($performance['hunts'] ?? []);
+        if (count($hunts) > 1) {
+            echo '<nav class="progression-hunts" aria-label="'
+                . esc_attr__('Chasse affichée', 'chassesautresor-com') . '">';
+            foreach ($hunts as $hunt) {
+                $huntId = (int) ($hunt['id'] ?? 0);
+                echo '<a class="progression-hunts__link" href="'
+                    . esc_url((string) ($hunt['url'] ?? '')) . '"'
+                    . ($huntId === (int) ($performance['hunt_id'] ?? 0) ? ' aria-current="page"' : '')
+                    . '>' . esc_html((string) ($hunt['title'] ?? '')) . '</a>';
+            }
+            echo '</nav>';
+        }
+        echo '<div class="equipe-performance__layout"><div class="equipe-performance__summary">';
+        echo '<article class="equipe-performance__primary"><p class="team-stat__label">'
+            . esc_html__('Résolues', 'chassesautresor-com') . '</p><p class="team-stat__value">'
+            . esc_html((string) (int) ($performance['resolved'] ?? 0) . '/'
+                . (string) (int) ($performance['resolvable'] ?? 0)) . '</p></article>';
+        echo '<div class="equipe-performance__compact">';
+        $cards = [
+            [__('Commencées', 'chassesautresor-com'), (int) ($performance['started'] ?? 0)],
+            [__('Tentatives', 'chassesautresor-com'), (int) ($performance['attempts'] ?? 0)],
+            [__('Indices', 'chassesautresor-com'), (int) ($performance['hints'] ?? 0)],
+        ];
+        foreach ($cards as [$label, $value]) {
+            echo '<article><p class="team-stat__label">' . esc_html($label)
+                . '</p><p class="team-stat__value">' . esc_html((string) $value) . '</p></article>';
+        }
+        echo '</div></div><section class="equipe-ranking" aria-labelledby="equipe-ranking-title">';
+        echo '<h3 id="equipe-ranking-title">' . esc_html__('Classement des équipes', 'chassesautresor-com')
+            . '</h3><div data-team-ranking>';
+        echo $this->ranking((array) ($performance['leaderboard'] ?? []));
+        echo '</div></section></div>';
+        $this->memberProgress((array) ($performance['members'] ?? []));
+        echo '</section>';
+    }
+
+    /** @param array<int, array<string, mixed>> $members */
+    private function memberProgress(array $members): void
+    {
+        if ($members === []) {
+            return;
+        }
+
+        echo '<section class="equipe-contributions" aria-labelledby="equipe-contributions-title">';
+        echo '<h3 id="equipe-contributions-title">'
+            . esc_html__('Progression des membres', 'chassesautresor-com') . '</h3><ul>';
+        foreach ($members as $member) {
+            $userId = (int) ($member['user_id'] ?? 0);
+            echo '<li>' . $this->userAvatar($userId, 38) . '<strong>'
+                . esc_html((string) ($member['username'] ?? '')) . '</strong><span>'
+                . esc_html(sprintf(
+                    _n(
+                        '%d énigme résolue',
+                        '%d énigmes résolues',
+                        (int) ($member['resolved'] ?? 0),
+                        'chassesautresor-com'
+                    ),
+                    (int) ($member['resolved'] ?? 0)
+                )) . '</span></li>';
+        }
+        echo '</ul></section>';
+    }
+
+    /** @param array<string, mixed> $view */
+    public function ranking(array $view): string
+    {
+        $rows = (array) ($view['rows'] ?? []);
+        $page = max(1, (int) ($view['page'] ?? 1));
+        $pages = max(1, (int) ($view['pages'] ?? 1));
+        $currentTeamId = (int) ($view['current_team_id'] ?? 0);
+        $position = (int) ($view['current_position'] ?? 0);
+        ob_start();
+        if ($rows === []) {
+            echo '<p class="equipe-note">' . esc_html__('Aucune équipe classée.', 'chassesautresor-com') . '</p>';
+        } else {
+            echo '<ol class="equipe-ranking__list" start="' . esc_attr((string) (($page - 1) * 10 + 1)) . '">';
+            foreach ($rows as $index => $row) {
+                $teamId = (int) ($row['team_id'] ?? 0);
+                echo '<li' . ($teamId === $currentTeamId ? ' class="is-current"' : '') . '>';
+                echo '<span class="equipe-ranking__rank">'
+                    . esc_html((string) ((($page - 1) * 10) + $index + 1)) . '</span>';
+                echo $this->teamAvatar((int) ($row['image_id'] ?? 0));
+                echo '<span class="equipe-ranking__identity"><strong>'
+                    . esc_html((string) ($row['team_name'] ?? '')) . '</strong><small>'
+                    . esc_html(sprintf(
+                        _n(
+                            '%d membre',
+                            '%d membres',
+                            (int) ($row['members'] ?? 0),
+                            'chassesautresor-com'
+                        ),
+                        (int) ($row['members'] ?? 0)
+                    )) . '</small></span>';
+                $resolved = (int) ($row['resolved'] ?? 0);
+                echo '<span class="equipe-ranking__score">' . esc_html(sprintf(
+                    _n('%d résolue', '%d résolues', $resolved, 'chassesautresor-com'),
+                    $resolved
+                )) . '</span></li>';
+            }
+            echo '</ol>';
+        }
+        if ($position > 0 && ($position < (($page - 1) * 10 + 1) || $position > $page * 10)) {
+            echo '<p class="equipe-ranking__position">' . esc_html(sprintf(
+                __('Votre équipe : %de', 'chassesautresor-com'),
+                $position
+            )) . '</p>';
+        }
+        echo $this->rankingPager($page, $pages);
+
+        return trim((string) ob_get_clean());
     }
 
     /**
@@ -373,6 +512,61 @@ final class TeamPageRenderer
         echo '</label>';
         echo '<input id="' . esc_attr($id) . '" name="equipe_image" type="file"';
         echo ' accept="image/jpeg,image/png,image/gif,image/webp">';
+    }
+
+    private function userAvatar(int $userId, int $size): string
+    {
+        if ($userId > 0 && function_exists('get_avatar')) {
+            return (string) get_avatar(
+                $userId,
+                $size,
+                '',
+                '',
+                ['class' => 'progression-avatar', 'loading' => 'lazy']
+            );
+        }
+
+        return '<span class="progression-avatar progression-avatar--empty" aria-hidden="true"></span>';
+    }
+
+    private function teamAvatar(int $imageId): string
+    {
+        $url = $imageId > 0 && isset($this->imageUrl)
+            ? (string) ($this->imageUrl)($imageId)
+            : '';
+        if ($url !== '') {
+            return '<img class="progression-avatar" src="' . esc_url($url) . '" alt="">';
+        }
+
+        return '<span class="progression-avatar progression-avatar--empty" aria-hidden="true">'
+            . $this->icon . '</span>';
+    }
+
+    private function rankingPager(int $page, int $pages): string
+    {
+        if ($pages <= 1) {
+            return '';
+        }
+
+        $html = '<nav class="equipe-ranking__pager" aria-label="'
+            . esc_attr__('Pages du classement des équipes', 'chassesautresor-com') . '">';
+        $html .= '<button type="button" data-team-ranking-page="' . esc_attr((string) max(1, $page - 1)) . '"'
+            . ($page <= 1 ? ' disabled' : '') . '>&lsaquo;</button>';
+        for ($number = 1; $number <= $pages; $number++) {
+            if ($pages > 7 && abs($number - $page) > 2 && $number !== 1 && $number !== $pages) {
+                if ($number === 2 || $number === $pages - 1) {
+                    $html .= '<span aria-hidden="true">…</span>';
+                }
+                continue;
+            }
+            $html .= '<button type="button" data-team-ranking-page="' . esc_attr((string) $number) . '"'
+                . ($number === $page ? ' aria-current="page"' : '') . '>'
+                . esc_html((string) $number) . '</button>';
+        }
+        $html .= '<button type="button" data-team-ranking-page="' . esc_attr((string) min($pages, $page + 1)) . '"'
+            . ($page >= $pages ? ' disabled' : '') . '>&rsaquo;</button></nav>';
+
+        return $html;
     }
 
     private function submit(string $label, string $class): void

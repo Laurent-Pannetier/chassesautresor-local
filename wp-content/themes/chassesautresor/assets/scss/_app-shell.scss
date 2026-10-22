@@ -1044,6 +1044,332 @@ html[data-theme="day"] .home-enigmas-preserve {
   text-decoration: none;
 }
 
+.progression-overview,
+.equipe-performance__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.player-summary,
+.progression-leaderboard,
+.equipe-performance__summary,
+.equipe-ranking {
+  min-width: 0;
+}
+
+.player-summary__primary,
+.player-summary__mini,
+.progression-leaderboard,
+.equipe-performance__primary,
+.equipe-performance__compact article,
+.equipe-ranking {
+  border: 1px solid var(--shell-border);
+  border-radius: 1rem;
+  background: var(--shell-card-background);
+  box-shadow: var(--shell-shadow);
+}
+
+.player-summary__primary,
+.equipe-performance__primary {
+  min-height: 9rem;
+  padding: 1.15rem;
+}
+
+.player-summary__primary .team-stat__value,
+.equipe-performance__primary .team-stat__value {
+  margin-top: 1.35rem;
+  font-size: clamp(2.4rem, 9vw, 4rem);
+}
+
+.player-summary__compact,
+.equipe-performance__compact {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.player-summary__mini,
+.equipe-performance__compact article {
+  min-width: 0;
+  padding: 0.75rem;
+}
+
+.player-summary__mini .team-stat__value,
+.equipe-performance__compact .team-stat__value {
+  margin-top: 0.6rem;
+  font-size: 1.4rem;
+}
+
+.progression-leaderboard,
+.equipe-ranking {
+  padding: 1rem;
+}
+
+.progression-leaderboard h2,
+.equipe-ranking h3,
+.equipe-contributions h3,
+.progression-riddle__leaders h4 {
+  margin: 0 0 0.75rem;
+  color: var(--shell-text);
+  font-size: 1rem;
+}
+
+.progression-ranking-list,
+.progression-riddle__leaders ol,
+.equipe-ranking__list,
+.equipe-contributions ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progression-ranking-list__item,
+.equipe-ranking__list li {
+  display: grid;
+  grid-template-columns: 1.5rem 2.5rem minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.7rem;
+}
+
+.progression-ranking-list__item + .progression-ranking-list__item,
+.equipe-ranking__list li + li {
+  border-top: 1px solid var(--shell-border);
+}
+
+.progression-ranking-list__item.is-current,
+.equipe-ranking__list li.is-current {
+  background: color-mix(in srgb, var(--shell-accent) 12%, transparent);
+}
+
+.progression-ranking-list__rank,
+.equipe-ranking__rank {
+  color: var(--shell-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.progression-avatar {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--shell-surface-2);
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.progression-avatar svg {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+.progression-ranking-list__identity,
+.equipe-ranking__identity,
+.progression-riddle__leaders li > span,
+.equipe-contributions li > strong {
+  min-width: 0;
+}
+
+.progression-ranking-list__identity strong,
+.progression-ranking-list__identity small,
+.equipe-ranking__identity strong,
+.equipe-ranking__identity small,
+.progression-riddle__leaders strong,
+.progression-riddle__leaders small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progression-ranking-list__identity strong,
+.equipe-ranking__identity strong,
+.progression-riddle__leaders strong {
+  color: var(--shell-text);
+  font-size: 0.86rem;
+}
+
+.progression-ranking-list__identity small,
+.equipe-ranking__identity small,
+.progression-riddle__leaders small {
+  margin-top: 0.1rem;
+  color: var(--shell-muted);
+  font-size: 0.7rem;
+}
+
+.progression-ranking-list__score,
+.equipe-ranking__score {
+  color: var(--shell-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.progression-leaderboard__position,
+.equipe-ranking__position {
+  margin: 0.75rem 0 0;
+  color: var(--shell-accent-strong);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.progression-leaderboard__pager,
+.equipe-ranking__pager,
+.progression-attempts__pager {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.8rem;
+}
+
+.progression-leaderboard__pager button,
+.equipe-ranking__pager button,
+.progression-attempts__pager button,
+.progression-riddle__submissions {
+  min-height: 2.15rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.progression-leaderboard__pager button[aria-current="page"],
+.equipe-ranking__pager button[aria-current="page"] {
+  border-color: transparent;
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+}
+
+.progression-leaderboard__pager button:disabled,
+.equipe-ranking__pager button:disabled,
+.progression-attempts__pager button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.progression-riddle__personal {
+  display: grid;
+  grid-template-columns: minmax(5.5rem, 7rem) minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.progression-riddle__thumbnail {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.8rem;
+  background: var(--shell-surface-2);
+  color: var(--shell-accent);
+  font-size: 2rem;
+  font-weight: 800;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.progression-riddle__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.progression-riddle__content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.progression-riddle__submissions {
+  align-self: flex-start;
+  border-color: var(--shell-accent);
+  color: var(--shell-accent-strong);
+}
+
+.progression-riddle__leaders {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--shell-border);
+}
+
+.progression-riddle__leaders ol {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.progression-riddle__leaders li {
+  display: grid;
+  grid-template-columns: 2.15rem minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.progression-riddle__leaders .progression-avatar {
+  width: 2.15rem;
+  height: 2.15rem;
+}
+
+.progression-riddle__leaders em {
+  color: var(--shell-muted);
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.progression-riddle__attempts {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--shell-border);
+}
+
+.progression-attempts__table-wrap {
+  overflow-x: auto;
+}
+
+.progression-attempts__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.progression-attempts__table th,
+.progression-attempts__table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--shell-border);
+  text-align: left;
+}
+
+.progression-attempts__result {
+  font-weight: 700;
+}
+
+.progression-attempts__result--bon,
+.progression-attempts__result--variante {
+  color: var(--shell-accent-strong);
+}
+
+.progression-attempts__result--attente {
+  color: var(--shell-icon-progression);
+}
+
+.progression-ajax-error {
+  color: var(--shell-danger);
+}
+
 .progression-intro,
 .progression-note,
 .progression-hint,
@@ -1160,8 +1486,7 @@ html[data-theme="day"] .home-enigmas-preserve {
   gap: 0.1rem;
 }
 
-.progression-figures dt,
-.progression-ranking span {
+.progression-figures dt {
   margin: 0;
   color: var(--shell-muted);
   font-size: 0.75rem;
@@ -1296,18 +1621,6 @@ html[data-theme="day"] .home-enigmas-preserve {
 .progression-series text {
   fill: var(--shell-muted);
   font-size: 11px;
-}
-
-.progression-ranking {
-  margin: 0;
-  color: var(--shell-text);
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
-.progression-ranking span {
-  display: block;
-  margin-bottom: 0.2rem;
 }
 
 .app-placeholder {
@@ -1506,6 +1819,23 @@ html[data-theme="day"] .home-enigmas-preserve {
 
   .team-stats__grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .progression-overview,
+  .equipe-performance__layout {
+    grid-template-columns: minmax(15rem, 0.8fr) minmax(24rem, 1.5fr);
+  }
+
+  .progression-riddle__personal {
+    grid-template-columns: 9rem minmax(0, 1fr);
+  }
+
+  .progression-riddle__metrics {
+    grid-template-columns: repeat(2, minmax(8rem, 12rem));
+  }
+
+  .progression-riddle__leaders ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .progression-steps-chart__row {
@@ -1795,7 +2125,7 @@ body.admin-bar.shell-edition .app-sidebar {
 }
 
 .app-equipe {
-  max-width: 46rem;
+  max-width: 74rem;
   padding: 0.25rem 0 2rem;
 }
 
@@ -1958,6 +2288,61 @@ body.admin-bar.shell-edition .app-sidebar {
   letter-spacing: 0.08em;
 }
 
+.equipe-performance {
+  margin-top: 1.25rem;
+}
+
+.equipe-performance > h2 {
+  margin: 0 0 0.8rem;
+  color: var(--shell-text);
+  font-size: 1.2rem;
+}
+
+.equipe-performance > .progression-hunts {
+  margin-bottom: 0.8rem;
+}
+
+.equipe-contributions {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 1rem;
+  background: var(--shell-card-background);
+}
+
+.equipe-contributions ul {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.equipe-contributions li {
+  display: grid;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.35rem 0;
+}
+
+.equipe-contributions .progression-avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+.equipe-contributions strong {
+  overflow: hidden;
+  color: var(--shell-text);
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.equipe-contributions li > span {
+  color: var(--shell-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 @media (--bp-small) {
   .equipe-grid--split {
     grid-template-columns: 1fr 1fr;
@@ -1965,5 +2350,9 @@ body.admin-bar.shell-edition .app-sidebar {
 
   .equipe-hero {
     flex-direction: row;
+  }
+
+  .equipe-contributions ul {
+    grid-template-columns: 1fr 1fr;
   }
 }

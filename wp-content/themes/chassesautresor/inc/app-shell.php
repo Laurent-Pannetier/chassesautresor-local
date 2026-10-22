@@ -327,12 +327,17 @@ function cta_shell_render_team_stats(): void
 
     global $wpdb;
     $overview = (new \ChassesAuTresor\Core\Progress\PlayerProgressionApplicationService(
-        new \ChassesAuTresor\Core\Progress\ProgressionOverviewRepository($wpdb)
+        new \ChassesAuTresor\Core\Progress\ProgressionOverviewRepository($wpdb),
+        new \ChassesAuTresor\Core\Progress\PlayerProgressionRepository($wpdb)
     ))->build($user_id, $hunt_id);
     echo (new \ChassesAuTresor\Core\Messages\PlayerProgressionRenderer())->render(
         $overview,
         $hunts,
-        $hunt_id
+        $hunt_id,
+        [
+            'url' => function_exists('admin_url') ? admin_url('admin-ajax.php') : '',
+            'nonce' => function_exists('wp_create_nonce') ? wp_create_nonce('cat_player_progression') : '',
+        ]
     );
 }
 
@@ -418,6 +423,32 @@ function cta_shell_enqueue(): void
         (string) filemtime($path),
         true
     );
+
+    if (function_exists('cta_shell_request_slug') && cta_shell_request_slug() === 'progression') {
+        $progressionPath = get_stylesheet_directory() . '/assets/js/player-progression.js';
+        if (file_exists($progressionPath)) {
+            wp_enqueue_script(
+                'cta-player-progression',
+                get_stylesheet_directory_uri() . '/assets/js/player-progression.js',
+                [],
+                (string) filemtime($progressionPath),
+                true
+            );
+        }
+    }
+
+    if (function_exists('cta_shell_request_slug') && cta_shell_request_slug() === 'equipe') {
+        $teamPath = get_stylesheet_directory() . '/assets/js/team-performance.js';
+        if (file_exists($teamPath)) {
+            wp_enqueue_script(
+                'cta-team-performance',
+                get_stylesheet_directory_uri() . '/assets/js/team-performance.js',
+                [],
+                (string) filemtime($teamPath),
+                true
+            );
+        }
+    }
 }
 add_action('wp_enqueue_scripts', 'cta_shell_enqueue');
 

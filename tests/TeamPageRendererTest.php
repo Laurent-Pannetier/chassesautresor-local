@@ -46,6 +46,12 @@ if (!function_exists('esc_url')) {
         return (string) $url;
     }
 }
+if (!function_exists('_n')) {
+    function _n($single, $plural, $number, $domain = null)
+    {
+        return (int) $number === 1 ? $single : $plural;
+    }
+}
 
 final class TeamPageRendererTest extends TestCase
 {
@@ -96,6 +102,50 @@ final class TeamPageRendererTest extends TestCase
         self::assertStringContainsString('Exclure', $html);
         self::assertStringContainsString('name="equipe_max"', $html);
         self::assertStringNotContainsString('nope', $html);
+    }
+
+    public function testItRendersTeamPerformanceWithoutInternalTieBreakData(): void
+    {
+        $service = $this->service();
+        $service->create(new TeamActor(1, false), 'Alpha', null);
+        $view = $service->describe(new TeamActor(1, false));
+        $view['performance'] = [
+            'hunt_id' => 12,
+            'resolved' => 2,
+            'resolvable' => 4,
+            'started' => 3,
+            'attempts' => 9,
+            'hints' => 1,
+            'members' => [['user_id' => 1, 'username' => 'J1', 'resolved' => 2]],
+            'leaderboard' => [
+                'rows' => [[
+                    'team_id' => 1,
+                    'team_name' => 'Alpha',
+                    'members' => 1,
+                    'resolved' => 2,
+                    'reached_at' => '2026-10-01 10:00:00',
+                ]],
+                'page' => 1,
+                'pages' => 1,
+                'current_team_id' => 1,
+                'current_position' => 1,
+            ],
+        ];
+
+        $html = (new TeamPageRenderer())->render(
+            $view,
+            '',
+            '/equipe/',
+            static fn (int $id): string => '',
+            '<svg></svg>'
+        );
+
+        self::assertStringContainsString('Progression de l’équipe', $html);
+        self::assertStringContainsString('2/4', $html);
+        self::assertStringContainsString('Classement des équipes', $html);
+        self::assertStringContainsString('Progression des membres', $html);
+        self::assertStringNotContainsString('2026-10-01', $html);
+        self::assertStringNotContainsString('reached_at', $html);
     }
 
     public function testTheShellOpensTheTeamPageAfterTrophies(): void

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use ChassesAuTresor\Core\Progress\PlayerProgressionApplicationService;
+use ChassesAuTresor\Core\Progress\PlayerProgressionRepository;
 use ChassesAuTresor\Core\Progress\ProgressionOverviewRepository;
 use PHPUnit\Framework\TestCase;
 
@@ -10,8 +11,10 @@ require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Progress/ProgressionOverviewRepository.php';
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Progress/PlayerProgressionApplicationService.php';
+require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Progress/PlayerProgressionRepository.php';
 
-final class PlayerProgressionRepositoryStub extends ProgressionOverviewRepository
+final class PlayerProgressionDashboardStub extends ProgressionOverviewRepository
 {
     public function __construct()
     {
@@ -43,11 +46,48 @@ final class PlayerProgressionRepositoryStub extends ProgressionOverviewRepositor
     }
 }
 
+final class PlayerProgressionDataStub extends PlayerProgressionRepository
+{
+    public function __construct()
+    {
+    }
+
+    public function riddleLeaders(int $riddleId, array $excludedUserIds, int $limit = 3): array
+    {
+        return $riddleId === 40
+            ? [['user_id' => 8, 'username' => 'Alice', 'team_name' => 'Corsaires', 'solved' => 1]]
+            : [];
+    }
+
+    public function countHuntLeaderboardPlayers(int $huntId, array $riddleIds, array $excludedUserIds): int
+    {
+        return 1;
+    }
+
+    public function huntLeaderboard(
+        int $huntId,
+        array $riddleIds,
+        array $excludedUserIds,
+        int $limit,
+        int $offset
+    ): array {
+        return [['user_id' => 7, 'username' => 'Bob', 'team_name' => '', 'resolved' => 1]];
+    }
+
+    public function huntPosition(int $userId, int $huntId, array $riddleIds, array $excludedUserIds): int
+    {
+        return 1;
+    }
+}
+
 final class PlayerProgressionApplicationServiceTest extends TestCase
 {
     public function testBuildsPersonalIndicatorsAndRiddleRows(): void
     {
-        $service = new PlayerProgressionApplicationService(new PlayerProgressionRepositoryStub());
+        $service = new PlayerProgressionApplicationService(
+            new PlayerProgressionDashboardStub(),
+            new PlayerProgressionDataStub()
+        );
         $overview = $service->build(
             7,
             12,
@@ -78,11 +118,16 @@ final class PlayerProgressionApplicationServiceTest extends TestCase
         self::assertSame('2026-10-03 09:00:00', $overview['riddles'][0]['last_activity']);
         self::assertSame('non_commencee', $overview['riddles'][1]['status']);
         self::assertSame(0, $overview['riddles'][1]['attempts']);
+        self::assertSame('Alice', $overview['riddles'][0]['leaders'][0]['username']);
+        self::assertSame('Bob', $overview['leaderboard']['rows'][0]['username']);
     }
 
     public function testMissingPlayerOrHuntStaysEmpty(): void
     {
-        $service = new PlayerProgressionApplicationService(new PlayerProgressionRepositoryStub());
+        $service = new PlayerProgressionApplicationService(
+            new PlayerProgressionDashboardStub(),
+            new PlayerProgressionDataStub()
+        );
 
         self::assertSame([], $service->build(0, 12)['riddles']);
         self::assertSame(0, $service->build(7, 0)['hints']);
