@@ -154,6 +154,9 @@ final class ShellEditionUrlTest extends TestCase
         self::assertStringNotContainsString("'edition' => 'open'", $lifecycle);
         self::assertStringNotContainsString("'edition' => 'open'", $messages);
         self::assertStringContainsString('organisateur-tab-revenus', $tabs);
+        $modal = (string) file_get_contents($theme . '/template-parts/modals/modal-conversion.php');
+        self::assertStringNotContainsString('render_conversion_modal_content', $modal);
+        self::assertStringContainsString('ConversionModalRenderer', $modal);
         self::assertFileDoesNotExist(
             $theme . '/template-parts/organisateur/panneaux/organisateur-edition-description.php'
         );

@@ -251,9 +251,15 @@ $is_complete = (
                             <?php if ($inlineDescription) : ?>
                                 <div class="champ-texte-editeur" hidden>
                                     <?php
-                                    $prepareDescription = static function (array $field): array {
-                                        $class = trim(($field['wrapper']['class'] ?? '') . ' acf-hide-label');
-                                        $field['wrapper']['class'] = $class;
+                                    $prepareDescription = static function ($field) {
+                                        if (!is_array($field)) {
+                                            return $field;
+                                        }
+                                        $wrapperClass = $field['wrapper']['class'] ?? '';
+                                        if (!is_string($wrapperClass)) {
+                                            $wrapperClass = '';
+                                        }
+                                        $field['wrapper']['class'] = trim($wrapperClass . ' acf-hide-label');
                                         $field['delay'] = 1;
 
                                         return $field;
