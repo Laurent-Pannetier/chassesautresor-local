@@ -103,7 +103,6 @@ final class RiddleStatisticsOverviewTest extends TestCase
         $rows = $service->overviewForHunt(
             12,
             'total',
-            5,
             static fn (int $huntId): array => $huntId === 12 ? [40] : [],
             static fn (int $riddleId): array => $riddleId === 40 ? [101, 102] : [],
             static fn (int $riddleId): int => $riddleId === 40 ? 1 : 0
@@ -117,6 +116,6 @@ final class RiddleStatisticsOverviewTest extends TestCase
         self::assertSame(2, $rows[0]['trouves']);
         self::assertSame(2, $rows[0]['steps']);
         self::assertSame(1, $rows[0]['step_players']);
-        self::assertSame('alice', $rows[0]['ranking'][0]['username']);
+        self::assertArrayNotHasKey('ranking', $rows[0]);
     }
 }

@@ -17,6 +17,7 @@ use DateTimeZone;
 final class StatisticsFixtureService
 {
     public const PLAYER_COUNT = 48;
+    public const TEAM_COUNT = 8;
     public const LOGIN_PREFIX = 'fixture-stats-';
     public const META_KEY = '_cat_stats_fixture';
     public const HUNT_META = '_cat_stats_fixture_hunt';
@@ -102,10 +103,17 @@ final class StatisticsFixtureService
         $this->rows = 0;
         $this->unlocked = [];
         $now = $this->clock();
+        if (!$this->seedTeams($userIds, $now->format('Y-m-d H:i:s'))) {
+            $this->purge();
+            return $this->failed('insert');
+        }
         $huntHints = $this->idList($catalog['hunt_hints'] ?? []);
         foreach ($userIds as $offset => $userId) {
             $profile = $offset % 8;
-            $moment = $this->moment($now, intdiv($offset, 8) % 4);
+            $moment = $this->shiftMoment(
+                $this->moment($now, intdiv($offset, 8) % 4),
+                -3 * ($offset % 8)
+            );
             $seeded = $this->seedPlayer($userId, $profile, $moment, $huntId, $riddles, $huntHints);
             if (!$seeded) {
                 $this->purge();
@@ -129,6 +137,16 @@ final class StatisticsFixtureService
         }
 
         $deleted = 0;
+        foreach ([
+            ['equipe_places', 'user_id'],
+            ['equipe_membres', 'user_id'],
+            ['equipes', 'created_by'],
+        ] as [$table, $column]) {
+            if (!$this->deleteByColumn($table, $column, $userIds)) {
+                return ['users' => 0, 'rows' => $deleted, 'error' => 'delete'];
+            }
+            $deleted += (int) $this->database->rows_affected;
+        }
         foreach ($this->activityTables() as $table) {
             if (!$this->deleteByUsers($table, $userIds)) {
                 return ['users' => 0, 'rows' => $deleted, 'error' => 'delete'];
@@ -153,6 +171,50 @@ final class StatisticsFixtureService
     private function failed(string $error): array
     {
         return ['users' => 0, 'rows' => 0, 'error' => $error];
+    }
+
+    /** @param int[] $userIds */
+    private function seedTeams(array $userIds, string $moment): bool
+    {
+        $membersPerTeam = 4;
+        for ($teamNumber = 1; $teamNumber <= self::TEAM_COUNT; $teamNumber++) {
+            $first = ($teamNumber - 1) * $membersPerTeam;
+            $teamUsers = array_slice($userIds, $first, $membersPerTeam);
+            if (count($teamUsers) !== $membersPerTeam) {
+                return false;
+            }
+
+            $teamId = $this->insertWithId('equipes', [
+                'nom' => sprintf('Équipe test %d', $teamNumber),
+                'nom_key' => sprintf('équipe test %d', $teamNumber),
+                'image_id' => null,
+                'join_code' => sprintf('TEST%04d', $teamNumber),
+                'created_by' => $teamUsers[0],
+                'created_at' => $moment,
+                'dissolved_at' => null,
+            ]);
+            if ($teamId <= 0) {
+                return false;
+            }
+
+            foreach ($teamUsers as $userId) {
+                if (!$this->insert('equipe_membres', [
+                    'equipe_id' => $teamId,
+                    'user_id' => $userId,
+                    'statut' => 'actif',
+                    'joined_at' => $moment,
+                    'left_at' => null,
+                    'excluded_by' => null,
+                ]) || !$this->insert('equipe_places', [
+                    'user_id' => $userId,
+                    'equipe_id' => $teamId,
+                ])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /** @return string[] */
@@ -201,8 +263,16 @@ final class StatisticsFixtureService
         }
 
         $sequence = 0;
-        foreach ($riddles as $riddle) {
-            if (!$this->seedRiddle($userId, $profile, $moment, $huntId, $riddle, $sequence)) {
+        foreach (array_values($riddles) as $riddleIndex => $riddle) {
+            if (!$this->seedRiddle(
+                $userId,
+                $profile,
+                $moment,
+                $huntId,
+                $riddle,
+                $riddleIndex,
+                $sequence
+            )) {
                 return false;
             }
         }
@@ -227,6 +297,7 @@ final class StatisticsFixtureService
         string $moment,
         int $huntId,
         array $riddle,
+        int $riddleIndex,
         int &$sequence
     ): bool {
         if ($profile < 1) {
@@ -234,10 +305,11 @@ final class StatisticsFixtureService
         }
 
         $riddleId = $riddle['id'];
+        $engagedAt = $this->shiftMoment($moment, -(45 + ($profile * 7) + ($riddleIndex * 5)));
         if (!$this->insert('engagements', [
             'user_id' => $userId,
             'enigme_id' => $riddleId,
-            'date_engagement' => $moment,
+            'date_engagement' => $engagedAt,
         ])) {
             return false;
         }
@@ -246,6 +318,7 @@ final class StatisticsFixtureService
         $reached = $this->reachedStepCount($profile, count($steps));
         for ($index = 0; $index < $reached; $index++) {
             $stepId = $steps[$index];
+            $stepMoment = $this->shiftMoment($engagedAt, 5 * ($index + 1));
             $progressUid = $this->uid($userId, $riddleId, $stepId, $sequence);
             $sequence++;
             if (!$this->insert('enigme_etapes_progression', [
@@ -253,17 +326,26 @@ final class StatisticsFixtureService
                 'enigme_id' => $riddleId,
                 'etape_id' => $stepId,
                 'statut' => 'trouvee',
-                'date_decouverte' => $moment,
+                'date_decouverte' => $stepMoment,
                 'tentative_uid' => $progressUid,
-                'created_at' => $moment,
-                'updated_at' => $moment,
+                'created_at' => $stepMoment,
+                'updated_at' => $stepMoment,
             ])) {
                 return false;
             }
 
             $results = $profile >= 4 && $index === 0 ? ['faux', 'bon'] : ['bon'];
-            foreach ($results as $result) {
-                $recorded = $this->attempt($userId, $riddleId, $stepId, $result, 0, $moment, $sequence);
+            foreach (array_values($results) as $resultIndex => $result) {
+                $attemptMoment = $this->shiftMoment($stepMoment, $resultIndex);
+                $recorded = $this->attempt(
+                    $userId,
+                    $riddleId,
+                    $stepId,
+                    $result,
+                    0,
+                    $attemptMoment,
+                    $sequence
+                );
                 $sequence++;
                 if (!$recorded) {
                     return false;
@@ -271,8 +353,10 @@ final class StatisticsFixtureService
             }
         }
 
-        foreach ($this->finalAttempts($profile, $riddle['validation']) as $result) {
-            $recorded = $this->attempt($userId, $riddleId, null, $result, 2, $moment, $sequence);
+        $finalAttempts = $this->finalAttempts($profile, $riddle['validation']);
+        foreach (array_values($finalAttempts) as $attemptIndex => $result) {
+            $attemptMoment = $this->shiftMoment($moment, -2 * (count($finalAttempts) - $attemptIndex - 1));
+            $recorded = $this->attempt($userId, $riddleId, null, $result, 2, $attemptMoment, $sequence);
             $sequence++;
             if (!$recorded) {
                 return false;
@@ -319,7 +403,7 @@ final class StatisticsFixtureService
             'user_id' => $userId,
             'enigme_id' => $riddleId,
             'etape_id' => $stepId,
-            'reponse_saisie' => 'fixture',
+            'reponse_saisie' => sprintf('Proposition test %d-%d-%d', $userId, $riddleId, $sequence),
             'resultat' => $result,
             'points_utilises' => $points,
             'date_tentative' => $moment,
@@ -454,17 +538,40 @@ final class StatisticsFixtureService
         return true;
     }
 
+    /** @param array<string,mixed> $data */
+    private function insertWithId(string $table, array $data): int
+    {
+        if (!$this->insert($table, $data)) {
+            return 0;
+        }
+
+        return max(0, (int) ($this->database->insert_id ?? 0));
+    }
+
     /** @param int[] $userIds */
     private function deleteByUsers(string $table, array $userIds): bool
     {
+        return $this->deleteByColumn($table, 'user_id', $userIds);
+    }
+
+    /** @param int[] $userIds */
+    private function deleteByColumn(string $table, string $column, array $userIds): bool
+    {
         $placeholders = implode(',', array_fill(0, count($userIds), '%d'));
         $sql = $this->database->prepare(
-            "DELETE FROM {$this->database->prefix}{$table} WHERE user_id IN ({$placeholders})",
+            "DELETE FROM {$this->database->prefix}{$table} WHERE {$column} IN ({$placeholders})",
             ...$userIds
         );
         $this->database->query($sql);
 
         return empty($this->database->last_error);
+    }
+
+    private function shiftMoment(string $moment, int $minutes): string
+    {
+        $date = new DateTimeImmutable($moment, new DateTimeZone('Europe/Paris'));
+
+        return $date->modify(($minutes >= 0 ? '+' : '') . $minutes . ' minutes')->format('Y-m-d H:i:s');
     }
 
     /**

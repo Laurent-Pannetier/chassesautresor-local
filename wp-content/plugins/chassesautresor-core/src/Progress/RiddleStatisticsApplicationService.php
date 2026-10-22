@@ -80,13 +80,11 @@ final class RiddleStatisticsApplicationService
      *     trouves:int,
      *     steps:int,
      *     step_players:int,
-     *     ranking:array<int, array{username:string, tentatives:int, date:string}>
      * }>
      */
     public function overviewForHunt(
         int $huntId,
         string $period = 'total',
-        int $rankingLimit = 5,
         ?callable $riddleIdsProvider = null,
         ?callable $stepIdsProvider = null,
         ?callable $stepPlayersProvider = null
@@ -121,13 +119,7 @@ final class RiddleStatisticsApplicationService
             }
 
             $summary = $this->summary($riddleId, $period);
-            $excluded = $this->excludedUserIds($riddleId);
             $stepIds = array_values(array_filter(array_map('intval', (array) $stepIdsProvider($riddleId))));
-            $ranking = array_slice(
-                $this->statistics->listSolvers($riddleId, $excluded),
-                0,
-                max(0, $rankingLimit)
-            );
 
             $rows[] = [
                 'id' => $riddleId,
@@ -137,14 +129,6 @@ final class RiddleStatisticsApplicationService
                 'trouves' => $this->statistics->countSolvedPlayers($riddleId),
                 'steps' => count($stepIds),
                 'step_players' => $stepIds === [] ? 0 : (int) $stepPlayersProvider($riddleId),
-                'ranking' => array_map(
-                    static fn (array $solver): array => [
-                        'username' => (string) ($solver['username'] ?? ''),
-                        'tentatives' => (int) ($solver['tentatives'] ?? 0),
-                        'date' => (string) ($solver['date'] ?? ''),
-                    ],
-                    $ranking
-                ),
             ];
         }
 

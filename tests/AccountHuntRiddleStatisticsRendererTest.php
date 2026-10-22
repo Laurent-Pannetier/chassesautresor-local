@@ -45,10 +45,6 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
             'trouves' => 2,
             'steps' => 3,
             'step_players' => 1,
-            'ranking' => [
-                ['username' => 'alice', 'tentatives' => 2],
-                ['username' => 'bob', 'tentatives' => 4],
-            ],
         ]] : [];
 
         $html = (new AccountHuntRiddleStatisticsRenderer($rowsProvider))->render(12);
@@ -59,7 +55,7 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         self::assertStringContainsString('4 joueurs engagés.', $html);
         self::assertStringContainsString('1 joueur a franchi au moins une étape.', $html);
         self::assertStringContainsString('2 joueurs ont résolu l’énigme.', $html);
-        self::assertStringContainsString('1. alice (2 tentatives) · 2. bob (4 tentatives)', $html);
+        self::assertStringNotContainsString('Classement', $html);
         self::assertStringNotContainsString('<table', $html);
         self::assertStringNotContainsString('progression-funnel', $html);
     }
@@ -139,9 +135,6 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
                 'trouves' => 2,
                 'steps' => 2,
                 'step_players' => 3,
-                'ranking' => [
-                    ['username' => 'alice', 'tentatives' => 2, 'date' => '2026-10-01 10:00:00'],
-                ],
                 'funnel' => [
                     'engaged' => 4,
                     'with_step' => 3,
@@ -195,7 +188,6 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         self::assertStringContainsString('Réponses finales par semaine', $html);
         self::assertStringContainsString('06/10', $html);
         self::assertStringContainsString('<polyline', $html);
-        self::assertStringContainsString('01/10/2026', $html);
         self::assertStringContainsString('Médiane pour résoudre', $html);
         self::assertStringContainsString('3 tentatives', $html);
         self::assertStringNotContainsString('progression-funnel', $html);
@@ -248,7 +240,6 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
                 'trouves' => 0,
                 'steps' => 9,
                 'step_players' => 0,
-                'ranking' => [],
                 'funnel' => [
                     'engaged' => 1,
                     'with_step' => 0,

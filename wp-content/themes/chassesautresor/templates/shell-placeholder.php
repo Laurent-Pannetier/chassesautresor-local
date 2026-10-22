@@ -45,6 +45,16 @@ if ($slug === 'equipe') :
     get_footer();
     return;
 endif;
+if ($slug === 'classement') :
+    ?>
+    <main class="app-classement" id="app-classement">
+        <h1 class="app-placeholder__title"><?php echo esc_html($title); ?></h1>
+        <?php get_template_part('template-parts/shell/classement'); ?>
+    </main>
+    <?php
+    get_footer();
+    return;
+endif;
 if ($slug === 'progression') :
     ?>
     <main class="app-progression" id="app-progression">

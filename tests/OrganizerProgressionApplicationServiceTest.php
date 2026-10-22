@@ -96,7 +96,6 @@ final class OrganizerProgressionApplicationServiceTest extends TestCase
                 'trouves' => 2,
                 'steps' => 1,
                 'step_players' => 3,
-                'ranking' => [],
             ]],
             static fn (): array => [
                 'participants' => 6,
