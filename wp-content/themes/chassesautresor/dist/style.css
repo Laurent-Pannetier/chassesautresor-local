@@ -19397,7 +19397,7 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .equipe-member {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
@@ -19407,10 +19407,16 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .equipe-member > span {
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.equipe-member form {
+.equipe-member .equipe-form {
   flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  width: auto;
   margin: 0;
 }
 
