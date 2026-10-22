@@ -29,16 +29,28 @@ class SolutionDisplayService {
 
         $availability = get_field('solution_disponibilite', $solution->ID) ?: 'fin_chasse';
         $publicationTime = get_field('solution_heure_publication', $solution->ID) ?: '00:00';
-        $baseDate = get_field('date_de_decouverte', $huntId)
-            ?: get_field('chasse_infos_date_fin', $huntId);
+        $winnerAnnounced = SolutionPublicationPlanner::winnerAnnounced($huntId);
+        $baseDate = get_field('chasse_cache_date_decouverte', $huntId)
+            ?: get_field('date_de_decouverte', $huntId);
+        if (!$baseDate) {
+            $baseDate = get_field('chasse_infos_date_fin', $huntId);
+        }
+
+        if ($baseDate instanceof \DateTimeInterface) {
+            $baseTimestamp = $baseDate->getTimestamp();
+        } else {
+            $baseTimestamp = $baseDate ? strtotime((string) $baseDate) : null;
+            $baseTimestamp = $baseTimestamp === false ? null : $baseTimestamp;
+        }
 
         return (new SolutionAvailabilityService())->isAvailable(
             (string) get_field('chasse_cache_statut', $huntId),
             (string) $availability,
-            $baseDate ? strtotime((string) $baseDate) : null,
+            $baseTimestamp,
             (int) get_field('solution_decalage_jours', $solution->ID),
             (string) $publicationTime,
-            (int) current_time('timestamp')
+            (int) current_time('timestamp'),
+            $winnerAnnounced
         );
     }
 }

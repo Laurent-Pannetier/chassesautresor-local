@@ -808,6 +808,18 @@ h2.hunt-edition-notice__title {
   line-height: 1.5;
 }
 
+.hunt-winner-notice {
+  box-sizing: border-box;
+  max-width: 42rem;
+  margin: 1rem auto 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .home-enigmas-preserve {
   background-color: #0b132b;
   background-image: url("../assets/svg/pattern-typographique.svg");

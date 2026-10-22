@@ -37,6 +37,11 @@ class SolutionAvailabilityServiceTest extends TestCase
         $this->assertTrue($this->isAvailable());
     }
 
+    public function testImmediateSolutionIsAvailableWhenAWinnerIsAnnounced(): void
+    {
+        $this->assertTrue($this->isAvailable(huntStatus: 'en_cours', winnerAnnounced: true));
+    }
+
     public function testDeferredSolutionIsHiddenBeforeTargetDate(): void
     {
         $this->assertFalse($this->isAvailable(
@@ -89,6 +94,14 @@ class SolutionAvailabilityServiceTest extends TestCase
         );
     }
 
+    public function testPublicationPlanReleasesImmediateSolutionWhenAWinnerIsAnnounced(): void
+    {
+        $this->assertSame(
+            ['state' => 'EN_COURS', 'target_timestamp' => null],
+            $this->service->getPublicationPlan('en_cours', 'fin_chasse', 0, '00:00', self::NOW, true)
+        );
+    }
+
     public function testDueSolutionQueryUsesCanonicalStateAndDate(): void
     {
         $args = $this->service->getDueSolutionIdsQueryArgs('2026-10-01 12:00:00');
@@ -105,7 +118,8 @@ class SolutionAvailabilityServiceTest extends TestCase
         string $availabilityMode = 'fin_chasse',
         ?int $baseTimestamp = null,
         int $delayDays = 0,
-        string $publicationTime = '00:00'
+        string $publicationTime = '00:00',
+        bool $winnerAnnounced = false
     ): bool {
         return $this->service->isAvailable(
             $huntStatus,
@@ -113,7 +127,8 @@ class SolutionAvailabilityServiceTest extends TestCase
             $baseTimestamp,
             $delayDays,
             $publicationTime,
-            self::NOW
+            self::NOW,
+            $winnerAnnounced
         );
     }
 }

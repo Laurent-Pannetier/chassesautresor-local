@@ -75,7 +75,8 @@ final class ProtectedSolutionAssetService
             );
         }
 
-        $huntFinished = get_field('chasse_cache_statut', $huntId) === 'termine';
+        $huntFinished = get_field('chasse_cache_statut', $huntId) === 'termine'
+            || \ChassesAuTresor\Core\Content\SolutionPublicationPlanner::winnerAnnounced($huntId);
         $riddleEngaged = $huntFinished
             && CoreServiceFactory::riddleEngagement($wpdb)->isEngaged($userId, $riddleId);
         $organizer = !$riddleEngaged && $this->isAssociatedOrganizer($userId, $huntId);

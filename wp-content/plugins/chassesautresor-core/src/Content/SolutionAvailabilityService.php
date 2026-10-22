@@ -17,9 +17,10 @@ class SolutionAvailabilityService
         string $availabilityMode,
         int $delayDays,
         string $publicationTime,
-        int $currentTimestamp
+        int $currentTimestamp,
+        bool $winnerAnnounced = false
     ): array {
-        if ($huntStatus !== 'termine') {
+        if (!$this->isReleased($huntStatus, $winnerAnnounced)) {
             return [
                 'state' => $availabilityMode === 'differee' ? 'FIN_CHASSE_DIFFERE' : 'FIN_CHASSE',
                 'target_timestamp' => null,
@@ -72,15 +73,21 @@ class SolutionAvailabilityService
         ];
     }
 
+    public function isReleased(string $huntStatus, bool $winnerAnnounced): bool
+    {
+        return $huntStatus === 'termine' || $winnerAnnounced;
+    }
+
     public function isAvailable(
         string $huntStatus,
         string $availabilityMode,
         ?int $baseTimestamp,
         int $delayDays,
         string $publicationTime,
-        int $currentTimestamp
+        int $currentTimestamp,
+        bool $winnerAnnounced = false
     ): bool {
-        if ($huntStatus !== 'termine') {
+        if (!$this->isReleased($huntStatus, $winnerAnnounced)) {
             return false;
         }
 

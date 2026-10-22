@@ -22,7 +22,8 @@ class HuntStatusService
         ?int $discoveryTimestamp,
         int $pointCost,
         bool $isUnlimited,
-        int $currentTimestamp
+        int $currentTimestamp,
+        bool $discoveryClosesHunt = true
     ): bool {
         return !in_array($currentStatus, self::VALID_STATUSES, true)
             || $currentStatus !== $this->calculate(
@@ -33,7 +34,8 @@ class HuntStatusService
                 $pointCost,
                 $isUnlimited,
                 $currentTimestamp,
-                $currentStatus
+                $currentStatus,
+                $discoveryClosesHunt
             );
     }
 
@@ -45,13 +47,16 @@ class HuntStatusService
         int $pointCost,
         bool $isUnlimited,
         int $currentTimestamp,
-        string $currentStatus = 'revision'
+        string $currentStatus = 'revision',
+        bool $discoveryClosesHunt = true
     ): string {
         if ($validationStatus !== 'valide') {
             return 'revision';
         }
 
-        if ($discoveryTimestamp !== null) {
+        // Automatic mode closes the hunt when a winner is recorded.
+        // Manual mode keeps it open: the discovery date is only an announcement.
+        if ($discoveryClosesHunt && $discoveryTimestamp !== null) {
             return 'termine';
         }
 

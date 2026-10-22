@@ -29,6 +29,42 @@ class HuntStatusServiceTest extends TestCase
         $this->assertSame('termine', $this->calculate('valide', 1_000, null, 1_500));
     }
 
+    public function testManualDiscoveryLeavesAFreeHuntOpen(): void
+    {
+        $this->assertSame(
+            'en_cours',
+            $this->service->calculate(
+                'valide',
+                1_000,
+                null,
+                1_500,
+                0,
+                false,
+                self::NOW,
+                'en_cours',
+                false
+            )
+        );
+    }
+
+    public function testManualDiscoveryLeavesAPaidHuntOpen(): void
+    {
+        $this->assertSame(
+            'payante',
+            $this->service->calculate(
+                'valide',
+                1_000,
+                null,
+                1_500,
+                50,
+                false,
+                self::NOW,
+                'payante',
+                false
+            )
+        );
+    }
+
     public function testExpiredHuntIsFinished(): void
     {
         $this->assertSame('termine', $this->calculate('valide', 1_000, 1_999));

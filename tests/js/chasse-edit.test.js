@@ -183,8 +183,15 @@ describe('chasse-edit UI', () => {
     const message = document.querySelector('.carte-arret-chasse .message-chasse-terminee');
     expect(message).not.toBeNull();
     expect(message.textContent).toContain('Alice');
-    expect(message.textContent).toContain('02/01/2024');
+    expect(message.textContent).toContain('🏆');
+    expect(message.textContent).not.toContain('La chasse continue');
     expect(document.querySelector('#chasse-tab-param .message-chasse-terminee')).not.toBeNull();
+    expect(global.modifierChampSimple).not.toHaveBeenCalledWith(
+      'champs_caches.chasse_cache_statut',
+      'termine',
+      '1',
+      'chasse'
+    );
   });
 
   test('start date toggle reveals datepicker when checked', () => {
