@@ -37,7 +37,7 @@ class RiddleSolutionFilePolicyService {
         }
 
         $timestamp = strtotime(
-            sprintf('+%d days %s', $delayDays, $publicationTime),
+            sprintf('%+d days %s', $delayDays, $publicationTime),
             $currentTimestamp
         );
         if ($timestamp === false) {

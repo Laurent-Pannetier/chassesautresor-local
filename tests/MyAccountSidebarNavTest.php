@@ -60,12 +60,14 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Trophées', 'Équipe', 'Profil', 'Règlement', 'Notifications'],
+            ['Accueil', 'Progression', 'Trophées', 'Équipe', 'Classement', 'Profil', 'Règlement', 'Notifications'],
             $labels
         );
         $this->assertSame('equipe', $items[3]['key']);
         $this->assertSame('primary', $items[3]['group']);
-        $this->assertSame('personal', $items[4]['group']);
+        $this->assertSame('classement', $items[4]['key']);
+        $this->assertSame('primary', $items[4]['group']);
+        $this->assertSame('personal', $items[5]['group']);
         $this->assertFalse(in_array('Points', $labels, true));
         $this->assertFalse(in_array('Statistiques', $labels, true));
         $this->assertFalse(in_array('Tentatives', $labels, true));
@@ -96,17 +98,46 @@ class MyAccountSidebarNavTest extends TestCase
         $labels = array_column($items, 'label');
 
         $this->assertSame(
-            ['Accueil', 'Progression', 'Trophées', 'Équipe', 'Outils', 'Profil', 'Règlement', 'Notifications'],
+            [
+                'Accueil',
+                'Progression',
+                'Trophées',
+                'Équipe',
+                'Classement',
+                'Outils',
+                'Profil',
+                'Règlement',
+                'Notifications',
+            ],
             $labels
         );
         $this->assertSame('equipe', $items[3]['key']);
         $this->assertSame('primary', $items[3]['group']);
-        $this->assertSame('personal', $items[5]['group']);
+        $this->assertSame('classement', $items[4]['key']);
+        $this->assertSame('outils', $items[5]['key']);
+        $this->assertSame('personal', $items[6]['group']);
         $this->assertFalse(in_array('Points', $labels, true));
         $this->assertFalse(in_array('Statistiques', $labels, true));
         $this->assertFalse(in_array('Tentatives', $labels, true));
         $this->assertFalse(in_array('Déconnexion', $labels, true));
         $this->assertTrue(myaccount_user_is_player($player));
         $this->assertFalse(myaccount_user_is_player($user));
+    }
+
+    public function test_classement_page_is_wired_after_equipe(): void
+    {
+        $root = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $navigation = (string) file_get_contents($root . '/inc/myaccount-functions.php');
+        $placeholder = (string) file_get_contents($root . '/templates/shell-placeholder.php');
+        $shell = (string) file_get_contents($root . '/inc/app-shell.php');
+        $equipe = strpos($navigation, "'equipe'");
+        $classement = strpos($navigation, "'classement'");
+
+        $this->assertNotFalse($equipe);
+        $this->assertNotFalse($classement);
+        $this->assertLessThan($classement, $equipe);
+        $this->assertStringContainsString("get_template_part('template-parts/shell/classement')", $placeholder);
+        $this->assertStringContainsString("'classement'", $shell);
+        $this->assertStringContainsString('cta_shell_render_player_ranking', $shell);
     }
 }
