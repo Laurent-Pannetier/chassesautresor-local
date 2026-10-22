@@ -59,45 +59,7 @@ final class ProtectedRiddleAssetService
     /** @return array{path:string,mime:string}|null */
     public function findImage(int $imageId, string $size = 'full', string $format = ''): ?array
     {
-        $formats = new ProtectedImagePathService();
-        $format = $formats->normalizeFormat($format);
-        $source = wp_get_attachment_image_src($imageId, $size === 'full' ? 'full' : $size);
-        $url = is_array($source) ? ($source[0] ?? '') : '';
-        $uploads = wp_get_upload_dir();
-        $path = '';
-        if (is_string($url) && $url !== '') {
-            $path = str_replace((string) $uploads['baseurl'], (string) $uploads['basedir'], $url);
-        }
-
-        // Metadata URL can drift after a protected-folder move; fall back to the attached file.
-        if ($path === '' || !is_file($path)) {
-            $attached = get_attached_file($imageId);
-            if (is_string($attached) && $attached !== '' && is_file($attached)) {
-                if ($size === 'full') {
-                    $path = $attached;
-                } else {
-                    $meta = wp_get_attachment_metadata($imageId);
-                    $sizeFile = is_array($meta) && isset($meta['sizes'][$size]['file'])
-                        ? (string) $meta['sizes'][$size]['file']
-                        : '';
-                    $candidate = $sizeFile !== ''
-                        ? trailingslashit(dirname($attached)) . basename($sizeFile)
-                        : '';
-                    $path = ($candidate !== '' && is_file($candidate)) ? $candidate : $attached;
-                }
-            }
-        }
-
-        if ($path === '' || !is_file($path)) {
-            return $size === 'full' ? null : $this->findImage($imageId, 'full', $format);
-        }
-
-        $formatted = $formats->applyFormat($path, $format);
-        if ($format === 'webp' && $formatted['mime'] !== 'image/webp') {
-            return $size === 'full' ? null : $this->findImage($imageId, 'full', $format);
-        }
-
-        return $formatted;
+        return (new ProtectedImagePathService())->find($imageId, $size, $format);
     }
 
     private function isAssociatedOrganizer(int $userId, int $huntId): bool

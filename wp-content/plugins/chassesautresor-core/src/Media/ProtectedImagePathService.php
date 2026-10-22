@@ -43,15 +43,8 @@ final class ProtectedImagePathService
             return is_array($cached) ? $cached : null;
         }
 
-        $source = wp_get_attachment_image_src($imageId, $size === 'full' ? 'full' : $size);
-        $url = is_array($source) ? ($source[0] ?? null) : null;
-        if (!is_string($url) || $url === '') {
-            return $this->cache($cacheKey, null);
-        }
-
-        $uploads = wp_get_upload_dir();
-        $path = str_replace((string) $uploads['baseurl'], (string) $uploads['basedir'], $url);
-        if (!is_file($path)) {
+        $path = $this->resolvePath($imageId, $size);
+        if ($path === null) {
             if ($size !== 'full') {
                 return $this->cache($cacheKey, $this->find($imageId, 'full', $format));
             }
@@ -69,6 +62,54 @@ final class ProtectedImagePathService
         }
 
         return $this->cache($cacheKey, $formatted);
+    }
+
+    /**
+     * Metadata URL can drift after a move into the protected folder.
+     */
+    private function resolvePath(int $imageId, string $size): ?string
+    {
+        $source = wp_get_attachment_image_src($imageId, $size === 'full' ? 'full' : $size);
+        $url = is_array($source) ? ($source[0] ?? null) : null;
+        $path = '';
+        if (is_string($url) && $url !== '') {
+            $uploads = wp_get_upload_dir();
+            $path = str_replace((string) $uploads['baseurl'], (string) $uploads['basedir'], $url);
+        }
+
+        if ($path === '' || !is_file($path)) {
+            $path = $this->attachedFallback($imageId, $size) ?? '';
+        }
+
+        return $path !== '' && is_file($path) ? $path : null;
+    }
+
+    private function attachedFallback(int $imageId, string $size): ?string
+    {
+        if (!function_exists('get_attached_file')) {
+            return null;
+        }
+
+        $attached = get_attached_file($imageId);
+        if (!is_string($attached) || $attached === '' || !is_file($attached)) {
+            return null;
+        }
+
+        if ($size === 'full' || !function_exists('wp_get_attachment_metadata')) {
+            return $attached;
+        }
+
+        $meta = wp_get_attachment_metadata($imageId);
+        $sizeFile = is_array($meta) && isset($meta['sizes'][$size]['file'])
+            ? (string) $meta['sizes'][$size]['file']
+            : '';
+        if ($sizeFile === '') {
+            return $attached;
+        }
+
+        $candidate = rtrim(dirname($attached), '/\\') . '/' . basename($sizeFile);
+
+        return is_file($candidate) ? $candidate : $attached;
     }
 
     /**

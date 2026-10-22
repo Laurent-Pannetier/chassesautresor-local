@@ -346,7 +346,7 @@ if ($peut_editer_chasse && function_exists('get_permalink')) {
                                         $ligne['image_id'],
                                         '',
                                         ['thumbnail'],
-                                        ['sizes' => '5rem']
+                                        ['sizes' => '4.25rem']
                                     );
                                     ?>
                                 <?php else : ?>

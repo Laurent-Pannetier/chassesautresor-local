@@ -36,19 +36,35 @@ final class ProtectedRiddleImageSignedUrlServiceTest extends TestCase
         $now = 1_700_000_000;
         $signed = $service->sign(42, 'medium', 7, $now);
 
-        self::assertSame($now + 600, $signed['exp']);
+        self::assertGreaterThanOrEqual($now + 300, $signed['exp']);
+        self::assertLessThanOrEqual($now + 900, $signed['exp']);
         self::assertSame(7, $signed['uid']);
         self::assertTrue(
             $service->verify(42, 'medium', 7, $signed['exp'], $signed['sig'], $now + 10)
         );
         self::assertFalse(
-            $service->verify(42, 'medium', 7, $signed['exp'], $signed['sig'], $now + 601)
+            $service->verify(42, 'medium', 7, $signed['exp'], $signed['sig'], $signed['exp'] + 1)
         );
         self::assertFalse(
             $service->verify(42, 'medium', 8, $signed['exp'], $signed['sig'], $now + 10)
         );
         self::assertFalse(
             $service->verify(43, 'medium', 7, $signed['exp'], $signed['sig'], $now + 10)
+        );
+    }
+
+    public function testSignReusesTheSameUrlInsideTheWindow(): void
+    {
+        $service = new ProtectedRiddleImageSignedUrlService(3600);
+        $now = 1_700_000_100;
+        $base = 'https://example.test/voir-image-enigme';
+        $first = $service->buildUrl(9, 'thumbnail', 3, $base, $now);
+        $second = $service->buildUrl(9, 'thumbnail', 3, $base, $now + 20);
+
+        self::assertSame($first, $second);
+        self::assertNotSame(
+            $first,
+            $service->buildUrl(9, 'thumbnail', 4, $base, $now)
         );
     }
 

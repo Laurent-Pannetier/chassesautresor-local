@@ -118,6 +118,8 @@ class RiddleMutationService {
         }
 
         if ($field === 'enigme_visuel_image') {
+            $previous = function_exists('get_field') ? get_field($field, $riddleId, false) : [];
+            $previousIds = array_map('intval', is_array($previous) ? $previous : []);
             $raw = is_array($value) ? $value : explode(',', (string) wp_unslash($value));
             $ids = [];
             foreach ($raw as $item) {
@@ -127,6 +129,9 @@ class RiddleMutationService {
                 }
             }
             $updated = update_field($field, $ids, $riddleId);
+            foreach (array_unique(array_merge($previousIds, $ids)) as $imageId) {
+                \ChassesAuTresor\Core\Media\RiddleImageRepository::forgetImage((int) $imageId);
+            }
             $stored = get_field($field, $riddleId, false);
             $storedIds = array_map('intval', is_array($stored) ? $stored : []);
             $valid = $updated || $storedIds === $ids;

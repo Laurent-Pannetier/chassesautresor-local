@@ -121,6 +121,25 @@ final class ProtectedRiddleImageDeliveryServiceTest extends TestCase
         );
     }
 
+    public function testBrowserCacheStaysPrivateAndCapped(): void
+    {
+        $service = new ProtectedRiddleImageDeliveryService();
+        $now = 1_700_000_000;
+
+        self::assertSame(
+            'private, max-age=900, must-revalidate',
+            $service->browserCacheControl($now + 5000, $now)
+        );
+        self::assertSame(
+            'private, max-age=30, must-revalidate',
+            $service->browserCacheControl($now + 30, $now)
+        );
+        self::assertSame(
+            'Tue, 14 Nov 2023 22:28:20 GMT',
+            $service->browserExpires($now + 5000, $now)
+        );
+    }
+
     public function testOriginalBytesAreKeptUnlessWebpWasRequested(): void
     {
         require_once __DIR__

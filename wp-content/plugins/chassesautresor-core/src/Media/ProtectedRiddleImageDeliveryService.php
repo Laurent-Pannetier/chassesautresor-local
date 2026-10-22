@@ -9,6 +9,12 @@ namespace ChassesAuTresor\Core\Media;
  */
 final class ProtectedRiddleImageDeliveryService
 {
+    /**
+     * Browser-only freshness. Access is checked again once this elapses.
+     * The signed URL itself stays valid longer, so the cache key does not change.
+     */
+    public const BROWSER_CACHE_MAX_AGE = 900;
+
     public function isLiteSpeedServer(?string $serverSoftware = null): bool
     {
         $software = $serverSoftware ?? (string) ($_SERVER['SERVER_SOFTWARE'] ?? '');
@@ -85,5 +91,27 @@ final class ProtectedRiddleImageDeliveryService
         header('X-LiteSpeed-Location: ' . $uri);
 
         return true;
+    }
+
+    /**
+     * Private cache header. Shared caches must not store the protected file.
+     */
+    public function browserCacheControl(int $expiresAt, ?int $now = null): string
+    {
+        return 'private, max-age=' . $this->browserMaxAge($expiresAt, $now) . ', must-revalidate';
+    }
+
+    public function browserExpires(int $expiresAt, ?int $now = null): string
+    {
+        $now = $now ?? time();
+
+        return gmdate('D, d M Y H:i:s', $now + $this->browserMaxAge($expiresAt, $now)) . ' GMT';
+    }
+
+    private function browserMaxAge(int $expiresAt, ?int $now = null): int
+    {
+        $remaining = max(0, $expiresAt - ($now ?? time()));
+
+        return min(self::BROWSER_CACHE_MAX_AGE, $remaining);
     }
 }
