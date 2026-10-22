@@ -50,23 +50,23 @@ $trophy_count = $logged_in && function_exists('cat_user_trophy_count')
     : 0;
 ?>
 <header class="app-topbar">
-    <?php if (!function_exists('cta_shell_shows_sidebar') || cta_shell_shows_sidebar()) : ?>
-        <button
-            type="button"
-            class="app-nav-toggle"
-            data-app-nav-toggle
-            aria-controls="app-sidebar"
-            aria-expanded="false"
-        >
-            <span class="app-nav-toggle__icon" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-            <span class="screen-reader-text"><?php esc_html_e('Menu', 'chassesautresor-com'); ?></span>
-        </button>
-    <?php endif; ?>
     <div class="app-topbar__lead">
+        <?php if (!function_exists('cta_shell_shows_sidebar') || cta_shell_shows_sidebar()) : ?>
+            <button
+                type="button"
+                class="app-nav-toggle"
+                data-app-nav-toggle
+                aria-controls="app-sidebar"
+                aria-expanded="false"
+            >
+                <span class="app-nav-toggle__icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="screen-reader-text"><?php esc_html_e('Menu', 'chassesautresor-com'); ?></span>
+            </button>
+        <?php endif; ?>
         <div class="app-topbar__brand">
             <?php if (
                 function_exists('has_custom_logo')
@@ -85,17 +85,11 @@ $trophy_count = $logged_in && function_exists('cat_user_trophy_count')
                 </a>
             <?php endif; ?>
         </div>
-        <div class="app-topbar__hunt">
-            <span class="app-topbar__hunt-mark" aria-hidden="true">
-                <?php
-                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                echo cta_shell_icon('flame');
-                ?>
-            </span>
-            <span class="app-topbar__hunt-title">
-                <?php esc_html_e('Antre de feu', 'chassesautresor-com'); ?>
-            </span>
-        </div>
+    </div>
+    <div class="app-topbar__hunt">
+        <span class="app-topbar__hunt-title">
+            <?php esc_html_e('Antre 2 feux', 'chassesautresor-com'); ?>
+        </span>
     </div>
     <?php if ($logged_in) : ?>
         <div class="app-topbar__meta">

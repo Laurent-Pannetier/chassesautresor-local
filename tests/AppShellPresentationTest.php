@@ -168,14 +168,36 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString("cta_shell_icon(", $sidebar);
         $this->assertStringNotContainsString('organizer-nav', $sidebar);
         $this->assertStringContainsString("cta_shell_icon('trophy')", $topbar);
-        $this->assertStringContainsString("cta_shell_icon('flame')", $topbar);
+        $this->assertStringNotContainsString("cta_shell_icon('flame')", $topbar);
         $this->assertStringContainsString("cta_shell_icon('logout')", $topbar);
         $this->assertStringNotContainsString('Chasse au trésor', $topbar);
-        $this->assertStringContainsString('Antre de feu', $topbar);
+        $this->assertStringContainsString('Antre 2 feux', $topbar);
+        $this->assertStringNotContainsString('app-topbar__hunt-mark', $topbar);
         $this->assertStringContainsString('solo', $topbar);
         $this->assertStringContainsString('cat_user_trophy_count', $topbar);
         $this->assertStringNotContainsString('app-topbar__trophy-count">0', $topbar);
         $this->assertStringNotContainsString('customer-logout', $topbar);
+    }
+
+    public function test_topbar_hunt_name_is_a_centered_gold_cinzel_title(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
+        $functions = (string) file_get_contents($theme . '/functions.php');
+
+        $this->assertMatchesRegularExpression(
+            '/\.app-topbar__lead,\s*\.app-topbar__meta \{\s*flex:\s*1 1 0%;/s',
+            $scss
+        );
+        $this->assertStringContainsString('font-family: "Cinzel", Palatino, "Palatino Linotype", serif;', $scss);
+        $this->assertStringContainsString('text-transform: uppercase;', $scss);
+        $this->assertStringContainsString('background-clip: text;', $scss);
+        $this->assertStringNotContainsString('.app-topbar__hunt-mark', $scss);
+        $this->assertStringContainsString('family=Cinzel:wght@600;700', $functions);
+        $this->assertMatchesRegularExpression(
+            '/html\[data-theme="day"\] \.app-topbar__hunt \{/',
+            $scss
+        );
     }
 
     public function test_profile_menu_script_no_longer_offers_logout(): void

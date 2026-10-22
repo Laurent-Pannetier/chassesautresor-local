@@ -298,6 +298,13 @@ add_action('wp_enqueue_scripts', function () {
         filemtime($theme_path . '/dist/style.css')
     );
 
+    wp_enqueue_style(
+        'chassesautresor-cinzel',
+        'https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap',
+        [],
+        null
+    );
+
     $script_dir = $theme_uri . '/assets/js/';
 
     if (is_user_logged_in() && function_exists('cat_notification_unread_count')) {
