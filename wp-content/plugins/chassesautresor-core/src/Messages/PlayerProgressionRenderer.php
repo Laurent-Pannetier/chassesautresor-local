@@ -29,14 +29,14 @@ final class PlayerProgressionRenderer
         }
         echo '>';
         $this->renderHuntSwitcher($hunts, $currentHuntId);
-        echo '<div class="progression-overview">';
         $this->renderCards($overview);
-        echo '<section class="progression-leaderboard" aria-labelledby="progression-leaderboard-title">';
+        echo '<section class="progression-leaderboard progression-table-card"'
+            . ' aria-labelledby="progression-leaderboard-title">';
         echo '<h2 id="progression-leaderboard-title">'
             . esc_html__('Classement de la chasse', 'chassesautresor-com') . '</h2>';
         echo '<div data-progression-leaderboard>';
         echo $this->leaderboard((array) ($overview['leaderboard'] ?? []));
-        echo '</div></section></div>';
+        echo '</div></section>';
         $this->renderRiddles((array) ($overview['riddles'] ?? []));
         echo '</section>';
 
@@ -107,26 +107,31 @@ final class PlayerProgressionRenderer
             echo '<p class="progression-leaderboard__empty">'
                 . esc_html__('Aucun joueur classé pour le moment.', 'chassesautresor-com') . '</p>';
         } else {
-            echo '<ol class="progression-ranking-list" start="' . esc_attr((string) (($page - 1) * 10 + 1)) . '">';
+            echo '<div class="progression-table-scroll"><table class="progression-data-table'
+                . ' progression-data-table--ranking progression-data-table--player-ranking">';
+            echo '<thead><tr><th scope="col">' . esc_html__('Rang', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Joueur', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Équipe', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Énigmes résolues', 'chassesautresor-com')
+                . '</th></tr></thead><tbody>';
             foreach ($rows as $index => $row) {
                 $userId = (int) ($row['user_id'] ?? 0);
                 $rank = (($page - 1) * 10) + $index + 1;
                 $class = $userId === $currentUserId
-                    ? ' class="progression-ranking-list__item is-current"'
-                    : ' class="progression-ranking-list__item"';
-                echo '<li' . $class . '>';
-                echo '<span class="progression-ranking-list__rank">' . esc_html((string) $rank) . '</span>';
-                echo $this->avatar($userId, 40);
-                echo '<span class="progression-ranking-list__identity"><strong>'
-                    . esc_html((string) ($row['username'] ?? '')) . '</strong><small>'
-                    . esc_html($this->teamLabel((string) ($row['team_name'] ?? ''))) . '</small></span>';
+                    ? ' class="is-current"'
+                    : '';
+                echo '<tr' . $class . '>';
+                echo '<td class="progression-data-table__rank">' . esc_html((string) $rank) . '</td>';
+                echo '<td><span class="progression-table-identity">' . $this->avatar($userId, 40);
+                echo '<strong>' . esc_html((string) ($row['username'] ?? '')) . '</strong>';
+                echo '<small>' . esc_html($this->teamLabel((string) ($row['team_name'] ?? '')))
+                    . '</small></span></td>';
+                echo '<td class="progression-data-table__team">'
+                    . esc_html($this->teamLabel((string) ($row['team_name'] ?? ''))) . '</td>';
                 $resolved = (int) ($row['resolved'] ?? 0);
-                echo '<span class="progression-ranking-list__score">' . esc_html(sprintf(
-                    _n('%d résolue', '%d résolues', $resolved, 'chassesautresor-com'),
-                    $resolved
-                )) . '</span></li>';
+                echo '<td class="progression-data-table__score">' . esc_html((string) $resolved) . '</td></tr>';
             }
-            echo '</ol>';
+            echo '</tbody></table></div>';
         }
         if ($position > 0 && ($position < (($page - 1) * 10 + 1) || $position > $page * 10)) {
             echo '<p class="progression-leaderboard__position">' . esc_html(sprintf(
@@ -154,11 +159,18 @@ final class PlayerProgressionRenderer
             return;
         }
 
-        echo '<ol class="progression-riddles__list">';
+        echo '<div class="progression-table-card progression-riddles__table-wrap">';
+        echo '<table class="progression-data-table progression-data-table--riddles">';
+        echo '<thead><tr><th scope="col">' . esc_html__('Énigme', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Statut', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Étapes franchies', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Tentatives', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Dernière activité', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Soumissions', 'chassesautresor-com') . '</th></tr></thead>';
         foreach ($riddles as $riddle) {
             $this->renderRiddle($riddle);
         }
-        echo '</ol></section>';
+        echo '</table></div></section>';
     }
 
     /** @param array<string, mixed> $riddle */
@@ -175,14 +187,13 @@ final class PlayerProgressionRenderer
         $stepsTotal = (int) ($riddle['steps_total'] ?? 0);
         $lastActivity = $this->formatDate((string) ($riddle['last_activity'] ?? ''));
         $activityLabel = $lastActivity !== ''
-            ? sprintf(
-                /* translators: %s: localized date of the latest attempt or step */
-                __('Dernière activité le %s', 'chassesautresor-com'),
-                $lastActivity
-            )
+            ? $lastActivity
             : __('Pas encore d’activité', 'chassesautresor-com');
-        echo '<li class="progression-riddle">';
-        echo '<div class="progression-riddle__personal">';
+        $attempts = (int) ($riddle['attempts'] ?? 0);
+
+        echo '<tbody class="progression-riddle">';
+        echo '<tr class="progression-riddle__row">';
+        echo '<th scope="row"><span class="progression-riddle__identity">';
         if ($url !== '') {
             echo '<a class="progression-riddle__thumbnail" href="' . esc_url($url) . '">';
         } else {
@@ -194,27 +205,29 @@ final class PlayerProgressionRenderer
             echo '<span aria-hidden="true">' . esc_html(mb_substr($title, 0, 1)) . '</span>';
         }
         echo $url !== '' ? '</a>' : '</span>';
-        echo '<div class="progression-riddle__content"><div class="progression-riddle__main">';
-        echo '<h3 class="progression-riddle__title">';
+        echo '<span class="progression-riddle__title">';
         if ($url !== '') {
             echo '<a href="' . esc_url($url) . '">' . esc_html($title) . '</a>';
         } else {
             echo esc_html($title);
         }
-        echo '</h3>';
-        echo '<p class="progression-riddle__status progression-riddle__status--' . esc_attr($statusClass) . '">'
-            . esc_html($this->statusLabel($status)) . '</p>';
-        echo '</div>';
-        echo '<dl class="progression-riddle__metrics">';
+        echo '</span></span></th>';
+        echo '<td data-label="' . esc_attr__('Statut', 'chassesautresor-com') . '"><span class="'
+            . esc_attr('progression-riddle__status progression-riddle__status--' . $statusClass) . '">'
+            . esc_html($this->statusLabel($status)) . '</span></td>';
+        echo '<td data-label="' . esc_attr__('Étapes franchies', 'chassesautresor-com') . '">';
         if ($stepsTotal > 0) {
-            echo '<div><dt>' . esc_html(__('Étapes franchies', 'chassesautresor-com')) . '</dt><dd>'
-                . esc_html((string) (int) ($riddle['steps_done'] ?? 0)) . '</dd></div>';
+            echo '<strong>' . esc_html((string) (int) ($riddle['steps_done'] ?? 0)) . '</strong>';
+        } else {
+            echo '<span aria-hidden="true">—</span><span class="screen-reader-text">'
+                . esc_html__('Sans étape', 'chassesautresor-com') . '</span>';
         }
-        echo '<div><dt>' . esc_html(__('Tentatives', 'chassesautresor-com')) . '</dt><dd>'
-            . esc_html((string) (int) ($riddle['attempts'] ?? 0)) . '</dd></div>';
-        echo '</dl>';
-        echo '<p class="progression-riddle__activity">' . esc_html($activityLabel) . '</p>';
-        $attempts = (int) ($riddle['attempts'] ?? 0);
+        echo '</td>';
+        echo '<td data-label="' . esc_attr__('Tentatives', 'chassesautresor-com') . '"><strong>'
+            . esc_html((string) $attempts) . '</strong></td>';
+        echo '<td data-label="' . esc_attr__('Dernière activité', 'chassesautresor-com')
+            . '" class="progression-riddle__activity">' . esc_html($activityLabel) . '</td>';
+        echo '<td class="progression-riddle__submission-cell">';
         if ($attempts > 0) {
             echo '<button type="button" class="progression-riddle__submissions"'
                 . ' data-riddle-attempts="' . esc_attr((string) (int) ($riddle['id'] ?? 0)) . '"'
@@ -227,27 +240,34 @@ final class PlayerProgressionRenderer
                     ),
                     $attempts
                 )) . '</button>';
+        } else {
+            echo '<span aria-hidden="true">—</span>';
         }
-        echo '</div></div>';
+        echo '</td></tr>';
+        echo '<tr class="progression-riddle__leaders-row"><td colspan="6">';
         $this->renderRiddleLeaders((array) ($riddle['leaders'] ?? []));
-        echo '<div class="progression-riddle__attempts" data-riddle-attempts-panel hidden></div>';
-        echo '</li>';
+        echo '</td></tr>';
+        echo '<tr class="progression-riddle__attempts-row" data-riddle-attempts-row hidden><td colspan="6">';
+        echo '<div class="progression-riddle__attempts" data-riddle-attempts-panel></div>';
+        echo '</td></tr></tbody>';
     }
 
     /** @param array<int, array<string, mixed>> $leaders */
     private function renderRiddleLeaders(array $leaders): void
     {
-        if ($leaders === []) {
-            return;
-        }
-
         echo '<section class="progression-riddle__leaders" aria-label="'
             . esc_attr__('En tête sur cette énigme', 'chassesautresor-com') . '">';
         echo '<h4>' . esc_html__('En tête sur cette énigme', 'chassesautresor-com') . '</h4>';
+        if ($leaders === []) {
+            echo '<p>' . esc_html__('Aucun joueur classé pour le moment.', 'chassesautresor-com')
+                . '</p></section>';
+            return;
+        }
         echo '<ol>';
-        foreach ($leaders as $leader) {
+        foreach (array_values($leaders) as $index => $leader) {
             $userId = (int) ($leader['user_id'] ?? 0);
-            echo '<li>' . $this->avatar($userId, 34);
+            echo '<li><span class="progression-riddle__leader-rank">'
+                . esc_html((string) ($index + 1)) . '</span>' . $this->avatar($userId, 34);
             echo '<span><strong>' . esc_html((string) ($leader['username'] ?? '')) . '</strong><small>'
                 . esc_html($this->teamLabel((string) ($leader['team_name'] ?? ''))) . '</small></span>';
             echo '<em>' . esc_html(

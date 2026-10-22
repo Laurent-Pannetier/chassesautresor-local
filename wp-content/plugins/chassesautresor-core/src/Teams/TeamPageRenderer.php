@@ -238,22 +238,20 @@ final class TeamPageRenderer
 
         echo '<section class="equipe-contributions" aria-labelledby="equipe-contributions-title">';
         echo '<h3 id="equipe-contributions-title">'
-            . esc_html__('Progression des membres', 'chassesautresor-com') . '</h3><ul>';
+            . esc_html__('Progression des membres', 'chassesautresor-com') . '</h3>';
+        echo '<div class="progression-table-scroll"><table class="progression-data-table">';
+        echo '<thead><tr><th scope="col">' . esc_html__('Joueur', 'chassesautresor-com') . '</th>';
+        echo '<th scope="col">' . esc_html__('Énigmes résolues', 'chassesautresor-com')
+            . '</th></tr></thead><tbody>';
         foreach ($members as $member) {
             $userId = (int) ($member['user_id'] ?? 0);
-            echo '<li>' . $this->userAvatar($userId, 38) . '<strong>'
-                . esc_html((string) ($member['username'] ?? '')) . '</strong><span>'
-                . esc_html(sprintf(
-                    _n(
-                        '%d énigme résolue',
-                        '%d énigmes résolues',
-                        (int) ($member['resolved'] ?? 0),
-                        'chassesautresor-com'
-                    ),
-                    (int) ($member['resolved'] ?? 0)
-                )) . '</span></li>';
+            echo '<tr><th scope="row"><span class="progression-table-identity">'
+                . $this->userAvatar($userId, 38) . '<strong>'
+                . esc_html((string) ($member['username'] ?? '')) . '</strong></span></th>';
+            echo '<td class="progression-data-table__score">'
+                . esc_html((string) (int) ($member['resolved'] ?? 0)) . '</td></tr>';
         }
-        echo '</ul></section>';
+        echo '</tbody></table></div></section>';
     }
 
     /** @param array<string, mixed> $view */
@@ -268,31 +266,27 @@ final class TeamPageRenderer
         if ($rows === []) {
             echo '<p class="equipe-note">' . esc_html__('Aucune équipe classée.', 'chassesautresor-com') . '</p>';
         } else {
-            echo '<ol class="equipe-ranking__list" start="' . esc_attr((string) (($page - 1) * 10 + 1)) . '">';
+            echo '<div class="progression-table-scroll"><table class="progression-data-table'
+                . ' progression-data-table--ranking progression-data-table--team-ranking">';
+            echo '<thead><tr><th scope="col">' . esc_html__('Rang', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Équipe', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Membres', 'chassesautresor-com') . '</th>';
+            echo '<th scope="col">' . esc_html__('Énigmes résolues', 'chassesautresor-com')
+                . '</th></tr></thead><tbody>';
             foreach ($rows as $index => $row) {
                 $teamId = (int) ($row['team_id'] ?? 0);
-                echo '<li' . ($teamId === $currentTeamId ? ' class="is-current"' : '') . '>';
-                echo '<span class="equipe-ranking__rank">'
-                    . esc_html((string) ((($page - 1) * 10) + $index + 1)) . '</span>';
-                echo $this->teamAvatar((int) ($row['image_id'] ?? 0));
-                echo '<span class="equipe-ranking__identity"><strong>'
-                    . esc_html((string) ($row['team_name'] ?? '')) . '</strong><small>'
-                    . esc_html(sprintf(
-                        _n(
-                            '%d membre',
-                            '%d membres',
-                            (int) ($row['members'] ?? 0),
-                            'chassesautresor-com'
-                        ),
-                        (int) ($row['members'] ?? 0)
-                    )) . '</small></span>';
+                echo '<tr' . ($teamId === $currentTeamId ? ' class="is-current"' : '') . '>';
+                echo '<td class="progression-data-table__rank">'
+                    . esc_html((string) ((($page - 1) * 10) + $index + 1)) . '</td>';
+                echo '<td><span class="progression-table-identity">'
+                    . $this->teamAvatar((int) ($row['image_id'] ?? 0)) . '<strong>'
+                    . esc_html((string) ($row['team_name'] ?? '')) . '</strong></span></td>';
+                echo '<td>' . esc_html((string) (int) ($row['members'] ?? 0)) . '</td>';
                 $resolved = (int) ($row['resolved'] ?? 0);
-                echo '<span class="equipe-ranking__score">' . esc_html(sprintf(
-                    _n('%d résolue', '%d résolues', $resolved, 'chassesautresor-com'),
-                    $resolved
-                )) . '</span></li>';
+                echo '<td class="progression-data-table__score">'
+                    . esc_html((string) $resolved) . '</td></tr>';
             }
-            echo '</ol>';
+            echo '</tbody></table></div>';
         }
         if ($position > 0 && ($position < (($page - 1) * 10 + 1) || $position > $page * 10)) {
             echo '<p class="equipe-ranking__position">' . esc_html(sprintf(

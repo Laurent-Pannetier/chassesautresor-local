@@ -65,12 +65,13 @@
     if (toggle) {
       var card = toggle.closest(".progression-riddle");
       var panel = card ? card.querySelector("[data-riddle-attempts-panel]") : null;
-      if (!panel) {
+      var panelRow = card ? card.querySelector("[data-riddle-attempts-row]") : null;
+      if (!panel || !panelRow) {
         return;
       }
       var expanded = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", expanded ? "false" : "true");
-      panel.hidden = expanded;
+      panelRow.hidden = expanded;
       if (!expanded && !panel.hasAttribute("data-loaded")) {
         panel.setAttribute("data-loaded", "true");
         panel.setAttribute("data-riddle-id", toggle.getAttribute("data-riddle-attempts") || "0");

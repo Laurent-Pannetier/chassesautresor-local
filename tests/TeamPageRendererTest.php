@@ -144,6 +144,8 @@ final class TeamPageRendererTest extends TestCase
         self::assertStringContainsString('2/4', $html);
         self::assertStringContainsString('Classement des équipes', $html);
         self::assertStringContainsString('Progression des membres', $html);
+        self::assertStringContainsString('progression-data-table--team-ranking', $html);
+        self::assertStringContainsString('<table class="progression-data-table"', $html);
         self::assertStringNotContainsString('2026-10-01', $html);
         self::assertStringNotContainsString('reached_at', $html);
     }

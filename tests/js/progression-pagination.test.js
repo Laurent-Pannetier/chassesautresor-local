@@ -9,7 +9,9 @@ describe('player progression pagination', () => {
         </div>
         <article class="progression-riddle">
           <button data-riddle-attempts="40" aria-expanded="false">Soumissions</button>
-          <div data-riddle-attempts-panel hidden></div>
+          <div data-riddle-attempts-row hidden>
+            <div data-riddle-attempts-panel></div>
+          </div>
         </article>
       </section>`;
     global.fetch = jest.fn(() => new Promise(() => {}));
@@ -31,7 +33,7 @@ describe('player progression pagination', () => {
     button.click();
 
     expect(button.getAttribute('aria-expanded')).toBe('true');
-    expect(document.querySelector('[data-riddle-attempts-panel]').hidden).toBe(false);
+    expect(document.querySelector('[data-riddle-attempts-row]').hidden).toBe(false);
     expect(fetch).toHaveBeenCalledWith('/ajax', expect.objectContaining({
       method: 'POST',
       body: 'action=cat_player_progression_attempts&nonce=player-nonce&hunt_id=12&riddle_id=40&page=1',

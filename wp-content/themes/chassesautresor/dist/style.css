@@ -18112,6 +18112,341 @@ html[data-theme=day] .home-enigmas-preserve {
   color: var(--shell-danger);
 }
 
+.player-summary,
+.equipe-performance__summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.player-summary__compact,
+.equipe-performance__compact {
+  display: contents;
+}
+
+.player-summary__primary,
+.player-summary__mini,
+.equipe-performance__primary,
+.equipe-performance__compact article {
+  min-height: 0;
+  margin: 0;
+  padding: 0.85rem 1rem;
+}
+
+.player-summary__primary,
+.equipe-performance__primary {
+  border-color: color-mix(in srgb, var(--shell-accent) 45%, var(--shell-border));
+}
+
+.player-summary__primary .team-stat__value,
+.equipe-performance__primary .team-stat__value,
+.player-summary__mini .team-stat__value,
+.equipe-performance__compact .team-stat__value {
+  margin-top: 0.55rem;
+  font-size: 1.65rem;
+}
+
+.player-summary__primary .team-stat__value,
+.equipe-performance__primary .team-stat__value {
+  font-size: 2rem;
+}
+
+.progression-table-card {
+  padding: 0;
+  border: 1px solid var(--shell-border);
+  border-radius: 1rem;
+  background: var(--shell-card-background);
+  box-shadow: var(--shell-shadow);
+  overflow: hidden;
+}
+
+.progression-leaderboard {
+  margin-top: 0;
+}
+
+.progression-leaderboard > h2,
+.equipe-ranking > h3,
+.equipe-contributions > h3 {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--shell-border);
+  font-size: 0.95rem;
+}
+
+.progression-table-scroll {
+  width: 100%;
+}
+
+.progression-data-table {
+  width: 100%;
+  border: 0;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: var(--shell-text);
+}
+
+.progression-data-table thead {
+  background: var(--shell-surface-2);
+}
+
+.progression-data-table th,
+.progression-data-table td {
+  padding: 0.7rem 0.85rem;
+  border: 0;
+  border-bottom: 1px solid var(--shell-border);
+  vertical-align: middle;
+  text-align: left;
+}
+
+.progression-data-table thead th {
+  color: var(--shell-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.progression-data-table tbody:last-child tr:last-child > * {
+  border-bottom: 0;
+}
+
+.progression-data-table tbody tr.is-current {
+  background: color-mix(in srgb, var(--shell-accent) 11%, transparent);
+}
+
+.progression-data-table--ranking th:first-child,
+.progression-data-table--ranking td:first-child {
+  width: 3.5rem;
+  text-align: center;
+}
+
+.progression-data-table--ranking th:last-child,
+.progression-data-table--ranking td:last-child {
+  width: 7rem;
+  text-align: right;
+}
+
+.progression-data-table__rank {
+  color: var(--shell-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.progression-data-table__score {
+  color: var(--shell-text);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.progression-table-identity {
+  display: grid;
+  grid-template-columns: 2.35rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.progression-table-identity .progression-avatar {
+  grid-row: 1/span 2;
+  width: 2.35rem;
+  height: 2.35rem;
+}
+
+.progression-table-identity strong,
+.progression-table-identity small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progression-table-identity strong {
+  color: var(--shell-text);
+  font-size: 0.84rem;
+}
+
+.progression-table-identity small {
+  display: block;
+  color: var(--shell-muted);
+  font-size: 0.68rem;
+}
+
+.progression-data-table--player-ranking th:nth-child(3),
+.progression-data-table--player-ranking td:nth-child(3) {
+  display: none;
+}
+
+.progression-leaderboard__pager,
+.equipe-ranking__pager {
+  margin: 0;
+  padding: 0.75rem;
+  border-top: 1px solid var(--shell-border);
+}
+
+.progression-data-table--riddles {
+  display: block;
+}
+
+.progression-data-table--riddles > thead {
+  display: none;
+}
+
+.progression-data-table--riddles tbody.progression-riddle {
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.progression-data-table--riddles tbody.progression-riddle + tbody.progression-riddle {
+  border-top: 0.55rem solid var(--shell-bg);
+}
+
+.progression-data-table--riddles tr {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.progression-data-table--riddles tr > * {
+  display: block;
+  min-width: 0;
+}
+
+.progression-data-table--riddles .progression-riddle__row > th {
+  grid-column: 1/-1;
+  padding-bottom: 0.45rem;
+}
+
+.progression-data-table--riddles .progression-riddle__row > td {
+  position: relative;
+  padding-top: 1.45rem;
+}
+
+.progression-data-table--riddles .progression-riddle__row > td::before {
+  position: absolute;
+  top: 0.45rem;
+  left: 0.85rem;
+  color: var(--shell-muted);
+  content: attr(data-label);
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.progression-riddle__identity {
+  display: grid;
+  grid-template-columns: 4.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.progression-riddle__identity .progression-riddle__thumbnail {
+  width: 4.25rem;
+  height: 3.2rem;
+  aspect-ratio: auto;
+  border-radius: 0.55rem;
+  font-size: 1.25rem;
+}
+
+.progression-riddle__identity .progression-riddle__title {
+  overflow: hidden;
+  font-size: 0.88rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progression-riddle__status {
+  display: inline-flex;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--shell-surface-2);
+}
+
+.progression-riddle__submission-cell {
+  display: flex !important;
+  align-items: center;
+}
+
+.progression-riddle__submissions {
+  min-height: 2rem;
+  padding: 0.3rem 0.65rem;
+  white-space: nowrap;
+}
+
+.progression-riddle__leaders-row,
+.progression-riddle__attempts-row {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.progression-riddle__leaders-row > td,
+.progression-riddle__attempts-row > td {
+  grid-column: 1/-1;
+  padding: 0 !important;
+}
+
+.progression-riddle__leaders {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  border-top: 0;
+  background: color-mix(in srgb, var(--shell-surface-2) 65%, transparent);
+}
+
+.progression-riddle__leaders h4,
+.progression-riddle__leaders p {
+  margin: 0;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.progression-riddle__leaders ol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.45rem;
+}
+
+.progression-riddle__leaders li {
+  grid-template-columns: 1rem 1.85rem minmax(0, 1fr) auto;
+}
+
+.progression-riddle__leaders .progression-avatar {
+  width: 1.85rem;
+  height: 1.85rem;
+}
+
+.progression-riddle__leader-rank {
+  color: var(--shell-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.progression-riddle__attempts-row[hidden] {
+  display: none !important;
+}
+
+.progression-riddle__attempts {
+  padding: 0.85rem;
+  border-top: 1px solid var(--shell-border);
+  background: var(--shell-surface);
+}
+
+.equipe-performance__layout {
+  display: block;
+}
+
+.equipe-ranking,
+.equipe-contributions {
+  padding: 0;
+  overflow: hidden;
+}
+
+.equipe-ranking {
+  margin-top: 1rem;
+}
+
 .progression-intro,
 .progression-note,
 .progression-hint,
@@ -18536,15 +18871,72 @@ html[data-theme=day] .home-enigmas-preserve {
   .team-stats__grid {
     grid-template-columns: 1fr 1fr;
   }
-  .progression-overview,
-  .equipe-performance__layout {
-    grid-template-columns: minmax(15rem, 0.8fr) minmax(24rem, 1.5fr);
+  .player-summary,
+  .equipe-performance__summary {
+    grid-template-columns: 1.2fr repeat(3, minmax(0, 1fr));
   }
-  .progression-riddle__personal {
-    grid-template-columns: 9rem minmax(0, 1fr);
+  .progression-data-table--player-ranking th:nth-child(3),
+  .progression-data-table--player-ranking td:nth-child(3) {
+    display: table-cell;
   }
-  .progression-riddle__metrics {
-    grid-template-columns: repeat(2, minmax(8rem, 12rem));
+  .progression-data-table--player-ranking .progression-table-identity small {
+    display: none;
+  }
+  .progression-data-table--riddles {
+    display: table;
+  }
+  .progression-data-table--riddles > thead {
+    display: table-header-group;
+  }
+  .progression-data-table--riddles tbody.progression-riddle {
+    display: table-row-group;
+  }
+  .progression-data-table--riddles tbody.progression-riddle + tbody.progression-riddle {
+    border-top: 0;
+  }
+  .progression-data-table--riddles tr {
+    display: table-row;
+  }
+  .progression-data-table--riddles tr > * {
+    display: table-cell;
+  }
+  .progression-data-table--riddles .progression-riddle__leaders-row > td,
+  .progression-data-table--riddles .progression-riddle__attempts-row > td {
+    display: table-cell;
+  }
+  .progression-data-table--riddles .progression-riddle__submission-cell {
+    display: table-cell !important;
+  }
+  .progression-data-table--riddles .progression-riddle__row > th,
+  .progression-data-table--riddles .progression-riddle__row > td {
+    padding: 0.7rem 0.85rem;
+  }
+  .progression-data-table--riddles .progression-riddle__row > td {
+    position: static;
+  }
+  .progression-data-table--riddles .progression-riddle__row > td::before {
+    display: none;
+  }
+  .progression-data-table--riddles th:first-child {
+    width: 30%;
+  }
+  .progression-data-table--riddles th:nth-child(2) {
+    width: 14%;
+  }
+  .progression-data-table--riddles th:nth-child(3),
+  .progression-data-table--riddles th:nth-child(4) {
+    width: 8%;
+    text-align: center;
+  }
+  .progression-data-table--riddles td:nth-child(3),
+  .progression-data-table--riddles td:nth-child(4) {
+    text-align: center;
+  }
+  .progression-data-table--riddles th:nth-child(5) {
+    width: 16%;
+  }
+  .progression-data-table--riddles th:nth-child(6) {
+    width: 24%;
   }
   .progression-riddle__leaders ol {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -19003,10 +19395,11 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .equipe-contributions {
   margin-top: 1rem;
-  padding: 1rem;
+  padding: 0;
   border: 1px solid var(--shell-border);
   border-radius: 1rem;
   background: var(--shell-card-background);
+  overflow: hidden;
 }
 
 .equipe-contributions ul {

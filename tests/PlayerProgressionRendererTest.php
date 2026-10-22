@@ -102,7 +102,7 @@ final class PlayerProgressionRendererTest extends TestCase
         self::assertStringContainsString('Chasse B', $html);
         self::assertStringContainsString('En cours', $html);
         self::assertStringContainsString('Étapes franchies', $html);
-        self::assertStringContainsString('<dd>1</dd>', $html);
+        self::assertStringContainsString('<strong>1</strong>', $html);
         self::assertStringNotContainsString('1/3', $html);
         self::assertStringNotContainsString('Reprendre', $html);
         self::assertStringContainsString('Voir mes 4 soumissions', $html);
@@ -115,6 +115,7 @@ final class PlayerProgressionRendererTest extends TestCase
         self::assertStringContainsString('Corsaires', $html);
         self::assertStringContainsString('/alpha.jpg', $html);
         self::assertStringContainsString('03/10/2026', $html);
-        self::assertStringNotContainsString('<table', $html);
+        self::assertStringContainsString('progression-data-table--ranking', $html);
+        self::assertStringContainsString('progression-data-table--riddles', $html);
     }
 }
