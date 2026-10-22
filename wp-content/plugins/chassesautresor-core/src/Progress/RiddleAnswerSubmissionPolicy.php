@@ -56,4 +56,47 @@ class RiddleAnswerSubmissionPolicy {
 
         return null;
     }
+
+    /**
+     * A player with no status row has not started, as on the riddle page.
+     */
+    public function effectiveUserStatus(?string $storedStatus): string {
+        if ($storedStatus === null || trim($storedStatus) === '') {
+            return 'non_commencee';
+        }
+
+        return $this->normalizeStatus($storedStatus);
+    }
+
+    /**
+     * Match the riddle page: a missing cache is accessible, and satisfied
+     * prerequisites unlock a riddle still cached as bloquee_pre_requis.
+     */
+    public function effectiveSystemState(?string $storedState, bool $prerequisitesMet = false): string {
+        if ($storedState === null) {
+            return 'accessible';
+        }
+
+        if ($storedState === 'bloquee_pre_requis' && $prerequisitesMet) {
+            return 'accessible';
+        }
+
+        return $storedState;
+    }
+
+    private function normalizeStatus(string $status): string {
+        $status = strtr(trim($status), [
+            'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ä' => 'A',
+            'à' => 'a', 'á' => 'a', 'â' => 'a', 'ä' => 'a',
+            'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'Î' => 'I', 'Ï' => 'I', 'î' => 'i', 'ï' => 'i',
+            'Ô' => 'O', 'Ö' => 'O', 'ô' => 'o', 'ö' => 'o',
+            'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U',
+            'ù' => 'u', 'û' => 'u', 'ü' => 'u',
+            'Ç' => 'C', 'ç' => 'c',
+        ]);
+
+        return function_exists('mb_strtolower') ? mb_strtolower($status) : strtolower($status);
+    }
 }

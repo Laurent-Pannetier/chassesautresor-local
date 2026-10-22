@@ -41,6 +41,114 @@ final class RiddleAnswerSubmissionPolicyTest extends TestCase {
         $this->assertNull($policy->validate(...array_merge($base, [false])));
     }
 
+    public function testAutomaticAnswerIsAcceptedWhenThePlayerHasNoStatusRow(): void
+    {
+        $policy = new RiddleAnswerSubmissionPolicy();
+
+        $this->assertSame('non_commencee', $policy->effectiveUserStatus(null));
+        $this->assertSame('non_commencee', $policy->effectiveUserStatus('  '));
+        $this->assertSame('accessible', $policy->effectiveSystemState(null));
+        $this->assertNull($policy->validate(
+            true,
+            true,
+            42,
+            'enigme',
+            'orpheline',
+            $policy->effectiveSystemState(null),
+            $policy->effectiveUserStatus(null),
+            0,
+            0,
+            0,
+            10,
+            true
+        ));
+    }
+
+    public function testSatisfiedPrerequisitesUnlockACachedPrerequisiteBlock(): void
+    {
+        $policy = new RiddleAnswerSubmissionPolicy();
+
+        $this->assertSame('accessible', $policy->effectiveSystemState('bloquee_pre_requis', true));
+        $this->assertSame('bloquee_pre_requis', $policy->effectiveSystemState('bloquee_pre_requis', false));
+        $this->assertSame('', $policy->effectiveSystemState(''));
+        $this->assertNull($policy->validate(
+            true,
+            true,
+            42,
+            'enigme',
+            'orpheline',
+            $policy->effectiveSystemState('bloquee_pre_requis', true),
+            'non_commencee',
+            0,
+            0,
+            0,
+            10,
+            true
+        ));
+    }
+
+    public function testAccentedStoredStatusStillAllowsAnotherAutomaticAnswer(): void
+    {
+        $policy = new RiddleAnswerSubmissionPolicy();
+
+        $this->assertSame('echouee', $policy->effectiveUserStatus('Échouée'));
+        $this->assertSame('terminee', $policy->effectiveUserStatus('Terminée'));
+        $this->assertNull($policy->validate(
+            true,
+            true,
+            42,
+            'enigme',
+            'orpheline',
+            'accessible',
+            $policy->effectiveUserStatus('Échouée'),
+            0,
+            0,
+            0,
+            10,
+            true
+        ));
+        $this->assertSame(
+            'deja_resolue',
+            $policy->validate(
+                true,
+                true,
+                42,
+                'enigme',
+                'orpheline',
+                'accessible',
+                $policy->effectiveUserStatus('Terminée'),
+                0,
+                0,
+                0,
+                10,
+                true
+            )
+        );
+    }
+
+    public function testManualSubmissionStillRequiresAnEngagedStatus(): void
+    {
+        $policy = new RiddleAnswerSubmissionPolicy();
+
+        $this->assertSame(
+            'interdit',
+            $policy->validate(
+                true,
+                true,
+                42,
+                'enigme',
+                'orpheline',
+                'accessible',
+                $policy->effectiveUserStatus(null),
+                0,
+                0,
+                0,
+                10,
+                false
+            )
+        );
+    }
+
     private function replace(array $arguments, int $index, $value): array
     {
         $arguments[$index] = $value;
