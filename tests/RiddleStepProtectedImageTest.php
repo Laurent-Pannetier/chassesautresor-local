@@ -24,10 +24,9 @@ final class RiddleStepProtectedImageTest extends TestCase {
         );
 
         self::assertStringContainsString('riddleStepImages($wpdb)', $source);
-        self::assertStringContainsString(
-            "header('Cache-Control: private, max-age=120, must-revalidate')",
-            $source
-        );
+        self::assertStringContainsString('browserCacheControl($exp)', $source);
+        self::assertStringContainsString('X-LiteSpeed-Cache-Control: no-cache', $source);
+        self::assertStringNotContainsString('nocache_headers()', $source);
         self::assertStringContainsString('http_response_code(304)', $source);
         self::assertStringContainsString('tryLiteSpeedSend', $source);
         self::assertStringContainsString('ProtectedRiddleImageSignedUrlService', $source);

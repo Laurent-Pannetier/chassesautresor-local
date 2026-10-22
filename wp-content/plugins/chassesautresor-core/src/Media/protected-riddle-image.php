@@ -101,17 +101,30 @@ $path = $safe_path;
 while (ob_get_level()) {
     ob_end_clean();
 }
-nocache_headers();
 remove_all_actions('template_redirect');
 do_action('litespeed_control_set_nocache');
 
 // ✅ Envoi du fichier
-// Cache navigateur privé court : jamais partagé (CDN/proxy), revalidation via ETag/Last-Modified.
-// TTL volontairement bas pour limiter la fenêtre si les droits d'accès changent.
+// Cache navigateur privé : jamais partagé (CDN / LiteSpeed). L'URL signée est stable
+// pendant sa fenêtre, donc un rechargement réutilise le fichier. Au-delà de 15 min
+// le navigateur revalide et l'accès est revérifié.
 $mtime = filemtime($path);
 $etag  = '"' . md5($mtime . filesize($path)) . '"';
 
-header('Cache-Control: private, max-age=120, must-revalidate');
+$cache_control = 'Cache-Control: ' . $delivery->browserCacheControl($exp);
+$expires = 'Expires: ' . $delivery->browserExpires($exp);
+$apply_private_cache = static function () use ($cache_control, $expires): void {
+    header('X-LiteSpeed-Cache-Control: no-cache', true);
+    header($cache_control, true);
+    header($expires, true);
+    header_remove('Pragma');
+};
+$apply_private_cache();
+// Réappliqué au moment de l'envoi : un plugin (LiteSpeed, page connectée) peut
+// encore remplacer ces en-têtes pendant le shutdown.
+if (function_exists('header_register_callback')) {
+    header_register_callback($apply_private_cache);
+}
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: no-referrer');
 header('Cross-Origin-Resource-Policy: same-origin');

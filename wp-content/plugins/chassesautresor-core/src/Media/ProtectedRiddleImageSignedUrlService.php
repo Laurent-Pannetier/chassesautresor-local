@@ -24,7 +24,7 @@ final class ProtectedRiddleImageSignedUrlService
         string $format = ''
     ): array {
         $format = $this->normalizeFormat($format);
-        $exp = ($now ?? time()) + max(60, $this->ttlSeconds);
+        $exp = $this->stableExpiry($now ?? time());
         return [
             'exp' => $exp,
             'uid' => max(0, $userId),
@@ -72,6 +72,22 @@ final class ProtectedRiddleImageSignedUrlService
         }
 
         return \add_query_arg($args, $baseUrl);
+    }
+
+    /**
+     * Align expiry on the TTL window so the same viewer receives the same URL
+     * until that window ends. Near the boundary the next window is used, which
+     * keeps at least half a TTL of validity.
+     */
+    private function stableExpiry(int $now): int
+    {
+        $window = max(60, $this->ttlSeconds);
+        $boundary = intdiv($now, $window) * $window + $window;
+        if ($boundary - $now < intdiv($window, 2)) {
+            $boundary += $window;
+        }
+
+        return $boundary;
     }
 
     private function signature(int $imageId, string $size, int $userId, int $exp, string $format = ''): string
