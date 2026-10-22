@@ -622,6 +622,7 @@ require_once $inc_path . 'single-hunt-home.php';
 require_once $inc_path . 'single-hunt-seo.php';
 require_once $inc_path . 'footer-functions.php';
 require_once $inc_path . 'app-shell.php';
+require_once $inc_path . 'auth-screen.php';
 
 require_once $inc_path . 'edition/edition-core.php';
 require_once $inc_path . 'edition/edition-organisateur.php';
