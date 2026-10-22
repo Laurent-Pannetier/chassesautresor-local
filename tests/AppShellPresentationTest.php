@@ -90,8 +90,10 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString('SphereGeometry', $source);
         $this->assertStringContainsString('prefers-reduced-motion', $source);
         $this->assertStringContainsString('stepSphere', $source);
+        $this->assertStringContainsString('travelLimit(viewHalfWidth, camera.position.z)', $source);
         $this->assertStringContainsString('IntersectionObserver', $source);
         $this->assertStringContainsString('--hunt-sphere-x', $source);
+        $this->assertStringNotContainsString('kickAngle', $source);
         $this->assertStringNotContainsString('rotation.y += 0.0042', $source);
         $this->assertStringNotContainsString('quaternion.slerp', $source);
         $this->assertStringContainsString('bounced', $motion);

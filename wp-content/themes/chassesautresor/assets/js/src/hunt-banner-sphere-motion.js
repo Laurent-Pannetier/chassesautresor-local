@@ -1,37 +1,58 @@
 /**
  * Lateral roll for the home-banner sphere.
- * The sphere travels on X, rolls without slipping, and rebounds on the
- * left and right edges with a nearby speed and a slightly new facing.
+ * The center stops where the silhouette meets the frame, so the circumference
+ * touches the edge. The rebound reverses the roll along the path actually
+ * traveled, without an extra spin.
  */
 var RADIUS = 1;
-var EDGE_MARGIN = 0.08;
 var BASE_SPEED = 0.32;
 var MIN_SPEED = 0.24;
 var MAX_SPEED = 0.44;
+var CONTACT_MARGIN = 0.012;
 
-function travelLimit(halfWidth) {
-  var limit = halfWidth - RADIUS - EDGE_MARGIN;
-  return limit > 0 ? limit : 0;
-}
-
-function unitAxis(x, y, z) {
-  var length = Math.hypot(x, y, z);
-  if (length < 0.000001) {
-    return { x: 0, y: 0, z: 1 };
+function silhouetteAngle(x, cameraZ) {
+  var distance = Math.hypot(x, cameraZ);
+  if (!(distance > RADIUS)) {
+    return Math.PI;
   }
-  return { x: x / length, y: y / length, z: z / length };
+  return Math.atan2(Math.abs(x), cameraZ) + Math.asin(RADIUS / distance);
 }
 
-function tiltRollAxis(random) {
-  return unitAxis(
-    (random() - 0.5) * 0.34,
-    (random() - 0.5) * 0.22,
-    1
-  );
+/**
+ * Largest |x| whose circumference stays inside the frame.
+ * `halfWidth` is the visible half-width on the plane z = 0.
+ */
+function travelLimit(halfWidth, cameraZ) {
+  if (!(halfWidth > 0) || !(cameraZ > RADIUS)) {
+    return 0;
+  }
+  var frame = Math.atan(halfWidth / cameraZ);
+  if (!(frame > silhouetteAngle(0, cameraZ) + CONTACT_MARGIN)) {
+    return 0;
+  }
+
+  var low = 0;
+  var high = halfWidth;
+  var step;
+  for (step = 0; step < 28; step += 1) {
+    var mid = (low + high) / 2;
+    if (silhouetteAngle(mid, cameraZ) + CONTACT_MARGIN <= frame) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+  return low > 0.02 ? low : 0;
 }
 
-function randomAxis(random) {
-  return unitAxis(random() * 2 - 1, random() * 2 - 1, random() * 2 - 1);
+function reflectedSpeed(velocity, random) {
+  var speed = Math.abs(velocity) * (0.9 + random() * 0.18);
+  if (speed < MIN_SPEED) {
+    speed = MIN_SPEED;
+  } else if (speed > MAX_SPEED) {
+    speed = MAX_SPEED;
+  }
+  return (velocity >= 0 ? -1 : 1) * speed;
 }
 
 function createRollState(limit, random) {
@@ -39,59 +60,56 @@ function createRollState(limit, random) {
   return {
     x: 0,
     velocityX: direction * BASE_SPEED,
-    rollAxis: tiltRollAxis(random),
     limit: limit,
   };
 }
 
 /**
  * Advance one step. `random` returns a number in [0, 1).
- * `rollAngle` is the world rotation, in radians, around the axis held
- * before this step. A bounce replaces that axis afterwards.
+ * `rollAngle` matches the signed distance the center really moves.
  */
 function stepSphere(state, dt, random) {
-  var next = {
-    x: state.x,
-    velocityX: state.velocityX,
-    rollAxis: state.rollAxis,
-    rollAngle: 0,
-    bounced: false,
-    kickAngle: 0,
-    kickAxis: { x: 0, y: 0, z: 1 },
-  };
-  if (!(dt > 0) || !(state.limit > 0.02)) {
-    return next;
+  var x = state.x;
+  var velocity = state.velocityX;
+  var limit = state.limit;
+  if (!(dt > 0) || !(limit > 0.02)) {
+    return { x: x, velocityX: velocity, rollAngle: 0, bounced: false };
+  }
+  if (x > limit) {
+    x = limit;
+  } else if (x < -limit) {
+    x = -limit;
   }
 
-  var distance = state.velocityX * dt;
-  var x = state.x + distance;
+  var remaining = dt;
+  var traveled = 0;
   var bounced = false;
-  if (x > state.limit) {
-    x = state.limit;
-    bounced = true;
-  } else if (x < -state.limit) {
-    x = -state.limit;
+  var passes = 0;
+  while (remaining > 0.0000001 && passes < 8) {
+    passes += 1;
+    var bound = velocity >= 0 ? limit : -limit;
+    var timeToBound = velocity === 0 ? Infinity : (bound - x) / velocity;
+    if (!(timeToBound >= 0) || timeToBound > remaining) {
+      var freeDistance = velocity * remaining;
+      x += freeDistance;
+      traveled += freeDistance;
+      remaining = 0;
+      break;
+    }
+    var distanceToBound = velocity * timeToBound;
+    x = bound;
+    traveled += distanceToBound;
+    remaining -= timeToBound;
+    velocity = reflectedSpeed(velocity, random);
     bounced = true;
   }
 
-  next.x = x;
-  next.rollAngle = -distance / RADIUS;
-  if (!bounced) {
-    return next;
-  }
-
-  var speed = Math.abs(state.velocityX) * (0.9 + random() * 0.18);
-  if (speed < MIN_SPEED) {
-    speed = MIN_SPEED;
-  } else if (speed > MAX_SPEED) {
-    speed = MAX_SPEED;
-  }
-  next.velocityX = (state.velocityX >= 0 ? -1 : 1) * speed;
-  next.rollAxis = tiltRollAxis(random);
-  next.kickAxis = randomAxis(random);
-  next.kickAngle = 0.1 + random() * 0.22;
-  next.bounced = true;
-  return next;
+  return {
+    x: x,
+    velocityX: velocity,
+    rollAngle: -traveled / RADIUS,
+    bounced: bounced,
+  };
 }
 
 /**
@@ -122,6 +140,7 @@ module.exports = {
   RADIUS: RADIUS,
   createRollState: createRollState,
   shadowPlacement: shadowPlacement,
+  silhouetteAngle: silhouetteAngle,
   stepSphere: stepSphere,
   travelLimit: travelLimit,
 };

@@ -77,8 +77,7 @@ function mount(root) {
   scene.add(mesh);
 
   var roll = createRollState(0, Math.random);
-  var axis = new Vector3(roll.rollAxis.x, roll.rollAxis.y, roll.rollAxis.z);
-  var kick = new Vector3();
+  var axis = new Vector3(0, 0, 1);
   var spin = new Quaternion();
   var viewHalfWidth = 1;
   var impact = 0;
@@ -105,7 +104,7 @@ function mount(root) {
     camera.position.z = 2.4 / (2 * Math.tan(halfFov));
     camera.updateProjectionMatrix();
     viewHalfWidth = camera.position.z * Math.tan(halfFov) * camera.aspect;
-    roll.limit = travelLimit(viewHalfWidth);
+    roll.limit = travelLimit(viewHalfWidth, camera.position.z);
     if (roll.x > roll.limit) {
       roll.x = roll.limit;
     } else if (roll.x < -roll.limit) {
@@ -147,13 +146,11 @@ function mount(root) {
       dt = 0.05;
     }
 
-      if (reduceMotionQuery.matches) {
-      if (mesh.position.x !== 0 || mesh.position.y !== 0 || impact > 0) {
+    if (reduceMotionQuery.matches) {
+      if (mesh.position.x !== 0 || impact > 0) {
         mesh.position.x = 0;
-        mesh.position.y = 0;
         roll.x = 0;
         impact = 0;
-        mesh.scale.set(1, 1, 1);
         placeShadow();
       }
     } else if (dt > 0) {
@@ -161,14 +158,11 @@ function mount(root) {
       roll.x = step.x;
       roll.velocityX = step.velocityX;
       mesh.position.x = step.x;
-      axis.set(roll.rollAxis.x, roll.rollAxis.y, roll.rollAxis.z);
-      spin.setFromAxisAngle(axis, step.rollAngle);
-      mesh.quaternion.premultiply(spin);
-      if (step.bounced) {
-        roll.rollAxis = step.rollAxis;
-        kick.set(step.kickAxis.x, step.kickAxis.y, step.kickAxis.z);
-        spin.setFromAxisAngle(kick, step.kickAngle);
+      if (step.rollAngle !== 0) {
+        spin.setFromAxisAngle(axis, step.rollAngle);
         mesh.quaternion.premultiply(spin);
+      }
+      if (step.bounced) {
         impact = 1;
       }
       if (impact > 0) {
@@ -177,9 +171,6 @@ function mount(root) {
           impact = 0;
         }
       }
-      mesh.position.y = -impact * 0.05;
-      mesh.scale.set(1 + impact * 0.035, 1 - impact * 0.05, 1 + impact * 0.035);
-      mesh.quaternion.normalize();
       placeShadow();
     }
 
