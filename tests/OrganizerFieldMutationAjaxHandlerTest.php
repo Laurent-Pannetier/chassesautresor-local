@@ -30,6 +30,12 @@ final class OrganizerFieldMutationAjaxHandlerTest extends TestCase {
                 10,
                 1,
             ],
+            [
+                'wp_ajax_enregistrer_champs_organisateur',
+                [OrganizerFieldMutationAjaxHandler::class, 'handleBatch'],
+                10,
+                1,
+            ],
         ], $hooks);
     }
 }

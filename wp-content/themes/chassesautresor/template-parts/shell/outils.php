@@ -44,6 +44,10 @@ if ($is_admin && class_exists(ChassesAuTresor\Core\Messages\AccountToolsRenderer
                 // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
                 echo cta_shell_render_hunt_edit_card($hunt_id);
             }
+            if (function_exists('cta_shell_render_organizer_edit_card')) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo cta_shell_render_organizer_edit_card();
+            }
             if ($can_reset) :
                 ?>
                 <div class="dashboard-card">

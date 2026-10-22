@@ -168,7 +168,13 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                             ? cta_shell_normalize_edition_section('enigme', $tab)
                             : 'parametres'
                     )
-                    : add_query_arg(['edition' => 'open', 'tab' => $tab], (string) get_permalink($post->ID));
+                    : add_query_arg(
+                        [
+                            'enigme' => (int) $post->ID,
+                            'section' => $tab === 'stats' ? 'stats' : 'parametres',
+                        ],
+                        home_url('/outils/')
+                    );
                 $edit = '<a class="enigme-menu__edit" href="' . esc_url($edit_url)
                     . '" aria-label="'
                     . esc_attr__("Paramètres", "chassesautresor-com")

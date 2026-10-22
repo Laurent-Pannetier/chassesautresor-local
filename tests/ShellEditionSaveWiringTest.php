@@ -27,12 +27,23 @@ final class ShellEditionSaveWiringTest extends TestCase {
         $this->assertStringContainsString("return Promise.resolve('queued')", $fields);
         $this->assertStringContainsString('enregistrer_champs_enigme', $queue);
         $this->assertStringContainsString('enregistrer_champs_chasse', $queue);
+        $this->assertStringContainsString('enregistrer_champs_organisateur', $queue);
         $this->assertStringContainsString('beforeunload', $queue);
         $this->assertStringContainsString('champs_caches.chasse_cache_gagnants', $queue);
         $this->assertStringContainsString('champs_caches.chasse_cache_date_decouverte', $queue);
         $this->assertStringContainsString('queueDates', $hunt);
         $this->assertStringContainsString('wp_ajax_enregistrer_champs_enigme', $riddleHandler);
         $this->assertStringContainsString('wp_ajax_enregistrer_champs_chasse', $huntHandler);
+        $organizerHandler = (string) file_get_contents(
+            $root . '/wp-content/plugins/chassesautresor-core/src/Content/OrganizerFieldMutationAjaxHandler.php'
+        );
+        $organizerTemplate = (string) file_get_contents(
+            $root . '/wp-content/themes/chassesautresor/template-parts/organisateur/organisateur-edition-main.php'
+        );
+        $this->assertStringContainsString('wp_ajax_enregistrer_champs_organisateur', $organizerHandler);
+        $this->assertStringContainsString('champ-coordonnees-editeur', $organizerTemplate);
+        $this->assertStringContainsString('Édition organisateur', $organizerTemplate);
+        $this->assertStringNotContainsString('panneau-fermer', $organizerTemplate);
         $template = (string) file_get_contents(
             $root . '/wp-content/themes/chassesautresor/template-parts/enigme/enigme-edition-main.php'
         );
