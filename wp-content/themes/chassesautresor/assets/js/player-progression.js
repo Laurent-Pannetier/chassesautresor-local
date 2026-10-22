@@ -53,6 +53,38 @@
     }
 
     root.addEventListener("click", function (event) {
+      var expand = event.target.closest("[data-ranking-expand]");
+      if (expand) {
+        var expandedRanking = expand.closest("[data-riddle-ranking]");
+        if (expandedRanking) {
+          expandedRanking.classList.add("is-expanded");
+          expand.setAttribute("aria-expanded", "true");
+        }
+        return;
+      }
+
+      var collapse = event.target.closest("[data-ranking-collapse]");
+      if (collapse) {
+        var collapsedRanking = collapse.closest("[data-riddle-ranking]");
+        if (!collapsedRanking) {
+          return;
+        }
+        collapsedRanking.classList.remove("is-expanded");
+        var fold = collapsedRanking.querySelector("[data-ranking-fold]");
+        var foldPage = fold ? fold.getAttribute("data-page") || "1" : "1";
+        if (foldPage !== "1") {
+          request(
+            "cat_player_progression_riddle_ranking",
+            {
+              riddle_id: collapsedRanking.getAttribute("data-riddle-id") || "0",
+              page: 1,
+            },
+            collapsedRanking
+          );
+        }
+        return;
+      }
+
       var leaderboardButton = event.target.closest("[data-leaderboard-page]");
       if (leaderboardButton && !leaderboardButton.disabled) {
         var leaderboard = root.querySelector("[data-progression-leaderboard]");

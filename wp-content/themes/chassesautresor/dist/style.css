@@ -17805,6 +17805,7 @@ html[data-theme=day] .home-enigmas-preserve {
 
 .player-summary__primary,
 .player-summary__mini,
+.player-summary__tile,
 .progression-leaderboard,
 .equipe-performance__primary,
 .equipe-performance__compact article,
@@ -17836,12 +17837,14 @@ html[data-theme=day] .home-enigmas-preserve {
 }
 
 .player-summary__mini,
+.player-summary__tile,
 .equipe-performance__compact article {
   min-width: 0;
   padding: 0.75rem;
 }
 
 .player-summary__mini .team-stat__value,
+.player-summary__tile .team-stat__value,
 .equipe-performance__compact .team-stat__value {
   margin-top: 0.6rem;
   font-size: 1.4rem;
@@ -17973,6 +17976,7 @@ html[data-theme=day] .home-enigmas-preserve {
 .progression-leaderboard__pager button,
 .equipe-ranking__pager button,
 .progression-attempts__pager button,
+.progression-ranking-fold__actions button,
 .progression-riddle__submissions {
   min-height: 2.15rem;
   padding: 0.35rem 0.65rem;
@@ -18084,7 +18088,12 @@ html[data-theme=day] .home-enigmas-preserve {
   color: var(--shell-danger);
 }
 
-.player-summary,
+.player-summary {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
 .equipe-performance__summary {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -18098,6 +18107,7 @@ html[data-theme=day] .home-enigmas-preserve {
 
 .player-summary__primary,
 .player-summary__mini,
+.player-summary__tile,
 .equipe-performance__primary,
 .equipe-performance__compact article {
   min-height: 0;
@@ -18113,6 +18123,7 @@ html[data-theme=day] .home-enigmas-preserve {
 .player-summary__primary .team-stat__value,
 .equipe-performance__primary .team-stat__value,
 .player-summary__mini .team-stat__value,
+.player-summary__tile .team-stat__value,
 .equipe-performance__compact .team-stat__value {
   margin-top: 0.55rem;
   font-size: 1.65rem;
@@ -18259,10 +18270,28 @@ html[data-theme=day] .home-enigmas-preserve {
 }
 
 .progression-leaderboard__pager,
-.equipe-ranking__pager {
+.equipe-ranking__pager,
+.progression-ranking-fold__actions {
   margin: 0;
   padding: 0.75rem;
   border-top: 1px solid var(--shell-border);
+}
+
+.progression-ranking-fold__actions {
+  display: flex;
+  justify-content: center;
+}
+
+[data-riddle-ranking]:not(.is-expanded) .progression-ranking-extra,
+[data-riddle-ranking]:not(.is-expanded) .progression-ranking-fold__pager,
+[data-riddle-ranking]:not(.is-expanded) .progression-ranking-fold__collapse,
+[data-riddle-ranking].is-expanded .progression-ranking-fold__expand,
+[data-riddle-ranking].is-expanded .progression-ranking-pin[data-pin-listed="1"] {
+  display: none;
+}
+
+.progression-ranking-pin td {
+  box-shadow: inset 0 1px 0 var(--shell-border);
 }
 
 .progression-data-table--riddles {
@@ -18813,7 +18842,9 @@ html[data-theme=day] .home-enigmas-preserve {
   .team-stats__grid {
     grid-template-columns: 1fr 1fr;
   }
-  .player-summary,
+  .player-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .equipe-performance__summary {
     grid-template-columns: 1.2fr repeat(3, minmax(0, 1fr));
   }

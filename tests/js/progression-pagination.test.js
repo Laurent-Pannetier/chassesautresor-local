@@ -57,6 +57,24 @@ describe('riddle ranking pagination', () => {
     global.fetch = jest.fn(() => new Promise(() => {}));
   });
 
+  test('expands a folded riddle ranking without a request', () => {
+    document.body.innerHTML = `
+      <section data-player-ranking data-ajax-url="/ajax" data-nonce="player-nonce"
+        data-hunt-id="12" data-error-message="Erreur">
+        <div data-riddle-ranking data-riddle-id="40">
+          <div data-ranking-fold data-page="1">
+            <button data-ranking-expand aria-expanded="false">Voir plus</button>
+            <button data-ranking-collapse>Réduire</button>
+          </div>
+        </div>
+      </section>`;
+    require('../../wp-content/themes/chassesautresor/assets/js/player-progression.js');
+    document.querySelector('[data-ranking-expand]').click();
+
+    expect(fetch).not.toHaveBeenCalled();
+    expect(document.querySelector('[data-riddle-ranking]').classList.contains('is-expanded')).toBe(true);
+  });
+
   test('requests one riddle ranking page without reloading', () => {
     require('../../wp-content/themes/chassesautresor/assets/js/player-progression.js');
     document.querySelector('[data-riddle-ranking-page]').click();

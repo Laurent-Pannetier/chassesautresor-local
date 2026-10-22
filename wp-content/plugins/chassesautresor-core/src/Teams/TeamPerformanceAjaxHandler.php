@@ -30,14 +30,11 @@ final class TeamPerformanceAjaxHandler
         global $wpdb;
         $repository = new TeamPerformanceRepository($wpdb);
         $teamId = (new TeamRepository($wpdb))->activeTeamId($userId);
-        if ($teamId <= 0) {
-            wp_send_json_error(['message' => __('Équipe introuvable.', 'chassesautresor-com')], 404);
-        }
-
         $view = (new TeamPerformanceApplicationService($repository))->ranking(
             $teamId,
             $huntId,
-            (int) ($_POST['page'] ?? 1)
+            (int) ($_POST['page'] ?? 1),
+            $userId
         );
         $renderer = new TeamPageRenderer(
             static function (int $attachmentId): string {

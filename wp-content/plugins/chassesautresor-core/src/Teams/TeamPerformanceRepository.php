@@ -104,74 +104,161 @@ class TeamPerformanceRepository
     }
 
     /**
+     * Teams and unaffiliated players share one board. A solo counts as a team of one.
+     * Only entries with at least one solved riddle are ranked.
+     *
      * @param int[] $riddleIds
+     * @param int[] $excludedUserIds
      * @return array<int, array<string, mixed>>
      */
-    public function leaderboard(int $huntId, array $riddleIds, int $limit, int $offset): array
+    public function rankedEntries(int $huntId, array $riddleIds, array $excludedUserIds = []): array
     {
         $riddleIds = $this->positiveIds($riddleIds);
         if ($huntId <= 0 || $riddleIds === []) {
             return [];
         }
 
-        [$participantsSql, $participantParams] = $this->participantsSql($huntId, $riddleIds);
-        [$scoresSql, $scoreParams] = $this->teamScoresSql($riddleIds);
-        $teams = $this->wpdb->prefix . 'equipes';
-        $places = $this->wpdb->prefix . 'equipe_places';
-        $sql = "SELECT e.id AS team_id, e.nom AS team_name, e.image_id,"
-            . " COALESCE(mc.members, 0) AS members, COALESCE(sc.resolved, 0) AS resolved"
-            . " FROM {$teams} e JOIN {$places} ep ON ep.equipe_id = e.id"
-            . " JOIN ({$participantsSql}) p ON p.user_id = ep.user_id"
-            . " LEFT JOIN (SELECT equipe_id, COUNT(*) AS members FROM {$places} GROUP BY equipe_id) mc"
-            . ' ON mc.equipe_id = e.id'
-            . " LEFT JOIN ({$scoresSql}) sc ON sc.team_id = e.id"
-            . ' WHERE e.dissolved_at IS NULL'
-            . ' GROUP BY e.id, e.nom, e.image_id, mc.members, sc.resolved, sc.reached_at'
-            . ' ORDER BY COALESCE(sc.resolved, 0) DESC,'
-            . ' CASE WHEN COALESCE(sc.resolved, 0) > 0 THEN sc.reached_at END ASC,'
-            . ' LOWER(e.nom) ASC, e.id ASC LIMIT %d OFFSET %d';
+        $rows = array_values(array_filter(
+            array_merge(
+                $this->teamRows($huntId, $riddleIds),
+                $this->soloRows($huntId, $riddleIds, $excludedUserIds)
+            ),
+            static fn (array $row): bool => (int) ($row['resolved'] ?? 0) > 0
+        ));
+        usort($rows, static function (array $left, array $right): int {
+            $byResolved = (int) ($right['resolved'] ?? 0) <=> (int) ($left['resolved'] ?? 0);
+            if ($byResolved !== 0) {
+                return $byResolved;
+            }
+            $byTime = strcmp(self::sortTime($left), self::sortTime($right));
+            if ($byTime !== 0) {
+                return $byTime;
+            }
+            $byName = strcasecmp((string) ($left['team_name'] ?? ''), (string) ($right['team_name'] ?? ''));
+            if ($byName !== 0) {
+                return $byName;
+            }
+            $byTeam = (int) ($left['team_id'] ?? 0) <=> (int) ($right['team_id'] ?? 0);
+            if ($byTeam !== 0) {
+                return $byTeam;
+            }
 
-        return $this->rows(
-            $sql,
-            array_merge($participantParams, $scoreParams, [max(1, $limit), max(0, $offset)])
+            return (int) ($left['user_id'] ?? 0) <=> (int) ($right['user_id'] ?? 0);
+        });
+        foreach ($rows as $index => $row) {
+            unset($rows[$index]['reached_at']);
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param int[] $riddleIds
+     * @param int[] $excludedUserIds
+     * @return array<int, array<string, mixed>>
+     */
+    public function leaderboard(
+        int $huntId,
+        array $riddleIds,
+        int $limit,
+        int $offset,
+        array $excludedUserIds = []
+    ): array {
+        return array_slice(
+            $this->rankedEntries($huntId, $riddleIds, $excludedUserIds),
+            max(0, $offset),
+            max(1, $limit)
         );
     }
 
-    /** @param int[] $riddleIds */
-    public function leaderboardCount(int $huntId, array $riddleIds): int
+    /**
+     * @param int[] $riddleIds
+     * @param int[] $excludedUserIds
+     */
+    public function leaderboardCount(int $huntId, array $riddleIds, array $excludedUserIds = []): int
     {
-        $riddleIds = $this->positiveIds($riddleIds);
-        if ($huntId <= 0 || $riddleIds === []) {
-            return 0;
-        }
-
-        [$participantsSql, $params] = $this->participantsSql($huntId, $riddleIds);
-        $places = $this->wpdb->prefix . 'equipe_places';
-        $teams = $this->wpdb->prefix . 'equipes';
-
-        return $this->value(
-            "SELECT COUNT(DISTINCT e.id) FROM {$teams} e"
-            . " JOIN {$places} ep ON ep.equipe_id = e.id"
-            . " JOIN ({$participantsSql}) p ON p.user_id = ep.user_id"
-            . ' WHERE e.dissolved_at IS NULL',
-            $params
-        );
+        return count($this->rankedEntries($huntId, $riddleIds, $excludedUserIds));
     }
 
-    /** @param int[] $riddleIds */
-    public function leaderboardPosition(int $teamId, int $huntId, array $riddleIds): int
-    {
-        if ($teamId <= 0) {
-            return 0;
-        }
-
-        foreach ($this->leaderboard($huntId, $riddleIds, PHP_INT_MAX, 0) as $index => $row) {
-            if ((int) ($row['team_id'] ?? 0) === $teamId) {
+    /**
+     * @param int[] $riddleIds
+     * @param int[] $excludedUserIds
+     */
+    public function leaderboardPosition(
+        int $teamId,
+        int $userId,
+        int $huntId,
+        array $riddleIds,
+        array $excludedUserIds = []
+    ): int {
+        foreach ($this->rankedEntries($huntId, $riddleIds, $excludedUserIds) as $index => $row) {
+            $rowTeamId = (int) ($row['team_id'] ?? 0);
+            if ($teamId > 0 && $rowTeamId === $teamId) {
+                return $index + 1;
+            }
+            if ($teamId <= 0 && $userId > 0 && (int) ($row['user_id'] ?? 0) === $userId) {
                 return $index + 1;
             }
         }
 
         return 0;
+    }
+
+    /** @param array<string, mixed> $row */
+    private static function sortTime(array $row): string
+    {
+        $time = trim((string) ($row['reached_at'] ?? ''));
+
+        return $time !== '' ? $time : '9999-99-99 99:99:99';
+    }
+
+    /**
+     * @param int[] $riddleIds
+     * @return array<int, array<string, mixed>>
+     */
+    private function teamRows(int $huntId, array $riddleIds): array
+    {
+        [$participantsSql, $participantParams] = $this->participantsSql($huntId, $riddleIds);
+        [$scoresSql, $scoreParams] = $this->teamScoresSql($riddleIds);
+        $teams = $this->wpdb->prefix . 'equipes';
+        $places = $this->wpdb->prefix . 'equipe_places';
+        $sql = "SELECT e.id AS team_id, 0 AS user_id, e.nom AS team_name, e.image_id,"
+            . " COALESCE(mc.members, 0) AS members, sc.resolved, sc.reached_at"
+            . " FROM {$teams} e JOIN {$places} ep ON ep.equipe_id = e.id"
+            . " JOIN ({$participantsSql}) p ON p.user_id = ep.user_id"
+            . " LEFT JOIN (SELECT equipe_id, COUNT(*) AS members FROM {$places} GROUP BY equipe_id) mc"
+            . ' ON mc.equipe_id = e.id'
+            . " JOIN ({$scoresSql}) sc ON sc.team_id = e.id"
+            . ' WHERE e.dissolved_at IS NULL'
+            . ' GROUP BY e.id, e.nom, e.image_id, mc.members, sc.resolved, sc.reached_at';
+
+        return $this->rows($sql, array_merge($participantParams, $scoreParams));
+    }
+
+    /**
+     * @param int[] $riddleIds
+     * @param int[] $excludedUserIds
+     * @return array<int, array<string, mixed>>
+     */
+    private function soloRows(int $huntId, array $riddleIds, array $excludedUserIds): array
+    {
+        [$participantsSql, $participantParams] = $this->participantsSql($huntId, $riddleIds);
+        [$scoresSql, $scoreParams] = $this->soloScoresSql($riddleIds);
+        [$excludeSql, $excludeParams] = $this->excludeClause($excludedUserIds);
+        $users = $this->wpdb->users;
+        $places = $this->wpdb->prefix . 'equipe_places';
+        $teams = $this->wpdb->prefix . 'equipes';
+        $sql = "SELECT 0 AS team_id, u.ID AS user_id,"
+            . " COALESCE(NULLIF(u.display_name, ''), u.user_login) AS team_name,"
+            . " 0 AS image_id, 1 AS members, sc.resolved, sc.reached_at"
+            . " FROM {$users} u"
+            . " JOIN ({$participantsSql}) p ON p.user_id = u.ID"
+            . " JOIN ({$scoresSql}) sc ON sc.user_id = u.ID"
+            . " WHERE NOT EXISTS (SELECT 1 FROM {$places} ep"
+            . " JOIN {$teams} e ON e.id = ep.equipe_id AND e.dissolved_at IS NULL"
+            . " WHERE ep.user_id = u.ID){$excludeSql}";
+
+        return $this->rows($sql, array_merge($participantParams, $scoreParams, $excludeParams));
     }
 
     /**
@@ -212,6 +299,45 @@ class TeamPerformanceRepository
             . " AND s.statut IN ('resolue', 'terminee', 'terminée') GROUP BY ep.equipe_id";
 
         return [$sql, array_merge($riddleIds, $riddleIds)];
+    }
+
+    /**
+     * @param int[] $riddleIds
+     * @return array{0:string,1:int[]}
+     */
+    private function soloScoresSql(array $riddleIds): array
+    {
+        $statuses = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $attempts = $this->wpdb->prefix . 'enigme_tentatives';
+        $placeholders = implode(', ', array_fill(0, count($riddleIds), '%d'));
+        $attemptPlaceholders = implode(', ', array_fill(0, count($riddleIds), '%d'));
+        $sql = "SELECT s.user_id, COUNT(DISTINCT s.enigme_id) AS resolved,"
+            . " MAX(COALESCE(fc.solved_at, s.date_mise_a_jour)) AS reached_at"
+            . " FROM {$statuses} s"
+            . " LEFT JOIN (SELECT user_id, enigme_id, MIN(date_tentative) AS solved_at"
+            . " FROM {$attempts} WHERE etape_id IS NULL AND resultat = 'bon'"
+            . " AND enigme_id IN ({$attemptPlaceholders}) GROUP BY user_id, enigme_id) fc"
+            . ' ON fc.user_id = s.user_id AND fc.enigme_id = s.enigme_id'
+            . " WHERE s.enigme_id IN ({$placeholders})"
+            . " AND s.statut IN ('resolue', 'terminee', 'terminée') GROUP BY s.user_id";
+
+        return [$sql, array_merge($riddleIds, $riddleIds)];
+    }
+
+    /**
+     * @param int[] $excludedUserIds
+     * @return array{0:string,1:int[]}
+     */
+    private function excludeClause(array $excludedUserIds): array
+    {
+        $excludedUserIds = $this->positiveIds($excludedUserIds);
+        if ($excludedUserIds === []) {
+            return ['', []];
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($excludedUserIds), '%d'));
+
+        return [" AND u.ID NOT IN ({$placeholders})", $excludedUserIds];
     }
 
     /** @param int[] $ids @return int[] */

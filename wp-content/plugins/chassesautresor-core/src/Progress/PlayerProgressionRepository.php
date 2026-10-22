@@ -205,24 +205,33 @@ class PlayerProgressionRepository
     }
 
     /**
+     * @param int[] $excludedUserIds
+     * @return array{rank:int,row:array<string,mixed>|null}
+     */
+    public function riddleStanding(int $userId, int $riddleId, array $excludedUserIds): array
+    {
+        $empty = ['rank' => 0, 'row' => null];
+        if ($userId <= 0 || $this->countEligibleRiddlePlayers($riddleId, $excludedUserIds) < 2) {
+            return $empty;
+        }
+
+        foreach ($this->riddleRanking($riddleId, $excludedUserIds, PHP_INT_MAX, 0) as $index => $row) {
+            if ((int) ($row['user_id'] ?? 0) === $userId) {
+                return ['rank' => $index + 1, 'row' => $row];
+            }
+        }
+
+        return $empty;
+    }
+
+    /**
      * A rank exists only when the player is eligible and at least one other player is too.
      *
      * @param int[] $excludedUserIds
      */
     public function riddleRank(int $userId, int $riddleId, array $excludedUserIds): int
     {
-        if ($userId <= 0 || $this->countEligibleRiddlePlayers($riddleId, $excludedUserIds) < 2) {
-            return 0;
-        }
-
-        $rows = $this->riddleRanking($riddleId, $excludedUserIds, PHP_INT_MAX, 0);
-        foreach ($rows as $index => $row) {
-            if ((int) ($row['user_id'] ?? 0) === $userId) {
-                return $index + 1;
-            }
-        }
-
-        return 0;
+        return $this->riddleStanding($userId, $riddleId, $excludedUserIds)['rank'];
     }
 
     /**

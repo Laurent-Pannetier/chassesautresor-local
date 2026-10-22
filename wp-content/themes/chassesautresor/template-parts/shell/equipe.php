@@ -52,15 +52,15 @@ foreach ($hunts as $hunt) {
 if ($huntId <= 0 && $hunts !== []) {
     $huntId = (int) ($hunts[0]['id'] ?? 0);
 }
+$teamId = is_array($team) ? (int) ($team['id'] ?? 0) : 0;
 if (
-    is_array($team)
-    && $huntId > 0
+    $huntId > 0
     && class_exists(ChassesAuTresor\Core\Teams\TeamPerformanceApplicationService::class)
 ) {
     global $wpdb;
     $performance = (new ChassesAuTresor\Core\Teams\TeamPerformanceApplicationService(
         new ChassesAuTresor\Core\Teams\TeamPerformanceRepository($wpdb)
-    ))->build((int) ($team['id'] ?? 0), $huntId);
+    ))->build($teamId, $huntId, 1, $userId);
     $teamHunts = [];
     foreach ($hunts as $hunt) {
         $id = (int) ($hunt['id'] ?? 0);

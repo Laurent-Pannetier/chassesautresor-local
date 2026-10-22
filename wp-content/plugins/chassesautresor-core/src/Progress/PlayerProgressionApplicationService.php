@@ -101,6 +101,7 @@ final class PlayerProgressionApplicationService
             'attempts_total' => (int) ($attempts['total'] ?? 0),
             'attempts_pending' => (int) ($attempts['pending'] ?? 0),
             'hints' => $this->dashboard->countUnlockedHints($userId, $huntId, $riddleIds),
+            'rank' => $playerData->huntPosition($userId, $huntId, $riddleIds, $excluded),
             'riddles' => $riddles,
         ];
     }
@@ -203,6 +204,13 @@ final class PlayerProgressionApplicationService
 
         $pages = max(1, (int) ceil($total / 10));
         $page = max(1, min($pages, $page));
+        $standing = $total > 10
+            ? $this->playerData()->riddleStanding($userId, $riddleId, $excluded)
+            : ['rank' => 0, 'row' => null];
+        $viewer = is_array($standing['row'] ?? null) ? $standing['row'] : null;
+        if (is_array($viewer)) {
+            $viewer['rank'] = (int) $standing['rank'];
+        }
 
         return [
             'rows' => $this->playerData()->riddleRanking(
@@ -215,6 +223,8 @@ final class PlayerProgressionApplicationService
             'pages' => $pages,
             'total' => $total,
             'current_user_id' => $userId,
+            'current_position' => (int) ($standing['rank'] ?? 0),
+            'viewer' => $viewer,
         ];
     }
 
@@ -251,6 +261,7 @@ final class PlayerProgressionApplicationService
             'attempts_total' => 0,
             'attempts_pending' => 0,
             'hints' => 0,
+            'rank' => 0,
             'riddles' => [],
         ];
     }

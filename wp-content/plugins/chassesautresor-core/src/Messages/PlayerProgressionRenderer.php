@@ -66,25 +66,19 @@ final class PlayerProgressionRenderer
             . esc_attr(__('Votre progression', 'chassesautresor-com')) . '">';
         echo '<h2 class="screen-reader-text">'
             . esc_html(__('Votre progression', 'chassesautresor-com')) . '</h2>';
-        echo '<article class="player-summary__primary">';
-        echo '<p class="team-stat__label">' . esc_html__('Résolues', 'chassesautresor-com') . '</p>';
-        echo '<p class="team-stat__value">' . esc_html($this->ratio(
-            (int) ($overview['resolved'] ?? 0),
-            (int) ($overview['resolvable'] ?? 0)
-        )) . '</p></article>';
-        echo '<div class="player-summary__compact">';
+        $rank = (int) ($overview['rank'] ?? 0);
         $cards = [
-            [__('Commencées', 'chassesautresor-com'), (int) ($overview['engaged'] ?? 0)],
-            [__('Tentatives', 'chassesautresor-com'), (int) ($overview['attempts_total'] ?? 0)],
-            [__('Indices', 'chassesautresor-com'), (int) ($overview['hints'] ?? 0)],
+            [__('Résolues', 'chassesautresor-com'), (string) (int) ($overview['resolved'] ?? 0)],
+            [__('Tentatives', 'chassesautresor-com'), (string) (int) ($overview['attempts_total'] ?? 0)],
+            [__('Classement', 'chassesautresor-com'), $rank > 0 ? $this->ordinal($rank) : '—'],
         ];
         foreach ($cards as [$label, $value]) {
-            echo '<article class="player-summary__mini">';
+            echo '<article class="player-summary__tile">';
             echo '<p class="team-stat__label">' . esc_html($label) . '</p>';
-            echo '<p class="team-stat__value">' . esc_html((string) $value) . '</p>';
+            echo '<p class="team-stat__value">' . esc_html($value) . '</p>';
             echo '</article>';
         }
-        echo '</div></section>';
+        echo '</section>';
     }
 
     /** @param array<string, mixed> $view */
@@ -297,15 +291,24 @@ final class PlayerProgressionRenderer
     /** @param array<string, mixed> $view */
     public function riddleRanking(array $view): string
     {
-        $rows = (array) ($view['rows'] ?? []);
+        $rows = array_values((array) ($view['rows'] ?? []));
         $page = max(1, (int) ($view['page'] ?? 1));
         $pages = max(1, (int) ($view['pages'] ?? 1));
         $currentUserId = (int) ($view['current_user_id'] ?? 0);
+        $viewer = is_array($view['viewer'] ?? null) ? $view['viewer'] : [];
+        $viewerRank = (int) ($viewer['rank'] ?? 0);
+        $fold = $pages > 1;
+        $pageStart = (($page - 1) * 10) + 1;
+        $pageEnd = $page * 10;
         ob_start();
         if ($rows === []) {
             echo '<p class="progression-leaderboard__empty">'
                 . esc_html__('Pas encore de classement.', 'chassesautresor-com') . '</p>';
         } else {
+            if ($fold) {
+                echo '<div class="progression-ranking-fold" data-ranking-fold data-page="'
+                    . esc_attr((string) $page) . '">';
+            }
             echo '<div class="progression-table-scroll"><table class="progression-data-table'
                 . ' progression-data-table--ranking progression-data-table--player-ranking'
                 . ' progression-data-table--riddle-ranking">';
@@ -315,32 +318,85 @@ final class PlayerProgressionRenderer
             echo '<th scope="col">' . esc_html__('Avancement', 'chassesautresor-com')
                 . '</th></tr></thead><tbody>';
             foreach ($rows as $index => $row) {
-                $userId = (int) ($row['user_id'] ?? 0);
-                $rank = (($page - 1) * 10) + $index + 1;
-                $class = $userId === $currentUserId ? ' class="is-current"' : '';
-                $solved = !empty($row['solved']);
-                $badgeClass = $solved
-                    ? 'progression-riddle__status progression-riddle__status--resolue'
-                    : 'progression-riddle__status progression-riddle__status--en_cours';
-                echo '<tr' . $class . '>';
-                echo '<td class="progression-data-table__rank">' . esc_html((string) $rank) . '</td>';
-                echo '<td><span class="progression-table-identity">' . $this->avatar($userId, 40);
-                echo '<strong>' . esc_html((string) ($row['username'] ?? '')) . '</strong>';
-                echo '<small>' . esc_html($this->teamLabel((string) ($row['team_name'] ?? '')))
-                    . '</small></span></td>';
-                echo '<td class="progression-data-table__team">'
-                    . esc_html($this->teamLabel((string) ($row['team_name'] ?? ''))) . '</td>';
-                echo '<td><span class="' . esc_attr($badgeClass) . '">' . esc_html(
-                    $solved
-                        ? __('Résolue', 'chassesautresor-com')
-                        : __('En progression', 'chassesautresor-com')
-                ) . '</span></td></tr>';
+                $rank = $pageStart + $index;
+                $extra = $fold && $page === 1 && $index >= 3;
+                $this->riddleRankingRow($row, $rank, $currentUserId, $extra);
+            }
+            if ($fold && $viewerRank > 3) {
+                $listed = $viewerRank >= $pageStart && $viewerRank <= $pageEnd;
+                $this->riddleRankingRow(
+                    $viewer,
+                    $viewerRank,
+                    $currentUserId,
+                    false,
+                    true,
+                    $listed
+                );
             }
             echo '</tbody></table></div>';
+            if ($fold) {
+                echo '<div class="progression-ranking-fold__actions progression-ranking-fold__expand">';
+                echo '<button type="button" data-ranking-expand aria-expanded="false">'
+                    . esc_html__('Voir plus', 'chassesautresor-com') . '</button></div>';
+                echo '<div class="progression-ranking-fold__actions progression-ranking-fold__collapse">';
+                echo '<button type="button" data-ranking-collapse aria-expanded="true">'
+                    . esc_html__('Réduire', 'chassesautresor-com') . '</button></div>';
+            }
+            echo $this->numberedPager(
+                $page,
+                $pages,
+                'data-riddle-ranking-page',
+                $fold ? 'progression-ranking-fold__pager' : ''
+            );
+            if ($fold) {
+                echo '</div>';
+            }
         }
-        echo $this->numberedPager($page, $pages, 'data-riddle-ranking-page');
 
         return trim((string) ob_get_clean());
+    }
+
+    /** @param array<string, mixed> $row */
+    private function riddleRankingRow(
+        array $row,
+        int $rank,
+        int $currentUserId,
+        bool $extra,
+        bool $pin = false,
+        bool $listed = false
+    ): void {
+        $userId = (int) ($row['user_id'] ?? 0);
+        $classes = [];
+        if ($userId === $currentUserId && $currentUserId > 0) {
+            $classes[] = 'is-current';
+        }
+        if ($extra) {
+            $classes[] = 'progression-ranking-extra';
+        }
+        if ($pin) {
+            $classes[] = 'progression-ranking-pin';
+        }
+        $class = $classes === [] ? '' : ' class="' . esc_attr(implode(' ', $classes)) . '"';
+        $listedAttr = $pin
+            ? ' data-pin-listed="' . ($listed ? '1' : '0') . '"'
+            : '';
+        $solved = !empty($row['solved']);
+        $badgeClass = $solved
+            ? 'progression-riddle__status progression-riddle__status--resolue'
+            : 'progression-riddle__status progression-riddle__status--en_cours';
+        echo '<tr' . $class . $listedAttr . '>';
+        echo '<td class="progression-data-table__rank">' . esc_html((string) $rank) . '</td>';
+        echo '<td><span class="progression-table-identity">' . $this->avatar($userId, 40);
+        echo '<strong>' . esc_html((string) ($row['username'] ?? '')) . '</strong>';
+        echo '<small>' . esc_html($this->teamLabel((string) ($row['team_name'] ?? '')))
+            . '</small></span></td>';
+        echo '<td class="progression-data-table__team">'
+            . esc_html($this->teamLabel((string) ($row['team_name'] ?? ''))) . '</td>';
+        echo '<td><span class="' . esc_attr($badgeClass) . '">' . esc_html(
+            $solved
+                ? __('Résolue', 'chassesautresor-com')
+                : __('En progression', 'chassesautresor-com')
+        ) . '</span></td></tr>';
     }
 
     private function rankLabel(int $rank): string
@@ -416,11 +472,6 @@ final class PlayerProgressionRenderer
         };
     }
 
-    private function ratio(int $left, int $right): string
-    {
-        return $left . '/' . $right;
-    }
-
     private function avatar(int $userId, int $size): string
     {
         if ($userId > 0 && function_exists('get_avatar')) {
@@ -443,13 +494,18 @@ final class PlayerProgressionRenderer
         return $team !== '' ? $team : __('Solo', 'chassesautresor-com');
     }
 
-    private function numberedPager(int $page, int $pages, string $attribute = 'data-leaderboard-page'): string
-    {
+    private function numberedPager(
+        int $page,
+        int $pages,
+        string $attribute = 'data-leaderboard-page',
+        string $extraClass = ''
+    ): string {
         if ($pages <= 1) {
             return '';
         }
 
-        $html = '<nav class="progression-leaderboard__pager" aria-label="'
+        $class = trim('progression-leaderboard__pager ' . $extraClass);
+        $html = '<nav class="' . esc_attr($class) . '" aria-label="'
             . esc_attr__('Pages du classement', 'chassesautresor-com') . '">';
         $html .= '<button type="button" ' . $attribute . '="' . esc_attr((string) max(1, $page - 1))
             . '" aria-label="' . esc_attr__('Page précédente', 'chassesautresor-com') . '"'

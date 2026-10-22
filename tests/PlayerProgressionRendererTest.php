@@ -55,6 +55,7 @@ final class PlayerProgressionRendererTest extends TestCase
                 'attempts_total' => 9,
                 'attempts_pending' => 1,
                 'hints' => 2,
+                'rank' => 4,
                 'riddles' => [[
                     'id' => 40,
                     'title' => 'Alpha',
@@ -97,11 +98,12 @@ final class PlayerProgressionRendererTest extends TestCase
             12
         );
 
-        self::assertStringContainsString('1/2', $html);
-        self::assertStringContainsString('Commencées', $html);
+        self::assertStringNotContainsString('1/2', $html);
+        self::assertStringNotContainsString('Commencées', $html);
+        self::assertStringNotContainsString('Indices', $html);
         self::assertStringContainsString('Tentatives', $html);
+        self::assertStringContainsString('4e', $html);
         self::assertStringNotContainsString('3/9', $html);
-        self::assertStringContainsString('>2<', $html);
         self::assertStringContainsString('aria-current="page"', $html);
         self::assertStringContainsString('Chasse B', $html);
         self::assertStringContainsString('En cours', $html);
@@ -169,6 +171,28 @@ final class PlayerProgressionRendererTest extends TestCase
                     'total' => 2,
                     'current_user_id' => 7,
                 ],
+            ], [
+                'id' => 42,
+                'title' => 'Gamma',
+                'ranking' => [
+                    'rows' => [
+                        ['user_id' => 1, 'username' => 'Un', 'team_name' => 'A', 'solved' => 1],
+                        ['user_id' => 2, 'username' => 'Deux', 'team_name' => 'B', 'solved' => 1],
+                        ['user_id' => 3, 'username' => 'Trois', 'team_name' => 'C', 'solved' => 1],
+                        ['user_id' => 4, 'username' => 'Quatre', 'team_name' => '', 'solved' => 0],
+                    ],
+                    'page' => 1,
+                    'pages' => 2,
+                    'total' => 11,
+                    'current_user_id' => 7,
+                    'viewer' => [
+                        'user_id' => 7,
+                        'username' => 'Zoe',
+                        'team_name' => 'Corsaires',
+                        'solved' => 1,
+                        'rank' => 12,
+                    ],
+                ],
             ]],
         ]);
 
@@ -187,5 +211,10 @@ final class PlayerProgressionRendererTest extends TestCase
         self::assertStringNotContainsString('2026-10-02', $ranking);
         self::assertStringNotContainsString('reached_at', $ranking);
         self::assertStringNotContainsString('En tête sur cette énigme', $ranking);
+        self::assertStringContainsString('Voir plus', $ranking);
+        self::assertStringContainsString('Réduire', $ranking);
+        self::assertStringContainsString('progression-ranking-extra', $ranking);
+        self::assertStringContainsString('data-pin-listed="0"', $ranking);
+        self::assertStringContainsString('Zoe', $ranking);
     }
 }
