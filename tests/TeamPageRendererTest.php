@@ -60,6 +60,8 @@ final class TeamPageRendererTest extends TestCase
         $html = $this->render(new TeamActor(1, false), '');
 
         self::assertStringContainsString('Créer une équipe', $html);
+        self::assertStringContainsString('equipe-identity', $html);
+        self::assertStringContainsString('name="equipe_image"', $html);
         self::assertStringContainsString('Rejoindre une équipe', $html);
         self::assertStringNotContainsString('Exclure', $html);
         self::assertStringNotContainsString('Gestion des équipes', $html);
@@ -81,8 +83,11 @@ final class TeamPageRendererTest extends TestCase
         self::assertStringContainsString('ABCD2345', $html);
         self::assertStringContainsString('Copier', $html);
         self::assertStringContainsString('Quitter', $html);
+        self::assertStringContainsString('class="equipe-leave"', $html);
+        self::assertStringContainsString('value="leave"', $html);
         self::assertStringContainsString('Créateur', $html);
         self::assertStringNotContainsString('Créer une équipe', $html);
+        self::assertStringNotContainsString('Rejoindre une équipe', $html);
         self::assertStringNotContainsString('Exclure', $html);
     }
 
@@ -99,9 +104,32 @@ final class TeamPageRendererTest extends TestCase
         );
 
         self::assertStringContainsString('Gestion des équipes', $html);
+        self::assertStringContainsString('equipe-manage__settings', $html);
+        self::assertStringContainsString('class="equipe-grid"', $html);
         self::assertStringContainsString('Exclure', $html);
         self::assertStringContainsString('name="equipe_max"', $html);
+        self::assertStringNotContainsString('Créer une équipe', $html);
+        self::assertStringNotContainsString('Rejoindre une équipe', $html);
         self::assertStringNotContainsString('nope', $html);
+    }
+
+    public function testAManagerWhoPlaysCanLeaveWithoutTheEntryForms(): void
+    {
+        $service = $this->service();
+        $service->create(new TeamActor(9, false), 'Alpha', null);
+        $html = (new TeamPageRenderer())->render(
+            $service->describe(new TeamActor(9, true)),
+            '',
+            '/equipe/',
+            static fn (int $id): string => '',
+            '<svg></svg>'
+        );
+
+        self::assertStringContainsString('class="equipe-leave"', $html);
+        self::assertStringContainsString('value="leave"', $html);
+        self::assertStringContainsString('Gestion des équipes', $html);
+        self::assertStringNotContainsString('Créer une équipe', $html);
+        self::assertStringNotContainsString('Rejoindre une équipe', $html);
     }
 
     public function testItRendersTeamPerformanceWithoutInternalTieBreakData(): void
