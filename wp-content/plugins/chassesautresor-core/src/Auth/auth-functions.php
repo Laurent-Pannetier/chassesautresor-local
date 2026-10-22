@@ -72,6 +72,10 @@ function cat_social_auth_error_message(string $code): string
         'identifiants' => __('Identifiant ou mot de passe incorrect.', 'chassesautresor-com'),
         'state' => __('La connexion a expiré. Recommencez.', 'chassesautresor-com'),
         'provider' => __('Le service n’a pas répondu. Réessayez dans un instant.', 'chassesautresor-com'),
+        'provider_inactif' => __(
+            'Cette connexion n’est pas encore activée. Utilisez l’e-mail en attendant.',
+            'chassesautresor-com'
+        ),
         'provider_id' => __('Le compte du service est incomplet.', 'chassesautresor-com'),
         'email_missing' => __(
             'Ce compte n’a pas fourni d’e-mail. Autorisez l’e-mail, ou utilisez l’autre service.',

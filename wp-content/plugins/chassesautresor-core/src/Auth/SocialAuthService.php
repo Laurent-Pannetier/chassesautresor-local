@@ -71,8 +71,11 @@ final class SocialAuthService
     {
         $provider = $this->provider($provider);
         $settings = $this->storedSettings();
-        if ($provider === '' || !$this->settings->ready($settings, $provider)) {
+        if ($provider === '') {
             return ['ok' => false, 'url' => '', 'error' => 'provider'];
+        }
+        if (!$this->settings->ready($settings, $provider)) {
+            return ['ok' => false, 'url' => '', 'error' => 'provider_inactif'];
         }
 
         $state = bin2hex(random_bytes(32));

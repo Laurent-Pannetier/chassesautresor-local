@@ -82,15 +82,17 @@ final class SocialAuthRouteHandler
         $action = isset($_POST['cat_auth_action']) ? sanitize_key((string) wp_unslash($_POST['cat_auth_action'])) : '';
         $redirect = self::postedRedirect();
         if ($action === 'start') {
-            self::guardNonce('cat_auth_start', $redirect);
+            $view = self::postedView();
+            self::guardNonce('cat_auth_start', $redirect, $view);
             $provider = isset($_POST['provider']) ? sanitize_key((string) wp_unslash($_POST['provider'])) : '';
             $begun = $service->begin($provider, $redirect, (int) get_current_user_id());
             if (!$begun['ok']) {
-                self::redirectToScreen($redirect, '', 'provider');
+                $code = (string) ($begun['error'] ?? '');
+                self::redirectToScreen($redirect, $view, $code !== '' ? $code : 'provider');
             }
             $endpoints = new SocialAuthEndpoints();
             if (!$endpoints->isProviderAuthorizeUrl($begun['url'])) {
-                self::redirectToScreen($redirect, '', 'provider');
+                self::redirectToScreen($redirect, $view, 'provider');
             }
             wp_redirect($begun['url']);
             exit;
@@ -243,6 +245,13 @@ final class SocialAuthRouteHandler
         $redirect = isset($_POST['redirect_to']) ? (string) wp_unslash($_POST['redirect_to']) : '';
 
         return (new SocialAuthService())->safeRedirect($redirect);
+    }
+
+    private static function postedView(): string
+    {
+        $view = isset($_POST['cat_auth_view']) ? sanitize_key((string) wp_unslash($_POST['cat_auth_view'])) : '';
+
+        return in_array($view, ['login', 'inscription'], true) ? $view : '';
     }
 
     private static function requestedRedirect(SocialAuthService $service): string

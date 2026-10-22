@@ -150,9 +150,9 @@ function cta_auth_screen_context(): array
     }
 
     $hunt = cta_auth_screen_hunt($redirect);
-    $providers = function_exists('cat_social_auth_ready_providers') ? cat_social_auth_ready_providers() : [];
+    $ready = function_exists('cat_social_auth_ready_providers') ? cat_social_auth_ready_providers() : [];
     $emailRequested = isset($_GET['email']) && (string) wp_unslash($_GET['email']) === '1';
-    $emailOpen = $providers === [] || $emailRequested || $error === 'identifiants';
+    $emailOpen = $ready === [] || $emailRequested || $error === 'identifiants';
 
     return [
         'view' => $view,
@@ -164,7 +164,6 @@ function cta_auth_screen_context(): array
         'page_url' => function_exists('cat_social_auth_callback_url')
             ? cat_social_auth_callback_url()
             : home_url('/connexion/'),
-        'providers' => $providers,
         'email_open' => $emailOpen,
         'registration_open' => get_option('users_can_register') === '1',
         'hunt' => $hunt,
@@ -311,6 +310,45 @@ function cta_auth_provider_icon(string $provider): string
 function cta_auth_join_path(array $parts): string
 {
     return implode('', $parts);
+}
+
+/**
+ * Discord puis Google, visibles avant l'enregistrement des identifiants.
+ */
+function cta_auth_provider_buttons(string $pageUrl, string $redirect, string $view): void
+{
+    echo '<div class="auth-providers">';
+    foreach (['discord', 'google'] as $provider) {
+        cta_auth_provider_button($provider, $pageUrl, $redirect, $view);
+    }
+    echo '</div>';
+}
+
+/**
+ * Un bouton de connexion sociale.
+ */
+function cta_auth_provider_button(string $provider, string $pageUrl, string $redirect, string $view): void
+{
+    $label = $provider === 'google'
+        ? __('Continuer avec Google', 'chassesautresor-com')
+        : __('Continuer avec Discord', 'chassesautresor-com');
+    $class = 'auth-provider auth-provider--' . $provider;
+    ?>
+    <form method="post" action="<?php echo esc_url($pageUrl); ?>">
+        <?php wp_nonce_field('cat_auth_start'); ?>
+        <input type="hidden" name="cat_auth_action" value="start">
+        <input type="hidden" name="provider" value="<?php echo esc_attr($provider); ?>">
+        <input type="hidden" name="cat_auth_view" value="<?php echo esc_attr($view); ?>">
+        <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>">
+        <button class="<?php echo esc_attr($class); ?>" type="submit">
+            <?php
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            echo cta_auth_provider_icon($provider);
+            ?>
+            <span><?php echo esc_html($label); ?></span>
+        </button>
+    </form>
+    <?php
 }
 
 /**

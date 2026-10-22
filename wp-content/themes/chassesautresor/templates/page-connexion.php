@@ -16,7 +16,6 @@ $info = function_exists('cat_social_auth_info_message')
     ? cat_social_auth_info_message((string) ($auth['info'] ?? ''))
     : '';
 $hunt = is_array($auth['hunt'] ?? null) ? $auth['hunt'] : [];
-$providers = is_array($auth['providers'] ?? null) ? $auth['providers'] : [];
 $redirect = (string) ($auth['redirect'] ?? '');
 $pageUrl = (string) ($auth['page_url'] ?? '');
 $privacyUrl = (string) ($auth['privacy_url'] ?? '');
@@ -192,10 +191,18 @@ $showSocialConfirm = str_starts_with((string) ($auth['info'] ?? ''), 'social_');
                     </a>
                 </p>
             <?php elseif ($view === 'inscription') : ?>
+                <p class="auth-card__lead">
+                    <?php esc_html_e(
+                        'Créez votre compte avec Discord, ou avec Google.',
+                        'chassesautresor-com'
+                    ); ?>
+                </p>
+                <?php cta_auth_provider_buttons($pageUrl, $redirect, 'inscription'); ?>
+                <p class="auth-card__or"><span><?php esc_html_e('ou', 'chassesautresor-com'); ?></span></p>
                 <?php if (empty($auth['registration_open'])) : ?>
                     <p class="auth-card__lead">
                         <?php esc_html_e(
-                            'La création de compte par e-mail est fermée. Utilisez Discord ou Google.',
+                            'La création de compte par e-mail est fermée.',
                             'chassesautresor-com'
                         ); ?>
                     </p>
@@ -234,61 +241,22 @@ $showSocialConfirm = str_starts_with((string) ($auth['info'] ?? ''), 'social_');
                 </p>
             <?php else : ?>
                 <p class="auth-card__lead">
-                    <?php
-                    if (in_array('discord', $providers, true) && in_array('google', $providers, true)) {
-                        esc_html_e('Continuez avec Discord, puis avec Google si besoin.', 'chassesautresor-com');
-                    } elseif (in_array('discord', $providers, true)) {
-                        esc_html_e('Continuez avec Discord.', 'chassesautresor-com');
-                    } elseif (in_array('google', $providers, true)) {
-                        esc_html_e('Continuez avec Google.', 'chassesautresor-com');
-                    } else {
-                        esc_html_e('Connectez-vous avec votre e-mail.', 'chassesautresor-com');
-                    }
-                    ?>
+                    <?php esc_html_e(
+                        'Connectez-vous avec Discord, ou avec Google.',
+                        'chassesautresor-com'
+                    ); ?>
                 </p>
-
-                <?php if ($providers !== []) : ?>
-                    <div class="auth-providers">
-                        <?php foreach ($providers as $provider) : ?>
-                            <?php
-                            $provider = (string) $provider;
-                            $isGoogle = $provider === 'google';
-                            $label = $isGoogle
-                                ? __('Continuer avec Google', 'chassesautresor-com')
-                                : __('Continuer avec Discord', 'chassesautresor-com');
-                            ?>
-                            <form method="post" action="<?php echo esc_url($pageUrl); ?>">
-                                <?php wp_nonce_field('cat_auth_start'); ?>
-                                <input type="hidden" name="cat_auth_action" value="start">
-                                <input type="hidden" name="provider" value="<?php echo esc_attr($provider); ?>">
-                                <input type="hidden" name="redirect_to" value="<?php echo esc_attr($redirect); ?>">
-                                <button
-                                    class="auth-provider auth-provider--<?php echo esc_attr($provider); ?>"
-                                    type="submit"
-                                >
-                                    <?php
-                                    // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-                                    echo cta_auth_provider_icon($provider);
-                                    ?>
-                                    <span><?php echo esc_html($label); ?></span>
-                                </button>
-                            </form>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($providers !== []) : ?>
-                    <p class="auth-card__or"><span><?php esc_html_e('ou', 'chassesautresor-com'); ?></span></p>
-                    <button
-                        class="auth-email-toggle"
-                        type="button"
-                        data-auth-email-toggle
-                        aria-expanded="<?php echo $emailOpen ? 'true' : 'false'; ?>"
-                        aria-controls="auth-email-panel"
-                    >
-                        <?php esc_html_e('Continuer avec un e-mail', 'chassesautresor-com'); ?>
-                    </button>
-                <?php endif; ?>
+                <?php cta_auth_provider_buttons($pageUrl, $redirect, 'login'); ?>
+                <p class="auth-card__or"><span><?php esc_html_e('ou', 'chassesautresor-com'); ?></span></p>
+                <button
+                    class="auth-email-toggle"
+                    type="button"
+                    data-auth-email-toggle
+                    aria-expanded="<?php echo $emailOpen ? 'true' : 'false'; ?>"
+                    aria-controls="auth-email-panel"
+                >
+                    <?php esc_html_e('Continuer avec un e-mail', 'chassesautresor-com'); ?>
+                </button>
 
                 <form
                     id="auth-email-panel"
