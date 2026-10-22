@@ -167,6 +167,22 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         $script = (string) file_get_contents(self::THEME_PATH . '/assets/js/reset-stats-card.js');
 
         self::assertStringContainsString('data-reset-stats', $outils);
+        self::assertStringContainsString('organisateur_creation', $outils);
+        $dashboard = (string) file_get_contents(
+            self::THEME_PATH . '/template-parts/myaccount/dashboard-joueur.php'
+        );
+        $home = (string) file_get_contents(self::THEME_PATH . '/inc/single-hunt-home.php');
+        $banner = strpos($dashboard, 'cta_shell_render_hunt_banner');
+        $strip = strpos($dashboard, 'cat_render_demo_player_progress_reset');
+        $enigmas = strpos($dashboard, 'cat_render_single_hunt_home_enigmas');
+        self::assertNotFalse($banner);
+        self::assertNotFalse($strip);
+        self::assertNotFalse($enigmas);
+        self::assertLessThan($strip, $banner);
+        self::assertLessThan($enigmas, $strip);
+        self::assertStringContainsString('data-reset-my-progress', $home);
+        self::assertStringContainsString('cta_reset_my_progress', $home);
+        self::assertStringContainsString('Votre participation est conservée.', $home);
         self::assertStringContainsString('cat_is_demo_mode', $outils);
         self::assertStringContainsString('cta_render_demo_reset_stats_button', $theme);
         self::assertStringNotContainsString("add_action('wp_footer', 'cta_render_demo_reset_stats_button'", $theme);
