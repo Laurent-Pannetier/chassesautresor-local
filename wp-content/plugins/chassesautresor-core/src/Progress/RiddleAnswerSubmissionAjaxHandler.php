@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Progress;
 
 use ChassesAuTresor\Core\Content\RiddleStepQueryService;
+use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 use RuntimeException;
 use Throwable;
@@ -31,7 +32,7 @@ class RiddleAnswerSubmissionAjaxHandler {
         $userId = (int) get_current_user_id();
         $error = self::validate($userId, $riddleId, $answer, $nonce, 'reponse_manuelle_nonce', false);
         if ($error !== null) {
-            wp_send_json_error($error);
+            self::reject($error);
         }
 
         $lock = self::acquireLock($riddleId, $userId);
@@ -75,7 +76,7 @@ class RiddleAnswerSubmissionAjaxHandler {
         } catch (Throwable $exception) {
             self::releaseLock($lock, $riddleId, $userId);
             cat_debug('Erreur tentative : ' . $exception->getMessage());
-            wp_send_json_error('erreur_interne');
+            self::reject('erreur_interne');
         }
         self::releaseLock($lock, $riddleId, $userId);
 
@@ -96,7 +97,7 @@ class RiddleAnswerSubmissionAjaxHandler {
         $userId = (int) get_current_user_id();
         $error = self::validate($userId, $riddleId, $answer, $nonce, 'reponse_auto_nonce', true);
         if ($error !== null) {
-            wp_send_json_error($error);
+            self::reject($error);
         }
 
         $configuration = (new AnswerWidgetConfigurationService())->forRiddle($riddleId);
@@ -125,7 +126,7 @@ class RiddleAnswerSubmissionAjaxHandler {
             self::database()->query('ROLLBACK');
             self::releaseLock($lock, $riddleId, $userId);
             cat_debug('Erreur tentative : ' . $exception->getMessage());
-            wp_send_json_error('erreur_interne');
+            self::reject('erreur_interne');
         }
         self::releaseLock($lock, $riddleId, $userId);
 
@@ -149,10 +150,17 @@ class RiddleAnswerSubmissionAjaxHandler {
         $loggedIn = is_user_logged_in();
         $postType = $riddleId > 0 ? (string) get_post_type($riddleId) : '';
         $nonceValid = $nonce !== '' && wp_verify_nonce($nonce, $nonceAction) !== false;
-        $state = $riddleId > 0 ? (string) get_field('enigme_cache_etat_systeme', $riddleId) : '';
-        $status = $userId > 0 && $riddleId > 0
-            ? (string) (CoreServiceFactory::huntProgress(self::database())->getRiddleStatus($userId, $riddleId) ?? '')
-            : '';
+        $policy = new RiddleAnswerSubmissionPolicy();
+        $storedStatus = $userId > 0 && $riddleId > 0
+            ? CoreServiceFactory::huntProgress(self::database())->getRiddleStatus($userId, $riddleId)
+            : null;
+        $rawState = $riddleId > 0 ? get_field('enigme_cache_etat_systeme', $riddleId) : '';
+        if ($rawState === false || is_array($rawState)) {
+            $rawState = '';
+        }
+        $prerequisitesMet = $rawState === 'bloquee_pre_requis'
+            && $userId > 0
+            && self::prerequisitesMet($userId, $riddleId);
         $finalAnswerUnlocked = true;
         if ($userId > 0 && $riddleId > 0) {
             $stepIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
@@ -162,14 +170,14 @@ class RiddleAnswerSubmissionAjaxHandler {
             }
         }
 
-        return (new RiddleAnswerSubmissionPolicy())->validate(
+        return $policy->validate(
             $loggedIn,
             $nonceValid,
             $riddleId,
             $postType,
             $answer,
-            $state,
-            $status,
+            $policy->effectiveSystemState(is_string($rawState) ? $rawState : null, $prerequisitesMet),
+            $policy->effectiveUserStatus(is_string($storedStatus) ? $storedStatus : null),
             0,
             0,
             (int) get_field('enigme_tentative_cout_points', $riddleId),
@@ -177,6 +185,62 @@ class RiddleAnswerSubmissionAjaxHandler {
             $automatic,
             $finalAnswerUnlocked
         );
+    }
+
+    private static function prerequisitesMet(int $userId, int $riddleId): bool
+    {
+        $relationships = new RelationshipService();
+        $prerequisiteIds = $relationships->normalizeIds(
+            (array) get_field('enigme_acces_pre_requis', $riddleId)
+        );
+        $condition = (string) (get_field('enigme_acces_condition', $riddleId) ?? 'immediat');
+
+        return CoreServiceFactory::huntProgress(self::database())->areRiddlePrerequisitesMet(
+            $userId,
+            $prerequisiteIds,
+            $condition
+        );
+    }
+
+    private static function reject(string $code): void
+    {
+        wp_send_json_error([
+            'code' => $code,
+            'message' => self::submissionErrorMessage($code),
+        ]);
+    }
+
+    private static function submissionErrorMessage(string $code): string
+    {
+        switch ($code) {
+            case 'non_connecte':
+                return __('Vous devez être connecté pour répondre.', 'chassesautresor-com');
+            case 'invalide':
+                return __('Cette réponse ne peut pas être envoyée.', 'chassesautresor-com');
+            case 'interdit':
+                return __(
+                    'Cette énigme n’accepte pas de réponse pour le moment.',
+                    'chassesautresor-com'
+                );
+            case 'deja_resolue':
+                return __('Vous avez déjà résolu cette énigme.', 'chassesautresor-com');
+            case 'etapes_incompletes':
+                return __('Terminez d’abord les étapes de l’énigme.', 'chassesautresor-com');
+            case 'tentatives_epuisees':
+                return __(
+                    'Vous avez utilisé toutes vos tentatives pour aujourd’hui.',
+                    'chassesautresor-com'
+                );
+            case 'points_insuffisants':
+                return __(
+                    'Vous n’avez pas assez de points pour cette tentative.',
+                    'chassesautresor-com'
+                );
+            case 'doublon':
+                return __('Une tentative est déjà en cours de traitement.', 'chassesautresor-com');
+            default:
+                return __('La tentative n’a pas pu être enregistrée.', 'chassesautresor-com');
+        }
     }
 
     private static function processAttempt(int $userId, int $riddleId, string $answer, string $result): string
@@ -268,7 +332,7 @@ class RiddleAnswerSubmissionAjaxHandler {
     {
         $lock = new RiddleSubmissionLock(self::database());
         if (!$lock->acquire($userId, $riddleId)) {
-            wp_send_json_error('doublon');
+            self::reject('doublon');
         }
 
         return $lock;
