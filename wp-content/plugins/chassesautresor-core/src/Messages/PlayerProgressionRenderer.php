@@ -137,9 +137,9 @@ final class PlayerProgressionRenderer
     {
         echo '<section class="progression-riddles" aria-label="'
             . esc_attr(__('Énigmes', 'chassesautresor-com')) . '">';
-        echo '<h2 class="progression-riddles__title">'
-            . esc_html(__('Énigmes', 'chassesautresor-com')) . '</h2>';
         if ($riddles === []) {
+            echo '<h2 class="progression-riddles__title">'
+                . esc_html(__('Énigmes', 'chassesautresor-com')) . '</h2>';
             echo '<p class="progression-riddles__empty">'
                 . esc_html(__('Cette chasse ne contient pas encore d’énigme.', 'chassesautresor-com'))
                 . '</p></section>';
@@ -147,6 +147,8 @@ final class PlayerProgressionRenderer
         }
 
         echo '<div class="progression-table-card progression-riddles__table-wrap">';
+        echo '<h2 class="progression-riddles__title">'
+            . esc_html(__('Énigmes', 'chassesautresor-com')) . '</h2>';
         echo '<table class="progression-data-table progression-data-table--riddles">';
         echo '<thead><tr><th scope="col">' . esc_html__('Énigme', 'chassesautresor-com') . '</th>';
         echo '<th scope="col">' . esc_html__('Statut', 'chassesautresor-com') . '</th>';

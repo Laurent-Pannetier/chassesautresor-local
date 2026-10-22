@@ -123,6 +123,10 @@ final class PlayerProgressionRendererTest extends TestCase
         self::assertStringContainsString('/alpha.jpg', $html);
         self::assertStringContainsString('03/10/2026', $html);
         self::assertStringContainsString('progression-data-table--riddles', $html);
+        self::assertStringContainsString(
+            'progression-riddles__table-wrap"><h2 class="progression-riddles__title">Énigmes</h2>',
+            $html
+        );
         self::assertStringContainsString('colspan="7"', $html);
 
         $ranking = (new PlayerProgressionRenderer())->renderRanking([
