@@ -7,6 +7,8 @@ namespace ChassesAuTresor\Core\Progress;
 use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
+use DateTimeImmutable;
+use DateTimeZone;
 
 /** Turn hunt and riddle statistics into the organizer progression dashboard. */
 final class OrganizerProgressionApplicationService
@@ -40,7 +42,7 @@ final class OrganizerProgressionApplicationService
     /**
      * @return array{summary:array<string,mixed>,riddles:array<int,array<string,mixed>>}
      */
-    public function build(int $huntId, string $period = 'total'): array
+    public function build(int $huntId, string $period = 'total', ?DateTimeImmutable $now = null): array
     {
         $periodService = new StatisticsPeriodService();
         $period = $periodService->normalize($period);
@@ -57,7 +59,7 @@ final class OrganizerProgressionApplicationService
             if (!is_array($row)) {
                 continue;
             }
-            $riddles[] = $this->enrich($row, $start, $end);
+            $riddles[] = $this->enrich($row, $start, $end, $now);
         }
 
         return [
@@ -88,7 +90,98 @@ final class OrganizerProgressionApplicationService
      * @param array<string, mixed> $row
      * @return array<string, mixed>
      */
-    private function enrich(array $row, ?string $start, ?string $end): array
+    /**
+     * Day or week buckets for the curve. A single day, or a span with no
+     * attempts, stays empty so the page does not draw a flat line.
+     *
+     * @param array<int, array<string, mixed>> $buckets
+     * @return array<int, array{label:string,total:int,success:int}>
+     */
+    public function fillAttemptSeries(array $buckets, string $grain, string $startAt, string $endAt): array
+    {
+        if (!in_array($grain, ['day', 'week'], true)) {
+            return [];
+        }
+
+        $counts = [];
+        foreach ($buckets as $bucket) {
+            if (!is_array($bucket)) {
+                continue;
+            }
+            $key = substr((string) ($bucket['bucket'] ?? ''), 0, 10);
+            if ($key === '') {
+                continue;
+            }
+            $counts[$key] = [
+                'total' => (int) ($bucket['total'] ?? 0),
+                'success' => (int) ($bucket['success'] ?? 0),
+            ];
+        }
+        $attempted = 0;
+        foreach ($counts as $count) {
+            $attempted += $count['total'];
+        }
+        if ($attempted === 0) {
+            return [];
+        }
+
+        $cursor = new DateTimeImmutable(substr($startAt, 0, 10));
+        $end = new DateTimeImmutable(substr($endAt, 0, 10));
+        if ($grain === 'week') {
+            $cursor = $cursor->modify('monday this week');
+            $end = $end->modify('monday this week');
+        }
+
+        $points = [];
+        $guard = 0;
+        while ($cursor <= $end && $guard < 400) {
+            $key = $cursor->format('Y-m-d');
+            $point = $counts[$key] ?? ['total' => 0, 'success' => 0];
+            $points[] = [
+                'label' => $cursor->format('d/m'),
+                'total' => $point['total'],
+                'success' => $point['success'],
+            ];
+            $cursor = $cursor->modify($grain === 'week' ? '+1 week' : '+1 day');
+            $guard++;
+        }
+
+        $shown = 0;
+        foreach ($points as $point) {
+            $shown += $point['total'];
+        }
+        if ($shown === 0) {
+            return [];
+        }
+
+        $first = 0;
+        foreach ($points as $index => $point) {
+            if ($point['total'] > 0 || $point['success'] > 0) {
+                $first = $index;
+                break;
+            }
+        }
+        $points = array_values(array_slice($points, $first));
+
+        return count($points) < 2 ? [] : $points;
+    }
+
+    public function seriesGrain(?string $start, ?string $end): ?string
+    {
+        if ($start === null || $end === null) {
+            return 'week';
+        }
+
+        $startDate = new DateTimeImmutable(substr($start, 0, 10));
+        $endDate = new DateTimeImmutable(substr($end, 0, 10));
+        if ($startDate->format('Y-m-d') === $endDate->format('Y-m-d')) {
+            return null;
+        }
+
+        return $startDate->diff($endDate)->days > 45 ? 'week' : 'day';
+    }
+
+    private function enrich(array $row, ?string $start, ?string $end, ?DateTimeImmutable $now): array
     {
         $riddleId = (int) ($row['id'] ?? 0);
         $excludedProvider = $this->excludedUserIds ?? [$this, 'defaultExcluded'];
@@ -148,8 +241,55 @@ final class OrganizerProgressionApplicationService
         $row['median_attempts'] = $this->median((array) $solverProvider($riddleId, $excluded));
         $row['top_hint'] = $topHint;
         $row['steps_detail'] = $stepsDetail;
+        $series = $this->attemptSeries($riddleId, $start, $end, $excluded, $now);
+        $row['attempt_series'] = $series['points'];
+        $row['attempt_series_grain'] = $series['grain'];
 
         return $row;
+    }
+
+    /**
+     * @param int[] $excluded
+     * @return array{points:array<int, array{label:string,total:int,success:int}>,grain:string}
+     */
+    private function attemptSeries(
+        int $riddleId,
+        ?string $start,
+        ?string $end,
+        array $excluded,
+        ?DateTimeImmutable $now
+    ): array {
+        $empty = ['points' => [], 'grain' => ''];
+        $grain = $this->seriesGrain($start, $end);
+        if ($grain === null || $riddleId <= 0) {
+            return $empty;
+        }
+
+        $seriesStart = $start;
+        $seriesEnd = $end;
+        if ($seriesStart === null || $seriesEnd === null) {
+            $anchor = ($now ?? new DateTimeImmutable('now', new DateTimeZone('Europe/Paris')))
+                ->setTimezone(new DateTimeZone('Europe/Paris'));
+            $seriesEnd = $anchor->format('Y-m-d H:i:s');
+            $seriesStart = $anchor->modify('-15 weeks')->modify('monday this week')->setTime(0, 0)
+                ->format('Y-m-d H:i:s');
+        }
+
+        return [
+            'grain' => $grain,
+            'points' => $this->fillAttemptSeries(
+                $this->dashboard()->finalAttemptBuckets(
+                    $riddleId,
+                    $grain,
+                    $seriesStart,
+                    $seriesEnd,
+                    $excluded
+                ),
+                $grain,
+                $seriesStart,
+                $seriesEnd
+            ),
+        ];
     }
 
     private function dashboard(): ProgressionOverviewRepository

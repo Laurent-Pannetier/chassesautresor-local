@@ -66,6 +66,19 @@ final class OrganizerProgressionRepositoryStub extends ProgressionOverviewReposi
     ): array {
         return [101 => 8];
     }
+
+    public function finalAttemptBuckets(
+        int $riddleId,
+        string $grain,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): array {
+        return [
+            ['bucket' => '2026-10-05', 'total' => 4, 'success' => 1],
+            ['bucket' => '2026-10-12', 'total' => 8, 'success' => 1],
+        ];
+    }
 }
 
 final class OrganizerProgressionApplicationServiceTest extends TestCase
@@ -99,7 +112,8 @@ final class OrganizerProgressionApplicationServiceTest extends TestCase
             static fn (int $hintId): string => 'Carte'
         );
 
-        $dashboard = $service->build(12, 'total');
+        $now = new DateTimeImmutable('2026-10-22 15:00:00', new DateTimeZone('Europe/Paris'));
+        $dashboard = $service->build(12, 'total', $now);
         $riddle = $dashboard['riddles'][0];
 
         self::assertNull($repository->startAt);
@@ -117,6 +131,29 @@ final class OrganizerProgressionApplicationServiceTest extends TestCase
         self::assertSame(3, $riddle['steps_detail'][0]['reached']);
         self::assertSame(8, $riddle['steps_detail'][0]['attempts']);
         self::assertSame(25, $dashboard['summary']['resolution_rate']);
+        self::assertSame('week', $riddle['attempt_series_grain']);
+        self::assertSame('05/10', $riddle['attempt_series'][0]['label']);
+        self::assertSame(4, $riddle['attempt_series'][0]['total']);
+        self::assertSame(1, $riddle['attempt_series'][0]['success']);
+        self::assertSame('12/10', $riddle['attempt_series'][1]['label']);
+        self::assertSame(8, $riddle['attempt_series'][1]['total']);
+        self::assertSame('19/10', $riddle['attempt_series'][2]['label']);
+        self::assertSame(0, $riddle['attempt_series'][2]['total']);
+    }
+
+    public function testASingleDayDoesNotBecomeACurve(): void
+    {
+        $service = new OrganizerProgressionApplicationService(new OrganizerProgressionRepositoryStub());
+
+        self::assertNull($service->seriesGrain('2026-10-22 00:00:00', '2026-10-22 15:00:00'));
+        self::assertSame('day', $service->seriesGrain('2026-10-19 00:00:00', '2026-10-22 15:00:00'));
+        self::assertSame('week', $service->seriesGrain(null, null));
+        self::assertSame([], $service->fillAttemptSeries(
+            [['bucket' => '2026-10-22', 'total' => 3, 'success' => 1]],
+            'day',
+            '2026-10-22 00:00:00',
+            '2026-10-22 15:00:00'
+        ));
     }
 
     public function testMedianOfAnEvenCountAveragesTheMiddlePair(): void

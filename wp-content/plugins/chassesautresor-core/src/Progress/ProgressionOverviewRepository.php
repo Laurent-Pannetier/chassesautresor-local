@@ -343,6 +343,59 @@ class ProgressionOverviewRepository
         return $this->mapCounts($rows, 'etape_id', 'attempts');
     }
 
+    /**
+     * Final-answer attempts grouped by day or by week starting Monday.
+     * Intermediate steps stay out of the series.
+     *
+     * @param int[] $excludedUserIds
+     * @return array<int, array{bucket:string,total:int,success:int}>
+     */
+    public function finalAttemptBuckets(
+        int $riddleId,
+        string $grain,
+        ?string $startAt = null,
+        ?string $endAt = null,
+        array $excludedUserIds = []
+    ): array {
+        if ($riddleId <= 0 || !in_array($grain, ['day', 'week'], true)) {
+            return [];
+        }
+
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $bucket = $grain === 'week'
+            ? 'DATE(DATE_SUB(date_tentative, INTERVAL WEEKDAY(date_tentative) DAY))'
+            : 'DATE(date_tentative)';
+        $where = 'enigme_id = %d AND etape_id IS NULL';
+        $params = [$riddleId];
+        if ($startAt !== null && $endAt !== null) {
+            $where .= ' AND date_tentative BETWEEN %s AND %s';
+            $params[] = $startAt;
+            $params[] = $endAt;
+        }
+        [$excludeSql, $excludeParams] = $this->excludeClause('user_id', $excludedUserIds);
+        $rows = $this->rows(
+            "SELECT {$bucket} AS bucket, COUNT(*) AS total,"
+            . " SUM(CASE WHEN resultat = 'bon' THEN 1 ELSE 0 END) AS success"
+            . " FROM {$table} WHERE {$where}{$excludeSql} GROUP BY {$bucket} ORDER BY bucket ASC",
+            array_merge($params, $excludeParams)
+        );
+
+        $series = [];
+        foreach ($rows as $row) {
+            $key = substr((string) ($row['bucket'] ?? ''), 0, 10);
+            if ($key === '') {
+                continue;
+            }
+            $series[] = [
+                'bucket' => $key,
+                'total' => (int) ($row['total'] ?? 0),
+                'success' => (int) ($row['success'] ?? 0),
+            ];
+        }
+
+        return $series;
+    }
+
     public function countWinners(int $huntId): int
     {
         if ($huntId <= 0) {
