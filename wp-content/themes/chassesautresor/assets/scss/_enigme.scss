@@ -2609,25 +2609,26 @@ body.comic-reader .comic-hud__sheet .solution {
 }
 
 body.comic-reader .comic-hud__controls {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  column-gap: 0.75rem;
   width: 100%;
-  overflow-x: auto;
 }
 
 body.comic-reader .comic-hud__controls .galerie-enigme__pager {
-  order: 1;
-}
-
-body.comic-reader .comic-hud__controls .zone-indices {
-  order: 2;
+  grid-column: 1;
+  justify-self: start;
 }
 
 body.comic-reader .comic-hud__controls .reponse-launcher {
-  order: 3;
+  grid-column: 2;
+  justify-self: center;
+}
+
+body.comic-reader .comic-hud__controls .zone-indices {
+  grid-column: 3;
+  justify-self: end;
 }
 
 body.comic-reader .comic-hud__sheet,
@@ -2770,7 +2771,23 @@ body.comic-reader .is-comic-hud .galerie-enigme__pager.is-counter-only .galerie-
 }
 
 body.comic-reader .is-comic-hud .reponse-launcher {
-  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.reponse-launcher__solved {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.reponse-launcher__solved i {
+  color: var(--color-success);
+}
+
+body.comic-reader .is-comic-hud .reponse-launcher__solved {
+  color: #f4f1ea;
 }
 
 body.comic-reader .is-comic-hud .reponse-launcher .reponse-launcher__open {
