@@ -1,7 +1,8 @@
 /**
  * Maps the hunt image onto a sphere for the home banner.
- * The sphere rolls sideways, rebounds on the left and right edges, and
- * a contact shadow follows it. Rebuild the footer bundle with:
+ * The sphere rolls sideways and rebounds on the left and right edges.
+ * Each rebound speeds it up, tilts its spin, then the roll slows toward
+ * the other edge. A contact shadow follows it. Rebuild the footer bundle with:
  * npx esbuild assets/js/src/hunt-banner-sphere.js --bundle --format=iife --minify
  *   --target=es2018 --legal-comments=inline --outfile=assets/js/hunt-banner-sphere.js
  */
@@ -157,10 +158,19 @@ function mount(root) {
       var step = stepSphere(roll, dt, Math.random);
       roll.x = step.x;
       roll.velocityX = step.velocityX;
+      roll.exitSpeed = step.exitSpeed;
+      roll.arrivalSpeed = step.arrivalSpeed;
+      roll.tumbleX = step.tumbleX;
+      roll.tumbleY = step.tumbleY;
       mesh.position.x = step.x;
-      if (step.rollAngle !== 0) {
-        spin.setFromAxisAngle(axis, step.rollAngle);
-        mesh.quaternion.premultiply(spin);
+      var spinIndex;
+      for (spinIndex = 0; spinIndex < step.spins.length; spinIndex += 1) {
+        var part = step.spins[spinIndex];
+        if (part.angle !== 0) {
+          axis.set(part.x, part.y, part.z);
+          spin.setFromAxisAngle(axis, part.angle);
+          mesh.quaternion.premultiply(spin);
+        }
       }
       if (step.bounced) {
         impact = 1;

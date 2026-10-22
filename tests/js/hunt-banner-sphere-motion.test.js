@@ -45,82 +45,185 @@ describe('hunt banner sphere roll', () => {
     expect(step.bounced).toBe(false);
   });
 
-  test('leaves the right edge along the path actually traveled', () => {
+  test('leaves a side faster than it arrived, on a new spin axis', () => {
+    const incoming = 0.22;
     const state = {
       x: 1,
-      velocityX: 0.32,
+      velocityX: incoming,
       limit: 1,
+      exitSpeed: 0.6,
+      arrivalSpeed: incoming,
+      tumbleX: 0,
+      tumbleY: 0,
     };
-
+    const picked = motion.pickBounceSpeeds(incoming, () => 0);
+    const tumble = motion.pickTumble(() => 0);
+    const slope = (picked.arrivalSpeed - picked.exitSpeed) / 2;
+    const nextSpeed = picked.exitSpeed * Math.exp(slope * 0.05);
+    const distance = (nextSpeed - picked.exitSpeed) / slope;
     const step = motion.stepSphere(state, 0.05, () => 0);
-    const speed = 0.288;
+    const spin = step.spins[0];
 
     expect(step.bounced).toBe(true);
-    expect(step.velocityX).toBeCloseTo(-speed, 5);
-    expect(step.x).toBeCloseTo(1 - speed * 0.05, 5);
-    expect(step.rollAngle).toBeCloseTo((speed * 0.05) / motion.RADIUS, 5);
+    expect(step.exitSpeed).toBeCloseTo(picked.exitSpeed, 5);
+    expect(step.arrivalSpeed).toBeCloseTo(picked.arrivalSpeed, 5);
+    expect(step.arrivalSpeed).toBeLessThan(step.exitSpeed);
+    expect(step.velocityX).toBeCloseTo(-nextSpeed, 5);
+    expect(Math.abs(step.velocityX)).toBeGreaterThan(incoming + 0.1);
+    expect(step.x).toBeCloseTo(1 - distance, 5);
+    expect(step.rollAngle).toBeCloseTo(-(step.x - state.x) / motion.RADIUS, 5);
+    expect(step.tumbleX).toBeCloseTo(tumble.x, 5);
+    expect(step.tumbleY).toBeCloseTo(tumble.y, 5);
+    expect(Math.hypot(step.tumbleX, step.tumbleY)).toBeGreaterThan(0.8);
+    expect(Math.abs(spin.x) + Math.abs(spin.y)).toBeGreaterThan(0.2);
+    expect(spin.z * spin.angle).toBeCloseTo(step.rollAngle, 5);
     expect(step.kickAngle).toBeUndefined();
   });
 
-  test('leaves the left edge with a slightly higher speed', () => {
+  test('a harder rebound leaves faster than a soft one', () => {
     const state = {
       x: -1,
-      velocityX: -0.32,
+      velocityX: -0.2,
       limit: 1,
+      exitSpeed: 0.55,
+      arrivalSpeed: 0.2,
+      tumbleX: 0.2,
+      tumbleY: 0.2,
     };
 
-    const step = motion.stepSphere(state, 0.05, () => 1);
+    const soft = motion.stepSphere(state, 0.05, () => 0);
+    const hard = motion.stepSphere(state, 0.05, () => 1);
 
-    expect(step.bounced).toBe(true);
-    expect(step.x).toBeCloseTo(-1 + 0.3456 * 0.05, 5);
-    expect(step.velocityX).toBeCloseTo(0.3456, 5);
-    expect(step.kickAngle).toBeUndefined();
+    expect(soft.bounced).toBe(true);
+    expect(hard.bounced).toBe(true);
+    expect(soft.velocityX).toBeGreaterThan(0.2);
+    expect(hard.velocityX).toBeGreaterThan(soft.velocityX + 0.15);
+    expect(hard.exitSpeed).toBeLessThanOrEqual(motion.PEAK_SPEED);
+    expect(Math.hypot(hard.tumbleX - soft.tumbleX, hard.tumbleY - soft.tumbleY)).toBeGreaterThan(0.3);
+    expect(soft.kickAngle).toBeUndefined();
+    expect(hard.kickAngle).toBeUndefined();
   });
 
-  test('turns around at the circumference without spinning past it', () => {
+  test('eases from the rebound speed down to the far edge', () => {
+    const exitSpeed = 0.7;
+    const arrivalSpeed = 0.2;
+    const limit = 2;
+    let state = {
+      x: -limit,
+      velocityX: exitSpeed,
+      limit,
+      exitSpeed,
+      arrivalSpeed,
+      tumbleX: 1.1,
+      tumbleY: -0.4,
+    };
+    let previous = exitSpeed;
+    let slowed = false;
+    let bounce = null;
+
+    for (let frame = 0; frame < 4000; frame += 1) {
+      const step = motion.stepSphere(state, 1 / 60, () => 0.35);
+      expect(Math.abs(step.x)).toBeLessThanOrEqual(limit + 1e-9);
+      expect(step.rollAngle).toBeCloseTo(-(step.x - state.x) / motion.RADIUS, 5);
+      if (step.bounced) {
+        bounce = step;
+        expect(Math.abs(step.velocityX)).toBeGreaterThan(previous + 0.1);
+        expect(Math.hypot(step.tumbleX - state.tumbleX, step.tumbleY - state.tumbleY)).toBeGreaterThan(0.2);
+        break;
+      }
+      expect(step.velocityX).toBeLessThan(previous);
+      if (step.velocityX < previous - 0.001) {
+        slowed = true;
+      }
+      previous = step.velocityX;
+      state = {
+        x: step.x,
+        velocityX: step.velocityX,
+        limit,
+        exitSpeed: step.exitSpeed,
+        arrivalSpeed: step.arrivalSpeed,
+        tumbleX: step.tumbleX,
+        tumbleY: step.tumbleY,
+      };
+    }
+
+    expect(slowed).toBe(true);
+    expect(previous).toBeLessThan(0.28);
+    expect(previous).toBeGreaterThan(arrivalSpeed - 0.02);
+    expect(bounce).not.toBeNull();
+  });
+
+  test('turns around at the circumference without leaving the frame', () => {
     const state = {
       x: 0.9,
       velocityX: 0.4,
       limit: 1,
     };
-    const dt = 0.5;
-    const step = motion.stepSphere(state, dt, () => 0);
-    const timeToWall = 0.1 / 0.4;
-    const speed = 0.36;
-    const timeAfter = dt - timeToWall;
-    const traveled = 0.1 - speed * timeAfter;
+    const step = motion.stepSphere(state, 0.5, () => 0);
 
     expect(step.bounced).toBe(true);
-    expect(step.velocityX).toBeCloseTo(-speed, 5);
-    expect(step.x).toBeCloseTo(1 - speed * timeAfter, 5);
-    expect(step.rollAngle).toBeCloseTo(-traveled / motion.RADIUS, 5);
+    expect(step.velocityX).toBeLessThan(0);
+    expect(Math.abs(step.velocityX)).toBeGreaterThan(0.4);
     expect(Math.abs(step.x)).toBeLessThanOrEqual(1);
+    expect(step.x).toBeLessThan(1);
+    expect(step.rollAngle).toBeCloseTo(-(step.x - state.x) / motion.RADIUS, 4);
+    expect(step.spins.length).toBeGreaterThan(1);
+    expect(Math.hypot(step.tumbleX, step.tumbleY)).toBeGreaterThan(0.8);
   });
 
-  test('keeps the speed in a narrow band across repeated bounces', () => {
-    const state = {
-      x: 0,
-      velocityX: motion.MAX_SPEED,
-      limit: 0.5,
-    };
+  test('keeps every rebound inside the frame and between the speed bounds', () => {
+    const state = motion.createRollState(1.4, () => 0.2);
     let bounces = 0;
     let previousX = state.x;
+    const tumbles = [];
 
-    for (let frame = 0; frame < 800; frame += 1) {
+    for (let frame = 0; frame < 1600; frame += 1) {
       const step = motion.stepSphere(state, 1 / 60, Math.random);
-      expect(Math.abs(step.x - previousX)).toBeLessThanOrEqual(motion.MAX_SPEED / 60 + 1e-9);
+      expect(Math.abs(step.x - previousX)).toBeLessThanOrEqual(motion.PEAK_SPEED / 60 + 1e-6);
+      expect(Math.abs(step.velocityX)).toBeGreaterThanOrEqual(motion.MIN_SPEED - 1e-6);
+      expect(Math.abs(step.velocityX)).toBeLessThanOrEqual(motion.PEAK_SPEED + 1e-6);
+      expect(Math.abs(step.x)).toBeLessThanOrEqual(state.limit + 1e-9);
       previousX = step.x;
       state.x = step.x;
       state.velocityX = step.velocityX;
+      state.exitSpeed = step.exitSpeed;
+      state.arrivalSpeed = step.arrivalSpeed;
+      state.tumbleX = step.tumbleX;
+      state.tumbleY = step.tumbleY;
       if (step.bounced) {
         bounces += 1;
-        expect(Math.abs(step.velocityX)).toBeGreaterThanOrEqual(motion.MIN_SPEED);
-        expect(Math.abs(step.velocityX)).toBeLessThanOrEqual(motion.MAX_SPEED);
+        tumbles.push([step.tumbleX, step.tumbleY]);
+        expect(step.arrivalSpeed).toBeLessThan(step.exitSpeed);
       }
-      expect(Math.abs(state.x)).toBeLessThanOrEqual(0.5 + 1e-9);
     }
 
     expect(bounces).toBeGreaterThan(2);
+    const separated = tumbles.some((tumble, index) => {
+      if (index === 0) {
+        return false;
+      }
+      const previous = tumbles[index - 1];
+      return Math.hypot(tumble[0] - previous[0], tumble[1] - previous[1]) > 0.15;
+    });
+    expect(separated).toBe(true);
+  });
+
+  test('starts halfway between the rebound speed and the far-edge speed', () => {
+    let index = 0;
+    const values = [0.1, 0.2, 0.4, 0.8, 0.3];
+    const state = motion.createRollState(2, () => {
+      const value = values[index];
+      index += 1;
+      return value;
+    });
+
+    expect(state.x).toBe(0);
+    expect(state.velocityX).toBeLessThan(0);
+    expect(Math.abs(state.velocityX)).toBeCloseTo((state.exitSpeed + state.arrivalSpeed) / 2, 5);
+    expect(state.arrivalSpeed).toBeLessThan(state.exitSpeed);
+    expect(state.exitSpeed).toBeLessThanOrEqual(motion.PEAK_SPEED);
+    expect(state.arrivalSpeed).toBeGreaterThanOrEqual(motion.MIN_SPEED);
+    expect(Math.hypot(state.tumbleX, state.tumbleY)).toBeGreaterThan(0.8);
   });
 
   test('places the shadow under the sphere and widens it on impact', () => {
