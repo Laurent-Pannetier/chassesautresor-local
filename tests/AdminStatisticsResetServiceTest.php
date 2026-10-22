@@ -87,7 +87,17 @@ final class AdminStatisticsResetServiceTest extends TestCase
         self::assertSame([4, 7], $GLOBALS['admin_reset_cleaned_users']);
         self::assertSame([10, 20], $clearedHunts);
         self::assertContains(['chasse_cache_statut', 'en_cours', 10], $GLOBALS['admin_reset_updated_fields']);
-        self::assertContains(['chasse_cache_gagnants', 10], $GLOBALS['admin_reset_deleted_fields']);
+        self::assertNotContains(
+            ['chasse_cache_statut', 'en_cours', 20],
+            $GLOBALS['admin_reset_updated_fields']
+        );
+        foreach ([10, 20] as $huntId) {
+            self::assertContains(['chasse_cache_gagnants', $huntId], $GLOBALS['admin_reset_deleted_fields']);
+            self::assertContains(
+                ['chasse_cache_date_decouverte', $huntId],
+                $GLOBALS['admin_reset_deleted_fields']
+            );
+        }
     }
 
     public function testItStopsAtTheFirstDatabaseError(): void
