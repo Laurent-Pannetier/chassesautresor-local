@@ -109,7 +109,7 @@ final class RiddleParticipationService {
             );
         }
 
-        $now = function_exists('current_time') ? (int) current_time('timestamp') : time();
+        $now = time();
 
         return $this->gateService->describe($userId, $riddleId, $this->resolvedHuntId, $hintIds, $now);
     }

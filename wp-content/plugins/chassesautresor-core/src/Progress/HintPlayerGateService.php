@@ -45,8 +45,9 @@ final class HintPlayerGateService {
         $riddleAt = $riddleId > 0
             ? $this->localTimestamp($this->riddleEngagements->findEngagedAt($userId, $riddleId))
             : null;
+        // Hunt rows are written with current_time('mysql', true), so they are GMT.
         $huntAt = $huntId > 0
-            ? $this->localTimestamp($this->huntEngagements->findEngagedAt($userId, $huntId))
+            ? $this->utcTimestamp($this->huntEngagements->findEngagedAt($userId, $huntId))
             : null;
 
         $gates = [];
@@ -68,13 +69,16 @@ final class HintPlayerGateService {
         return $gates;
     }
 
-    public function canConsult(int $userId, int $hintId, int $now): bool {
+    public function canConsult(int $userId, int $hintId, int $now, int $contextRiddleId = 0): bool {
         if ($userId <= 0 || $hintId <= 0 || !$this->isPublished($hintId, $now)) {
             return false;
         }
 
         $target = $this->targetType((string) get_field('indice_cible_type', $hintId));
         $riddleId = $target === 'enigme' ? $this->firstId(get_field('indice_enigme_linked', $hintId)) : 0;
+        if ($riddleId <= 0 && $contextRiddleId > 0 && $target === 'enigme') {
+            $riddleId = $contextRiddleId;
+        }
         $huntId = $this->firstId(get_field('indice_chasse_linked', $hintId));
         $gates = $this->describe($userId, $riddleId, $huntId, [$hintId], $now);
 

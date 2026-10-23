@@ -9,5 +9,7 @@ describe('hint unlock request security', () => {
     );
 
     expect(source).toContain("fd.append('nonce', indicesUnlock.nonce);");
+    expect(source).toContain("fd.append('enigme_id', zone.dataset.enigmeId);");
+    expect(source).toContain('hints_html');
   });
 });

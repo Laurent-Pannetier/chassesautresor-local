@@ -22,7 +22,7 @@ class RiddleEngagementRepository
 
         return (bool) $this->wpdb->get_var(
             $this->wpdb->prepare(
-                "SELECT 1 FROM {$table} WHERE user_id = %d AND enigme_id = %d LIMIT 1",
+                "SELECT 1 FROM {$table} WHERE user_id = %d AND enigme_id = %d AND indice_id IS NULL LIMIT 1",
                 $userId,
                 $riddleId
             )

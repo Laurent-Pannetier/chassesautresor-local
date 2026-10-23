@@ -29,15 +29,15 @@ final class RiddlePlayerPanelRenderer {
     {
         $solved = est_enigme_resolue_par_utilisateur($userId, $riddleId);
         $response = $this->response($riddleId, $userId, $solved, $responseHtml);
-        $hints = $this->participation->hints($riddleId, $userId);
         $hintHtml = '';
 
-        if ($hints['riddle'] !== [] || $hints['hunt'] !== []) {
+        $lists = $this->renderHintLists($riddleId, $userId);
+        if ($lists !== '') {
             $hintHtml = '<div class="zone-indices" data-hint-display="'
-                . esc_attr(self::HINT_DISPLAY_GLOBAL) . '">';
-            $hintHtml .= $this->hintGroup($hints['riddle'], __('Indices énigme', 'chassesautresor-com'));
-            $hintHtml .= $this->hintGroup($hints['hunt'], __('Indices chasse', 'chassesautresor-com'));
-            $hintHtml .= '<div class="indice-display"></div></div>';
+                . esc_attr(self::HINT_DISPLAY_GLOBAL) . '" data-enigme-id="'
+                . esc_attr((string) $riddleId) . '">'
+                . $lists
+                . '<div class="indice-display"></div></div>';
         }
 
         $content = ($response !== '' || $hintHtml !== '')
@@ -71,6 +71,14 @@ final class RiddlePlayerPanelRenderer {
             . esc_html($message) . '</p></div>';
     }
 
+    public function renderHintLists(int $riddleId, int $userId): string
+    {
+        $hints = $this->participation->hints($riddleId, $userId);
+
+        return $this->hintGroup($hints['riddle'], __('Indices énigme', 'chassesautresor-com'))
+            . $this->hintGroup($hints['hunt'], __('Indices chasse', 'chassesautresor-com'));
+    }
+
     /** @param array<int,array<string,mixed>> $hints */
     private function hintGroup(array $hints, string $title): string
     {
@@ -92,7 +100,7 @@ final class RiddlePlayerPanelRenderer {
     {
         if ($hint['state'] === 'programme') {
             $timestamp = $hint['available_at'];
-            $now = (int) current_time('timestamp');
+            $now = time();
             if ($timestamp === false || $timestamp > $now) {
                 $detail = $this->availabilityLabel($timestamp, $now);
 
