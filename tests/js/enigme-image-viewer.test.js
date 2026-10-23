@@ -197,6 +197,27 @@ describe('enigme image viewer', () => {
     }
   });
 
+  test('arms the lens when the reader retargets the click onto the stage', () => {
+    const restorePointer = useFinePointer();
+    try {
+      const trigger = document.querySelector('[data-enigme-lightbox-src="full-1.jpg"]');
+      const img = trigger.querySelector('img');
+      const stage = document.querySelector('.galerie-enigme__stage');
+      boxImage(img, { left: 0, top: 0, width: 400, height: 300 });
+
+      pointMouse('pointerdown', img, 120, 80);
+      pointMouse('pointerup', img, 120, 80);
+      clickMouse(stage, 120, 80);
+
+      const lens = document.querySelector('.enigme-loupe');
+      expect(lens.hidden).toBe(false);
+      expect(lens.querySelector('.enigme-loupe__image').getAttribute('src')).toBe('full-1.jpg');
+      expect(trigger.classList.contains('is-loupe-target')).toBe(true);
+    } finally {
+      restorePointer();
+    }
+  });
+
   test('hides the lens while dragging and ignores the letterbox around a contained image', () => {
     const restorePointer = useFinePointer();
     try {

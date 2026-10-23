@@ -1122,8 +1122,12 @@
       return;
     }
 
-    const zoomTrigger = event.target.closest('[data-enigme-lightbox-src]');
+    const zoomTrigger = event.target.closest?.('[data-enigme-lightbox-src]');
     if (!zoomTrigger) {
+      if (mouseDriven() && event.target.closest?.('.galerie-enigme__stage')) {
+        event.preventDefault();
+        toggleLens(event);
+      }
       return;
     }
 
@@ -1463,11 +1467,8 @@
     const fit = style.objectFit;
     const naturalW = img.naturalWidth;
     const naturalH = img.naturalHeight;
-    if (fit !== 'contain' && fit !== 'cover') {
+    if ((fit !== 'contain' && fit !== 'cover') || !naturalW || !naturalH) {
       return frame;
-    }
-    if (!naturalW || !naturalH) {
-      return null;
     }
     const parts = (style.objectPosition || '50% 50%').trim().split(/\s+/);
     const fractionX = axisFraction(parts[0]);
@@ -1526,6 +1527,11 @@
     let press = null;
     let armed = false;
     let dragClick = false;
+    let pressedZoom = null;
+
+    const zoomTriggerFrom = (event) =>
+      eventElement(event)?.closest?.('[data-enigme-lightbox-src]') ||
+      (event.type === 'click' ? pressedZoom : null);
 
     const clearTarget = () => {
       activeTrigger?.classList.remove('is-loupe-target');
@@ -1565,7 +1571,7 @@
         conceal();
         return;
       }
-      const trigger = eventElement(event)?.closest?.('[data-enigme-lightbox-src]') || null;
+      const trigger = zoomTriggerFrom(event);
       const source = trigger?.getAttribute('data-enigme-lightbox-src') || '';
       const picture = trigger?.querySelector('img') || null;
       if (!trigger || !source || !picture) {
@@ -1606,27 +1612,34 @@
       if (editionActive() || !mouseEvent(event)) {
         return;
       }
-      const trigger = eventElement(event)?.closest?.('[data-enigme-lightbox-src]') || null;
+      const trigger = zoomTriggerFrom(event);
       if (!trigger) {
+        pressedZoom = null;
         return;
       }
       if (armed) {
+        pressedZoom = null;
         disarm();
         return;
       }
       const picture = trigger.querySelector('img');
       const rect = picture ? contentRect(picture) : null;
       if (!rect || !containsPoint(rect, event.clientX, event.clientY)) {
+        pressedZoom = null;
         return;
       }
       armed = true;
       place(event);
+      pressedZoom = null;
     };
     disarmLens = disarm;
 
     const onPointerDown = (event) => {
       lastPointerType = event.pointerType || lastPointerType;
       dragClick = false;
+      pressedZoom = event.pointerType === 'mouse'
+        ? eventElement(event)?.closest?.('[data-enigme-lightbox-src]') || null
+        : null;
       if (event.pointerType !== 'mouse' || event.button !== 0) {
         return;
       }
