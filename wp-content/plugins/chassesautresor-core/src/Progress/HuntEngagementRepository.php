@@ -29,6 +29,25 @@ class HuntEngagementRepository
         );
     }
 
+    public function findEngagedAt(int $userId, int $huntId): ?string
+    {
+        if ($userId <= 0 || $huntId <= 0) {
+            return null;
+        }
+
+        $table = $this->wpdb->prefix . 'engagements';
+        $value = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT MIN(date_engagement) FROM {$table}"
+                . ' WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL',
+                $userId,
+                $huntId
+            )
+        );
+
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
     public function countByHunt(int $huntId): int
     {
         $table = $this->wpdb->prefix . 'engagements';

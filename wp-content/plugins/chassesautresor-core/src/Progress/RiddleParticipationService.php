@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\HintAccessPolicy;
 use ChassesAuTresor\Core\Content\RiddleRelationshipService;
 
 /** Load the hints displayed in a player's riddle participation panel. */
 final class RiddleParticipationService {
     private ?HintUnlockService $hintUnlockService;
+    private ?HintPlayerGateService $gateService;
+    private int $resolvedHuntId = 0;
 
-    public function __construct(?HintUnlockService $hintUnlockService = null) {
+    public function __construct(
+        ?HintUnlockService $hintUnlockService = null,
+        ?HintPlayerGateService $gateService = null
+    ) {
         $this->hintUnlockService = $hintUnlockService;
+        $this->gateService = $gateService;
     }
 
     /** @return array{riddle:int[],hunt:int[]} */
@@ -19,6 +26,7 @@ final class RiddleParticipationService {
         $huntId = (new RiddleRelationshipService())->resolveHuntId(
             get_field('enigme_chasse_associee', $riddleId)
         );
+        $this->resolvedHuntId = $huntId;
 
         return [
             'riddle' => $this->query('enigme', 'indice_enigme_linked', $riddleId),
@@ -32,15 +40,33 @@ final class RiddleParticipationService {
         $hintIds = array_values(array_unique(array_merge($groups['riddle'], $groups['hunt'])));
 
         $unlockedIds = array_fill_keys($this->hintUnlockService()->unlockedHintIds($userId, $hintIds), true);
+        $gates = $this->gates($userId, $riddleId, $hintIds);
 
         return [
-            'riddle' => array_map(fn (int $hintId): array => $this->hint($hintId, $unlockedIds), $groups['riddle']),
-            'hunt' => array_map(fn (int $hintId): array => $this->hint($hintId, $unlockedIds), $groups['hunt']),
+            'riddle' => array_map(
+                fn (int $hintId): array => $this->hint($hintId, $unlockedIds, $gates),
+                $groups['riddle']
+            ),
+            'hunt' => array_map(
+                fn (int $hintId): array => $this->hint($hintId, $unlockedIds, $gates),
+                $groups['hunt']
+            ),
         ];
     }
 
-    /** @return array{id:int,cost:int,state:string,unlocked:bool,title:string,available_at:int|false} */
-    private function hint(int $hintId, array $unlockedIds): array {
+    /**
+     * @param array<int, bool> $unlockedIds
+     * @param array<int, array<string, mixed>> $gates
+     * @return array<string, mixed>
+     */
+    private function hint(int $hintId, array $unlockedIds, array $gates): array {
+        $gate = $gates[$hintId] ?? $this->openGate();
+        $missing = array_values(array_filter(
+            array_map('intval', (array) ($gate['missing'] ?? [])),
+            static fn (int $id): bool => $id > 0
+        ));
+        $gate['missing_labels'] = array_map(fn (int $id): string => $this->title($id), $missing);
+
         return [
             'id' => $hintId,
             'cost' => (int) get_field('indice_cout_points', $hintId),
@@ -48,7 +74,44 @@ final class RiddleParticipationService {
             'unlocked' => isset($unlockedIds[$hintId]),
             'title' => $this->title($hintId),
             'available_at' => $this->timestamp(get_field('indice_date_disponibilite', $hintId)),
+            'gate' => $gate,
         ];
+    }
+
+    /** @return array<string, mixed> */
+    private function openGate(): array {
+        return [
+            'open' => true,
+            'reason' => HintAccessPolicy::REASON_OPEN,
+            'available_at' => null,
+            'missing' => [],
+            'delay_minutes' => 0,
+            'anchor' => HintAccessPolicy::ANCHOR_NONE,
+            'target' => 'enigme',
+        ];
+    }
+
+    /**
+     * @param int[] $hintIds
+     * @return array<int, array<string, mixed>>
+     */
+    private function gates(int $userId, int $riddleId, array $hintIds): array {
+        if (!isset($GLOBALS['wpdb']) || !is_object($GLOBALS['wpdb'])) {
+            return [];
+        }
+        if ($this->gateService === null) {
+            global $wpdb;
+            $this->gateService = new HintPlayerGateService(
+                new HintAccessPolicy(),
+                new HintUnlockRepository($wpdb),
+                new RiddleEngagementRepository($wpdb),
+                new HuntEngagementRepository($wpdb)
+            );
+        }
+
+        $now = time();
+
+        return $this->gateService->describe($userId, $riddleId, $this->resolvedHuntId, $hintIds, $now);
     }
 
     private function title(int $hintId): string {

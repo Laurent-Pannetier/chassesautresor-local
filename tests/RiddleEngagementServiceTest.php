@@ -53,6 +53,7 @@ class RiddleEngagementServiceTest extends TestCase
     {
         $wpdb = new class {
             public string $prefix = 'wp_';
+            public string $query = '';
             public array $arguments = [];
             public $result = '1';
             public $insertResult = 1;
@@ -60,6 +61,7 @@ class RiddleEngagementServiceTest extends TestCase
 
             public function prepare(string $query, ...$arguments): string
             {
+                $this->query = $query;
                 $this->arguments = $arguments;
                 return $query;
             }
@@ -79,6 +81,7 @@ class RiddleEngagementServiceTest extends TestCase
 
         $this->assertTrue($repository->exists(7, 10));
         $this->assertSame([7, 10], $wpdb->arguments);
+        $this->assertStringContainsString('indice_id IS NULL', $wpdb->query);
 
         $wpdb->result = null;
         $this->assertFalse($repository->exists(7, 10));

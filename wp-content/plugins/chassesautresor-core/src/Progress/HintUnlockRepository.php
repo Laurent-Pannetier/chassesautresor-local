@@ -65,6 +65,40 @@ class HintUnlockRepository
         return array_values(array_unique(array_map('intval', (array) $rows)));
     }
 
+    /**
+     * @param int[] $hintIds
+     * @return array<int, string> Hint id => GMT datetime.
+     */
+    public function findUnlockTimestamps(int $userId, array $hintIds): array {
+        $hintIds = array_values(array_unique(array_filter(
+            array_map('intval', $hintIds),
+            static fn (int $hintId): bool => $hintId > 0
+        )));
+        if ($userId <= 0 || $hintIds === []) {
+            return [];
+        }
+
+        $table = $this->wpdb->prefix . 'indices_deblocages';
+        $placeholders = implode(', ', array_fill(0, count($hintIds), '%d'));
+        $query = "SELECT indice_id, date_deblocage FROM {$table}"
+            . " WHERE user_id = %d AND indice_id IN ({$placeholders})";
+        $rows = $this->wpdb->get_results(
+            $this->wpdb->prepare($query, $userId, ...$hintIds),
+            ARRAY_A
+        );
+
+        $stamps = [];
+        foreach ((array) $rows as $row) {
+            $hintId = (int) ($row['indice_id'] ?? 0);
+            $unlockedAt = (string) ($row['date_deblocage'] ?? '');
+            if ($hintId > 0 && $unlockedAt !== '') {
+                $stamps[$hintId] = $unlockedAt;
+            }
+        }
+
+        return $stamps;
+    }
+
     public function insertUnlock(
         int $userId,
         int $hintId,

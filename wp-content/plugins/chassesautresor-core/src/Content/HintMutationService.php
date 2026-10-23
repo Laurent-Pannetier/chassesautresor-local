@@ -18,6 +18,7 @@ class HintMutationService {
      * @param callable(string, mixed, int): mixed $updateField
      * @param callable(string, int): mixed $deleteField
      * @param callable(int): void $refreshCache
+     * @param array{prerequisites:int[],delay_minutes:int,anchor:string}|null $access
      * @return array{availability:string,availability_date:string}
      */
     public function applyModal(
@@ -31,7 +32,8 @@ class HintMutationService {
         bool $replaceOptionalFields,
         callable $updateField,
         callable $deleteField,
-        callable $refreshCache
+        callable $refreshCache,
+        ?array $access = null
     ): array {
         if ($imageId > 0) {
             $updateField('indice_image', $imageId, $hintId);
@@ -52,6 +54,11 @@ class HintMutationService {
 
         $updateField('indice_disponibilite', $normalizedAvailability, $hintId);
         $updateField('indice_date_disponibilite', $availabilityDate, $hintId);
+        if (is_array($access)) {
+            $updateField('indice_acces_pre_requis', array_values($access['prerequisites']), $hintId);
+            $updateField('indice_delai_minutes', (int) $access['delay_minutes'], $hintId);
+            $updateField('indice_delai_ancrage', (string) $access['anchor'], $hintId);
+        }
         $refreshCache($hintId);
 
         return [
