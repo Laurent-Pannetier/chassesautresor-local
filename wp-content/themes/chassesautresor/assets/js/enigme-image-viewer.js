@@ -7,9 +7,9 @@
  * se fait au glissement horizontal, au clavier, ou avec les flèches du
  * bandeau. Un tap affiche le bandeau.
  *
- * Avec une souris, une loupe ×4 suit le pointeur tant qu’il est sur l’image.
- * Au toucher, un double tap ou un pincement ouvre la lightbox en taille
- * native. Échap, le bouton ou un clic sur le fond referment cette vue.
+ * Avec une souris, un clic arme une loupe ×4 qui suit le pointeur sur
+ * l’image. Un second clic ou Échap l’éteint. Au toucher, un double tap ou
+ * un pincement ouvre la lightbox en taille native.
  */
 (function () {
   window.__enigmeViewerDispose?.();
@@ -832,6 +832,9 @@
         return;
       }
       lastTapAt = now;
+      if (event.pointerType === 'mouse') {
+        return;
+      }
       if (tapTimer) {
         window.clearTimeout(tapTimer);
       }
@@ -1129,6 +1132,9 @@
       mouseDriven()
     ) {
       event.preventDefault();
+      if (mouseDriven()) {
+        toggleLens(event);
+      }
       return;
     }
 
@@ -1143,6 +1149,8 @@
   const mouseDriven = () =>
     lastPointerType === 'mouse' ||
     (lastPointerType !== 'touch' && finePointerQuery().matches);
+  let toggleLens = () => {};
+  let disarmLens = () => {};
 
   document.addEventListener('click', onViewerClick);
 
@@ -1151,11 +1159,12 @@
       if (document.querySelector('form.is-reply-widget.is-immersive-open')) {
         return;
       }
-      if (!document.querySelector('.enigme-lightbox-overlay')) {
+      if (document.querySelector('.enigme-lightbox-overlay')) {
+        event.preventDefault();
+        closeLightbox();
         return;
       }
-      event.preventDefault();
-      closeLightbox();
+      disarmLens();
       return;
     }
 
@@ -1515,15 +1524,22 @@
 
     let activeTrigger = null;
     let press = null;
+    let armed = false;
+    let dragClick = false;
 
     const clearTarget = () => {
       activeTrigger?.classList.remove('is-loupe-target');
       activeTrigger = null;
     };
 
-    const hide = () => {
+    const conceal = () => {
       lens.hidden = true;
       clearTarget();
+    };
+
+    const disarm = () => {
+      armed = false;
+      conceal();
     };
 
     const eventElement = (event) => {
@@ -1533,25 +1549,32 @@
       return event.target?.parentElement || null;
     };
 
+    const mouseEvent = (event) =>
+      event.pointerType === 'mouse' ||
+      (event.pointerType !== 'touch' && mouseDriven());
+
     const place = (event) => {
-      if (!finePointerQuery().matches || event.pointerType !== 'mouse' || editionActive()) {
-        hide();
+      if (editionActive()) {
+        disarm();
+        return;
+      }
+      if (!armed || !mouseEvent(event)) {
         return;
       }
       if (press?.dragged) {
-        hide();
+        conceal();
         return;
       }
       const trigger = eventElement(event)?.closest?.('[data-enigme-lightbox-src]') || null;
       const source = trigger?.getAttribute('data-enigme-lightbox-src') || '';
       const picture = trigger?.querySelector('img') || null;
       if (!trigger || !source || !picture) {
-        hide();
+        conceal();
         return;
       }
       const rect = contentRect(picture);
       if (!rect || !containsPoint(rect, event.clientX, event.clientY)) {
-        hide();
+        conceal();
         return;
       }
       if (image.getAttribute('src') !== source) {
@@ -1575,8 +1598,35 @@
       lens.hidden = false;
     };
 
+    toggleLens = (event) => {
+      if (dragClick) {
+        dragClick = false;
+        return;
+      }
+      if (editionActive() || !mouseEvent(event)) {
+        return;
+      }
+      const trigger = eventElement(event)?.closest?.('[data-enigme-lightbox-src]') || null;
+      if (!trigger) {
+        return;
+      }
+      if (armed) {
+        disarm();
+        return;
+      }
+      const picture = trigger.querySelector('img');
+      const rect = picture ? contentRect(picture) : null;
+      if (!rect || !containsPoint(rect, event.clientX, event.clientY)) {
+        return;
+      }
+      armed = true;
+      place(event);
+    };
+    disarmLens = disarm;
+
     const onPointerDown = (event) => {
       lastPointerType = event.pointerType || lastPointerType;
+      dragClick = false;
       if (event.pointerType !== 'mouse' || event.button !== 0) {
         return;
       }
@@ -1604,6 +1654,7 @@
       }
       const wasDrag = press.dragged;
       press = null;
+      dragClick = wasDrag;
       if (wasDrag) {
         place(event);
       }
@@ -1612,14 +1663,14 @@
     const onPointerLeave = (event) => {
       if (!event.relatedTarget) {
         press = null;
-        hide();
+        conceal();
       }
     };
 
     const onEditionChange = () => {
       if (editionActive()) {
         press = null;
-        hide();
+        disarm();
       }
     };
 
@@ -1639,7 +1690,7 @@
       document.removeEventListener('pointercancel', onPointerUp);
       document.removeEventListener('pointerleave', onPointerLeave);
       editionObserver.disconnect();
-      hide();
+      disarm();
       lens.remove();
     };
   };
