@@ -140,33 +140,79 @@ describe('enigme image viewer', () => {
     );
   };
 
-  test('follows a fine pointer with a 4x lens and does not open the overlay', () => {
+  const clickMouse = (target, x, y) => {
+    target.dispatchEvent(
+      new MouseEvent('click', {
+        bubbles: true,
+        clientX: x,
+        clientY: y,
+        button: 0,
+      })
+    );
+  };
+
+  test('arms a 4x lens on click and turns it off on a second click or Escape', () => {
     const restorePointer = useFinePointer();
     try {
-    const trigger = document.querySelector('.riddle-player-step__zoom');
-    const img = trigger.querySelector('img');
-    boxImage(img, { left: 100, top: 50, width: 200, height: 100 });
+      const trigger = document.querySelector('.riddle-player-step__zoom');
+      const img = trigger.querySelector('img');
+      boxImage(img, { left: 100, top: 50, width: 200, height: 100 });
+      const lens = document.querySelector('.enigme-loupe');
+      const zoomed = lens.querySelector('.enigme-loupe__image');
 
-    pointMouse('pointermove', img, 150, 80);
-    trigger.click();
+      pointMouse('pointermove', img, 150, 80);
+      expect(lens.hidden).toBe(true);
 
-    expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
-    const lens = document.querySelector('.enigme-loupe');
-    const zoomed = lens.querySelector('.enigme-loupe__image');
-    expect(lens.hidden).toBe(false);
-    expect(lens.querySelector('.enigme-loupe__cross')).not.toBeNull();
-    expect(zoomed.getAttribute('src')).toBe('step-full.jpg');
-    expect(zoomed.style.width).toBe('800px');
-    expect(zoomed.style.height).toBe('400px');
-    expect(zoomed.style.left).toBe('-80px');
-    expect(zoomed.style.top).toBe('0px');
-    expect(lens.style.left).toBe('30px');
-    expect(lens.style.top).toBe('-40px');
-    expect(trigger.classList.contains('is-loupe-target')).toBe(true);
+      clickMouse(img, 150, 80);
+      expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
+      expect(lens.hidden).toBe(false);
+      expect(lens.querySelector('.enigme-loupe__cross')).not.toBeNull();
+      expect(zoomed.getAttribute('src')).toBe('step-full.jpg');
+      expect(zoomed.style.width).toBe('800px');
+      expect(zoomed.style.height).toBe('400px');
+      expect(zoomed.style.left).toBe('-80px');
+      expect(zoomed.style.top).toBe('0px');
+      expect(lens.style.left).toBe('30px');
+      expect(lens.style.top).toBe('-40px');
+      expect(trigger.classList.contains('is-loupe-target')).toBe(true);
 
-    pointMouse('pointermove', img, 10, 10);
-    expect(lens.hidden).toBe(true);
-    expect(trigger.classList.contains('is-loupe-target')).toBe(false);
+      pointMouse('pointermove', img, 10, 10);
+      expect(lens.hidden).toBe(true);
+      pointMouse('pointermove', img, 150, 80);
+      expect(lens.hidden).toBe(false);
+
+      clickMouse(img, 150, 80);
+      expect(lens.hidden).toBe(true);
+      pointMouse('pointermove', img, 160, 90);
+      expect(lens.hidden).toBe(true);
+
+      clickMouse(img, 150, 80);
+      expect(lens.hidden).toBe(false);
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      expect(lens.hidden).toBe(true);
+      pointMouse('pointermove', img, 150, 80);
+      expect(lens.hidden).toBe(true);
+    } finally {
+      restorePointer();
+    }
+  });
+
+  test('arms the lens when the reader retargets the click onto the stage', () => {
+    const restorePointer = useFinePointer();
+    try {
+      const trigger = document.querySelector('[data-enigme-lightbox-src="full-1.jpg"]');
+      const img = trigger.querySelector('img');
+      const stage = document.querySelector('.galerie-enigme__stage');
+      boxImage(img, { left: 0, top: 0, width: 400, height: 300 });
+
+      pointMouse('pointerdown', img, 120, 80);
+      pointMouse('pointerup', img, 120, 80);
+      clickMouse(stage, 120, 80);
+
+      const lens = document.querySelector('.enigme-loupe');
+      expect(lens.hidden).toBe(false);
+      expect(lens.querySelector('.enigme-loupe__image').getAttribute('src')).toBe('full-1.jpg');
+      expect(trigger.classList.contains('is-loupe-target')).toBe(true);
     } finally {
       restorePointer();
     }
@@ -185,6 +231,7 @@ describe('enigme image viewer', () => {
     pointMouse('pointermove', img, 100, 10);
     expect(document.querySelector('.enigme-loupe').hidden).toBe(true);
 
+    clickMouse(img, 100, 100);
     pointMouse('pointerdown', img, 100, 100);
     pointMouse('pointermove', img, 100, 100);
     const lens = document.querySelector('.enigme-loupe');

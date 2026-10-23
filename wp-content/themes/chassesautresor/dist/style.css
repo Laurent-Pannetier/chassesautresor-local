@@ -8674,10 +8674,6 @@ li.active .enigme-menu__edit {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .enigme-media-zoom,
-  .riddle-player-step__zoom {
-    cursor: default;
-  }
   .enigme-media-zoom:hover img,
   .enigme-media-zoom:focus-visible img {
     transform: none;
@@ -10192,7 +10188,7 @@ body.comic-reader .page-enigme--reader .enigme-media-zoom {
   border: 0;
   border-radius: 0;
   background: transparent;
-  cursor: default;
+  cursor: zoom-in;
 }
 
 body.comic-reader .page-enigme--reader .enigme-media-zoom__hint,
