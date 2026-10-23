@@ -1145,25 +1145,105 @@ li.active .enigme-menu__edit {
   image-rendering: auto;
 }
 
-.enigme-lightbox__close {
+button.enigme-lightbox__close {
   position: fixed;
-  top: var(--space-md);
-  right: var(--space-md);
-  z-index: 10001;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: 0;
+  top: calc(var(--space-sm) + env(safe-area-inset-top, 0px));
+  right: calc(var(--space-sm) + env(safe-area-inset-right, 0px));
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.4rem 0.75rem 0.4rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #111;
-  font-size: 1.5rem;
+  background-color: rgba(8, 10, 16, 0.92);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
   line-height: 1;
+  letter-spacing: 0.01em;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.72),
+    0 8px 22px rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
 
-.enigme-lightbox__close:hover,
-.enigme-lightbox__close:focus-visible {
-  background: #fff;
+body.admin-bar button.enigme-lightbox__close {
+  top: calc(32px + var(--space-sm));
+}
+
+@media (max-width: 782px) {
+  body.admin-bar button.enigme-lightbox__close {
+    top: calc(46px + var(--space-sm));
+  }
+}
+
+button.enigme-lightbox__close:hover,
+button.enigme-lightbox__close:focus,
+button.enigme-lightbox__close:focus-visible {
+  background-color: #05070c;
+  color: #fff;
+  border-color: #fff;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.enigme-lightbox__close-icon {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.enigme-lightbox__close-icon::before,
+.enigme-lightbox__close-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.95rem;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.enigme-lightbox__close-icon::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.enigme-lightbox__close-icon::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.enigme-lightbox__close-key {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .enigme-lightbox__close-key {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  button.enigme-lightbox__close {
+    width: 2.75rem;
+    padding: 0;
+  }
 }
 
 .participation {

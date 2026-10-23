@@ -6,13 +6,16 @@
  * Une page 16:9 occupe le viewport (`object-fit: contain`). Le feuilletage
  * se fait au glissement horizontal, au clavier, ou avec les flèches du
  * bandeau. Un tap affiche le bandeau ; un double tap ou un pincement ouvre
- * la lightbox en taille native (1:1).
+ * la lightbox en taille native (1:1). Échap, le bouton ou un clic
+ * sur le fond referment cette vue.
  */
 (function () {
   window.__enigmeViewerDispose?.();
 
   const CLOSE_LABEL =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.closeLabel) || 'Fermer';
+  const ESCAPE_LABEL =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.escapeLabel) || 'Échap';
   const nativeSizeLabel =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.nativeSizeLabel) ||
     'Taille originale';
@@ -1053,8 +1056,17 @@
     const closeButton = document.createElement('button');
     closeButton.type = 'button';
     closeButton.className = 'enigme-lightbox__close';
-    closeButton.setAttribute('aria-label', CLOSE_LABEL);
-    closeButton.textContent = '×';
+    closeButton.setAttribute('aria-label', `${CLOSE_LABEL} (${ESCAPE_LABEL})`);
+
+    const closeIcon = document.createElement('span');
+    closeIcon.className = 'enigme-lightbox__close-icon';
+    closeIcon.setAttribute('aria-hidden', 'true');
+
+    const escapeHint = document.createElement('kbd');
+    escapeHint.className = 'enigme-lightbox__close-key';
+    escapeHint.textContent = ESCAPE_LABEL;
+
+    closeButton.append(closeIcon, escapeHint);
 
     const image = document.createElement('img');
     image.className = 'enigme-lightbox__image';
@@ -1128,6 +1140,10 @@
       if (document.querySelector('form.is-reply-widget.is-immersive-open')) {
         return;
       }
+      if (!document.querySelector('.enigme-lightbox-overlay')) {
+        return;
+      }
+      event.preventDefault();
       closeLightbox();
       return;
     }
@@ -1159,7 +1175,7 @@
       gallery.dispatchEvent(new CustomEvent('comic-page-change', { bubbles: true }));
     }
   };
-  document.addEventListener('keydown', onViewerKeydown);
+  document.addEventListener('keydown', onViewerKeydown, true);
 
   document.querySelectorAll('[data-enigme-gallery]').forEach((gallery) => {
     const active = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
@@ -1395,7 +1411,7 @@
 
   window.__enigmeViewerDispose = () => {
     document.removeEventListener('click', onViewerClick);
-    document.removeEventListener('keydown', onViewerKeydown);
+    document.removeEventListener('keydown', onViewerKeydown, true);
     window.__comicReaderTeardown?.();
     if (noticeTimer) {
       window.clearTimeout(noticeTimer);

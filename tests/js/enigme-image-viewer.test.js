@@ -82,6 +82,11 @@ describe('enigme image viewer', () => {
     expect(image.getAttribute('style') || '').not.toMatch(/max-width|max-height/);
     expect(document.body.classList.contains('no-scroll')).toBe(true);
 
+    const close = overlay.querySelector('.enigme-lightbox__close');
+    expect(close.querySelector('.enigme-lightbox__close-icon')).not.toBeNull();
+    expect(close.querySelector('.enigme-lightbox__close-key').textContent).toBe('Échap');
+    expect(close.getAttribute('aria-label')).toBe('Fermer (Échap)');
+
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
     expect(document.body.classList.contains('no-scroll')).toBe(false);
