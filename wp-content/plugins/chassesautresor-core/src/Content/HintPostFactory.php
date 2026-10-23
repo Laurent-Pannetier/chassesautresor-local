@@ -67,6 +67,9 @@ class HintPostFactory {
             'indice_cout_points' => $initialState['points_cost'],
             'indice_cache_complet' => $initialState['complete'],
             'indice_cache_etat_systeme' => $initialState['system_state'],
+            'indice_acces_pre_requis' => [],
+            'indice_delai_minutes' => 0,
+            'indice_delai_ancrage' => HintAccessPolicy::ANCHOR_NONE,
         ];
 
         if ($targetType === 'enigme') {

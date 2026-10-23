@@ -29,6 +29,25 @@ class RiddleEngagementRepository
         );
     }
 
+    public function findEngagedAt(int $userId, int $riddleId): ?string
+    {
+        if ($userId <= 0 || $riddleId <= 0) {
+            return null;
+        }
+
+        $table = $this->wpdb->prefix . 'engagements';
+        $value = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT MIN(date_engagement) FROM {$table}"
+                . ' WHERE user_id = %d AND enigme_id = %d AND indice_id IS NULL',
+                $userId,
+                $riddleId
+            )
+        );
+
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
     public function insert(int $userId, int $riddleId, string $engagedAt): bool
     {
         return $this->wpdb->insert(

@@ -98,6 +98,7 @@ final class RiddleParticipationServiceTest extends TestCase {
         $hints = (new RiddleParticipationService($unlockService))->hints(12, 9);
         self::assertSame(5, $hints['riddle'][0]['cost']);
         self::assertTrue($hints['riddle'][0]['unlocked']);
+        self::assertTrue($hints['riddle'][0]['gate']['open']);
         self::assertSame('Indice #5', $hints['riddle'][0]['title']);
         self::assertSame('Titre personnalisé', $hints['riddle'][1]['title']);
         self::assertSame('Indice #7', $hints['hunt'][0]['title']);

@@ -16,11 +16,20 @@ document.addEventListener('DOMContentLoaded', function () {
           if (link) {
             link.dataset.unlocked = '1';
             link.classList.remove('indice-link--locked');
-            link.classList.add('indice-link--unlocked');
+            link.classList.add('indice-link--unlocked', 'indice-link--consulted');
+            link.setAttribute('aria-label', (link.querySelector('.indice-link__label') || link).textContent.trim()
+              + ', ' + indicesUnlock.texts.consulted);
             var icon = link.querySelector('i');
             if (icon) {
-              icon.classList.remove('fa-lightbulb', 'fa-hourglass');
-              icon.classList.add('fa-eye');
+              icon.classList.remove('fa-lightbulb', 'fa-hourglass', 'fa-lock', 'fa-eye');
+              icon.classList.add('fa-check');
+            }
+            var text = link.querySelector('.indice-link__text');
+            if (text && !text.querySelector('.indice-link__status')) {
+              var status = document.createElement('span');
+              status.className = 'indice-link__status';
+              status.textContent = indicesUnlock.texts.consulted;
+              text.appendChild(status);
             }
           }
           if (res.data.points !== undefined) {
@@ -29,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function () {
               solde.textContent = indicesUnlock.texts.solde + ' : ' + res.data.points + ' ' + indicesUnlock.texts.pts;
             }
           }
+        } else if (container) {
+          displayContent(container, '<p>' + indicesUnlock.texts.unavailable + '</p>');
         }
       });
   }

@@ -11,6 +11,7 @@ class HintModalAjaxHandler {
     public static function register(callable $addAction): void {
         $addAction('wp_ajax_creer_indice_modal', [self::class, 'create'], 10, 1);
         $addAction('wp_ajax_modifier_indice_modal', [self::class, 'update'], 10, 1);
+        $addAction('wp_ajax_indice_lister_prerequis', [self::class, 'listPrerequisites'], 10, 1);
     }
 
     public static function create(): void {
@@ -30,6 +31,7 @@ class HintModalAjaxHandler {
             wp_send_json_error('acces_refuse');
         }
 
+        $access = self::accessConfiguration(0, $targetType, $targetId);
         $hintId = HintCreationRouteHandler::create($targetId, $targetType);
         if (is_wp_error($hintId)) {
             wp_send_json_error($hintId->get_error_message());
@@ -39,7 +41,7 @@ class HintModalAjaxHandler {
             wp_send_json_error('echec_creation');
         }
 
-        self::applyMutation($hintId, false);
+        self::applyMutation($hintId, false, $access);
         wp_send_json_success(['indice_id' => $hintId]);
     }
 
@@ -54,8 +56,29 @@ class HintModalAjaxHandler {
             wp_send_json_error('acces_refuse');
         }
 
-        self::applyMutation($hintId, true);
+        self::applyMutation($hintId, true, self::accessConfiguration($hintId, $targetType, $targetId));
         wp_send_json_success(['indice_id' => $hintId]);
+    }
+
+    public static function listPrerequisites(): void {
+        self::guardRequest();
+        [$targetId, $targetType] = self::getTarget();
+        $hintId = isset($_POST['indice_id']) ? (int) $_POST['indice_id'] : 0;
+        $access = new RelatedContentAccessResolver();
+        if (!$access->canPerform('edit', $targetType, $targetId)
+            && !$access->canPerform('create', $targetType, $targetId)
+        ) {
+            wp_send_json_error('acces_refuse');
+        }
+
+        $hints = [];
+        foreach (self::eligibleIds($targetId, $targetType, $hintId) as $id) {
+            $hints[] = [
+                'id' => $id,
+                'title' => self::hintLabel($id),
+            ];
+        }
+        wp_send_json_success(['indices' => $hints]);
     }
 
     private static function guardRequest(): void {
@@ -79,7 +102,83 @@ class HintModalAjaxHandler {
         return [$targetId, $targetType];
     }
 
-    private static function applyMutation(int $hintId, bool $replaceOptionalFields): void {
+    /**
+     * @return array{error:?string,prerequisites:int[],delay_minutes:int,anchor:string}
+     */
+    private static function accessConfiguration(int $hintId, string $targetType, int $targetId): array {
+        $requested = isset($_POST['indice_acces_pre_requis'])
+            ? (array) $_POST['indice_acces_pre_requis']
+            : [];
+        $policy = new HintAccessPolicy();
+        $eligible = self::eligibleIds($targetId, $targetType, $hintId);
+        $normalized = $policy->normalize(
+            $hintId,
+            $requested,
+            $eligible,
+            self::prerequisiteGraph($eligible),
+            isset($_POST['indice_delai_minutes']) ? (int) $_POST['indice_delai_minutes'] : 0,
+            sanitize_key((string) ($_POST['indice_delai_ancrage'] ?? HintAccessPolicy::ANCHOR_NONE))
+        );
+        if ($normalized['error'] !== null) {
+            wp_send_json_error($normalized['error']);
+        }
+
+        return $normalized;
+    }
+
+    /** @return int[] */
+    private static function eligibleIds(int $targetId, string $targetType, int $hintId): array {
+        $args = (new HintQueryService())->getRankedHintIdsQueryArgs($targetId, $targetType);
+        if ($args === [] || !function_exists('get_posts')) {
+            return [];
+        }
+
+        $eligible = [];
+        foreach ((array) get_posts($args) as $id) {
+            $id = (int) $id;
+            if ($id <= 0 || $id === $hintId) {
+                continue;
+            }
+            if ($targetType === 'chasse' && (string) get_field('indice_cible_type', $id) === 'enigme') {
+                continue;
+            }
+            $eligible[] = $id;
+        }
+
+        return $eligible;
+    }
+
+    /**
+     * @param int[] $eligibleIds
+     * @return array<int, int[]>
+     */
+    private static function prerequisiteGraph(array $eligibleIds): array {
+        $policy = new HintAccessPolicy();
+        $graph = [];
+        foreach ($eligibleIds as $id) {
+            $graph[$id] = $policy->normalizeIds((array) get_field('indice_acces_pre_requis', $id));
+        }
+
+        return $graph;
+    }
+
+    private static function hintLabel(int $hintId): string {
+        $post = get_post($hintId);
+        $title = $post ? (string) $post->post_title : '';
+        $rank = (int) get_post_meta($hintId, 'indice_rank', true);
+        $default = defined('TITRE_DEFAUT_INDICE') ? (string) TITRE_DEFAUT_INDICE : '';
+        $prefix = defined('INDICE_DEFAULT_PREFIX') ? (string) INDICE_DEFAULT_PREFIX : '';
+        if ((new HintTitleService())->shouldRegenerate($title, $default, $prefix)) {
+            return sprintf(__('Indice #%d', 'chassesautresor-com'), max(1, $rank));
+        }
+
+        return $title;
+    }
+
+    /**
+     * @param array{prerequisites:int[],delay_minutes:int,anchor:string} $access
+     */
+    private static function applyMutation(int $hintId, bool $replaceOptionalFields, array $access): void {
         (new HintMutationService())->applyModal(
             $hintId,
             isset($_POST['indice_image']) ? (int) $_POST['indice_image'] : 0,
@@ -91,7 +190,8 @@ class HintModalAjaxHandler {
             $replaceOptionalFields,
             static fn (string $field, $value, int $postId) => update_field($field, $value, $postId),
             static fn (string $field, int $postId) => delete_field($field, $postId),
-            static fn (int $postId) => do_action('chassesautresor_hint_cache_refresh_requested', $postId)
+            static fn (int $postId) => do_action('chassesautresor_hint_cache_refresh_requested', $postId),
+            $access
         );
     }
 }

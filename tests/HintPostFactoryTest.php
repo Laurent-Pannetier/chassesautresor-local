@@ -33,6 +33,9 @@ final class HintPostFactoryTest extends TestCase {
                 'indice_cout_points' => 0,
                 'indice_cache_complet' => false,
                 'indice_cache_etat_systeme' => 'desactive',
+                'indice_acces_pre_requis' => [],
+                'indice_delai_minutes' => 0,
+                'indice_delai_ancrage' => 'aucun',
             ],
             $this->factory->getInitialFields(
                 12,

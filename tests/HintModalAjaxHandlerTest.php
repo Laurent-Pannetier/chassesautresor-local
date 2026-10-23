@@ -26,6 +26,7 @@ final class HintModalAjaxHandlerTest extends TestCase {
         $this->assertSame([
             ['wp_ajax_creer_indice_modal', [HintModalAjaxHandler::class, 'create'], 10, 1],
             ['wp_ajax_modifier_indice_modal', [HintModalAjaxHandler::class, 'update'], 10, 1],
+            ['wp_ajax_indice_lister_prerequis', [HintModalAjaxHandler::class, 'listPrerequisites'], 10, 1],
         ], $hooks);
     }
 }

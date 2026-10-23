@@ -91,12 +91,20 @@ final class RiddlePlayerPanelRenderer {
     {
         if ($hint['state'] === 'programme') {
             $timestamp = $hint['available_at'];
-            $now = current_time('timestamp');
+            $now = (int) current_time('timestamp');
             if ($timestamp === false || $timestamp > $now) {
-                return '<span class="indice-label indice-link--upcoming etiquette">'
-                    . '<i class="fa-solid fa-hourglass" aria-hidden="true"></i> '
-                    . esc_html($this->availabilityLabel($timestamp, $now)) . '</span>';
+                return $this->staticHint(
+                    (string) $hint['title'],
+                    $this->availabilityLabel($timestamp, $now),
+                    'fa-hourglass',
+                    'upcoming'
+                );
             }
+        }
+
+        $gate = is_array($hint['gate'] ?? null) ? $hint['gate'] : ['open' => true];
+        if ($gate['open'] === false && empty($hint['unlocked'])) {
+            return $this->closedHint($hint, $gate);
         }
 
         $unlocked = (bool) $hint['unlocked'];
@@ -104,13 +112,62 @@ final class RiddlePlayerPanelRenderer {
         $costHtml = $cost > 0
             ? ' - ' . $cost . ' <sup>' . esc_html__('pts', 'chassesautresor-com') . '</sup>'
             : '';
+        $stateClass = $unlocked ? 'unlocked indice-link--consulted' : 'locked';
+        $icon = $unlocked ? 'fa-check' : 'fa-lightbulb';
+        $status = $unlocked
+            ? '<span class="indice-link__status">' . esc_html__('Consulté', 'chassesautresor-com') . '</span>'
+            : '';
+        $aria = $unlocked
+            ? ' aria-label="' . esc_attr(sprintf(
+                __('%s, consulté', 'chassesautresor-com'),
+                (string) $hint['title']
+            )) . '"'
+            : '';
 
-        return '<a href="#" class="indice-link indice-link--' . ($unlocked ? 'unlocked' : 'locked')
+        return '<a href="#" class="indice-link indice-link--' . $stateClass
             . ' etiquette" data-indice-id="' . esc_attr($hint['id']) . '" data-cout="' . esc_attr($cost)
-            . '" data-unlocked="' . ($unlocked ? '1' : '0') . '"><i class="fa-solid '
-            . ($unlocked ? 'fa-eye' : 'fa-lightbulb') . '" aria-hidden="true"></i> '
-            . '<span class="indice-link__label">' . esc_html($hint['title']) . '</span>'
+            . '" data-unlocked="' . ($unlocked ? '1' : '0') . '"' . $aria . '><i class="fa-solid '
+            . $icon . '" aria-hidden="true"></i> '
+            . '<span class="indice-link__text"><span class="indice-link__label">' . esc_html($hint['title'])
+            . '</span>' . $status . '</span>'
             . $costHtml . '</a>';
+    }
+
+    /** @param array<string,mixed> $hint @param array<string,mixed> $gate */
+    private function closedHint(array $hint, array $gate): string
+    {
+        if (($gate['reason'] ?? '') === 'prerequisite') {
+            $missing = array_values(array_filter(
+                array_map('strval', (array) ($gate['missing_labels'] ?? [])),
+                static fn (string $label): bool => $label !== ''
+            ));
+            $status = $missing === []
+                ? __('Prérequis manquant', 'chassesautresor-com')
+                : sprintf(__('Après %s', 'chassesautresor-com'), implode(', ', $missing));
+
+            return $this->staticHint((string) $hint['title'], $status, 'fa-lock', 'prerequisite');
+        }
+
+        $availableAt = $gate['available_at'] ?? null;
+        if (is_int($availableAt)) {
+            $status = $this->availabilityLabel($availableAt, (int) current_time('timestamp'));
+        } elseif (($gate['target'] ?? '') === 'chasse') {
+            $status = __('Après le début de la chasse', 'chassesautresor-com');
+        } else {
+            $status = __('Après le début de l’énigme', 'chassesautresor-com');
+        }
+
+        return $this->staticHint((string) $hint['title'], $status, 'fa-hourglass', 'upcoming');
+    }
+
+    private function staticHint(string $title, string $status, string $icon, string $modifier): string
+    {
+        return '<span class="indice-label indice-link--' . esc_attr($modifier) . ' etiquette" title="'
+            . esc_attr($status) . '" aria-disabled="true" aria-label="'
+            . esc_attr(sprintf(__('%1$s, %2$s', 'chassesautresor-com'), $title, $status)) . '">'
+            . '<i class="fa-solid ' . esc_attr($icon) . '" aria-hidden="true"></i> '
+            . '<span class="indice-link__text"><span class="indice-link__label">' . esc_html($title) . '</span>'
+            . '<span class="indice-link__status">' . esc_html($status) . '</span></span></span>';
     }
 
     /** @param int|false $timestamp */

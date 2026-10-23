@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\HintAccessPolicy;
 use ChassesAuTresor\Core\Points\PointsRepository;
 use ChassesAuTresor\Core\Points\PointsService;
 
@@ -40,12 +41,21 @@ class HintUnlockAjaxHandler {
             $status = in_array($error, ['non_connecte', 'invalid_nonce', 'points_insuffisants'], true) ? 403 : 400;
             wp_send_json_error($error, $status);
         }
+        $service = new HintUnlockService(new HintUnlockRepository($wpdb), $points);
+        $alreadyUnlocked = $service->isUnlocked($userId, $hintId);
+        if (!$alreadyUnlocked && !(new HintPlayerGateService(
+            new HintAccessPolicy(),
+            new HintUnlockRepository($wpdb),
+            new RiddleEngagementRepository($wpdb),
+            new HuntEngagementRepository($wpdb)
+        ))->canConsult($userId, $hintId, (int) current_time('timestamp'))) {
+            wp_send_json_error('indice_indisponible', 403);
+        }
         $lockKey = "hint_unlock_{$hintId}_{$userId}";
         if (!wp_cache_add($lockKey, 1, 'indices', 15)) {
             wp_send_json_error('doublon', 409);
         }
-        $service = new HintUnlockService(new HintUnlockRepository($wpdb), $points);
-        if (!$service->isUnlocked($userId, $hintId)) {
+        if (!$alreadyUnlocked) {
             [$huntId, $riddleId] = self::relations($hintId);
             $saved = $service->recordUnlock(
                 $userId,
