@@ -1091,9 +1091,20 @@ li.active .enigme-menu__edit {
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .enigme-media-zoom,
+  .riddle-player-step__zoom {
+    cursor: default;
+  }
+
   .enigme-media-zoom:hover img,
   .enigme-media-zoom:focus-visible img {
-    transform: scale(1.04);
+    transform: none;
+  }
+
+  .enigme-media-zoom.is-loupe-target,
+  .riddle-player-step__zoom.is-loupe-target,
+  body.comic-reader .page-enigme--reader .enigme-media-zoom.is-loupe-target {
+    cursor: none;
   }
 
   .enigme-media-zoom:hover .enigme-media-zoom__hint,
@@ -1145,105 +1156,79 @@ li.active .enigme-menu__edit {
   image-rendering: auto;
 }
 
-button.enigme-lightbox__close {
+.enigme-lightbox__close {
   position: fixed;
-  top: calc(var(--space-sm) + env(safe-area-inset-top, 0px));
-  right: calc(var(--space-sm) + env(safe-area-inset-right, 0px));
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  min-width: 2.75rem;
-  min-height: 2.75rem;
-  margin: 0;
-  padding: 0.4rem 0.75rem 0.4rem 0.6rem;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 10001;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
   border-radius: 999px;
-  background-color: rgba(8, 10, 16, 0.92);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0a0a0a;
+  font-size: 1.5rem;
   line-height: 1;
-  letter-spacing: 0.01em;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.72),
-    0 8px 22px rgba(0, 0, 0, 0.4);
   cursor: pointer;
 }
 
-body.admin-bar button.enigme-lightbox__close {
-  top: calc(32px + var(--space-sm));
+.enigme-lightbox__close:hover,
+.enigme-lightbox__close:focus,
+.enigme-lightbox__close:focus-visible {
+  background: #fff;
+  color: #0a0a0a;
 }
 
-@media (max-width: 782px) {
-  body.admin-bar button.enigme-lightbox__close {
-    top: calc(46px + var(--space-sm));
-  }
+.enigme-loupe,
+.enigme-loupe * {
+  pointer-events: none;
 }
 
-button.enigme-lightbox__close:hover,
-button.enigme-lightbox__close:focus,
-button.enigme-lightbox__close:focus-visible {
-  background-color: #05070c;
-  color: #fff;
-  border-color: #fff;
-  outline: 2px solid #fff;
-  outline-offset: 2px;
+.enigme-loupe {
+  position: fixed;
+  z-index: 30;
+  width: 240px;
+  height: 240px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  overflow: hidden;
+  background: #05070c;
+  box-shadow:
+    0 0 0 4px rgba(8, 14, 28, 0.72),
+    0 10px 24px rgba(0, 0, 0, 0.28);
 }
 
-.enigme-lightbox__close-icon {
-  position: relative;
-  display: block;
-  flex: 0 0 auto;
-  width: 0.95rem;
-  height: 0.95rem;
+.enigme-loupe__image {
+  position: absolute;
+  max-width: none;
+  max-height: none;
+  user-select: none;
 }
 
-.enigme-lightbox__close-icon::before,
-.enigme-lightbox__close-icon::after {
-  content: '';
+.enigme-loupe__cross {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.enigme-loupe__cross::before,
+.enigme-loupe__cross::after {
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 0.95rem;
-  height: 2px;
-  border-radius: 1px;
-  background: currentColor;
+  background: rgba(244, 241, 234, 0.8);
+  transform: translate(-50%, -50%);
 }
 
-.enigme-lightbox__close-icon::before {
-  transform: translate(-50%, -50%) rotate(45deg);
+.enigme-loupe__cross::before {
+  width: 1px;
+  height: 0.9rem;
 }
 
-.enigme-lightbox__close-icon::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.enigme-lightbox__close-key {
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  line-height: 1;
-}
-
-@media (hover: none), (pointer: coarse) {
-  .enigme-lightbox__close-key {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
-  button.enigme-lightbox__close {
-    width: 2.75rem;
-    padding: 0;
-  }
+.enigme-loupe__cross::after {
+  width: 0.9rem;
+  height: 1px;
 }
 
 .participation {

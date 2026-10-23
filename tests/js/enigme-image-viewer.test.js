@@ -83,13 +83,126 @@ describe('enigme image viewer', () => {
     expect(document.body.classList.contains('no-scroll')).toBe(true);
 
     const close = overlay.querySelector('.enigme-lightbox__close');
-    expect(close.querySelector('.enigme-lightbox__close-icon')).not.toBeNull();
-    expect(close.querySelector('.enigme-lightbox__close-key').textContent).toBe('Échap');
-    expect(close.getAttribute('aria-label')).toBe('Fermer (Échap)');
+    expect(close.textContent).toBe('×');
+    expect(close.querySelector('.enigme-lightbox__close-key')).toBeNull();
+    expect(close.getAttribute('aria-label')).toBe('Fermer');
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
     expect(document.body.classList.contains('no-scroll')).toBe(false);
+  });
+
+  const useFinePointer = () => {
+    const previous = window.matchMedia;
+    window.matchMedia = (query) => ({
+      matches: query === '(hover: hover) and (pointer: fine)',
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    return () => {
+      window.matchMedia = previous;
+    };
+  };
+
+  const boxImage = (img, rect) => {
+    img.getBoundingClientRect = () => ({
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+      right: rect.left + rect.width,
+      bottom: rect.top + rect.height,
+      x: rect.left,
+      y: rect.top,
+      toJSON() {},
+    });
+  };
+
+  class MousePointerEvent extends MouseEvent {
+    constructor(type, init = {}) {
+      super(type, init);
+      this.pointerId = init.pointerId ?? 1;
+      this.pointerType = init.pointerType || 'mouse';
+    }
+  }
+
+  const pointMouse = (type, target, x, y) => {
+    target.dispatchEvent(
+      new MousePointerEvent(type, {
+        bubbles: true,
+        pointerId: 1,
+        pointerType: 'mouse',
+        clientX: x,
+        clientY: y,
+        button: 0,
+      })
+    );
+  };
+
+  test('follows a fine pointer with a 4x lens and does not open the overlay', () => {
+    const restorePointer = useFinePointer();
+    try {
+    const trigger = document.querySelector('.riddle-player-step__zoom');
+    const img = trigger.querySelector('img');
+    boxImage(img, { left: 100, top: 50, width: 200, height: 100 });
+
+    pointMouse('pointermove', img, 150, 80);
+    trigger.click();
+
+    expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
+    const lens = document.querySelector('.enigme-loupe');
+    const zoomed = lens.querySelector('.enigme-loupe__image');
+    expect(lens.hidden).toBe(false);
+    expect(lens.querySelector('.enigme-loupe__cross')).not.toBeNull();
+    expect(zoomed.getAttribute('src')).toBe('step-full.jpg');
+    expect(zoomed.style.width).toBe('800px');
+    expect(zoomed.style.height).toBe('400px');
+    expect(zoomed.style.left).toBe('-80px');
+    expect(zoomed.style.top).toBe('0px');
+    expect(lens.style.left).toBe('30px');
+    expect(lens.style.top).toBe('-40px');
+    expect(trigger.classList.contains('is-loupe-target')).toBe(true);
+
+    pointMouse('pointermove', img, 10, 10);
+    expect(lens.hidden).toBe(true);
+    expect(trigger.classList.contains('is-loupe-target')).toBe(false);
+    } finally {
+      restorePointer();
+    }
+  });
+
+  test('hides the lens while dragging and ignores the letterbox around a contained image', () => {
+    const restorePointer = useFinePointer();
+    try {
+    const trigger = document.querySelector('[data-enigme-lightbox-src="full-1.jpg"]');
+    const img = trigger.querySelector('img');
+    img.style.objectFit = 'contain';
+    Object.defineProperty(img, 'naturalWidth', { configurable: true, get: () => 400 });
+    Object.defineProperty(img, 'naturalHeight', { configurable: true, get: () => 200 });
+    boxImage(img, { left: 0, top: 0, width: 200, height: 200 });
+
+    pointMouse('pointermove', img, 100, 10);
+    expect(document.querySelector('.enigme-loupe').hidden).toBe(true);
+
+    pointMouse('pointerdown', img, 100, 100);
+    pointMouse('pointermove', img, 100, 100);
+    const lens = document.querySelector('.enigme-loupe');
+    const zoomed = lens.querySelector('.enigme-loupe__image');
+    expect(lens.hidden).toBe(false);
+    expect(zoomed.style.width).toBe('800px');
+    expect(zoomed.style.height).toBe('400px');
+    expect(zoomed.style.left).toBe('-280px');
+    expect(zoomed.style.top).toBe('-80px');
+
+    pointMouse('pointermove', img, 140, 100);
+    expect(lens.hidden).toBe(true);
+
+    pointMouse('pointerup', img, 140, 100);
+    expect(lens.hidden).toBe(false);
+    } finally {
+      restorePointer();
+    }
   });
 
   test('keeps the lightbox on the picture when older hotspot data is present', () => {
@@ -340,6 +453,39 @@ describe('comic reader', () => {
     expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
     jest.advanceTimersByTime(TAP_WAIT);
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
+  test('mouse double click does not open the overlay when a fine pointer is available', () => {
+    const previousMatch = window.matchMedia;
+    window.matchMedia = (query) => ({
+      matches: query === '(hover: hover) and (pointer: fine)',
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    jest.advanceTimersByTime(2900);
+
+    const zoom = document.querySelector('.enigme-media-zoom');
+    const fire = (type, x, y) => {
+      zoom.dispatchEvent(
+        new TestPointerEvent(type, {
+          bubbles: true,
+          pointerId: 1,
+          pointerType: 'mouse',
+          clientX: x,
+          clientY: y,
+          button: 0,
+        })
+      );
+    };
+    fire('pointerdown', 40, 40);
+    fire('pointerup', 41, 40);
+    jest.advanceTimersByTime(120);
+    fire('pointerdown', 42, 41);
+    fire('pointerup', 43, 41);
+
+    expect(document.querySelector('.enigme-lightbox-overlay')).toBeNull();
+    window.matchMedia = previousMatch;
   });
 
   test('double tap opens the native-size loupe', () => {
