@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\HintAccessPolicy;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /** Render the portable data-driven part of a riddle participation panel. */
@@ -93,11 +94,14 @@ final class RiddlePlayerPanelRenderer {
             $timestamp = $hint['available_at'];
             $now = (int) current_time('timestamp');
             if ($timestamp === false || $timestamp > $now) {
-                return $this->staticHint(
+                $detail = $this->availabilityLabel($timestamp, $now);
+
+                return $this->inactiveHint(
                     (string) $hint['title'],
-                    $this->availabilityLabel($timestamp, $now),
+                    $detail,
                     'fa-hourglass',
-                    'upcoming'
+                    'upcoming',
+                    $this->inlineCountdown($timestamp === false ? '' : $this->shortSchedule($timestamp, $now))
                 );
             }
         }
@@ -114,9 +118,6 @@ final class RiddlePlayerPanelRenderer {
             : '';
         $stateClass = $unlocked ? 'unlocked indice-link--consulted' : 'locked';
         $icon = $unlocked ? 'fa-check' : 'fa-lightbulb';
-        $status = $unlocked
-            ? '<span class="indice-link__status">' . esc_html__('Consulté', 'chassesautresor-com') . '</span>'
-            : '';
         $aria = $unlocked
             ? ' aria-label="' . esc_attr(sprintf(
                 __('%s, consulté', 'chassesautresor-com'),
@@ -128,46 +129,96 @@ final class RiddlePlayerPanelRenderer {
             . ' etiquette" data-indice-id="' . esc_attr($hint['id']) . '" data-cout="' . esc_attr($cost)
             . '" data-unlocked="' . ($unlocked ? '1' : '0') . '"' . $aria . '><i class="fa-solid '
             . $icon . '" aria-hidden="true"></i> '
-            . '<span class="indice-link__text"><span class="indice-link__label">' . esc_html($hint['title'])
-            . '</span>' . $status . '</span>'
+            . '<span class="indice-link__label">' . esc_html($hint['title']) . '</span>'
             . $costHtml . '</a>';
     }
 
     /** @param array<string,mixed> $hint @param array<string,mixed> $gate */
     private function closedHint(array $hint, array $gate): string
     {
+        $title = (string) $hint['title'];
         if (($gate['reason'] ?? '') === 'prerequisite') {
             $missing = array_values(array_filter(
                 array_map('strval', (array) ($gate['missing_labels'] ?? [])),
                 static fn (string $label): bool => $label !== ''
             ));
-            $status = $missing === []
+            $detail = $missing === []
                 ? __('Prérequis manquant', 'chassesautresor-com')
                 : sprintf(__('Après %s', 'chassesautresor-com'), implode(', ', $missing));
 
-            return $this->staticHint((string) $hint['title'], $status, 'fa-lock', 'prerequisite');
+            return $this->inactiveHint($title, $detail, 'fa-lock', 'prerequisite', '');
         }
 
-        $availableAt = $gate['available_at'] ?? null;
-        if (is_int($availableAt)) {
-            $status = $this->availabilityLabel($availableAt, (int) current_time('timestamp'));
-        } elseif (($gate['target'] ?? '') === 'chasse') {
-            $status = __('Après le début de la chasse', 'chassesautresor-com');
-        } else {
-            $status = __('Après le début de l’énigme', 'chassesautresor-com');
-        }
-
-        return $this->staticHint((string) $hint['title'], $status, 'fa-hourglass', 'upcoming');
+        return $this->delayHint($hint, $gate);
     }
 
-    private function staticHint(string $title, string $status, string $icon, string $modifier): string
+    /** @param array<string,mixed> $hint @param array<string,mixed> $gate */
+    private function delayHint(array $hint, array $gate): string
     {
-        return '<span class="indice-label indice-link--' . esc_attr($modifier) . ' etiquette" title="'
-            . esc_attr($status) . '" aria-disabled="true" aria-label="'
-            . esc_attr(sprintf(__('%1$s, %2$s', 'chassesautresor-com'), $title, $status)) . '">'
+        $title = (string) $hint['title'];
+        $availableAt = $gate['available_at'] ?? null;
+        $policy = new HintAccessPolicy();
+        $attributes = ' data-indice-id="' . esc_attr((string) $hint['id'])
+            . '" data-cout="' . esc_attr((string) ($hint['cost'] ?? 0)) . '"';
+        if (is_int($availableAt)) {
+            $countdown = $policy->countdownLabel($availableAt - time());
+            $detail = $this->availabilityLabel($availableAt, time());
+            $attributes .= ' data-available-at="' . esc_attr((string) $availableAt) . '"';
+        } else {
+            $minutes = (int) ($gate['delay_minutes'] ?? 0);
+            $countdown = $minutes > 0 ? $policy->durationLabel($minutes) : '';
+            $detail = ($gate['target'] ?? '') === 'chasse'
+                ? __('Après le début de la chasse', 'chassesautresor-com')
+                : __('Après le début de l’énigme', 'chassesautresor-com');
+        }
+
+        return $this->inactiveHint(
+            $title,
+            $detail,
+            'fa-stopwatch',
+            'delay',
+            $this->inlineCountdown($countdown),
+            $attributes
+        );
+    }
+
+    private function inlineCountdown(string $value): string
+    {
+        if ($value === '') {
+            return '';
+        }
+
+        return '<span class="indice-link__countdown">' . esc_html($value) . '</span> ';
+    }
+
+    private function inactiveHint(
+        string $title,
+        string $detail,
+        string $icon,
+        string $modifier,
+        string $inlineHtml,
+        string $attributes = ''
+    ): string {
+        return '<span class="indice-label indice-link--' . esc_attr($modifier)
+            . ' etiquette" aria-disabled="true" title="' . esc_attr($detail) . '" aria-label="'
+            . esc_attr(sprintf(__('%1$s, %2$s', 'chassesautresor-com'), $title, $detail)) . '"'
+            . $attributes . '>'
             . '<i class="fa-solid ' . esc_attr($icon) . '" aria-hidden="true"></i> '
-            . '<span class="indice-link__text"><span class="indice-link__label">' . esc_html($title) . '</span>'
-            . '<span class="indice-link__status">' . esc_html($status) . '</span></span></span>';
+            . $inlineHtml
+            . '<span class="indice-link__label">' . esc_html($title) . '</span></span>';
+    }
+
+    /** @param int|false $timestamp */
+    private function shortSchedule($timestamp, int $now): string
+    {
+        if ($timestamp === false) {
+            return '';
+        }
+        if (wp_date('Y-m-d', $timestamp) === wp_date('Y-m-d', $now)) {
+            return wp_date('H:i', $timestamp);
+        }
+
+        return wp_date('d/m', $timestamp);
     }
 
     /** @param int|false $timestamp */

@@ -88,6 +88,21 @@ final class HintAccessPolicyTest extends TestCase {
         $this->assertSame([8], $result['prerequisites']);
     }
 
+    public function testCountdownUsesAShortFormat(): void {
+        $this->assertSame('0:42', $this->policy->countdownLabel(42));
+        $this->assertSame('12:05', $this->policy->countdownLabel(725));
+        $this->assertSame('2h', $this->policy->countdownLabel(7200));
+        $this->assertSame('2h05', $this->policy->countdownLabel(7500));
+        $this->assertSame('3j', $this->policy->countdownLabel(3 * 86400));
+        $this->assertSame('0:00', $this->policy->countdownLabel(-5));
+    }
+
+    public function testConfiguredDelayUsesTheSameShortUnits(): void {
+        $this->assertSame('15m', $this->policy->durationLabel(15));
+        $this->assertSame('1h30', $this->policy->durationLabel(90));
+        $this->assertSame('2j', $this->policy->durationLabel(2880));
+    }
+
     public function testDelayIsCappedAtSevenDays(): void {
         $result = $this->policy->normalize(5, [], [8], [], 999999, 'engagement');
 

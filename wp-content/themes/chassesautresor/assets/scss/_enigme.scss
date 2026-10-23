@@ -83,16 +83,20 @@
   .indice-label {
     display: inline-flex;
     align-items: center;
+    flex-wrap: nowrap;
     gap: var(--space-xs);
     padding: calc(var(--space-xs) / 2) var(--space-sm);
     border-radius: 4px;
     font-weight: 600;
     font-size: 0.875rem;
+    line-height: 1.2;
+    white-space: nowrap;
     border: 2px solid transparent;
   }
 
   .indice-link {
     text-decoration: none;
+    cursor: pointer;
 
     &--locked,
     &--upcoming {
@@ -114,25 +118,27 @@
     }
   }
 
-  .indice-link__text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    line-height: 1.15;
+  .indice-link__label,
+  .indice-link__countdown {
+    white-space: nowrap;
   }
 
-  .indice-link__status {
-    font-size: 0.68rem;
-    font-weight: 500;
-    opacity: 0.85;
+  .indice-link__countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
   }
 
+  .indice-label.indice-link--delay,
   .indice-label.indice-link--upcoming,
   .indice-label.indice-link--prerequisite {
     background-color: transparent;
     color: var(--color-titre-enigme);
     border-color: var(--color-gris-3);
     border-style: dashed;
+    box-shadow: none;
+    cursor: default;
+    opacity: 0.62;
+    pointer-events: none;
   }
 
   .btn-debloquer-indice {
@@ -2901,12 +2907,21 @@ body.comic-reader .is-comic-hud .indice-link--active {
   color: var(--color-text-fond-clair);
 }
 
+body.comic-reader .is-comic-hud .indice-label.indice-link--delay,
 body.comic-reader .is-comic-hud .indice-label.indice-link--upcoming,
 body.comic-reader .is-comic-hud .indice-label.indice-link--prerequisite {
   background: transparent;
-  color: rgba(244, 241, 234, 0.72);
+  color: rgba(244, 241, 234, 0.55);
   border-style: dashed;
   border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: none;
+  cursor: default;
+  opacity: 1;
+  pointer-events: none;
+}
+
+body.comic-reader .is-comic-hud .indice-link__countdown {
+  font-variant-numeric: tabular-nums;
 }
 
 body.comic-reader .is-comic-hud .zone-indices-line__label {
@@ -2921,8 +2936,7 @@ body.comic-reader .is-comic-hud .zone-indices-line__label {
   border: 0;
 }
 
-body.comic-reader .is-comic-hud .indice-link__label,
-body.comic-reader .is-comic-hud .indice-link__status {
+body.comic-reader .is-comic-hud .indice-link__label {
   max-width: 9rem;
   overflow: hidden;
   text-overflow: ellipsis;

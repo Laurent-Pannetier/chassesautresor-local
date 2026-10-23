@@ -21,6 +21,9 @@ final class HintAccessPolicy {
     public const ERROR_CYCLE = 'cycle_prerequis';
     public const ERROR_MISSING = 'missing_prerequisites';
     public const MAX_DELAY_MINUTES = 10080;
+    private const SECONDS_PER_MINUTE = 60;
+    private const SECONDS_PER_HOUR = 3600;
+    private const SECONDS_PER_DAY = 86400;
 
     /**
      * @param array<int, mixed> $ids
@@ -184,6 +187,46 @@ final class HintAccessPolicy {
         }
 
         return false;
+    }
+
+    public function countdownLabel(int $remainingSeconds): string {
+        $remaining = max(0, $remainingSeconds);
+        if ($remaining >= self::SECONDS_PER_DAY) {
+            return intdiv($remaining, self::SECONDS_PER_DAY) . 'j';
+        }
+        if ($remaining >= self::SECONDS_PER_HOUR) {
+            $hours = intdiv($remaining, self::SECONDS_PER_HOUR);
+            $minutes = intdiv($remaining % self::SECONDS_PER_HOUR, self::SECONDS_PER_MINUTE);
+
+            return $minutes > 0
+                ? $hours . 'h' . str_pad((string) $minutes, 2, '0', STR_PAD_LEFT)
+                : $hours . 'h';
+        }
+
+        $minutes = intdiv($remaining, self::SECONDS_PER_MINUTE);
+        $seconds = $remaining % self::SECONDS_PER_MINUTE;
+
+        return $minutes . ':' . str_pad((string) $seconds, 2, '0', STR_PAD_LEFT);
+    }
+
+    public function durationLabel(int $minutes): string {
+        $minutes = max(0, $minutes);
+        if ($minutes >= 1440) {
+            $days = intdiv($minutes, 1440);
+            $hours = intdiv($minutes % 1440, 60);
+
+            return $hours > 0 ? $days . 'j' . $hours . 'h' : $days . 'j';
+        }
+        if ($minutes >= 60) {
+            $hours = intdiv($minutes, 60);
+            $rest = $minutes % 60;
+
+            return $rest > 0
+                ? $hours . 'h' . str_pad((string) $rest, 2, '0', STR_PAD_LEFT)
+                : $hours . 'h';
+        }
+
+        return $minutes . 'm';
     }
 
     private function normalizeAnchor(string $anchor): string {
