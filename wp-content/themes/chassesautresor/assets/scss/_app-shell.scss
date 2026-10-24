@@ -2053,8 +2053,50 @@ html[data-theme="day"] .home-enigmas-preserve {
   font-weight: 700;
 }
 
+.progression-figures__detail {
+  margin: 0;
+  color: var(--shell-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.progression-figures__item--alert dt,
+.progression-figures__item--alert dd,
+.progression-figures__item--alert a {
+  color: var(--shell-icon-progression);
+}
+
+.progression-figures__item--alert a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+}
+
+.progression-scope {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--shell-surface-2);
+  color: var(--shell-muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.4;
+  vertical-align: 0.15em;
+}
+
+.progression-figures__item--alert dt .progression-scope {
+  color: var(--shell-muted);
+}
+
+.progression-series__reading {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
 .progression-dropoff h4,
-.progression-series figcaption {
+.progression-series figcaption,
+.progression-series__summary {
   margin: 0 0 0.45rem;
   color: var(--shell-text);
   font-size: 0.9rem;
@@ -2075,9 +2117,18 @@ html[data-theme="day"] .home-enigmas-preserve {
 
 .progression-steps-chart__row {
   display: grid;
-  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr) auto auto;
   gap: 0.45rem;
   align-items: center;
+}
+
+.progression-steps-chart__row--break .progression-steps-chart__label,
+.progression-steps-chart__row--break .progression-steps-chart__value {
+  color: var(--shell-icon-progression);
+}
+
+.progression-steps-chart__row--break .progression-steps-chart__fill {
+  background: var(--shell-icon-progression);
 }
 
 .progression-steps-chart__label {
@@ -2105,6 +2156,18 @@ html[data-theme="day"] .home-enigmas-preserve {
 .progression-steps-chart__value {
   color: var(--shell-text);
   font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.progression-steps-chart__share,
+.progression-steps-chart__attempts {
+  color: var(--shell-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.progression-steps-chart__attempts {
   font-weight: 700;
 }
 
@@ -2139,36 +2202,75 @@ html[data-theme="day"] .home-enigmas-preserve {
   color: var(--shell-icon-progression);
 }
 
-.progression-series svg {
+.progression-series__summary {
+  cursor: pointer;
+}
+
+.progression-series .progression-dropoff {
+  margin-top: 0.85rem;
+}
+
+.progression-columns {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+  height: 7rem;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progression-columns__item {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+}
+
+.progression-columns__value {
+  height: 1rem;
+  color: var(--shell-text);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1rem;
+}
+
+.progression-columns__plot {
+  position: relative;
+  width: 100%;
+  height: 4.7rem;
+}
+
+.progression-columns__bar {
+  position: absolute;
+  right: 18%;
+  bottom: 0;
+  left: 18%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 2px;
+  overflow: hidden;
+  border-radius: 0.2rem 0.2rem 0 0;
+  background: var(--shell-accent);
+}
+
+.progression-columns__success {
   display: block;
   width: 100%;
-  height: auto;
+  background: var(--shell-icon-rules);
 }
 
-.progression-series__grid {
-  stroke: var(--shell-border);
-  stroke-width: 1;
-}
-
-.progression-series__line {
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
-}
-
-.progression-series__line--total {
-  color: var(--shell-accent);
-}
-
-.progression-series__line--success {
-  color: var(--shell-icon-rules);
-}
-
-.progression-series text {
-  fill: var(--shell-muted);
-  font-size: 11px;
+.progression-columns__label {
+  height: 1.15rem;
+  margin-top: 0.15rem;
+  overflow: hidden;
+  color: var(--shell-muted);
+  font-size: 0.65rem;
+  line-height: 1.15rem;
+  white-space: nowrap;
 }
 
 .app-placeholder {

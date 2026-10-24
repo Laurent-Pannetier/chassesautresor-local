@@ -69,10 +69,8 @@ final class AccountHuntRiddleStatisticsRenderer
             )) . '</p>';
         } else {
             echo '<ol class="progression-riddles__list">';
-            foreach ($rows as $row) {
-                if (is_array($row)) {
-                    echo $this->riddleItem($row);
-                }
+            foreach ($this->sortRiddles($rows) as $row) {
+                echo $this->riddleItem($row, $period);
             }
             echo '</ol>';
         }
@@ -96,7 +94,7 @@ final class AccountHuntRiddleStatisticsRenderer
     private function periodNote(): string
     {
         return '<p class="progression-note">' . esc_html(__(
-            'Les tentatives, le rendement, la file d’attente et la courbe suivent la période. '
+            'Les tentatives, les bonnes réponses, la file d’attente et la courbe suivent la période. '
             . 'Les joueurs résolus, en validation ou dans les étapes décrivent l’état actuel.',
             'chassesautresor-com'
         )) . '</p>';
@@ -189,7 +187,7 @@ final class AccountHuntRiddleStatisticsRenderer
     }
 
     /** @param array<string, mixed> $row */
-    private function riddleItem(array $row): string
+    private function riddleItem(array $row, string $period): string
     {
         $stepCount = (int) ($row['steps'] ?? 0);
         if ($stepCount <= 0 && is_array($row['steps_detail'] ?? null)) {
@@ -205,30 +203,25 @@ final class AccountHuntRiddleStatisticsRenderer
         $html .= '<h3 class="progression-riddle__title">'
             . esc_html((string) ($row['title'] ?? '')) . '</h3>';
         $html .= '</div>';
-        $html .= '<p class="progression-story">' . esc_html($this->story(
-            $row,
-            $engaged,
-            $solved,
-            $submitted,
-            $withStep,
-            $stepCount
-        )) . '</p>';
-        $html .= $this->distributionBar(
+        foreach ($this->storyParts($row, $engaged, $solved, $submitted, $withStep, $stepCount) as $part) {
+            $html .= '<p class="progression-story">' . esc_html($part['text'])
+                . $this->scopeBadge($part['scope'], $period) . '</p>';
+        }
+        $bar = $this->distributionBar(
             $this->distribution($engaged, (int) $withStep, $submitted, $solved),
             $withStep !== null
         );
-        $html .= $this->keyFigures($row);
-        if (is_array($row['top_hint'] ?? null)) {
-            $hint = (array) $row['top_hint'];
-            $html .= '<p class="progression-hint">' . esc_html(sprintf(
-                /* translators: 1: hint title, 2: number of unlocks */
-                __('Indice le plus débloqué : %1$s (%2$d)', 'chassesautresor-com'),
-                (string) ($hint['title'] ?? ''),
-                (int) ($hint['unlocks'] ?? 0)
-            )) . '</p>';
+        $html .= $bar;
+        if ($bar !== '') {
+            $html .= $this->stateNote($period);
         }
-        $html .= $this->stepsBlock($row, $engaged);
-        $html .= $this->seriesChart($row);
+        $html .= $this->keyFigures($row, $period);
+        $hint = $this->hintSentence(is_array($row['top_hint'] ?? null) ? (array) $row['top_hint'] : [], $engaged);
+        if ($hint !== '') {
+            $html .= '<p class="progression-hint">' . esc_html($hint)
+                . $this->scopeBadge('current', $period) . '</p>';
+        }
+        $html .= $this->answersDetails($row, $engaged);
         $html .= '</li>';
 
         return $html;
@@ -244,84 +237,83 @@ final class AccountHuntRiddleStatisticsRenderer
         return $stepCount > 0 ? (int) ($row['step_players'] ?? 0) : null;
     }
 
-    /** @param array<string, mixed> $row */
-    private function story(
+    /**
+     * Facts the bar does not already show: how many players engaged, whether
+     * any step was cleared, and the case where nobody has solved the riddle.
+     *
+     * @param array<string, mixed> $row
+     * @return array<int, array{text:string,scope:string}>
+     */
+    private function storyParts(
         array $row,
         int $engaged,
         int $solved,
         int $submitted,
         ?int $withStep,
         int $stepCount
-    ): string {
-        $sentences = [];
+    ): array {
+        $parts = [];
         if ($engaged === 0) {
-            $sentences[] = __('Aucun joueur engagé sur la période.', 'chassesautresor-com');
+            $parts[] = [
+                'text' => __('Aucun joueur engagé sur la période.', 'chassesautresor-com'),
+                'scope' => 'period',
+            ];
         } else {
-            $sentences[] = sprintf(
-                /* translators: %d: number of engaged players */
-                _n('%d joueur engagé.', '%d joueurs engagés.', $engaged, 'chassesautresor-com'),
-                $engaged
-            );
+            $parts[] = [
+                'text' => sprintf(
+                    /* translators: %d: number of engaged players */
+                    _n('%d joueur engagé.', '%d joueurs engagés.', $engaged, 'chassesautresor-com'),
+                    $engaged
+                ),
+                'scope' => 'period',
+            ];
         }
 
         if ($withStep === 0 && $stepCount > 0) {
-            $sentences[] = sprintf(
-                /* translators: %d: number of intermediate steps */
-                _n(
-                    'L’étape n’a pas été franchie.',
-                    'Aucune des %d étapes n’a été franchie.',
-                    $stepCount,
-                    'chassesautresor-com'
+            $parts[] = [
+                'text' => sprintf(
+                    /* translators: %d: number of intermediate steps */
+                    _n(
+                        'L’étape n’a pas été franchie.',
+                        'Aucune des %d étapes n’a été franchie.',
+                        $stepCount,
+                        'chassesautresor-com'
+                    ),
+                    $stepCount
                 ),
-                $stepCount
-            );
+                'scope' => 'current',
+            ];
         } elseif ($withStep !== null && $withStep > 0) {
-            $sentences[] = sprintf(
-                /* translators: %d: number of players who cleared an intermediate step */
-                _n(
-                    '%d joueur a franchi au moins une étape.',
-                    '%d joueurs ont franchi au moins une étape.',
-                    $withStep,
-                    'chassesautresor-com'
+            $parts[] = [
+                'text' => sprintf(
+                    /* translators: %d: number of players who cleared an intermediate step */
+                    _n(
+                        '%d joueur a franchi au moins une étape.',
+                        '%d joueurs ont franchi au moins une étape.',
+                        $withStep,
+                        'chassesautresor-com'
+                    ),
+                    $withStep
                 ),
-                $withStep
-            );
+                'scope' => 'current',
+            ];
+        }
+
+        if ($solved > 0) {
+            return $parts;
         }
 
         $finalAttempts = is_array($row['yield'] ?? null)
             ? (int) ($row['yield']['total'] ?? 0)
             : (int) ($row['tentatives'] ?? 0);
-        if ($solved > 0) {
-            $sentences[] = sprintf(
-                /* translators: %d: number of players who solved the riddle */
-                _n(
-                    '%d joueur a résolu l’énigme.',
-                    '%d joueurs ont résolu l’énigme.',
-                    $solved,
-                    'chassesautresor-com'
-                ),
-                $solved
-            );
-        } elseif ($finalAttempts > 0 || $submitted > 0) {
-            $sentences[] = __('Personne n’a encore résolu l’énigme.', 'chassesautresor-com');
-        } else {
-            $sentences[] = __('Aucune réponse finale n’a été envoyée.', 'chassesautresor-com');
-        }
+        $parts[] = [
+            'text' => ($finalAttempts > 0 || $submitted > 0)
+                ? __('Personne n’a encore résolu l’énigme.', 'chassesautresor-com')
+                : __('Aucune réponse finale n’a été envoyée.', 'chassesautresor-com'),
+            'scope' => 'current',
+        ];
 
-        if ($submitted > 0) {
-            $sentences[] = sprintf(
-                /* translators: %d: number of players waiting for a manual validation */
-                _n(
-                    '%d joueur attend une validation.',
-                    '%d joueurs attendent une validation.',
-                    $submitted,
-                    'chassesautresor-com'
-                ),
-                $submitted
-            );
-        }
-
-        return implode(' ', $sentences);
+        return $parts;
     }
 
     /**
@@ -358,7 +350,7 @@ final class AccountHuntRiddleStatisticsRenderer
 
         $notStarted = $hasSteps
             ? __('Pas encore d’étape', 'chassesautresor-com')
-            : __('En cours', 'chassesautresor-com');
+            : __('Sans réponse finale', 'chassesautresor-com');
         $segments = [
             'solved' => [__('Résolus', 'chassesautresor-com'), $distribution['solved']],
             'review' => [__('En validation', 'chassesautresor-com'), $distribution['review']],
@@ -390,35 +382,43 @@ final class AccountHuntRiddleStatisticsRenderer
     }
 
     /** @param array<string, mixed> $row */
-    private function keyFigures(array $row): string
+    private function keyFigures(array $row, string $period): string
     {
         $items = [];
         if (is_array($row['yield'] ?? null)) {
-            $yield = $this->yieldLabel((array) $row['yield']);
-            if ($yield !== '—') {
-                $items[] = [__('Rendement', 'chassesautresor-com'), $yield];
+            $yield = $this->yieldFigure((array) $row['yield']);
+            if ($yield !== null) {
+                $items[] = $yield + ['scope' => 'period', 'alert' => false, 'url' => ''];
             }
         }
         $pending = (int) ($row['pending'] ?? 0);
         if ($pending > 0) {
             $items[] = [
-                __('En attente', 'chassesautresor-com'),
-                sprintf(
+                'label' => __('À valider', 'chassesautresor-com'),
+                'value' => sprintf(
                     /* translators: %d: final answers still waiting for review */
                     _n('%d réponse', '%d réponses', $pending, 'chassesautresor-com'),
                     $pending
                 ),
+                'detail' => '',
+                'scope' => 'period',
+                'alert' => true,
+                'url' => $this->reviewUrl((int) ($row['id'] ?? 0)),
             ];
         }
         if (array_key_exists('median_attempts', $row) && $row['median_attempts'] !== null) {
             $median = (int) $row['median_attempts'];
             $items[] = [
-                __('Médiane pour résoudre', 'chassesautresor-com'),
-                sprintf(
+                'label' => __('Médiane pour résoudre', 'chassesautresor-com'),
+                'value' => sprintf(
                     /* translators: %d: median number of final attempts needed to solve */
                     _n('%d tentative', '%d tentatives', $median, 'chassesautresor-com'),
                     $median
                 ),
+                'detail' => '',
+                'scope' => 'current',
+                'alert' => false,
+                'url' => '',
             ];
         }
         if ($items === []) {
@@ -427,7 +427,19 @@ final class AccountHuntRiddleStatisticsRenderer
 
         $html = '<dl class="progression-figures">';
         foreach ($items as $item) {
-            $html .= '<div><dt>' . esc_html($item[0]) . '</dt><dd>' . esc_html($item[1]) . '</dd></div>';
+            $class = 'progression-figures__item'
+                . ($item['alert'] ? ' progression-figures__item--alert' : '');
+            $html .= '<div class="' . $class . '">';
+            $html .= '<dt>' . esc_html($item['label']) . $this->scopeBadge($item['scope'], $period) . '</dt>';
+            $value = esc_html($item['value']);
+            if ($item['url'] !== '') {
+                $value = '<a href="' . esc_url($item['url']) . '">' . $value . '</a>';
+            }
+            $html .= '<dd>' . $value . '</dd>';
+            if ($item['detail'] !== '') {
+                $html .= '<p class="progression-figures__detail">' . esc_html($item['detail']) . '</p>';
+            }
+            $html .= '</div>';
         }
 
         return $html . '</dl>';
@@ -465,76 +477,48 @@ final class AccountHuntRiddleStatisticsRenderer
             : __('Tentatives par étape', 'chassesautresor-com');
         $html = '<section class="progression-dropoff">';
         $html .= '<h4>' . esc_html($title) . '</h4>';
-        if ($anyReached) {
-            $html .= $this->stepsChart($steps, $engaged);
-        }
-        $html .= $this->stepsTable($steps, $engaged);
+        $html .= $this->stepsHistogram($steps, $engaged, $anyReached);
 
         return $html . '</section>';
     }
 
     /** @param array<int, array<string, mixed>> $steps */
-    private function stepsChart(array $steps, int $engaged): string
+    private function stepsHistogram(array $steps, int $engaged, bool $anyReached): string
     {
-        $scale = max(1, $engaged);
-        foreach ($steps as $step) {
-            $scale = max($scale, (int) ($step['reached'] ?? 0));
+        $breakIndex = $anyReached ? $this->steepestDropIndex($steps) : null;
+        $scale = $anyReached && $engaged > 0 ? $engaged : 1;
+        if (!$anyReached || $engaged <= 0) {
+            foreach ($steps as $step) {
+                $amount = $anyReached ? (int) ($step['reached'] ?? 0) : (int) ($step['attempts'] ?? 0);
+                $scale = max($scale, $amount);
+            }
         }
 
         $html = '<ul class="progression-steps-chart">';
-        foreach ($steps as $step) {
-            $reached = (int) ($step['reached'] ?? 0);
-            $percent = (int) round((100 * $reached) / $scale);
-            $label = $this->stepTitle($step);
-            $html .= '<li class="progression-steps-chart__row">';
-            $html .= '<span class="progression-steps-chart__label">' . esc_html($label) . '</span>';
-            $html .= '<span class="progression-steps-chart__track" aria-hidden="true">';
-            $html .= '<span class="progression-steps-chart__fill" style="width:' . $percent . '%"></span>';
-            $html .= '</span>';
-            $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $reached) . '</span>';
-            $html .= '</li>';
-        }
-        $html .= '</ul>';
-        $html .= '<p class="progression-note">' . esc_html(sprintf(
-            /* translators: %d: number of players represented by a full bar */
-            _n(
-                'La barre pleine représente %d joueur.',
-                'La barre pleine représente %d joueurs.',
-                $scale,
-                'chassesautresor-com'
-            ),
-            $scale
-        )) . '</p>';
-
-        return $html;
-    }
-
-    /** @param array<int, array<string, mixed>> $steps */
-    private function stepsTable(array $steps, int $engaged): string
-    {
-        $breakIndex = $this->steepestDropIndex($steps);
-        $html = '<div class="progression-dropoff__scroll"><table class="progression-dropoff__table">';
-        $html .= '<thead><tr>';
-        foreach ([
-            __('Étape', 'chassesautresor-com'),
-            __('Joueurs', 'chassesautresor-com'),
-            __('Part des engagés', 'chassesautresor-com'),
-            __('Tentatives', 'chassesautresor-com'),
-        ] as $header) {
-            $html .= '<th scope="col">' . esc_html($header) . '</th>';
-        }
-        $html .= '</tr></thead><tbody>';
         foreach ($steps as $index => $step) {
             $reached = (int) ($step['reached'] ?? 0);
             $attempts = (int) ($step['attempts'] ?? 0);
-            $share = $engaged > 0 ? (int) round((100 * $reached) / $engaged) . ' %' : '—';
-            $class = $index === $breakIndex ? ' class="progression-dropoff__break"' : '';
-            $html .= '<tr' . $class . '><th scope="row">' . esc_html($this->stepTitle($step)) . '</th>';
-            $html .= '<td>' . esc_html((string) $reached) . '</td>';
-            $html .= '<td>' . esc_html($share) . '</td>';
-            $html .= '<td>' . esc_html((string) $attempts) . '</td></tr>';
+            $amount = $anyReached ? $reached : $attempts;
+            $percent = $scale > 0 ? min(100, (int) round((100 * $amount) / $scale)) : 0;
+            $class = 'progression-steps-chart__row';
+            if ($index === $breakIndex) {
+                $class .= ' progression-steps-chart__row--break';
+            }
+            $html .= '<li class="' . $class . '">';
+            $html .= '<span class="progression-steps-chart__label">' . esc_html($this->stepTitle($step)) . '</span>';
+            $html .= '<span class="progression-steps-chart__track" aria-hidden="true">';
+            $html .= '<span class="progression-steps-chart__fill" style="width:' . $percent . '%"></span></span>';
+            if ($anyReached) {
+                $share = $engaged > 0 ? (int) round((100 * $reached) / $engaged) . ' %' : '—';
+                $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $reached)
+                    . ' <span class="progression-steps-chart__share">' . esc_html($share) . '</span></span>';
+                $html .= '<span class="progression-steps-chart__attempts">' . esc_html((string) $attempts) . '</span>';
+            } else {
+                $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $attempts) . '</span>';
+            }
+            $html .= '</li>';
         }
-        $html .= '</tbody></table></div>';
+        $html .= '</ul>';
         if ($breakIndex !== null) {
             $html .= '<p class="progression-note">' . esc_html(sprintf(
                 /* translators: %s: step title where the largest drop happens */
@@ -572,8 +556,60 @@ final class AccountHuntRiddleStatisticsRenderer
         return $title !== '' ? $title : __('Étape', 'chassesautresor-com');
     }
 
-    /** @param array<string, mixed> $row */
-    private function seriesChart(array $row): string
+    /**
+     * Weekly or daily finals, then the step histogram, behind one disclosure.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function answersDetails(array $row, int $engaged): string
+    {
+        $steps = $this->stepsBlock($row, $engaged);
+        $series = $this->seriesParts($row);
+        if ($steps === '' && $series === null) {
+            return '';
+        }
+
+        $hasSeries = $series !== null;
+        $html = '';
+        if ($hasSeries && $series['reading'] !== '') {
+            $html .= '<p class="progression-series__reading">' . esc_html($series['reading']) . '</p>';
+        }
+        $html .= '<details class="progression-series">';
+        $html .= '<summary class="progression-series__summary">' . esc_html($this->answersSummary(
+            $hasSeries ? $series['grain'] : '',
+            $hasSeries,
+            $steps !== ''
+        )) . '</summary>';
+        if ($hasSeries) {
+            $html .= '<p class="screen-reader-text">' . esc_html($series['accessible']) . '</p>';
+            $html .= $series['body'];
+        }
+        $html .= $steps;
+
+        return $html . '</details>';
+    }
+
+    private function answersSummary(string $grain, bool $hasSeries, bool $hasSteps): string
+    {
+        if ($hasSeries && $hasSteps) {
+            return $grain === 'day'
+                ? __('Réponses finales par jour et étapes', 'chassesautresor-com')
+                : __('Réponses finales par semaine et étapes', 'chassesautresor-com');
+        }
+        if ($hasSeries) {
+            return $grain === 'day'
+                ? __('Réponses finales par jour', 'chassesautresor-com')
+                : __('Réponses finales par semaine', 'chassesautresor-com');
+        }
+
+        return __('Étapes', 'chassesautresor-com');
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array{reading:string,grain:string,accessible:string,body:string}|null
+     */
+    private function seriesParts(array $row): ?array
     {
         $series = [];
         foreach ((array) ($row['attempt_series'] ?? []) as $point) {
@@ -582,123 +618,351 @@ final class AccountHuntRiddleStatisticsRenderer
             }
             $series[] = [
                 'label' => (string) ($point['label'] ?? ''),
+                'date' => (string) ($point['date'] ?? ''),
                 'total' => (int) ($point['total'] ?? 0),
                 'success' => (int) ($point['success'] ?? 0),
+                'open' => (bool) ($point['open'] ?? false),
             ];
         }
         if (count($series) < 2) {
-            return '';
+            return null;
         }
 
         $totals = array_map(static fn (array $point): int => $point['total'], $series);
         $successes = array_map(static fn (array $point): int => $point['success'], $series);
         $max = max(1, max($totals));
-        $left = 36.0;
-        $right = 628.0;
-        $top = 16.0;
-        $bottom = 132.0;
-        $chartId = 'progression-series-' . max(0, (int) ($row['id'] ?? 0));
         $grain = (string) ($row['attempt_series_grain'] ?? 'week');
-        $caption = $grain === 'day'
-            ? __('Réponses finales par jour', 'chassesautresor-com')
-            : __('Réponses finales par semaine', 'chassesautresor-com');
         $summary = sprintf(
-            /* translators: 1: number of points, 2: final attempts, 3: correct final answers */
-            __(
-                'Courbe des réponses finales : %1$d points, %2$d tentatives, %3$d bonnes réponses.',
-                'chassesautresor-com'
+            /* translators: 1: number of buckets, 2: final attempts, 3: correct final answers */
+            __('Histogramme des réponses finales : %1$s, %2$s, %3$s.', 'chassesautresor-com'),
+            sprintf(_n('%d point', '%d points', count($series), 'chassesautresor-com'), count($series)),
+            sprintf(
+                _n('%d tentative', '%d tentatives', array_sum($totals), 'chassesautresor-com'),
+                array_sum($totals)
             ),
-            count($series),
-            array_sum($totals),
-            array_sum($successes)
+            sprintf(
+                _n('%d bonne réponse', '%d bonnes réponses', array_sum($successes), 'chassesautresor-com'),
+                array_sum($successes)
+            )
         );
-
-        $html = '<figure class="progression-series">';
-        $html .= '<figcaption>' . esc_html($caption) . '</figcaption>';
-        $html .= '<svg viewBox="0 0 640 176" role="img" aria-labelledby="' . esc_attr($chartId) . '">';
-        $html .= '<title id="' . esc_attr($chartId) . '">' . esc_html($summary) . '</title>';
-        $html .= '<line class="progression-series__grid" x1="' . $left . '" y1="' . $bottom
-            . '" x2="' . $right . '" y2="' . $bottom . '"></line>';
-        $html .= '<line class="progression-series__grid" x1="' . $left . '" y1="' . $top
-            . '" x2="' . $right . '" y2="' . $top . '"></line>';
-        $html .= '<text x="0" y="20">' . esc_html((string) $max) . '</text>';
-        $html .= '<text x="0" y="130">0</text>';
-        $html .= '<polyline class="progression-series__line progression-series__line--total" points="'
-            . esc_attr($this->chartPoints($totals, $max, $left, $right, $top, $bottom)) . '"></polyline>';
-        $html .= '<polyline class="progression-series__line progression-series__line--success" points="'
-            . esc_attr($this->chartPoints($successes, $max, $left, $right, $top, $bottom)) . '"></polyline>';
-        $html .= $this->seriesLabels($series, $left, $right);
-        $html .= '</svg>';
-        $html .= '<ul class="progression-series__legend">';
-        $html .= '<li><i class="progression-series__swatch progression-series__swatch--total" aria-hidden="true"></i> '
+        $peak = $this->peakIndex($totals);
+        $body = $this->seriesColumns($series, $max, $peak);
+        $body .= '<ul class="progression-series__legend">';
+        $body .= '<li><i class="progression-series__swatch progression-series__swatch--total" aria-hidden="true"></i> '
             . esc_html(__('Tentatives finales', 'chassesautresor-com')) . '</li>';
-        $html .= '<li><i class="progression-series__swatch progression-series__swatch--success"'
+        $body .= '<li><i class="progression-series__swatch progression-series__swatch--success"'
             . ' aria-hidden="true"></i> '
             . esc_html(__('Bonnes réponses', 'chassesautresor-com')) . '</li>';
-        $html .= '</ul>';
-        $html .= '<p class="progression-note">' . esc_html(__(
-            'La courbe suit la période choisie. Les essais sur les étapes n’y entrent pas.',
+        $body .= '</ul>';
+        $body .= '<p class="progression-note">' . esc_html(__(
+            'Les essais sur les étapes n’y entrent pas.',
             'chassesautresor-com'
-        )) . '</p></figure>';
+        )) . '</p>';
 
-        return $html;
+        return [
+            'reading' => $this->seriesReading($series[$peak], $grain),
+            'grain' => $grain,
+            'accessible' => $summary,
+            'body' => $body,
+        ];
     }
 
     /**
-     * @param int[] $values
+     * @param array<int, array{label:string,date:string,total:int,success:int,open:bool}> $series
      */
-    private function chartPoints(
-        array $values,
-        int $max,
-        float $left,
-        float $right,
-        float $top,
-        float $bottom
-    ): string {
-        $span = max(1, count($values) - 1);
-        $coords = [];
-        foreach (array_values($values) as $index => $value) {
-            $x = $left + ($right - $left) * ($index / $span);
-            $y = $bottom - ($bottom - $top) * ($value / max(1, $max));
-            $coords[] = round($x, 1) . ',' . round($y, 1);
-        }
-
-        return implode(' ', $coords);
-    }
-
-    /** @param array<int, array{label:string,total:int,success:int}> $series */
-    private function seriesLabels(array $series, float $left, float $right): string
+    private function seriesColumns(array $series, int $max, int $peak): string
     {
         $count = count($series);
         $step = (int) max(1, ceil($count / 8));
-        $span = max(1, $count - 1);
-        $html = '';
+        $html = '<ol class="progression-columns">';
         foreach ($series as $index => $point) {
-            $isLast = $index === $count - 1;
-            if ($index % $step !== 0 && !$isLast) {
-                continue;
+            $total = $point['total'];
+            $success = min($point['success'], max(0, $total));
+            $height = $max > 0 ? (int) round((100 * $total) / $max) : 0;
+            $successHeight = $total > 0 ? (int) round((100 * $success) / $total) : 0;
+            $showLabel = $index % $step === 0 || $index === $count - 1;
+            $html .= '<li class="progression-columns__item">';
+            $html .= '<span class="progression-columns__value">'
+                . ($index === $peak && $total > 0 ? esc_html((string) $total) : '') . '</span>';
+            $html .= '<span class="progression-columns__plot">';
+            if ($height > 0) {
+                $html .= '<span class="progression-columns__bar" style="height:' . $height . '%">';
+                if ($successHeight > 0) {
+                    $html .= '<span class="progression-columns__success" style="height:'
+                        . $successHeight . '%"></span>';
+                }
+                $html .= '</span>';
             }
-            $x = round($left + ($right - $left) * ($index / $span), 1);
-            $anchor = $index === 0 ? 'start' : ($isLast ? 'end' : 'middle');
-            $html .= '<text x="' . $x . '" y="152" text-anchor="' . $anchor . '">'
-                . esc_html($point['label']) . '</text>';
+            $html .= '</span>';
+            $html .= '<span class="progression-columns__label">'
+                . ($showLabel ? esc_html($point['label']) : '') . '</span>';
+            $html .= '</li>';
         }
 
-        return $html;
+        return $html . '</ol>';
     }
 
-    /** @param array<string, mixed> $yield */
-    private function yieldLabel(array $yield): string
+    /**
+     * @param array<string, mixed> $yield
+     * @return array{label:string,value:string,detail:string}|null
+     */
+    private function yieldFigure(array $yield): ?array
     {
         $success = (int) ($yield['success'] ?? 0);
         $total = (int) ($yield['total'] ?? 0);
         if ($total <= 0) {
-            return '—';
+            return null;
         }
 
         $percent = (int) round((100 * $success) / $total);
+        $successLabel = sprintf(
+            _n('%d réussite', '%d réussites', $success, 'chassesautresor-com'),
+            $success
+        );
+        $attemptLabel = sprintf(
+            _n('%d tentative', '%d tentatives', $total, 'chassesautresor-com'),
+            $total
+        );
 
-        return $success . '/' . $total . ' · ' . $percent . ' %';
+        return [
+            'label' => __('Bonnes réponses finales', 'chassesautresor-com'),
+            'value' => $percent . ' %',
+            'detail' => sprintf(
+                /* translators: 1: successful final answers, 2: all final attempts */
+                __('%1$s sur %2$s', 'chassesautresor-com'),
+                $successLabel,
+                $attemptLabel
+            ),
+        ];
+    }
+
+    private function scopeBadge(string $scope, string $period): string
+    {
+        if ($period === 'total' || $scope === '') {
+            return '';
+        }
+        $label = $scope === 'period'
+            ? __('Période', 'chassesautresor-com')
+            : __('État actuel', 'chassesautresor-com');
+
+        return ' <span class="progression-scope">' . esc_html($label) . '</span>';
+    }
+
+    private function stateNote(string $period): string
+    {
+        if ($period === 'total') {
+            return '';
+        }
+
+        return '<p class="progression-note">' . esc_html(__(
+            'Résolus, validation et étapes décrivent l’état actuel.',
+            'chassesautresor-com'
+        )) . '</p>';
+    }
+
+    private function reviewUrl(int $riddleId): string
+    {
+        if ($riddleId <= 0 || !function_exists('apply_filters')) {
+            return '';
+        }
+        $url = apply_filters('chassesautresor_edition_url', '', 'enigme', $riddleId, 'tentatives');
+
+        return is_string($url) ? $url : '';
+    }
+
+    /**
+     * Pending reviews first, then the weakest final-answer yield.
+     *
+     * @param array<int, mixed> $rows
+     * @return array<int, array<string, mixed>>
+     */
+    private function sortRiddles(array $rows): array
+    {
+        $indexed = [];
+        foreach ($rows as $index => $row) {
+            if (is_array($row)) {
+                $indexed[] = ['index' => (int) $index, 'row' => $row];
+            }
+        }
+        usort($indexed, function (array $left, array $right): int {
+            $pending = $this->pendingCount($right['row']) <=> $this->pendingCount($left['row']);
+            if ($pending !== 0) {
+                return $pending;
+            }
+            $yield = $this->yieldRank($left['row']) <=> $this->yieldRank($right['row']);
+            if ($yield !== 0) {
+                return $yield;
+            }
+
+            return $left['index'] <=> $right['index'];
+        });
+
+        return array_map(static fn (array $item): array => $item['row'], $indexed);
+    }
+
+    /** @param array<string, mixed> $row */
+    private function pendingCount(array $row): int
+    {
+        return max(0, (int) ($row['pending'] ?? 0));
+    }
+
+    /** @param array<string, mixed> $row */
+    private function yieldRank(array $row): int
+    {
+        if (!is_array($row['yield'] ?? null)) {
+            return 101;
+        }
+        $total = (int) ($row['yield']['total'] ?? 0);
+        if ($total <= 0) {
+            return 101;
+        }
+
+        return (int) round((100 * (int) ($row['yield']['success'] ?? 0)) / $total);
+    }
+
+    /** @param array<string, mixed> $hint */
+    private function hintSentence(array $hint, int $engaged): string
+    {
+        $title = $this->readableHintTitle((string) ($hint['title'] ?? ''));
+        $unlocks = max(0, (int) ($hint['unlocks'] ?? 0));
+        if ($title === '' || $unlocks <= 0) {
+            return '';
+        }
+        if ($engaged > 0 && $unlocks <= $engaged) {
+            $share = sprintf(
+                /* translators: 1: players who unlocked the hint, 2: engaged players */
+                _n('%1$d joueur sur %2$d', '%1$d joueurs sur %2$d', $unlocks, 'chassesautresor-com'),
+                $unlocks,
+                $engaged
+            );
+        } else {
+            $share = sprintf(
+                _n('%d joueur', '%d joueurs', $unlocks, 'chassesautresor-com'),
+                $unlocks
+            );
+        }
+
+        return sprintf(
+            /* translators: 1: hint title, 2: how many players unlocked it */
+            __('Indice le plus débloqué : %1$s, %2$s', 'chassesautresor-com'),
+            $title,
+            $share
+        );
+    }
+
+    private function readableHintTitle(string $title): string
+    {
+        $title = trim($title);
+        if (preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)+$/', $title) !== 1) {
+            return $title;
+        }
+        $stripped = preg_replace('/^(?:clue|indice)-/', '', $title);
+        $words = explode(' ', str_replace('-', ' ', (string) $stripped));
+        $small = ['de', 'du', 'des', 'la', 'le', 'les', 'et', 'au', 'aux'];
+        foreach ($words as $index => $word) {
+            if ($index > 0 && in_array($word, $small, true)) {
+                continue;
+            }
+            $words[$index] = $this->ucFirst($word);
+        }
+
+        return implode(' ', $words);
+    }
+
+    private function ucFirst(string $word): string
+    {
+        if ($word === '') {
+            return '';
+        }
+        if (function_exists('mb_substr') && function_exists('mb_strtoupper')) {
+            return mb_strtoupper(mb_substr($word, 0, 1, 'UTF-8'), 'UTF-8')
+                . mb_substr($word, 1, null, 'UTF-8');
+        }
+
+        return ucfirst($word);
+    }
+
+    /**
+     * @param array{label:string,date:string,total:int,success:int,open:bool} $point
+     */
+    private function seriesReading(array $point, string $grain): string
+    {
+        $total = $point['total'];
+        if ($total <= 0) {
+            return '';
+        }
+        $when = $this->dayMonth($point['date'], $point['label']);
+        $head = $grain === 'day'
+            ? sprintf(
+                /* translators: %s: day, for instance 19 octobre */
+                __('Le %s', 'chassesautresor-com'),
+                $when
+            )
+            : sprintf(
+                /* translators: %s: first day of the week, for instance 19 octobre */
+                __('Semaine du %s', 'chassesautresor-com'),
+                $when
+            );
+        if ($point['open']) {
+            $head .= ', ' . __('encore en cours', 'chassesautresor-com');
+        }
+        $attempts = sprintf(
+            /* translators: %d: final attempts in the highlighted bucket */
+            _n('%d tentative finale', '%d tentatives finales', $total, 'chassesautresor-com'),
+            $total
+        );
+        $success = $point['success'];
+        if ($success <= 0) {
+            $outcome = __('aucune réussite', 'chassesautresor-com');
+        } elseif ($success >= $total) {
+            $outcome = __('toutes réussies', 'chassesautresor-com');
+        } elseif ($success * 2 < $total) {
+            $outcome = __('peu de réussites', 'chassesautresor-com');
+        } else {
+            $outcome = sprintf(
+                _n('%d bonne réponse', '%d bonnes réponses', $success, 'chassesautresor-com'),
+                $success
+            );
+        }
+
+        return $head . ' : ' . $attempts . ', ' . $outcome . '.';
+    }
+
+    private function dayMonth(string $date, string $fallback): string
+    {
+        $parsed = \DateTimeImmutable::createFromFormat('!Y-m-d', substr($date, 0, 10));
+        if (!$parsed instanceof \DateTimeImmutable) {
+            return $fallback;
+        }
+        $months = [
+            1 => __('janvier', 'chassesautresor-com'),
+            2 => __('février', 'chassesautresor-com'),
+            3 => __('mars', 'chassesautresor-com'),
+            4 => __('avril', 'chassesautresor-com'),
+            5 => __('mai', 'chassesautresor-com'),
+            6 => __('juin', 'chassesautresor-com'),
+            7 => __('juillet', 'chassesautresor-com'),
+            8 => __('août', 'chassesautresor-com'),
+            9 => __('septembre', 'chassesautresor-com'),
+            10 => __('octobre', 'chassesautresor-com'),
+            11 => __('novembre', 'chassesautresor-com'),
+            12 => __('décembre', 'chassesautresor-com'),
+        ];
+
+        return $parsed->format('j') . ' ' . ($months[(int) $parsed->format('n')] ?? '');
+    }
+
+    /** @param int[] $totals */
+    private function peakIndex(array $totals): int
+    {
+        $peak = 0;
+        foreach ($totals as $index => $total) {
+            if ($total >= $totals[$peak]) {
+                $peak = (int) $index;
+            }
+        }
+
+        return $peak;
     }
 
     private function emptyCard(string $title, string $message): string

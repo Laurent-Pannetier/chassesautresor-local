@@ -137,7 +137,10 @@ final class OrganizerProgressionApplicationServiceTest extends TestCase
         self::assertSame('12/10', $riddle['attempt_series'][1]['label']);
         self::assertSame(8, $riddle['attempt_series'][1]['total']);
         self::assertSame('19/10', $riddle['attempt_series'][2]['label']);
+        self::assertSame('2026-10-19', $riddle['attempt_series'][2]['date']);
         self::assertSame(0, $riddle['attempt_series'][2]['total']);
+        self::assertFalse($riddle['attempt_series'][0]['open']);
+        self::assertTrue($riddle['attempt_series'][2]['open']);
     }
 
     public function testASingleDayDoesNotBecomeACurve(): void
