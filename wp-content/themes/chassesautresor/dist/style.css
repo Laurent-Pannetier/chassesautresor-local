@@ -16959,7 +16959,10 @@ html[data-theme=day] .app-topbar__hunt {
 .app-sidebar .screen-reader-text,
 .hunt-banner .screen-reader-text,
 .team-stats .screen-reader-text,
-.app-placeholder .screen-reader-text {
+.app-placeholder .screen-reader-text,
+.app-progression .screen-reader-text,
+.app-equipe .screen-reader-text,
+.app-classement .screen-reader-text {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -17969,6 +17972,7 @@ html[data-theme=day] .home-enigmas-preserve {
 .player-summary__tile,
 .progression-leaderboard,
 .equipe-performance__primary,
+.equipe-performance__rank,
 .equipe-performance__compact article,
 .equipe-ranking {
   border: 1px solid var(--shell-border);
@@ -17999,6 +18003,7 @@ html[data-theme=day] .home-enigmas-preserve {
 
 .player-summary__mini,
 .player-summary__tile,
+.equipe-performance__rank,
 .equipe-performance__compact article {
   min-width: 0;
   padding: 0.75rem;
@@ -18006,9 +18011,20 @@ html[data-theme=day] .home-enigmas-preserve {
 
 .player-summary__mini .team-stat__value,
 .player-summary__tile .team-stat__value,
+.equipe-performance__rank .team-stat__value,
 .equipe-performance__compact .team-stat__value {
   margin-top: 0.6rem;
   font-size: 1.4rem;
+}
+
+.equipe-performance__rank a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.equipe-performance__rank a:hover,
+.equipe-performance__rank a:focus-visible {
+  text-decoration: underline;
 }
 
 .progression-leaderboard,
@@ -18261,15 +18277,23 @@ html[data-theme=day] .home-enigmas-preserve {
   gap: 0.65rem;
 }
 
-.player-summary__compact,
-.equipe-performance__compact {
+.player-summary__compact {
   display: contents;
+}
+
+.equipe-performance__compact {
+  display: grid;
+  grid-column: 1/-1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 0;
 }
 
 .player-summary__primary,
 .player-summary__mini,
 .player-summary__tile,
 .equipe-performance__primary,
+.equipe-performance__rank,
 .equipe-performance__compact article {
   min-height: 0;
   margin: 0;
@@ -18285,6 +18309,7 @@ html[data-theme=day] .home-enigmas-preserve {
 .equipe-performance__primary .team-stat__value,
 .player-summary__mini .team-stat__value,
 .player-summary__tile .team-stat__value,
+.equipe-performance__rank .team-stat__value,
 .equipe-performance__compact .team-stat__value {
   margin-top: 0.55rem;
   font-size: 1.65rem;
@@ -18613,6 +18638,10 @@ html[data-theme=day] .home-enigmas-preserve {
 
 .equipe-ranking {
   margin-top: 1rem;
+}
+
+.player-ranking .equipe-ranking {
+  margin-top: 0;
 }
 
 .progression-intro,
@@ -19129,7 +19158,7 @@ html[data-theme=day] .home-enigmas-preserve {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .equipe-performance__summary {
-    grid-template-columns: 1.2fr repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1.4fr minmax(0, 1fr);
   }
   .progression-data-table--player-ranking th:nth-child(3),
   .progression-data-table--player-ranking td:nth-child(3) {

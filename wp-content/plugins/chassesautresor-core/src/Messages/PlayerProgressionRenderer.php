@@ -264,6 +264,44 @@ final class PlayerProgressionRenderer
         }
         echo '>';
         $this->renderHuntSwitcher($hunts, $currentHuntId);
+        $board = (string) ($view['board'] ?? 'joueurs');
+        $this->renderBoardSwitcher((array) ($view['views'] ?? []), $board);
+        if ($board === 'equipes') {
+            $this->renderTeamBoard($view);
+        } else {
+            $this->renderPlayerBoards($view);
+        }
+        echo '</section>';
+
+        return trim((string) ob_get_clean());
+    }
+
+    /** @param array<int, array<string, mixed>> $views */
+    private function renderBoardSwitcher(array $views, string $current): void
+    {
+        if (count($views) < 2) {
+            return;
+        }
+
+        echo '<nav class="progression-hunts player-ranking__boards" aria-label="'
+            . esc_attr(__('Classement affiché', 'chassesautresor-com')) . '">';
+        foreach ($views as $item) {
+            $id = (string) ($item['id'] ?? '');
+            $title = trim((string) ($item['title'] ?? ''));
+            if ($id === '' || $title === '') {
+                continue;
+            }
+            $active = $id === $current ? ' aria-current="page"' : '';
+            echo '<a class="progression-hunts__link" href="'
+                . esc_url((string) ($item['url'] ?? '')) . '"' . $active . '>'
+                . esc_html($title) . '</a>';
+        }
+        echo '</nav>';
+    }
+
+    /** @param array<string, mixed> $view */
+    private function renderPlayerBoards(array $view): void
+    {
         echo '<section class="progression-leaderboard progression-table-card player-ranking__board"'
             . ' aria-labelledby="player-ranking-title">';
         echo '<header class="player-ranking__heading">';
@@ -292,9 +330,29 @@ final class PlayerProgressionRenderer
             echo $this->riddleRanking((array) ($riddle['ranking'] ?? []));
             echo '</div></section>';
         }
-        echo '</section>';
+    }
 
-        return trim((string) ob_get_clean());
+    /** @param array<string, mixed> $view */
+    private function renderTeamBoard(array $view): void
+    {
+        $ajax = is_array($view['team_ajax'] ?? null) ? $view['team_ajax'] : [];
+        echo '<section class="progression-leaderboard progression-table-card player-ranking__board'
+            . ' equipe-ranking" aria-labelledby="team-ranking-title"';
+        if ($ajax !== []) {
+            echo ' data-team-performance data-ajax-url="' . esc_url((string) ($ajax['url'] ?? '')) . '"';
+            echo ' data-nonce="' . esc_attr((string) ($ajax['nonce'] ?? '')) . '"';
+            echo ' data-hunt-id="' . esc_attr((string) (int) ($view['hunt_id'] ?? 0)) . '"';
+            echo ' data-error-message="'
+                . esc_attr__('Impossible de charger le classement.', 'chassesautresor-com') . '"';
+        }
+        echo '>';
+        echo '<header class="player-ranking__heading">';
+        echo '<h2 id="team-ranking-title">'
+            . esc_html__('Classement des équipes', 'chassesautresor-com') . '</h2>';
+        echo '</header>';
+        echo '<div data-team-ranking>';
+        echo (string) ($view['team_ranking_html'] ?? '');
+        echo '</div></section>';
     }
 
     /** @param array<string, mixed> $view */

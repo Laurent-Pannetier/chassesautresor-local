@@ -174,22 +174,14 @@ final class TeamPageRenderer
     /** @param array<string, mixed> $performance */
     private function performance(array $performance): void
     {
-        $ajax = is_array($performance['ajax'] ?? null) ? (array) $performance['ajax'] : [];
         $teamId = (int) ($performance['team_id'] ?? 0);
-        $labelId = $teamId > 0 ? 'equipe-performance-title' : 'equipe-ranking-title';
-        echo '<section class="equipe-performance" aria-labelledby="' . esc_attr($labelId) . '"';
-        if ($ajax !== []) {
-            echo ' data-team-performance data-ajax-url="' . esc_url((string) ($ajax['url'] ?? '')) . '"';
-            echo ' data-nonce="' . esc_attr((string) ($ajax['nonce'] ?? '')) . '"';
-            echo ' data-hunt-id="' . esc_attr((string) (int) ($performance['hunt_id'] ?? 0)) . '"';
-            echo ' data-error-message="'
-                . esc_attr__('Impossible de charger le classement.', 'chassesautresor-com') . '"';
+        if ($teamId <= 0) {
+            return;
         }
-        echo '>';
-        if ($teamId > 0) {
-            echo '<h2 id="equipe-performance-title">'
-                . esc_html__('Progression de l’équipe', 'chassesautresor-com') . '</h2>';
-        }
+
+        echo '<section class="equipe-performance" aria-labelledby="equipe-performance-title">';
+        echo '<h2 id="equipe-performance-title">'
+            . esc_html__('Progression de l’équipe', 'chassesautresor-com') . '</h2>';
         $hunts = (array) ($performance['hunts'] ?? []);
         if (count($hunts) > 1) {
             echo '<nav class="progression-hunts" aria-label="'
@@ -203,34 +195,46 @@ final class TeamPageRenderer
             }
             echo '</nav>';
         }
-        echo '<div class="equipe-performance__layout">';
-        if ($teamId > 0) {
-            echo '<div class="equipe-performance__summary">';
-            echo '<article class="equipe-performance__primary"><p class="team-stat__label">'
-                . esc_html__('Résolues', 'chassesautresor-com') . '</p><p class="team-stat__value">'
-                . esc_html((string) (int) ($performance['resolved'] ?? 0) . '/'
-                    . (string) (int) ($performance['resolvable'] ?? 0)) . '</p></article>';
-            echo '<div class="equipe-performance__compact">';
-            $cards = [
-                [__('Commencées', 'chassesautresor-com'), (int) ($performance['started'] ?? 0)],
-                [__('Tentatives', 'chassesautresor-com'), (int) ($performance['attempts'] ?? 0)],
-                [__('Indices', 'chassesautresor-com'), (int) ($performance['hints'] ?? 0)],
-            ];
-            foreach ($cards as [$label, $value]) {
-                echo '<article><p class="team-stat__label">' . esc_html($label)
-                    . '</p><p class="team-stat__value">' . esc_html((string) $value) . '</p></article>';
-            }
-            echo '</div></div>';
+        echo '<div class="equipe-performance__summary">';
+        echo '<article class="equipe-performance__primary"><p class="team-stat__label">'
+            . esc_html__('Résolues', 'chassesautresor-com') . '</p><p class="team-stat__value">'
+            . esc_html((string) (int) ($performance['resolved'] ?? 0) . '/'
+                . (string) (int) ($performance['resolvable'] ?? 0)) . '</p></article>';
+        $this->rankTile($performance);
+        echo '<div class="equipe-performance__compact">';
+        $cards = [
+            [__('Commencées', 'chassesautresor-com'), (int) ($performance['started'] ?? 0)],
+            [__('Tentatives', 'chassesautresor-com'), (int) ($performance['attempts'] ?? 0)],
+            [__('Indices', 'chassesautresor-com'), (int) ($performance['hints'] ?? 0)],
+        ];
+        foreach ($cards as [$label, $value]) {
+            echo '<article><p class="team-stat__label">' . esc_html($label)
+                . '</p><p class="team-stat__value">' . esc_html((string) $value) . '</p></article>';
         }
-        echo '<section class="equipe-ranking" aria-labelledby="equipe-ranking-title">';
-        echo '<h3 id="equipe-ranking-title">' . esc_html__('Classement des équipes', 'chassesautresor-com')
-            . '</h3><div data-team-ranking>';
-        echo $this->ranking((array) ($performance['leaderboard'] ?? []));
-        echo '</div></section></div>';
-        if ($teamId > 0) {
-            $this->memberProgress((array) ($performance['members'] ?? []));
-        }
+        echo '</div></div>';
+        $this->memberProgress((array) ($performance['members'] ?? []));
         echo '</section>';
+    }
+
+    /** @param array<string, mixed> $performance */
+    private function rankTile(array $performance): void
+    {
+        $leaderboard = is_array($performance['leaderboard'] ?? null) ? $performance['leaderboard'] : [];
+        $rank = (int) ($leaderboard['current_position'] ?? 0);
+        $url = (string) ($performance['ranking_url'] ?? '');
+        $value = $rank > 0
+            ? esc_html($this->ordinal($rank))
+            : '<span aria-hidden="true">—</span><span class="screen-reader-text">'
+                . esc_html__('Pas de classement', 'chassesautresor-com') . '</span>';
+        echo '<article class="equipe-performance__rank">';
+        echo '<p class="team-stat__label">' . esc_html__('Classement', 'chassesautresor-com') . '</p>';
+        echo '<p class="team-stat__value">';
+        if ($url !== '') {
+            echo '<a href="' . esc_url($url) . '">' . $value . '</a>';
+        } else {
+            echo $value;
+        }
+        echo '</p></article>';
     }
 
     /** @param array<int, array<string, mixed>> $members */

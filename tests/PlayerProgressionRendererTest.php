@@ -223,5 +223,48 @@ final class PlayerProgressionRendererTest extends TestCase
         self::assertStringContainsString('progression-ranking-extra', $ranking);
         self::assertStringContainsString('data-pin-listed="0"', $ranking);
         self::assertStringContainsString('Zoe', $ranking);
+
+        $views = [
+            ['id' => 'joueurs', 'title' => 'Joueurs', 'url' => '/classement/?chasse=12'],
+            ['id' => 'equipes', 'title' => 'Équipes', 'url' => '/classement/?chasse=12&vue=equipes'],
+        ];
+        $players = (new PlayerProgressionRenderer())->renderRanking([
+            'board' => 'joueurs',
+            'views' => $views,
+            'leaderboard' => [
+                'rows' => [],
+                'page' => 1,
+                'pages' => 1,
+                'current_user_id' => 7,
+                'current_position' => 0,
+            ],
+            'riddles' => [],
+        ]);
+        self::assertStringContainsString('>Joueurs<', $players);
+        self::assertStringContainsString('>Équipes<', $players);
+        self::assertStringContainsString('href="/classement/?chasse=12&vue=equipes"', $players);
+        self::assertStringContainsString('Classement de la chasse', $players);
+        self::assertStringNotContainsString('Classement des équipes', $players);
+
+        $teams = (new PlayerProgressionRenderer())->renderRanking([
+            'hunt_id' => 12,
+            'board' => 'equipes',
+            'views' => $views,
+            'team_ranking_html' => '<table class="progression-data-table--team-ranking">'
+                . '<tr><td>Alpha</td></tr></table>',
+            'team_ajax' => ['url' => '/ajax', 'nonce' => 'n'],
+            'riddles' => [[
+                'id' => 40,
+                'title' => 'Cachee',
+                'ranking' => ['rows' => []],
+            ]],
+        ]);
+        self::assertStringContainsString('Classement des équipes', $teams);
+        self::assertStringContainsString('data-team-performance', $teams);
+        self::assertStringContainsString('data-team-ranking', $teams);
+        self::assertStringContainsString('Alpha', $teams);
+        self::assertStringContainsString('vue=equipes" aria-current="page"', $teams);
+        self::assertStringNotContainsString('Classement de la chasse', $teams);
+        self::assertStringNotContainsString('Cachee', $teams);
     }
 }
