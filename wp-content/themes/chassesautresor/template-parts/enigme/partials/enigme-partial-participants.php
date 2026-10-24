@@ -45,7 +45,7 @@ if (empty($participants)) :
     endif;
 else : ?>
 <h3><?= esc_html__('Liste participants', 'chassesautresor-com'); ?></h3>
-<table class="stats-table compact">
+<table class="stats-table">
   <thead>
       <tr>
         <th scope="col"><?= esc_html__('Nom', 'chassesautresor-com'); ?></th>

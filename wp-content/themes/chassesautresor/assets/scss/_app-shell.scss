@@ -3941,59 +3941,6 @@ body.shell-edition .edition-animation-table .liste-solutions > p {
   color: var(--shell-muted);
 }
 
-body.shell-edition .edition-animation-table .stats-table {
-  width: 100%;
-  margin: 0;
-  border: 0;
-  border-collapse: collapse;
-  background: transparent;
-  color: var(--shell-text);
-}
-
-body.shell-edition .edition-animation-table .stats-table thead {
-  background: color-mix(in srgb, var(--shell-bg) 42%, var(--shell-surface));
-  color: var(--shell-muted);
-}
-
-body.shell-edition .edition-animation-table .stats-table th,
-body.shell-edition .edition-animation-table .stats-table td {
-  border: 0;
-  border-bottom: 1px solid var(--shell-border);
-  background: transparent;
-  color: var(--shell-text);
-  padding: 0.7rem 0.85rem;
-  font-weight: 400;
-  text-align: left;
-  vertical-align: middle;
-}
-
-body.shell-edition .edition-animation-table .stats-table thead th {
-  padding-top: 0.48rem;
-  padding-bottom: 0.42rem;
-  background: transparent;
-  color: var(--shell-muted);
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-}
-
-body.shell-edition .edition-animation-table .stats-table tbody tr:nth-child(odd),
-body.shell-edition .edition-animation-table .stats-table tbody tr:nth-child(even) {
-  background: transparent;
-}
-
-body.shell-edition .edition-animation-table .stats-table tbody tr:last-child > * {
-  border-bottom: 0;
-}
-
-body.shell-edition .edition-animation-table .indices-table th.indice-actions,
-body.shell-edition .edition-animation-table .indices-table td.indice-actions,
-body.shell-edition .edition-animation-table .solutions-table th.solution-actions,
-body.shell-edition .edition-animation-table .solutions-table td.solution-actions {
-  text-align: center;
-}
-
 body.shell-edition .edition-animation-table .stats-table a {
   color: var(--shell-accent-strong);
   font-weight: 600;

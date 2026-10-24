@@ -2681,11 +2681,6 @@ body.shell-edition .edition-tab.active:focus-visible {
   gap: var(--space-xs);
 }
 
-#chasse-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1),
-#organisateur-tab-stats > div.edition-panel-body > table > thead > tr:nth-child(2) > th:nth-child(1) {
-  text-align: right;
-}
-
 /* 🏷️ Aspect étiquette pour les valeurs */
 .etiquette {
   display: inline-block;
