@@ -44,6 +44,14 @@ if (
     return;
 }
 
+if (
+    function_exists('cta_shell_user_is_administrator')
+    && cta_shell_user_is_administrator()
+    && function_exists('cat_trophy_create_form')
+) {
+    echo cat_trophy_create_form(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+}
+
 echo (new ChassesAuTresor\Core\Trophies\TrophyWallRenderer())->render(
     cat_trophy_wall((int) get_current_user_id())
 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

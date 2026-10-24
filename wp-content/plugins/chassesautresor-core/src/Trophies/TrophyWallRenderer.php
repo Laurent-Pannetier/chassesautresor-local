@@ -61,6 +61,12 @@ final class TrophyWallRenderer
             }
             echo '</ul></details>';
         }
+        $editUrl = (string) ($card['edit_url'] ?? '');
+        if ($editUrl !== '') {
+            echo '<a class="trophy-card__edit" href="' . esc_url($editUrl) . '">';
+            echo esc_html__('Fiche', 'chassesautresor-com');
+            echo '</a>';
+        }
         echo '</div></article>';
     }
 }

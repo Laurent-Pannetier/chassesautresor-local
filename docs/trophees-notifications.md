@@ -19,6 +19,9 @@ La fiche utilise :
 
 Une chasse vide fait du trophée un trophée de plateforme.
 
+L’administrateur ajoute un trophée depuis la page Trophées. Le formulaire publie un trophée actif.
+La tuile admin contient un lien vers la fiche WordPress pour le texte de notification.
+
 Le seul déclencheur livré initialement est `code_event`.
 La participation à une chasse envoie la clé `bienvenue` au joueur qui vient de s’engager.
 Le trophée correspondant doit être publié, actif, et porter exactement cette clé.

@@ -20107,6 +20107,85 @@ body.admin-bar.shell-edition .app-sidebar {
   margin-top: 0.25rem;
 }
 
+.trophy-card__content a.trophy-card__edit {
+  display: inline-block;
+  margin-top: 0.55rem;
+  color: var(--shell-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.trophy-create {
+  margin: 0 0 1rem;
+}
+
+.trophy-create__toggle {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: var(--shell-primary-button-bg);
+  color: var(--shell-primary-button-text);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.trophy-create__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.trophy-create__toggle::marker {
+  content: "";
+}
+
+.trophy-create__form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 28rem;
+  margin-top: 0.85rem;
+}
+
+.trophy-create__form label {
+  display: grid;
+  gap: 0.3rem;
+  color: var(--shell-text);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.trophy-create__form input,
+.trophy-create__form textarea,
+.trophy-create__form select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 0.7rem;
+  background: var(--shell-surface-2);
+  color: var(--shell-text);
+  font: inherit;
+  font-weight: 500;
+}
+
+.trophy-create__submit {
+  justify-self: start;
+  padding: 0.45rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--shell-primary-button-bg);
+  color: var(--shell-primary-button-text);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.trophy-create__notice {
+  margin: 0;
+  color: var(--shell-state-blocked-text);
+  font-size: 0.85rem;
+}
+
 .trophies-page__empty,
 .notifications-center__empty {
   color: var(--shell-muted);
