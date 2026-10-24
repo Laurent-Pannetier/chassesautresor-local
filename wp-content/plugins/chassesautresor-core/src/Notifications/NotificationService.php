@@ -61,6 +61,13 @@ final class NotificationService
         return $notificationId;
     }
 
+    public function hasEvent(string $eventKey): bool
+    {
+        $eventKey = trim($eventKey);
+
+        return $eventKey !== '' && $this->store->eventId($this->eventKey($eventKey)) > 0;
+    }
+
     private function key(string $value, string $fallback): string
     {
         $value = strtolower(trim($value));

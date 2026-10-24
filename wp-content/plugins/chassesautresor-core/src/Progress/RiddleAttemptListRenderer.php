@@ -27,7 +27,7 @@ final class RiddleAttemptListRenderer
                 <th><?= esc_html__('Résultat', 'chassesautresor-com'); ?></th>
             </tr></thead>
             <tbody><?php foreach ($attempts as $attempt) : ?>
-                <?= $this->row($attempt); ?>
+                <?= $this->row($attempt, (string) ($arguments['focus_uid'] ?? '')); ?>
             <?php endforeach; ?></tbody>
         </table>
         <?= $this->pager($page, $pages); ?>
@@ -35,7 +35,7 @@ final class RiddleAttemptListRenderer
         return (string) ob_get_clean();
     }
 
-    private function row(object $attempt): string
+    private function row(object $attempt, string $focusUid): string
     {
         $user = get_userdata((int) $attempt->user_id);
         $login = $user && isset($user->user_login)
@@ -56,10 +56,17 @@ final class RiddleAttemptListRenderer
             'attente' => esc_html__('attente', 'chassesautresor-com'),
         ];
         $classes = ['bon' => 'etiquette-success', 'attente' => 'etiquette-pending'];
+        $rowClasses = [];
+        if ($isPending) {
+            $rowClasses[] = 'tentative-pending';
+        }
+        if ($focusUid !== '' && $uid === $focusUid) {
+            $rowClasses[] = 'tentative-focus';
+        }
 
         ob_start();
         ?>
-        <tr class="<?= $isPending ? 'tentative-pending' : ''; ?>">
+        <tr class="<?= esc_attr(implode(' ', $rowClasses)); ?>">
             <td><?= esc_html(mysql2date('d/m/y H:i', $attempt->date_tentative)); ?></td>
             <td><?= esc_html($login); ?></td>
             <?= $proposition; ?>

@@ -974,20 +974,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
     require_once get_stylesheet_directory() . '/inc/enigme/tentatives.php';
   }
 
-  $page_tentatives = max(1, intval($_GET['page_tentatives'] ?? 1));
   $par_page = 20;
+  $focus_uid = isset($_GET['uid']) ? sanitize_text_field(wp_unslash((string) $_GET['uid'])) : '';
+  $jumpToAttempt = $focus_uid !== ''
+      && !isset($_GET['page_tentatives'])
+      && function_exists('page_tentatives_pour_uid');
+  if ($jumpToAttempt) {
+      $page_tentatives = page_tentatives_pour_uid($enigme_id, $focus_uid, $par_page);
+  } else {
+      $page_tentatives = max(1, intval($_GET['page_tentatives'] ?? 1));
+  }
   $offset = ($page_tentatives - 1) * $par_page;
   $tentatives = recuperer_tentatives_enigme($enigme_id, $par_page, $offset);
   $total_tentatives = compter_tentatives_enigme($enigme_id);
   $pages_tentatives = (int) ceil($total_tentatives / $par_page);
   ?>
-  <div class="liste-tentatives" data-page="<?= esc_attr($page_tentatives); ?>" data-total="<?= esc_attr($total_tentatives); ?>" data-pages="<?= esc_attr($pages_tentatives); ?>">
+  <div
+    class="liste-tentatives"
+    data-page="<?= esc_attr($page_tentatives); ?>"
+    data-total="<?= esc_attr($total_tentatives); ?>"
+    data-pages="<?= esc_attr($pages_tentatives); ?>"
+    data-focus-uid="<?= esc_attr($focus_uid); ?>"
+  >
     <?php get_template_part('template-parts/enigme/partials/enigme-partial-tentatives', null, [
       'tentatives' => $tentatives,
       'page'       => $page_tentatives,
       'par_page'   => $par_page,
       'total'      => $total_tentatives,
       'pages'      => $pages_tentatives,
+      'focus_uid'  => $focus_uid,
     ]); ?>
   </div>
 </div>

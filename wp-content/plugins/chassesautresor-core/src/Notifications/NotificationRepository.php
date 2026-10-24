@@ -45,6 +45,11 @@ final class NotificationRepository implements NotificationStore
         return (int) $this->wpdb->insert_id;
     }
 
+    public function eventId(string $eventKey): int
+    {
+        return $this->idByEventKey($eventKey);
+    }
+
     public function addRecipient(int $notificationId, int $userId): void
     {
         if ($notificationId <= 0 || $userId <= 0 || $this->recipientExists($notificationId, $userId)) {

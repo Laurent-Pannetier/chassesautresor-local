@@ -219,6 +219,21 @@ class RiddleAttemptService
         return $this->repository->findForRiddle($riddleId, $limit, $offset);
     }
 
+    public function pageForAttempt(int $riddleId, string $uid, int $perPage): int
+    {
+        $uid = trim($uid);
+        if ($riddleId <= 0 || $uid === '' || $perPage <= 0) {
+            return 1;
+        }
+
+        $position = $this->repository->positionForRiddle($riddleId, $uid);
+        if ($position <= 0) {
+            return 1;
+        }
+
+        return (int) ceil($position / $perPage);
+    }
+
     public function findLatestPendingForUserAndRiddle(int $userId, int $riddleId): ?object
     {
         if ($userId <= 0 || $riddleId <= 0) {

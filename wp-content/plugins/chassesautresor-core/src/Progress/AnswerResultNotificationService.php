@@ -20,10 +20,10 @@ final class AnswerResultNotificationService
         $title = (string) get_the_title($riddleId);
         $resultLabel = $accepted
             ? __('Réponse acceptée', 'chassesautresor-com')
-            : __('Réponse refusée', 'chassesautresor-com');
+            : __('Réponse invalidée', 'chassesautresor-com');
         $message = '<p>' . ($accepted
             ? esc_html__('Félicitations ! Votre réponse est correcte.', 'chassesautresor-com')
-            : esc_html__('Votre réponse est incorrecte.', 'chassesautresor-com')) . '</p>';
+            : esc_html__('Votre réponse a été invalidée.', 'chassesautresor-com')) . '</p>';
         $message .= '<p><a href="' . esc_url(get_permalink($riddleId)) . '">'
             . ($accepted
                 ? esc_html__('Retour à l’énigme', 'chassesautresor-com')

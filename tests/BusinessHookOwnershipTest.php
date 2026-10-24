@@ -18,6 +18,7 @@ use ChassesAuTresor\Core\Points\ConversionSettingsRequestHandler;
 use ChassesAuTresor\Core\Points\ConversionRequestHandler;
 use ChassesAuTresor\Core\Points\ManualPointsAdjustmentHandler;
 use ChassesAuTresor\Core\Points\PurchasePointsHookHandler;
+use ChassesAuTresor\Core\Progress\FirstAutomaticSolveAlertHookHandler;
 use ChassesAuTresor\Core\Progress\HuntCompletionHookHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerConfirmationRouteHandler;
 use ChassesAuTresor\Core\Relationships\OrganizerContactRouteHandler;
@@ -411,6 +412,22 @@ final class BusinessHookOwnershipTest extends TestCase
 
         self::assertSame(
             ['enigme_resolue', [HuntCompletionHookHandler::class, 'handle'], 10, 2],
+            $hooks[0]
+        );
+    }
+
+    public function testFirstAutomaticSolveAlertIsRegisteredByCore(): void
+    {
+        $hooks = [];
+
+        FirstAutomaticSolveAlertHookHandler::register(
+            static function (...$arguments) use (&$hooks): void {
+                $hooks[] = $arguments;
+            }
+        );
+
+        self::assertSame(
+            ['enigme_resolue', [FirstAutomaticSolveAlertHookHandler::class, 'handle'], 10, 2],
             $hooks[0]
         );
     }

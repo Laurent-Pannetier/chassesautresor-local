@@ -52,5 +52,6 @@ if (
 $target = function_exists('cta_shell_edition_url')
     ? cta_shell_edition_url('enigme', $enigme_id, 'tentatives')
     : home_url('/outils/');
+$target = add_query_arg('uid', $uid, $target);
 wp_safe_redirect($target);
 exit;
