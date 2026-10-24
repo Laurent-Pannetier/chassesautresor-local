@@ -397,6 +397,17 @@ class AppShellPresentationTest extends TestCase
         $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
         $this->assertStringContainsString('--hunt-banner-height: clamp(7.5rem, 18vh, 11rem);', $scss);
         $this->assertStringNotContainsString('--hunt-banner-height: 22rem;', $scss);
+        $this->assertStringContainsString(
+            '.home.cat-single-hunt-cockpit--joueur .hunt-banner',
+            $scss
+        );
+        $this->assertStringContainsString('--hunt-banner-height: 250px;', $scss);
+        $this->assertStringContainsString('min-height: 250px;', $scss);
+        $home = (string) file_get_contents($theme . '/inc/single-hunt-home.php');
+        $this->assertStringContainsString(
+            "\$classes[] = 'cat-single-hunt-cockpit--' . cat_single_hunt_home_audience();",
+            $home
+        );
         $this->assertStringContainsString('.hunt-banner__frame picture img', $scss);
     }
 
