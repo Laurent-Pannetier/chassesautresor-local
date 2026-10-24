@@ -186,6 +186,9 @@ final class TrophyCreateTest extends TestCase
         self::assertStringContainsString(esc_html('Forêt <i>'), $html);
         self::assertStringContainsString('trophy-create__notice', $html);
         self::assertStringContainsString('Ajouter', $html);
+        self::assertStringContainsString('data-trophy-create-cancel', $html);
+        self::assertStringContainsString('type="button"', $html);
+        self::assertStringContainsString('Annuler', $html);
 
         $card = (new TrophyWallRenderer())->render([
             [

@@ -51,9 +51,14 @@ final class TrophyCreateFormRenderer
             __('Clé de l’événement', 'chassesautresor-com'),
             '<input id="trophee_cle" name="trophee_cle" type="text" maxlength="120" placeholder="bienvenue" required>'
         );
-        echo '<button class="trophy-create__submit" type="submit">'
-            . esc_html__('Ajouter', 'chassesautresor-com') . '</button>';
-        echo '</form></details>';
+        echo '<div class="trophy-create__actions">';
+        echo '<button class="trophy-create__cancel" type="button" data-trophy-create-cancel>';
+        echo esc_html__('Annuler', 'chassesautresor-com');
+        echo '</button>';
+        echo '<button class="trophy-create__submit" type="submit">';
+        echo esc_html__('Ajouter', 'chassesautresor-com');
+        echo '</button>';
+        echo '</div></form></details>';
 
         return trim((string) ob_get_clean());
     }

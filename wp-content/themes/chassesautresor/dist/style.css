@@ -20173,15 +20173,31 @@ body.admin-bar.shell-edition .app-sidebar {
   font-weight: 500;
 }
 
-.trophy-create__submit {
-  justify-self: start;
+.trophy-create__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.trophy-create__submit,
+.trophy-create__cancel {
   padding: 0.45rem 0.9rem;
-  border: 0;
   border-radius: 999px;
-  background: var(--shell-primary-button-bg);
-  color: var(--shell-primary-button-text);
   font-weight: 800;
   cursor: pointer;
+}
+
+.trophy-create__submit {
+  border: 0;
+  background: var(--shell-primary-button-bg);
+  color: var(--shell-primary-button-text);
+}
+
+.trophy-create__cancel {
+  border: 1px solid var(--shell-border);
+  background: transparent;
+  color: var(--shell-text);
+  font-weight: 700;
 }
 
 .trophy-create__notice {
