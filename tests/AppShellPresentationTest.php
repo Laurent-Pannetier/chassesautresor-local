@@ -163,6 +163,69 @@ class AppShellPresentationTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_still_banner_prefers_the_panoramic_field(): void
+    {
+        $this->bootShell();
+        $GLOBALS['cat_attachment_image'] = null;
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return ["ID" => 91, "url" => "https://example.test/bandeau.jpg"];
+            }
+            return ["ID" => 42, "url" => "https://example.test/chasse.jpg"];
+        }');
+        eval('function wp_get_attachment_image($id, $size = "thumbnail", $icon = false, $attr = []){
+            $GLOBALS["cat_attachment_image"] = $id;
+            return "<img class=\"hunt-banner__photo\" src=\"https://example.test/" . $id . ".jpg\">";
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('hunt-banner__frame', $html);
+        $this->assertSame(91, $GLOBALS['cat_attachment_image']);
+        $this->assertStringNotContainsString('data-hunt-sphere', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_still_banner_falls_back_to_the_hunt_image(): void
+    {
+        $this->bootShell();
+        $GLOBALS['cat_attachment_image'] = null;
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return null;
+            }
+            return ["ID" => 42, "url" => "https://example.test/chasse.jpg"];
+        }');
+        eval('function wp_get_attachment_image($id, $size = "thumbnail", $icon = false, $attr = []){
+            $GLOBALS["cat_attachment_image"] = $id;
+            return "<img class=\"hunt-banner__photo\" src=\"https://example.test/" . $id . ".jpg\">";
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('hunt-banner__frame', $html);
+        $this->assertSame(42, $GLOBALS['cat_attachment_image']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_hunt_sphere_switch_is_an_admin_tools_tile(): void
     {
         $this->bootShell();

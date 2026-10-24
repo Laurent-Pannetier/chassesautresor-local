@@ -111,7 +111,10 @@ function initChampImage(bloc) {
             if (typeof window.mettreAJourResumeInfos === 'function') {
               window.mettreAJourResumeInfos();
             }
-            if (typeof window.mettreAJourVisuelCPT === 'function') {
+            if (
+              champ !== 'chasse_bandeau_accueil' &&
+              typeof window.mettreAJourVisuelCPT === 'function'
+            ) {
               mettreAJourVisuelCPT(cpt, postId, ficheUrl);
             }
           } else {

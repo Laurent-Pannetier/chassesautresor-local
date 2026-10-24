@@ -35,6 +35,11 @@ class HuntFieldMutationService {
                 $normalizedValue = (int) $value;
                 $recalculateStatus = true;
                 break;
+            case 'chasse_bandeau_accueil':
+                $storedField = 'chasse_bandeau_accueil';
+                $normalizedValue = (int) $value;
+                $recalculateStatus = false;
+                break;
             case 'chasse_principale_description':
                 $storedField = 'chasse_principale_description';
                 $recalculateStatus = true;

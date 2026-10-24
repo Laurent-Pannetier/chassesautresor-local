@@ -43,6 +43,15 @@ final class HuntFieldMutationServiceTest extends TestCase {
         ];
     }
 
+    public function testPersistsTheOptionalHomeBannerWithoutRecalculatingStatus(): void {
+        $result = $this->apply('chasse_bandeau_accueil', '88');
+
+        $this->assertTrue($result['handled']);
+        $this->assertNull($result['error']);
+        $this->assertFalse($result['recalculate_status']);
+        $this->assertSame(['chasse_bandeau_accueil', 88, 42], $this->updates[0]);
+    }
+
     public function testRejectsAnUnknownEndMode(): void {
         $result = $this->apply('chasse_mode_fin', 'inconnu');
 

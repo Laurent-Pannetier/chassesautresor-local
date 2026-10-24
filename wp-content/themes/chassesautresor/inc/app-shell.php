@@ -213,7 +213,58 @@ function cta_shell_hunt_sphere_enabled(): bool
 }
 
 /**
- * Hunt visual used as the home header. No overlay copy is added.
+ * Reads an ACF image value (array, id or URL) into an attachment source.
+ *
+ * @param mixed $imageData
+ * @return array{id:int,url:string}
+ */
+function cta_shell_image_value_source($imageData): array
+{
+    $source = ['id' => 0, 'url' => ''];
+    if (is_array($imageData)) {
+        if (!empty($imageData['ID'])) {
+            $source['id'] = (int) $imageData['ID'];
+        } elseif (!empty($imageData['id'])) {
+            $source['id'] = (int) $imageData['id'];
+        }
+        if (!empty($imageData['url']) && is_string($imageData['url'])) {
+            $source['url'] = $imageData['url'];
+        }
+    } elseif (is_numeric($imageData)) {
+        $source['id'] = (int) $imageData;
+    } elseif (is_string($imageData) && $imageData !== '') {
+        $source['url'] = $imageData;
+    }
+
+    return $source;
+}
+
+/**
+ * Fills a missing URL from the attachment id.
+ *
+ * @param array{id:int,url:string} $source
+ * @return array{id:int,url:string}
+ */
+function cta_shell_resolve_image_source(array $source): array
+{
+    if ($source['url'] === '' && $source['id'] > 0 && function_exists('wp_get_attachment_image_url')) {
+        $resolved = wp_get_attachment_image_url($source['id'], 'full');
+        $source['url'] = is_string($resolved) ? $resolved : '';
+    }
+
+    return $source;
+}
+
+/**
+ * @param array{id:int,url:string} $source
+ */
+function cta_shell_image_source_is_empty(array $source): bool
+{
+    return $source['id'] <= 0 && $source['url'] === '';
+}
+
+/**
+ * Hunt visual used by the login screen, the cards and the sphere texture.
  *
  * @return array{id:int,url:string}
  */
@@ -225,29 +276,14 @@ function cta_shell_hunt_image_source(int $huntId): array
     }
 
     if (function_exists('get_field')) {
-        $imageData = get_field('chasse_principale_image', $huntId);
-        if (is_array($imageData)) {
-            if (!empty($imageData['ID'])) {
-                $source['id'] = (int) $imageData['ID'];
-            }
-            if (!empty($imageData['url'])) {
-                $source['url'] = (string) $imageData['url'];
-            }
-        } elseif (is_numeric($imageData)) {
-            $source['id'] = (int) $imageData;
-        } elseif (is_string($imageData) && $imageData !== '') {
-            $source['url'] = $imageData;
-        }
+        $source = cta_shell_image_value_source(get_field('chasse_principale_image', $huntId));
     }
 
     if ($source['id'] <= 0 && function_exists('get_post_thumbnail_id')) {
         $source['id'] = (int) get_post_thumbnail_id($huntId);
     }
 
-    if ($source['url'] === '' && $source['id'] > 0 && function_exists('wp_get_attachment_image_url')) {
-        $resolved = wp_get_attachment_image_url($source['id'], 'full');
-        $source['url'] = is_string($resolved) ? $resolved : '';
-    }
+    $source = cta_shell_resolve_image_source($source);
 
     if ($source['url'] === '' && function_exists('get_the_post_thumbnail_url')) {
         $thumb = get_the_post_thumbnail_url($huntId, 'full');
@@ -255,6 +291,25 @@ function cta_shell_hunt_image_source(int $huntId): array
     }
 
     return $source;
+}
+
+/**
+ * Wide home strip. The panoramic field wins; the hunt poster is the fallback.
+ *
+ * @return array{id:int,url:string}
+ */
+function cta_shell_hunt_banner_image_source(int $huntId): array
+{
+    if ($huntId > 0 && function_exists('get_field')) {
+        $banner = cta_shell_resolve_image_source(
+            cta_shell_image_value_source(get_field('chasse_bandeau_accueil', $huntId))
+        );
+        if (!cta_shell_image_source_is_empty($banner)) {
+            return $banner;
+        }
+    }
+
+    return cta_shell_hunt_image_source($huntId);
 }
 
 /**
@@ -379,7 +434,7 @@ function cta_shell_render_hunt_banner_sphere(int $huntId, string $alt): void
  */
 function cta_shell_render_hunt_banner_photo(int $huntId, string $alt): void
 {
-    $source = cta_shell_hunt_image_source($huntId);
+    $source = cta_shell_hunt_banner_image_source($huntId);
     $html = cta_shell_hunt_banner_photo_markup($source['id'], $source['url'], $alt);
     if ($html === '') {
         cta_shell_render_hunt_banner_empty();
