@@ -2075,15 +2075,6 @@ a.chasse-badge.chasse-badge--region:focus-visible {
   margin: 0;
 }
 
-/* ========== 🧾 BLOC PRÉSENTATION DE LA CHASSE ========== */
-.chasse-enigmes-header .liens-placeholder {
-  display: none;
-}
-
-body.edition-active-chasse .chasse-enigmes-header .liens-placeholder {
-  display: block;
-}
-
 /* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
 @media not all and (min-width: 768px) {
   .header-chasse {
@@ -4883,7 +4874,6 @@ body.edition-active-enigme .champ-desactive {
   cursor: default;
 }
 
-/* ========== 📂 Toggle panneau édition ========== */
 section.enigme-wrapper {
   position: relative;
 }
@@ -4910,20 +4900,6 @@ section.enigme-wrapper {
 }
 
 /* ========== 🖼️ IMAGE MODIFIABLE ========== */
-body:not(.edition-active) .header-organisateur .champ-img .champ-modifier .icone-modif {
-  display: none;
-}
-
-body:not(.edition-active) .header-organisateur .champ-img .champ-modifier {
-  opacity: 1;
-  filter: none;
-  pointer-events: none;
-}
-
-body.edition-active .header-organisateur .champ-img .champ-modifier {
-  transform: translateY(0);
-}
-
 .champ-img.champ-vide img {
   display: none;
 }
@@ -5445,17 +5421,6 @@ body[class*=edition-active] .champ-desactive .champ-modifier,
    🪟 PANNEAU D’ÉDITION GLOBAL
    ================================================== */
 /* ========== 🧱 STRUCTURE ========== */
-.edition-panel {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  padding: 0;
-  transition: max-height 0.4s ease, opacity 0.3s ease, transform 0.3s ease;
-  transform: translateY(-10px);
-  border: 0;
-  pointer-events: none;
-}
-
 body.shell-edition.mode-edition {
   --color-editor-background: var(--shell-surface);
   --color-editor-border: var(--shell-border);
@@ -5944,22 +5909,6 @@ body.shell-edition .champ-coordonnees-editeur input {
   margin-bottom: var(--space-xs);
 }
 
-.edition-panel .panneau-fermer {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--color-editor-text-muted);
-  cursor: pointer;
-  padding: var(--space-xxs);
-  line-height: 1;
-  transition: color 0.2s ease;
-  opacity: 0.75;
-}
-
-.edition-panel .panneau-fermer:hover {
-  opacity: 1;
-}
-
 .edition-panel-body {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -6273,111 +6222,11 @@ li.ligne-email .champ-affichage {
     flex-direction: column;
   }
 }
-/* ==================================================
-    🧭 PANNEAU LATÉRAL 
-   -------------------------------------------------- */
-/* 🧭 Panneau latéral – animation et position */
-.panneau-lateral-liens {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100%;
-  width: 100%;
-  max-width: 420px;
-  background-color: var(--color-editor-background);
-  z-index: 10000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  overflow-y: auto;
-  transform: translateX(100%);
-  opacity: 0;
-  pointer-events: none;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-  border: 1px solid var(--color-editor-border);
-  border-radius: 8px;
-  color: var(--color-editor-text);
-}
-
-.panneau-lateral-liens.ouvert {
-  transform: translateX(0%);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-body.panneau-ouvert::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 9998;
-}
-
-.panneau-lateral__contenu {
-  padding: var(--space-2xl) var(--space-2xl) var(--space-2xl) var(--space-3xl);
-}
-
-.panneau-lateral__contenu #bouton-supprimer-recompense {
-  color: var(--color-text-fond-clair);
-}
-
-/* Alignement commun des headers dans les panneaux */
-.panneau-lateral__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-editor-border);
-  position: sticky;
-  top: 0;
-  background-color: var(--color-editor-background);
-  z-index: 10;
-}
-
-.panneau-lateral__header h2 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-editor-heading);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.panneau-lateral-liens.ouvert .panneau-lateral__header h2 {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* 🧭 Bouton de fermeture */
-.panneau-fermer {
-  background: none;
-  border: none;
-  font-size: 1.25rem;
-  color: var(--color-editor-text-muted);
-  cursor: pointer;
-  padding: var(--space-xxs);
-  line-height: 1;
-  transition: color 0.2s ease;
-  opacity: 0.75;
-}
-
-.panneau-fermer:hover {
-  opacity: 1;
-}
-
-/* 🧭 Liste sans puces */
+/* Formulaires de liens intégrés à la page d'édition. */
 .liste-liens-formulaires {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-/* 🧭 Affichage propre des labels */
-.panneau-lateral__contenu label {
-  font-size: unset;
-  color: var(--color-editor-text-muted);
 }
 
 .acf-hide-label > .acf-label {
@@ -6397,12 +6246,10 @@ body.panneau-ouvert::before {
   display: none;
 }
 
-/* 🧭 Espacement des champs */
 .ligne-lien-formulaire {
   margin-bottom: var(--space-xl);
 }
 
-/* 🧭 Champ input */
 .ligne-lien-formulaire input[type=url] {
   width: 100%;
   font-size: 1rem;
@@ -6413,61 +6260,7 @@ body.panneau-ouvert::before {
   box-sizing: border-box;
 }
 
-/* 🧭 Bouton enregistrer */
-.panneau-lateral__actions {
-  margin-top: var(--space-2xl);
-}
-
-.bouton-enregistrer-liens {
-  background-color: var(--color-editor-success);
-  color: white;
-  padding: var(--space-xs) var(--space-md);
-  border: none;
-  font-weight: bold;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.bouton-enregistrer-liens:hover {
-  background-color: var(--color-editor-success-hover);
-}
-
-.zone-chasses,
-.bloc-presentation-organisateur {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-.panneau-lateral-large {
-  width: 100%;
-  max-width: 1000px;
-}
-
-.zone-chasses.masque,
-.bloc-presentation-organisateur.masque {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.bloc-toggle {
-  overflow: hidden;
-  transition: opacity 0.4s ease, max-height 0.4s ease;
-  opacity: 1;
-  max-height: 1000px;
-  /* suffisant pour la plupart des cas */
-}
-
-.bloc-toggle.masque {
-  opacity: 0;
-  max-height: 0;
-  pointer-events: none;
-}
-
-/* 🖼️ Masquer l'option de tri dans la galerie d'images de l’énigme */
-#panneau-images-enigme .acf-gallery-sort {
+.champ-images-editeur .acf-gallery-sort {
   display: none;
 }
 
