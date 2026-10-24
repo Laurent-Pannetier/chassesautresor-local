@@ -49,6 +49,54 @@ final class ShellEditionUrlTest extends TestCase
         self::assertSame('parametres', cta_shell_normalize_edition_section('enigme', 'points'));
     }
 
+    public function testPanelIdsFollowTheSectionOfEachContentType(): void
+    {
+        self::assertSame('enigme-tab-soumission', cta_shell_edition_panel_id('enigme', 'tentatives'));
+        self::assertSame('enigme-tab-soumission', cta_shell_edition_panel_id('enigme', 'soumission'));
+        self::assertSame('chasse-tab-stats', cta_shell_edition_panel_id('chasse', 'stats'));
+        self::assertSame('chasse-tab-param', cta_shell_edition_panel_id('chasse', 'tentatives'));
+        self::assertSame('organisateur-tab-revenus', cta_shell_edition_panel_id('organisateur', 'points'));
+    }
+
+    public function testOnlyAMismatchedSectionRewritesTheAddress(): void
+    {
+        self::assertFalse(cta_shell_edition_section_needs_canonical_redirect('', 'parametres', false));
+        self::assertFalse(cta_shell_edition_section_needs_canonical_redirect('tentatives', 'tentatives', false));
+        self::assertTrue(cta_shell_edition_section_needs_canonical_redirect('soumission', 'tentatives', false));
+        self::assertTrue(cta_shell_edition_section_needs_canonical_redirect('tentatives', 'parametres', false));
+        self::assertTrue(cta_shell_edition_section_needs_canonical_redirect('parametres', 'parametres', true));
+    }
+
+    public function testPublicRiddlePageDoesNotOpenTheEditor(): void
+    {
+        $handler = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core/src/Content/RiddleAccessRedirectHandler.php'
+        );
+
+        self::assertStringNotContainsString('cta_shell_edition_url', $handler);
+        self::assertStringNotContainsString('editionUrl', $handler);
+    }
+
+    public function testEditionScreensRenderTheRequestedTab(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $files = [
+            '/template-parts/enigme/enigme-edition-main.php',
+            '/template-parts/chasse/chasse-edition-main.php',
+            '/template-parts/organisateur/organisateur-edition-main.php',
+            '/template-parts/common/edition-animation.php',
+        ];
+        foreach ($files as $file) {
+            $source = (string) file_get_contents($theme . $file);
+            self::assertStringContainsString('cta_shell_edition_tab_panel_attr', $source, $file);
+            self::assertStringNotContainsString('class="edition-tab active"', $source, $file);
+        }
+
+        $shell = (string) file_get_contents($theme . '/inc/shell-edition.php');
+        self::assertStringContainsString('shell-edition-tabs-ready', $shell);
+        self::assertStringContainsString('cta_shell_redirect_canonical_edition_section', $shell);
+    }
+
     public function testEditionUrlStaysOnTheOutilsScreen(): void
     {
         $url = cta_shell_edition_url('enigme', 12, 'soumission');

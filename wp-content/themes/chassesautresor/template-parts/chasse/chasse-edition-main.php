@@ -122,13 +122,19 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
             </h1>
         </div>
         <div class="edition-tabs">
-          <button class="edition-tab active" data-target="chasse-tab-param"><?= esc_html__('Paramètres', 'chassesautresor-com'); ?></button>
-          <button class="edition-tab" data-target="chasse-tab-stats"><?= esc_html__('Statistiques', 'chassesautresor-com'); ?></button>
-          <button class="edition-tab" data-target="chasse-tab-animation"><?= esc_html__('Animation', 'chassesautresor-com'); ?></button>
+          <button <?= cta_shell_edition_tab_button_attr('chasse', 'chasse-tab-param'); ?>>
+            <?= esc_html__('Paramètres', 'chassesautresor-com'); ?>
+          </button>
+          <button <?= cta_shell_edition_tab_button_attr('chasse', 'chasse-tab-stats'); ?>>
+            <?= esc_html__('Statistiques', 'chassesautresor-com'); ?>
+          </button>
+          <button <?= cta_shell_edition_tab_button_attr('chasse', 'chasse-tab-animation'); ?>>
+            <?= esc_html__('Animation', 'chassesautresor-com'); ?>
+          </button>
         </div>
     </div>
 
-    <div id="chasse-tab-param" class="edition-tab-content active">
+    <div <?= cta_shell_edition_tab_panel_attr('chasse', 'chasse-tab-param'); ?>>
       <i class="fa-solid fa-sliders tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-sliders"></i> <?= esc_html__('Paramètres', 'chassesautresor-com'); ?></h2>
@@ -920,7 +926,7 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
     </div> <!-- .edition-panel-body -->
     </div> <!-- #chasse-tab-param -->
 
-    <div id="chasse-tab-stats" class="edition-tab-content" style="display:none;">
+    <div <?= cta_shell_edition_tab_panel_attr('chasse', 'chasse-tab-stats'); ?>>
       <i class="fa-solid fa-chart-column tab-watermark" aria-hidden="true"></i>
       <div class="edition-panel-header">
         <h2><i class="fa-solid fa-chart-column"></i> <?= esc_html__('Statistiques', 'chassesautresor-com'); ?></h2>
