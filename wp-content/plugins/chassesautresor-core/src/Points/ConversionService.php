@@ -67,12 +67,19 @@ class ConversionService
             ? ['settlement_date' => $date]
             : ['cancelled_date' => $date];
 
+        $this->repository->beginTransaction();
+        $request = $this->repository->lockPendingConversion($requestId);
+        if ($request === null) {
+            $this->repository->rollBack();
+
+            return null;
+        }
+
         $this->repository->updateRequestStatus($requestId, $status, $dates);
-        $request = $this->repository->getRequestById($requestId);
         $refundedPoints = 0;
         $paidAmount = 0.0;
 
-        if ($request !== null && in_array($status, ['cancelled', 'refused'], true)) {
+        if (in_array($status, ['cancelled', 'refused'], true)) {
             $refundedPoints = abs((int) $request['points']);
             $reason = sprintf(
                 /* translators: %d: number of restored points. */
@@ -80,9 +87,11 @@ class ConversionService
                 $refundedPoints
             );
             $this->points->add((int) $request['user_id'], $refundedPoints, $reason, 'admin', $requestId);
-        } elseif ($request !== null && $status === 'paid') {
+        } elseif ($status === 'paid') {
             $paidAmount = (float) $request['amount_eur'];
         }
+
+        $this->repository->commit();
 
         return [
             'status' => $status,

@@ -77,4 +77,27 @@ final class HuntEngagementApplicationServiceTest extends TestCase {
         $this->assertSame(['status' => 'engagement_failed', 'charged' => 0], $result);
         $this->assertFalse($charged);
     }
+
+    public function testRejectsWhenTheDebitCannotBeApplied(): void {
+        $charged = false;
+        $result = (new HuntEngagementApplicationService())->engage(
+            1,
+            2,
+            'chasse',
+            true,
+            false,
+            false,
+            10,
+            20,
+            static fn (): bool => true,
+            static function () use (&$charged): bool {
+                $charged = true;
+
+                return false;
+            }
+        );
+
+        $this->assertSame(['status' => 'points_insuffisants', 'charged' => 0], $result);
+        $this->assertTrue($charged);
+    }
 }

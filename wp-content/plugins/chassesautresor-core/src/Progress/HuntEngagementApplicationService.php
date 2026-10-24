@@ -38,8 +38,8 @@ class HuntEngagementApplicationService {
         if (!(bool) $persist($userId, $huntId)) {
             return ['status' => 'engagement_failed', 'charged' => 0];
         }
-        if ($cost > 0) {
-            $debit($userId, $huntId, $cost);
+        if ($cost > 0 && $debit($userId, $huntId, $cost) === false) {
+            return ['status' => 'points_insuffisants', 'charged' => 0];
         }
 
         return ['status' => 'success', 'charged' => $cost];

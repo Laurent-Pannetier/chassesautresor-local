@@ -219,14 +219,6 @@ function charger_scripts_personnalises() {
     );
     
     wp_enqueue_script(
-      'encodage-morse',
-      $theme_dir . 'encodage-morse.js',
-      [],
-      filemtime(get_stylesheet_directory() . '/assets/js/encodage-morse.js'),
-      true
-    );
-
-    wp_enqueue_script(
       'validation-chasse',
       $theme_dir . 'validation-chasse.js',
       [],

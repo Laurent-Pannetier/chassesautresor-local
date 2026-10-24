@@ -44,6 +44,36 @@ class ConversionServiceRepository extends PointsRepository
         ];
     }
 
+    public bool $pendingAvailable = true;
+
+    public function beginTransaction(): void
+    {
+    }
+
+    public function commit(): void
+    {
+    }
+
+    public function rollBack(): void
+    {
+    }
+
+    public function lockPendingConversion(int $id): ?array
+    {
+        if (!$this->pendingAvailable) {
+            return null;
+        }
+
+        $this->pendingAvailable = false;
+
+        return [
+            'user_id' => 7,
+            'points' => -500,
+            'amount_eur' => 12.5,
+            'request_status' => 'pending',
+        ];
+    }
+
     public function updateRequestStatus(int $id, string $status, array $dates = []): void
     {
         $this->status = $status;
@@ -65,6 +95,8 @@ class ConversionPointsRecorder extends PointsService
     /** @var array<int, mixed> */
     public array $operation = [];
 
+    public int $calls = 0;
+
     public function __construct()
     {
     }
@@ -76,6 +108,7 @@ class ConversionPointsRecorder extends PointsService
         string $originType = 'admin',
         ?int $originId = null
     ): void {
+        $this->calls++;
         $this->operation = [$userId, $amount, $reason, $originType, $originId];
     }
 }
@@ -111,5 +144,31 @@ class ConversionServiceTest extends TestCase
         $this->assertSame('cancelled', $repository->status);
         $this->assertSame(500, $result['refunded_points']);
         $this->assertSame([7, 500, 'Restauration de 500 points après annulation/refus', 'admin', 12], $points->operation);
+    }
+
+    public function testRepeatedCancellationDoesNotRefundTwice(): void
+    {
+        $repository = new ConversionServiceRepository();
+        $points = new ConversionPointsRecorder();
+        $service = new ConversionService($repository, $points);
+
+        $first = $service->updateStatus(12, 'annule', '2023-01-01 00:00:00');
+        $second = $service->updateStatus(12, 'annule', '2023-01-01 00:00:00');
+
+        $this->assertSame(500, $first['refunded_points']);
+        $this->assertNull($second);
+        $this->assertSame(1, $points->calls);
+    }
+
+    public function testRepeatedPaymentIsNotSettledTwice(): void
+    {
+        $repository = new ConversionServiceRepository();
+        $service = new ConversionService($repository, new ConversionPointsRecorder());
+
+        $first = $service->updateStatus(12, 'regle', '2023-01-01 00:00:00');
+        $second = $service->updateStatus(12, 'regle', '2023-01-01 00:00:00');
+
+        $this->assertSame(12.5, $first['paid_amount']);
+        $this->assertNull($second);
     }
 }

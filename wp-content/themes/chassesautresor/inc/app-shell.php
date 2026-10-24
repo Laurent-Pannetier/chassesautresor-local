@@ -259,7 +259,15 @@ function cta_shell_enqueue_hunt_sphere(): void
 }
 
 /**
- * Renders the hunt header. The image is mapped onto a sphere that rolls sideways.
+ * Three.js is reserved for the public homepage. Other screens keep the still image.
+ */
+function cta_shell_uses_hunt_sphere(): bool
+{
+    return function_exists('is_front_page') && is_front_page();
+}
+
+/**
+ * Renders the hunt header. The image is mapped onto a sphere on the homepage only.
  * An empty frame is used when no image exists.
  */
 function cta_shell_render_hunt_banner(): void
@@ -274,14 +282,20 @@ function cta_shell_render_hunt_banner(): void
     $label = esc_attr__('Image de la chasse', 'chassesautresor-com');
     echo '<section class="hunt-banner" aria-label="' . $label . '">';
     if ($url !== '') {
-        cta_shell_enqueue_hunt_sphere();
         $src = esc_url($url);
-        echo '<div class="hunt-banner__sphere" data-hunt-sphere data-image="' . $src . '">';
-        echo '<canvas class="hunt-banner__canvas" aria-hidden="true"></canvas>';
-        echo '<img class="hunt-banner__fallback" src="' . $src . '" alt="' . esc_attr($alt) . '">';
-        echo '</div>';
-        echo '<script>(function(){var s=document.currentScript,n=s&&s.previousElementSibling;';
-        echo 'if(n){n.classList.add("is-pending");}})();</script>';
+        if (cta_shell_uses_hunt_sphere()) {
+            cta_shell_enqueue_hunt_sphere();
+            echo '<div class="hunt-banner__sphere" data-hunt-sphere data-image="' . $src . '">';
+            echo '<canvas class="hunt-banner__canvas" aria-hidden="true"></canvas>';
+            echo '<img class="hunt-banner__fallback" src="' . $src . '" alt="' . esc_attr($alt) . '">';
+            echo '</div>';
+            echo '<script>(function(){var s=document.currentScript,n=s&&s.previousElementSibling;';
+            echo 'if(n){n.classList.add("is-pending");}})();</script>';
+        } else {
+            echo '<div class="hunt-banner__sphere">';
+            echo '<img class="hunt-banner__fallback" src="' . $src . '" alt="' . esc_attr($alt) . '">';
+            echo '</div>';
+        }
     } else {
         echo '<p class="hunt-banner__empty">';
         echo esc_html__('Emplacement de l’image de la chasse', 'chassesautresor-com');

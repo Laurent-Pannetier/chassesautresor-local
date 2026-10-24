@@ -29,24 +29,33 @@ if (
   wp_die( __( '⛔️ Accès refusé.', 'chassesautresor-com' ) );
 }
 
-// 💚 Réinitialisations
-$reset_action = isset($_GET['reset_all'])
-  ? 'all'
-  : (isset($_GET['reset_tentatives']) ? 'attempts' : (isset($_GET['reset_statuts']) ? 'statuses' : ''));
-if ($reset_action !== '') {
-  global $wpdb;
-  $reset = (new ChassesAuTresor\Core\Progress\RiddleAttemptMaintenanceService(
-    cat_get_riddle_attempt_service(),
-    cat_get_hunt_progress_service(),
-    ChassesAuTresor\Core\Support\CoreServiceFactory::riddleRetry($wpdb)
-  ))->reset($reset_action, $enigme_id);
-  echo '<p style="text-align:center;">' . esc_html(sprintf(
-    __('%1$d tentative(s) et %2$d statut(s) supprimé(s).', 'chassesautresor-com'),
-    $reset['attempts'],
-    $reset['statuses']
-  )) . '</p>';
-  return;
+// Maintenance destructive : POST + nonce, jamais un lien GET.
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && isset($_POST['reset_action'])) {
+  check_admin_referer('reset_enigme_' . $enigme_id);
+  $reset_action = sanitize_key(wp_unslash((string) $_POST['reset_action']));
+  if (in_array($reset_action, ['all', 'attempts', 'statuses'], true)) {
+    global $wpdb;
+    $reset = (new ChassesAuTresor\Core\Progress\RiddleAttemptMaintenanceService(
+      cat_get_riddle_attempt_service(),
+      cat_get_hunt_progress_service(),
+      ChassesAuTresor\Core\Support\CoreServiceFactory::riddleRetry($wpdb)
+    ))->reset($reset_action, $enigme_id);
+    wp_safe_redirect(add_query_arg(
+      [
+        'uid' => $uid,
+        'maintenance' => $reset_action,
+        'removed_attempts' => (int) $reset['attempts'],
+        'removed_statuses' => (int) $reset['statuses'],
+      ],
+      remove_query_arg(['reset_all', 'reset_tentatives', 'reset_statuts'])
+    ));
+    exit;
+  }
 }
+
+$maintenance = isset($_GET['maintenance'])
+  ? sanitize_key(wp_unslash((string) $_GET['maintenance']))
+  : '';
 
 // ✅ Traitement si POST (validation ou refus)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action_traitement'], $_POST['uid'])) {
@@ -95,25 +104,31 @@ get_header();
     <?php endif; ?>
   </div>
 
-  <div class="traitement-actions">
-    <a href="<?= esc_url(add_query_arg('reset_statuts', '1')); ?>"
-      onclick="return confirm('Supprimer tous les statuts utilisateurs pour cette énigme ?');"
-      class="btn-danger">
-      🧹 Réinitialiser les statuts
-    </a>
+  <?php if (in_array($maintenance, ['all', 'attempts', 'statuses'], true)) : ?>
+    <p class="message-succes" role="status">
+      <?= esc_html(sprintf(
+        __('%1$d tentative(s) et %2$d statut(s) supprimé(s).', 'chassesautresor-com'),
+        absint($_GET['removed_attempts'] ?? 0),
+        absint($_GET['removed_statuses'] ?? 0)
+      )); ?>
+    </p>
+  <?php endif; ?>
 
-    <a href="<?= esc_url(add_query_arg('reset_tentatives', '1')); ?>"
-      onclick="return confirm('Supprimer toutes les tentatives pour cette énigme ?');"
-      class="btn-danger">
-      ❌ Supprimer les tentatives
-    </a>
-
-    <a href="<?= esc_url(add_query_arg('reset_all', '1')); ?>"
-      onclick="return confirm('Supprimer TOUT (statuts + tentatives) ?');"
-      class="btn-danger">
-      🔥 Tout supprimer
-    </a>
-  </div>
+  <form method="post" class="traitement-actions">
+    <?php wp_nonce_field('reset_enigme_' . $enigme_id); ?>
+    <button type="submit" name="reset_action" value="statuses" class="btn-danger"
+      onclick="return confirm('<?= esc_js(__('Supprimer tous les statuts utilisateurs pour cette énigme ?', 'chassesautresor-com')); ?>');">
+      <?= esc_html__('Réinitialiser les statuts', 'chassesautresor-com'); ?>
+    </button>
+    <button type="submit" name="reset_action" value="attempts" class="btn-danger"
+      onclick="return confirm('<?= esc_js(__('Supprimer toutes les tentatives pour cette énigme ?', 'chassesautresor-com')); ?>');">
+      <?= esc_html__('Supprimer les tentatives', 'chassesautresor-com'); ?>
+    </button>
+    <button type="submit" name="reset_action" value="all" class="btn-danger"
+      onclick="return confirm('<?= esc_js(__('Supprimer les statuts et les tentatives de cette énigme ?', 'chassesautresor-com')); ?>');">
+      <?= esc_html__('Tout supprimer', 'chassesautresor-com'); ?>
+    </button>
+  </form>
 </main>
 
 <?php get_footer(); ?>

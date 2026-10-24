@@ -102,6 +102,22 @@ class HuntEngagementRepository
         return (bool) $inserted && empty($this->wpdb->last_error);
     }
 
+    public function deleteHuntLevel(int $userId, int $huntId): void
+    {
+        if ($userId <= 0 || $huntId <= 0) {
+            return;
+        }
+
+        $table = $this->wpdb->prefix . 'engagements';
+        $this->wpdb->query(
+            $this->wpdb->prepare(
+                "DELETE FROM {$table} WHERE user_id = %d AND chasse_id = %d AND enigme_id IS NULL",
+                $userId,
+                $huntId
+            )
+        );
+    }
+
     public function countUniquePlayersForHunts(array $huntIds, array $excludedUserIds = []): int
     {
         $table = $this->wpdb->prefix . 'engagements';
