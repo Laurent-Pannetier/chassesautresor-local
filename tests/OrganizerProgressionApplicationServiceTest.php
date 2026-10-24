@@ -53,6 +53,25 @@ final class OrganizerProgressionRepositoryStub extends ProgressionOverviewReposi
         return $this->hint;
     }
 
+    public function hintUnlockCounts(int $riddleId, array $excludedUserIds = []): array
+    {
+        if ($this->hint === null) {
+            return [];
+        }
+
+        return [(int) $this->hint['indice_id'] => (int) $this->hint['unlocks']];
+    }
+
+    public function huntHintUnlockCounts(int $huntId, array $excludedUserIds = []): array
+    {
+        return [];
+    }
+
+    public function countCurrentPlayers(string $scope, int $id, array $excludedUserIds = []): int
+    {
+        return $scope === 'chasse' ? 6 : 4;
+    }
+
     public function countPlayersByStep(array $stepIds, array $excludedUserIds = []): array
     {
         return [101 => 3];
@@ -126,6 +145,10 @@ final class OrganizerProgressionApplicationServiceTest extends TestCase
         self::assertSame(4, $riddle['median_attempts']);
         self::assertSame('Carte', $riddle['top_hint']['title']);
         self::assertSame(5, $riddle['top_hint']['unlocks']);
+        self::assertSame([['title' => 'Carte', 'unlocks' => 5]], $riddle['hints']);
+        self::assertSame(4, $riddle['hints_base']);
+        self::assertSame([], $dashboard['hunt_hints']);
+        self::assertSame(6, $dashboard['hunt_hints_base']);
         self::assertSame('La porte', $riddle['steps_detail'][0]['title']);
         self::assertSame(3, $riddle['steps_detail'][0]['reached']);
         self::assertSame(8, $riddle['steps_detail'][0]['attempts']);
@@ -190,5 +213,7 @@ final class OrganizerProgressionApplicationServiceTest extends TestCase
 
         self::assertNull($riddle['funnel']['with_step']);
         self::assertSame([], $riddle['steps_detail']);
+        self::assertSame([], $riddle['hints']);
+        self::assertNull($riddle['top_hint']);
     }
 }

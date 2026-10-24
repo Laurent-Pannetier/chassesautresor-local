@@ -37,10 +37,16 @@ final class AccountHuntRiddleStatisticsRenderer
             $period = 'total';
         }
         $summary = [];
+        $huntHints = [];
+        $huntBase = 0;
         if ($this->dashboardProvider !== null) {
             $dashboard = (array) ($this->dashboardProvider)($huntId, $period);
             $rows = (array) ($dashboard['riddles'] ?? []);
             $summary = (array) ($dashboard['summary'] ?? []);
+            $huntHints = is_array($dashboard['hunt_hints'] ?? null) ? $dashboard['hunt_hints'] : [];
+            $huntBase = array_key_exists('hunt_hints_base', $dashboard)
+                ? (int) $dashboard['hunt_hints_base']
+                : (int) ($summary['participants'] ?? 0);
         } else {
             $rows = (array) ($this->rowsProvider)($huntId);
         }
@@ -58,6 +64,7 @@ final class AccountHuntRiddleStatisticsRenderer
             echo $this->periodNav($period, $pageUrl);
             echo $this->summaryMetrics($summary);
             echo $this->periodNote();
+            echo $this->huntHints($huntHints, $huntBase, $period);
         }
         echo '<section class="progression-riddles" aria-label="'
             . esc_attr(__('Énigmes', 'chassesautresor-com')) . '">';
@@ -216,11 +223,12 @@ final class AccountHuntRiddleStatisticsRenderer
             $html .= $this->stateNote($period);
         }
         $html .= $this->keyFigures($row, $period);
-        $hint = $this->hintSentence(is_array($row['top_hint'] ?? null) ? (array) $row['top_hint'] : [], $engaged);
-        if ($hint !== '') {
-            $html .= '<p class="progression-hint">' . esc_html($hint)
-                . $this->scopeBadge('current', $period) . '</p>';
+        $hintBase = array_key_exists('hints_base', $row) ? (int) $row['hints_base'] : $engaged;
+        $hints = is_array($row['hints'] ?? null) ? $row['hints'] : [];
+        if ($hints === [] && is_array($row['top_hint'] ?? null)) {
+            $hints = [$row['top_hint']];
         }
+        $html .= $this->hintBlock($hints, $hintBase, $period);
         $html .= $this->answersDetails($row, $engaged);
         $html .= '</li>';
 
@@ -818,6 +826,96 @@ final class AccountHuntRiddleStatisticsRenderer
         }
 
         return (int) round((100 * (int) ($row['yield']['success'] ?? 0)) / $total);
+    }
+
+    /** @param array<int, mixed> $hints */
+    private function huntHints(array $hints, int $engaged, string $period): string
+    {
+        $block = $this->hintBlock($hints, $engaged, $period);
+        if ($block === '') {
+            return '';
+        }
+
+        return '<section class="progression-hints-hunt" aria-labelledby="progression-hunt-hints-title">'
+            . '<h2 id="progression-hunt-hints-title" class="progression-riddles__title">'
+            . esc_html(__('Indices de la chasse', 'chassesautresor-com'))
+            . '</h2>' . $block . '</section>';
+    }
+
+    /** @param array<int, mixed> $hints */
+    private function hintBlock(array $hints, int $engaged, string $period): string
+    {
+        $rows = [];
+        foreach ($hints as $hint) {
+            if (!is_array($hint)) {
+                continue;
+            }
+            $title = $this->readableHintTitle((string) ($hint['title'] ?? ''));
+            if ($title === '') {
+                continue;
+            }
+            $rows[] = [
+                'title' => $title,
+                'unlocks' => max(0, (int) ($hint['unlocks'] ?? 0)),
+            ];
+        }
+        if ($rows === []) {
+            return '';
+        }
+
+        $html = '<details class="progression-hints">';
+        $html .= '<summary class="progression-hints__summary">'
+            . esc_html($this->hintSummary($rows, $engaged))
+            . $this->scopeBadge('current', $period) . '</summary>';
+        $html .= $this->hintChart($rows, $engaged);
+
+        return $html . '</details>';
+    }
+
+    /** @param array<int, array{title:string,unlocks:int}> $rows */
+    private function hintSummary(array $rows, int $engaged): string
+    {
+        $top = null;
+        foreach ($rows as $row) {
+            if ($top === null || $row['unlocks'] > $top['unlocks']) {
+                $top = $row;
+            }
+        }
+        if ($top === null || $top['unlocks'] <= 0) {
+            return __('Aucun indice débloqué.', 'chassesautresor-com');
+        }
+
+        return $this->hintSentence($top, $engaged);
+    }
+
+    /** @param array<int, array{title:string,unlocks:int}> $rows */
+    private function hintChart(array $rows, int $engaged): string
+    {
+        $scale = max(1, $engaged);
+        foreach ($rows as $row) {
+            $scale = max($scale, $row['unlocks']);
+        }
+
+        $html = '<ul class="progression-steps-chart progression-hints-chart">';
+        foreach ($rows as $row) {
+            $unlocks = $row['unlocks'];
+            $percent = min(100, (int) round((100 * $unlocks) / $scale));
+            $html .= '<li class="progression-steps-chart__row">';
+            $html .= '<span class="progression-steps-chart__label">' . esc_html($row['title']) . '</span>';
+            $html .= '<span class="progression-steps-chart__track" aria-hidden="true">';
+            $html .= '<span class="progression-steps-chart__fill" style="width:' . $percent . '%"></span></span>';
+            $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $unlocks);
+            if ($engaged > 0 && $unlocks <= $engaged) {
+                $html .= ' <span class="progression-steps-chart__share">' . esc_html(sprintf(
+                    /* translators: %d: players engaged on the riddle or hunt */
+                    __('sur %d', 'chassesautresor-com'),
+                    $engaged
+                )) . '</span>';
+            }
+            $html .= '</span></li>';
+        }
+
+        return $html . '</ul>';
     }
 
     /** @param array<string, mixed> $hint */

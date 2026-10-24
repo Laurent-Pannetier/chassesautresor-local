@@ -23,6 +23,7 @@ final class StatisticsAjaxHandlerRegistrationTest extends TestCase {
             'wp_ajax_chasse_lister_participants' => [HuntStatisticsAjaxHandler::class, 'participants'],
             'wp_ajax_enigme_recuperer_stats' => [RiddleStatisticsAjaxHandler::class, 'summary'],
             'wp_ajax_enigme_lister_participants' => [RiddleStatisticsAjaxHandler::class, 'participants'],
+            'wp_ajax_enigme_indices_participant' => [RiddleStatisticsAjaxHandler::class, 'participantHints'],
         ], $hooks);
     }
 

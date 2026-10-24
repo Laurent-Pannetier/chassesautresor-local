@@ -137,4 +137,30 @@ final class ProgressionOverviewRepositoryTest extends TestCase
         self::assertStringContainsString('DATE(date_tentative)', $database->lastQuery);
         self::assertStringNotContainsString('WEEKDAY(date_tentative)', $database->lastQuery);
     }
+
+    public function testHintUnlocksAreCountedPerHint(): void
+    {
+        $database = new ProgressionOverviewDatabaseStub();
+        $database->results = [['indice_id' => '9', 'unlocks' => '5']];
+        $repository = new ProgressionOverviewRepository($database);
+
+        self::assertSame([9 => 5], $repository->hintUnlockCounts(40, [3]));
+        self::assertStringContainsString('enigme_id = %d', $database->lastQuery);
+        self::assertStringContainsString('GROUP BY indice_id', $database->lastQuery);
+        self::assertStringContainsString('user_id NOT IN (%d)', $database->lastQuery);
+        self::assertSame([], $repository->hintUnlockCounts(0));
+    }
+
+    public function testHuntHintsIgnoreRiddleUnlocks(): void
+    {
+        $database = new ProgressionOverviewDatabaseStub();
+        $repository = new ProgressionOverviewRepository($database);
+
+        self::assertSame([], $repository->huntHintUnlockCounts(12));
+        self::assertStringContainsString('chasse_id = %d', $database->lastQuery);
+        self::assertStringContainsString('enigme_id IS NULL OR enigme_id = 0', $database->lastQuery);
+        self::assertSame(0, $repository->countCurrentPlayers('chasse', 12, [3]));
+        self::assertStringContainsString('indice_id IS NULL', $database->lastQuery);
+        self::assertStringContainsString('user_id NOT IN (%d)', $database->lastQuery);
+    }
 }

@@ -285,6 +285,82 @@ class ProgressionOverviewRepository
     }
 
     /**
+     * Unlock counts for hints attached to one riddle.
+     *
+     * @param int[] $excludedUserIds
+     * @return array<int, int>
+     */
+    public function hintUnlockCounts(int $riddleId, array $excludedUserIds = []): array
+    {
+        if ($riddleId <= 0) {
+            return [];
+        }
+
+        $table = $this->wpdb->prefix . 'indices_deblocages';
+        [$excludeSql, $excludeParams] = $this->excludeClause('user_id', $excludedUserIds);
+
+        return $this->mapCounts(
+            $this->rows(
+                "SELECT indice_id, COUNT(*) AS unlocks FROM {$table}"
+                . " WHERE enigme_id = %d{$excludeSql} GROUP BY indice_id",
+                array_merge([$riddleId], $excludeParams)
+            ),
+            'indice_id',
+            'unlocks'
+        );
+    }
+
+    /**
+     * Hunt hints are stored without a riddle.
+     *
+     * @param int[] $excludedUserIds
+     * @return array<int, int>
+     */
+    public function huntHintUnlockCounts(int $huntId, array $excludedUserIds = []): array
+    {
+        if ($huntId <= 0) {
+            return [];
+        }
+
+        $table = $this->wpdb->prefix . 'indices_deblocages';
+        [$excludeSql, $excludeParams] = $this->excludeClause('user_id', $excludedUserIds);
+
+        return $this->mapCounts(
+            $this->rows(
+                "SELECT indice_id, COUNT(*) AS unlocks FROM {$table}"
+                . ' WHERE chasse_id = %d AND (enigme_id IS NULL OR enigme_id = 0)'
+                . "{$excludeSql} GROUP BY indice_id",
+                array_merge([$huntId], $excludeParams)
+            ),
+            'indice_id',
+            'unlocks'
+        );
+    }
+
+    /**
+     * Players engaged on the riddle or the hunt. Hint rows stay out of this total.
+     *
+     * @param int[] $excludedUserIds
+     */
+    public function countCurrentPlayers(string $scope, int $id, array $excludedUserIds = []): int
+    {
+        if ($id <= 0 || !in_array($scope, ['enigme', 'chasse'], true)) {
+            return 0;
+        }
+
+        $table = $this->wpdb->prefix . 'engagements';
+        $where = $scope === 'enigme'
+            ? 'enigme_id = %d AND indice_id IS NULL'
+            : 'chasse_id = %d AND enigme_id IS NULL AND indice_id IS NULL';
+        [$excludeSql, $excludeParams] = $this->excludeClause('user_id', $excludedUserIds);
+
+        return $this->var(
+            "SELECT COUNT(DISTINCT user_id) FROM {$table} WHERE {$where}{$excludeSql}",
+            array_merge([$id], $excludeParams)
+        );
+    }
+
+    /**
      * @param int[] $stepIds
      * @param int[] $excludedUserIds
      * @return array<int, int>

@@ -38,7 +38,7 @@ final class RiddleSidebarRenderer
             </div>
         </div>
         <?php if ($solvers !== []) : ?>
-            <table class="stats-table compact">
+            <table class="stats-table">
                 <thead><tr><th scope="col"></th>
                     <th scope="col"><?= esc_html__('Joueur', 'chassesautresor-com'); ?></th>
                     <th scope="col"><?= esc_html__('Date', 'chassesautresor-com'); ?></th>

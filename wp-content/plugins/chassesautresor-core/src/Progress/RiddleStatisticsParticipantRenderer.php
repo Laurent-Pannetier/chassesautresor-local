@@ -29,7 +29,7 @@ final class RiddleStatisticsParticipantRenderer
         ob_start();
         ?>
         <h3><?= esc_html__('Liste participants', 'chassesautresor-com'); ?></h3>
-        <table class="stats-table compact">
+        <table class="stats-table">
             <thead><tr>
                 <th scope="col"><?= esc_html__('Nom', 'chassesautresor-com'); ?></th>
                 <?= $this->sortableHeader('date', __('Engagement', 'chassesautresor-com'), $dateIcon); ?>
@@ -41,6 +41,7 @@ final class RiddleStatisticsParticipantRenderer
                         ' data-format="etiquette"'
                     ); ?>
                 <?php endif; ?>
+                <th scope="col"><?= esc_html__('Indices', 'chassesautresor-com'); ?></th>
                 <th scope="col"><?= esc_html__('Trouvé', 'chassesautresor-com'); ?></th>
             </tr></thead>
             <tbody><?php foreach ($participants as $participant) : ?>
@@ -50,6 +51,7 @@ final class RiddleStatisticsParticipantRenderer
                     <?php if ($mode !== 'aucune') : ?>
                         <td><?= esc_html($participant['nb_tentatives']); ?></td>
                     <?php endif; ?>
+                    <?= $this->hintsCell($participant); ?>
                     <td><?= $participant['trouve'] ? '<i class="fa-solid fa-check fa-xl"></i>' : ''; ?></td>
                 </tr>
             <?php endforeach; ?></tbody>
@@ -57,6 +59,72 @@ final class RiddleStatisticsParticipantRenderer
         <?= $this->pager($request['page'], $pages); ?>
         <?php
         return (string) ob_get_clean();
+    }
+
+    /** @param array<int, array<string, mixed>> $hints */
+    public function hintsDetail(array $hints): string
+    {
+        if ($hints === []) {
+            return '<p class="participant-hints__empty">'
+                . esc_html__('Aucun indice débloqué.', 'chassesautresor-com') . '</p>';
+        }
+
+        $html = '<ul class="participant-hints__list">';
+        foreach ($hints as $hint) {
+            if (!is_array($hint)) {
+                continue;
+            }
+            $title = trim((string) ($hint['title'] ?? ''));
+            if ($title === '') {
+                $title = __('Indice', 'chassesautresor-com');
+            }
+            $when = $this->formatUnlock((string) ($hint['unlocked_at'] ?? ''));
+            $html .= '<li><span>' . esc_html($title) . '</span>';
+            if ($when !== '') {
+                $html .= '<time datetime="' . esc_attr((string) ($hint['unlocked_at'] ?? '')) . '">'
+                    . esc_html($when) . '</time>';
+            }
+            $html .= '</li>';
+        }
+
+        return $html . '</ul>';
+    }
+
+    /** @param array<string, mixed> $participant */
+    private function hintsCell(array $participant): string
+    {
+        $count = max(0, (int) ($participant['nb_indices'] ?? 0));
+        if ($count <= 0) {
+            return '<td class="participant-hints-count"><span aria-label="'
+                . esc_attr__('Aucun indice', 'chassesautresor-com') . '">—</span></td>';
+        }
+
+        $label = sprintf(
+            _n('%d indice débloqué', '%d indices débloqués', $count, 'chassesautresor-com'),
+            $count
+        );
+
+        return '<td class="participant-hints-count"><button type="button" class="participant-hints"'
+            . ' data-user-id="' . esc_attr((string) (int) ($participant['user_id'] ?? 0)) . '"'
+            . ' aria-expanded="false" aria-label="' . esc_attr($label) . '">'
+            . esc_html((string) $count) . '</button></td>';
+    }
+
+    private function formatUnlock(string $mysql): string
+    {
+        $mysql = trim($mysql);
+        if ($mysql === '') {
+            return '';
+        }
+        $stamp = strtotime($mysql . ' UTC');
+        if ($stamp === false) {
+            return $mysql;
+        }
+        if (function_exists('wp_date')) {
+            return (string) wp_date('d/m/Y H:i', $stamp);
+        }
+
+        return gmdate('d/m/Y H:i', $stamp);
     }
 
     private function sortIcon(string $column, string $orderBy, string $order): string

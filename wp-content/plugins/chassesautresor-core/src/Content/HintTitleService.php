@@ -26,4 +26,18 @@ class HintTitleService
 
         return $prefix !== '' && strpos($currentTitle, $prefix) === 0;
     }
+
+    /**
+     * A generated title is replaced by the player label « Indice #N ».
+     * A title already saved as « Indice #N », or any custom title, is kept.
+     */
+    public function usesPlayerRankLabel(string $currentTitle, string $defaultTitle, string $prefix): bool
+    {
+        $currentTitle = trim($currentTitle);
+        if ($currentTitle === '' || ($defaultTitle !== '' && $currentTitle === $defaultTitle)) {
+            return true;
+        }
+
+        return $prefix !== '' && strpos($currentTitle, $prefix) === 0;
+    }
 }

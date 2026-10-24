@@ -13,6 +13,7 @@ class RiddleStatisticsAjaxHandler {
     public static function register(callable $addAction): void {
         $addAction('wp_ajax_enigme_recuperer_stats', [self::class, 'summary']);
         $addAction('wp_ajax_enigme_lister_participants', [self::class, 'participants']);
+        $addAction('wp_ajax_enigme_indices_participant', [self::class, 'participantHints']);
     }
 
     public static function configure(
@@ -80,6 +81,25 @@ class RiddleStatisticsAjaxHandler {
             $orderBy
         );
         wp_send_json_success(['html' => $html, 'total' => $total, 'page' => $request['page'], 'pages' => $pages]);
+    }
+
+    public static function participantHints(): void
+    {
+        if (!is_user_logged_in()) {
+            wp_send_json_error('non_connecte');
+        }
+        self::verifyNonce();
+        $riddleId = isset($_POST['enigme_id']) ? (int) $_POST['enigme_id'] : 0;
+        $userId = isset($_POST['user_id']) ? (int) $_POST['user_id'] : 0;
+        if ($riddleId <= 0 || $userId <= 0 || get_post_type($riddleId) !== 'enigme') {
+            wp_send_json_error('post_invalide');
+        }
+        if (!(new RiddleAttemptAccessService())->canModifyRiddle((int) get_current_user_id(), $riddleId)) {
+            wp_send_json_error('acces_refuse');
+        }
+        $hints = self::application()->participantHints($riddleId, $userId);
+        $html = (new RiddleStatisticsParticipantRenderer())->hintsDetail($hints);
+        wp_send_json_success(['html' => $html]);
     }
 
     private static function verifyNonce(): void {

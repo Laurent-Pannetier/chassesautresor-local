@@ -29,7 +29,7 @@ final class HuntStatisticsParticipantRenderer
         ob_start();
         ?>
         <h3><?= esc_html__('Joueurs', 'chassesautresor-com'); ?></h3>
-        <table class="stats-table compact">
+        <table class="stats-table">
             <colgroup><col style="width:20%"><col style="width:20%"><col style="width:20%">
                 <col style="width:20%"><col style="width:20%"></colgroup>
             <thead><tr>
