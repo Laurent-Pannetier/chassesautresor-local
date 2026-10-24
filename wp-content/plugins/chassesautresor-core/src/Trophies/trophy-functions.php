@@ -169,6 +169,11 @@ if (!function_exists('cat_trophy_wall')) {
         );
         foreach ($cards as $index => $card) {
             $cards[$index]['image_url'] = cat_trophy_image_url((int) ($card['image_id'] ?? 0));
+            if ($isAdmin) {
+                $cards[$index]['context_label'] = cat_trophy_wall_context_label(
+                    (int) ($card['hunt_id'] ?? 0)
+                );
+            }
         }
 
         return $cards;
@@ -279,6 +284,24 @@ if (!function_exists('cat_trophy_user_names')) {
         }
 
         return $names;
+    }
+}
+
+if (!function_exists('cat_trophy_wall_context_label')) {
+    function cat_trophy_wall_context_label(int $huntId): string
+    {
+        if ($huntId <= 0) {
+            return (string) __('Global', 'chassesautresor-com');
+        }
+        if (
+            !function_exists('get_post_type')
+            || get_post_type($huntId) !== 'chasse'
+            || !function_exists('get_the_title')
+        ) {
+            return '';
+        }
+
+        return trim((string) get_the_title($huntId));
     }
 }
 

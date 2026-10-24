@@ -146,6 +146,7 @@ final class TrophyWallTest extends TestCase
                 'image_url' => 'https://example.test/t.png',
                 'count' => 2,
                 'holders' => ['Alice', 'Bob <i>'],
+                'context_label' => 'Forêt enchantée',
             ],
         ]);
 
@@ -157,7 +158,30 @@ final class TrophyWallTest extends TestCase
         self::assertStringContainsString(esc_html('Bob <i>'), $html);
         self::assertStringContainsString(esc_html('Pionnier <b>'), $html);
         self::assertStringNotContainsString('>0<', $html);
+        self::assertSame(1, substr_count($html, 'trophy-card__context'));
+        self::assertStringContainsString(esc_html('Forêt enchantée'), $html);
         self::assertSame('', (new TrophyWallRenderer())->render([]));
+    }
+
+    public function testPlatformTrophyIsLabeledGlobalForTheAdministrator(): void
+    {
+        require_once dirname(__DIR__)
+            . '/wp-content/plugins/chassesautresor-core/src/Trophies/trophy-functions.php';
+
+        self::assertSame('Global', cat_trophy_wall_context_label(0));
+        $html = (new TrophyWallRenderer())->render([
+            [
+                'title' => 'Bienvenue',
+                'description' => '',
+                'image_url' => '',
+                'count' => 0,
+                'holders' => [],
+                'context_label' => cat_trophy_wall_context_label(0),
+            ],
+        ]);
+
+        self::assertStringContainsString('trophy-card__context', $html);
+        self::assertStringContainsString('Global', $html);
     }
 
     public function testTrophyPageKeepsThePlayerShelfAndAddsTheStaffWall(): void

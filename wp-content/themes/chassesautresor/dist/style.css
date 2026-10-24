@@ -20058,6 +20058,13 @@ body.admin-bar.shell-edition .app-sidebar {
   font-size: 0.8rem;
 }
 
+.trophy-card__content p.trophy-card__context {
+  margin: 0 0 0.15rem;
+  color: var(--shell-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 .trophy-card--none {
   border-style: dashed;
   opacity: 0.72;

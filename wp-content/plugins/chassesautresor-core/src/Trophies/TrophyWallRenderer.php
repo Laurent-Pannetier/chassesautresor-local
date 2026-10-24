@@ -43,7 +43,11 @@ final class TrophyWallRenderer
         } else {
             echo '<div class="trophy-card__fallback" aria-hidden="true">🏆</div>';
         }
+        $context = trim((string) ($card['context_label'] ?? ''));
         echo '<div class="trophy-card__content">';
+        if ($context !== '') {
+            echo '<p class="trophy-card__context">' . esc_html($context) . '</p>';
+        }
         echo '<h2>' . esc_html($title) . '</h2>';
         if ($description !== '') {
             echo '<p>' . esc_html($description) . '</p>';
