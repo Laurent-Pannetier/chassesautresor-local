@@ -69,8 +69,8 @@ final class AccountHuntRiddleStatisticsRenderer
             )) . '</p>';
         } else {
             echo '<ol class="progression-riddles__list">';
-            foreach ($this->sortRiddles($rows) as $index => $row) {
-                echo $this->riddleItem($row, $period, $index === 0);
+            foreach ($this->sortRiddles($rows) as $row) {
+                echo $this->riddleItem($row, $period);
             }
             echo '</ol>';
         }
@@ -187,7 +187,7 @@ final class AccountHuntRiddleStatisticsRenderer
     }
 
     /** @param array<string, mixed> $row */
-    private function riddleItem(array $row, string $period, bool $expandChart): string
+    private function riddleItem(array $row, string $period): string
     {
         $stepCount = (int) ($row['steps'] ?? 0);
         if ($stepCount <= 0 && is_array($row['steps_detail'] ?? null)) {
@@ -222,7 +222,7 @@ final class AccountHuntRiddleStatisticsRenderer
                 . $this->scopeBadge('current', $period) . '</p>';
         }
         $html .= $this->stepsBlock($row, $engaged);
-        $html .= $this->seriesChart($row, $expandChart);
+        $html .= $this->seriesChart($row);
         $html .= '</li>';
 
         return $html;
@@ -478,76 +478,48 @@ final class AccountHuntRiddleStatisticsRenderer
             : __('Tentatives par étape', 'chassesautresor-com');
         $html = '<section class="progression-dropoff">';
         $html .= '<h4>' . esc_html($title) . '</h4>';
-        if ($anyReached) {
-            $html .= $this->stepsChart($steps, $engaged);
-        }
-        $html .= $this->stepsTable($steps, $engaged);
+        $html .= $this->stepsHistogram($steps, $engaged, $anyReached);
 
         return $html . '</section>';
     }
 
     /** @param array<int, array<string, mixed>> $steps */
-    private function stepsChart(array $steps, int $engaged): string
+    private function stepsHistogram(array $steps, int $engaged, bool $anyReached): string
     {
-        $scale = max(1, $engaged);
-        foreach ($steps as $step) {
-            $scale = max($scale, (int) ($step['reached'] ?? 0));
+        $breakIndex = $anyReached ? $this->steepestDropIndex($steps) : null;
+        $scale = $anyReached && $engaged > 0 ? $engaged : 1;
+        if (!$anyReached || $engaged <= 0) {
+            foreach ($steps as $step) {
+                $amount = $anyReached ? (int) ($step['reached'] ?? 0) : (int) ($step['attempts'] ?? 0);
+                $scale = max($scale, $amount);
+            }
         }
 
         $html = '<ul class="progression-steps-chart">';
-        foreach ($steps as $step) {
-            $reached = (int) ($step['reached'] ?? 0);
-            $percent = (int) round((100 * $reached) / $scale);
-            $label = $this->stepTitle($step);
-            $html .= '<li class="progression-steps-chart__row">';
-            $html .= '<span class="progression-steps-chart__label">' . esc_html($label) . '</span>';
-            $html .= '<span class="progression-steps-chart__track" aria-hidden="true">';
-            $html .= '<span class="progression-steps-chart__fill" style="width:' . $percent . '%"></span>';
-            $html .= '</span>';
-            $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $reached) . '</span>';
-            $html .= '</li>';
-        }
-        $html .= '</ul>';
-        $html .= '<p class="progression-note">' . esc_html(sprintf(
-            /* translators: %d: number of players represented by a full bar */
-            _n(
-                'La barre pleine représente %d joueur.',
-                'La barre pleine représente %d joueurs.',
-                $scale,
-                'chassesautresor-com'
-            ),
-            $scale
-        )) . '</p>';
-
-        return $html;
-    }
-
-    /** @param array<int, array<string, mixed>> $steps */
-    private function stepsTable(array $steps, int $engaged): string
-    {
-        $breakIndex = $this->steepestDropIndex($steps);
-        $html = '<div class="progression-dropoff__scroll"><table class="progression-dropoff__table">';
-        $html .= '<thead><tr>';
-        foreach ([
-            __('Étape', 'chassesautresor-com'),
-            __('Joueurs', 'chassesautresor-com'),
-            __('Part des engagés', 'chassesautresor-com'),
-            __('Tentatives', 'chassesautresor-com'),
-        ] as $header) {
-            $html .= '<th scope="col">' . esc_html($header) . '</th>';
-        }
-        $html .= '</tr></thead><tbody>';
         foreach ($steps as $index => $step) {
             $reached = (int) ($step['reached'] ?? 0);
             $attempts = (int) ($step['attempts'] ?? 0);
-            $share = $engaged > 0 ? (int) round((100 * $reached) / $engaged) . ' %' : '—';
-            $class = $index === $breakIndex ? ' class="progression-dropoff__break"' : '';
-            $html .= '<tr' . $class . '><th scope="row">' . esc_html($this->stepTitle($step)) . '</th>';
-            $html .= '<td>' . esc_html((string) $reached) . '</td>';
-            $html .= '<td>' . esc_html($share) . '</td>';
-            $html .= '<td>' . esc_html((string) $attempts) . '</td></tr>';
+            $amount = $anyReached ? $reached : $attempts;
+            $percent = $scale > 0 ? min(100, (int) round((100 * $amount) / $scale)) : 0;
+            $class = 'progression-steps-chart__row';
+            if ($index === $breakIndex) {
+                $class .= ' progression-steps-chart__row--break';
+            }
+            $html .= '<li class="' . $class . '">';
+            $html .= '<span class="progression-steps-chart__label">' . esc_html($this->stepTitle($step)) . '</span>';
+            $html .= '<span class="progression-steps-chart__track" aria-hidden="true">';
+            $html .= '<span class="progression-steps-chart__fill" style="width:' . $percent . '%"></span></span>';
+            if ($anyReached) {
+                $share = $engaged > 0 ? (int) round((100 * $reached) / $engaged) . ' %' : '—';
+                $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $reached)
+                    . ' <span class="progression-steps-chart__share">' . esc_html($share) . '</span></span>';
+                $html .= '<span class="progression-steps-chart__attempts">' . esc_html((string) $attempts) . '</span>';
+            } else {
+                $html .= '<span class="progression-steps-chart__value">' . esc_html((string) $attempts) . '</span>';
+            }
+            $html .= '</li>';
         }
-        $html .= '</tbody></table></div>';
+        $html .= '</ul>';
         if ($breakIndex !== null) {
             $html .= '<p class="progression-note">' . esc_html(sprintf(
                 /* translators: %s: step title where the largest drop happens */
@@ -586,7 +558,7 @@ final class AccountHuntRiddleStatisticsRenderer
     }
 
     /** @param array<string, mixed> $row */
-    private function seriesChart(array $row, bool $expanded): string
+    private function seriesChart(array $row): string
     {
         $series = [];
         foreach ((array) ($row['attempt_series'] ?? []) as $point) {
@@ -608,18 +580,13 @@ final class AccountHuntRiddleStatisticsRenderer
         $totals = array_map(static fn (array $point): int => $point['total'], $series);
         $successes = array_map(static fn (array $point): int => $point['success'], $series);
         $max = max(1, max($totals));
-        $left = 36.0;
-        $right = 628.0;
-        $top = 16.0;
-        $bottom = 132.0;
-        $chartId = 'progression-series-' . max(0, (int) ($row['id'] ?? 0));
         $grain = (string) ($row['attempt_series_grain'] ?? 'week');
         $caption = $grain === 'day'
             ? __('Réponses finales par jour', 'chassesautresor-com')
             : __('Réponses finales par semaine', 'chassesautresor-com');
         $summary = sprintf(
-            /* translators: 1: number of points, 2: final attempts, 3: correct final answers */
-            __('Courbe des réponses finales : %1$s, %2$s, %3$s.', 'chassesautresor-com'),
+            /* translators: 1: number of buckets, 2: final attempts, 3: correct final answers */
+            __('Histogramme des réponses finales : %1$s, %2$s, %3$s.', 'chassesautresor-com'),
             sprintf(_n('%d point', '%d points', count($series), 'chassesautresor-com'), count($series)),
             sprintf(
                 _n('%d tentative', '%d tentatives', array_sum($totals), 'chassesautresor-com'),
@@ -637,18 +604,10 @@ final class AccountHuntRiddleStatisticsRenderer
         if ($reading !== '') {
             $html .= '<p class="progression-series__reading">' . esc_html($reading) . '</p>';
         }
-        $html .= '<details class="progression-series"' . ($expanded ? ' open' : '') . '>';
+        $html .= '<details class="progression-series">';
         $html .= '<summary class="progression-series__summary">' . esc_html($caption) . '</summary>';
-        $html .= '<svg viewBox="0 0 640 176" role="img" aria-labelledby="' . esc_attr($chartId) . '">';
-        $html .= '<title id="' . esc_attr($chartId) . '">' . esc_html($summary) . '</title>';
-        $html .= $this->chartGrid($max, $left, $right, $top, $bottom);
-        $html .= '<polyline class="progression-series__line progression-series__line--total" points="'
-            . esc_attr($this->chartPoints($totals, $max, $left, $right, $top, $bottom)) . '"></polyline>';
-        $html .= '<polyline class="progression-series__line progression-series__line--success" points="'
-            . esc_attr($this->chartPoints($successes, $max, $left, $right, $top, $bottom)) . '"></polyline>';
-        $html .= $this->peakMarker($series, $peak, $max, $left, $right, $top, $bottom);
-        $html .= $this->seriesLabels($series, $left, $right);
-        $html .= '</svg>';
+        $html .= '<p class="screen-reader-text">' . esc_html($summary) . '</p>';
+        $html .= $this->seriesColumns($series, $max, $peak);
         $html .= '<ul class="progression-series__legend">';
         $html .= '<li><i class="progression-series__swatch progression-series__swatch--total" aria-hidden="true"></i> '
             . esc_html(__('Tentatives finales', 'chassesautresor-com')) . '</li>';
@@ -665,64 +624,38 @@ final class AccountHuntRiddleStatisticsRenderer
     }
 
     /**
-     * @param int[] $values
+     * @param array<int, array{label:string,date:string,total:int,success:int,open:bool}> $series
      */
-    private function chartPoints(
-        array $values,
-        int $max,
-        float $left,
-        float $right,
-        float $top,
-        float $bottom
-    ): string {
-        $coords = [];
-        foreach (array_values($values) as $index => $value) {
-            [$x, $y] = $this->pointCoordinate($index, count($values), $value, $max, $left, $right, $top, $bottom);
-            $coords[] = $x . ',' . $y;
-        }
-
-        return implode(' ', $coords);
-    }
-
-    /**
-     * @return array{0:float,1:float}
-     */
-    private function pointCoordinate(
-        int $index,
-        int $count,
-        int $value,
-        int $max,
-        float $left,
-        float $right,
-        float $top,
-        float $bottom
-    ): array {
-        $span = max(1, $count - 1);
-        $x = $left + ($right - $left) * ($index / $span);
-        $y = $bottom - ($bottom - $top) * ($value / max(1, $max));
-
-        return [round($x, 1), round($y, 1)];
-    }
-
-    /** @param array<int, array{label:string,total:int,success:int}> $series */
-    private function seriesLabels(array $series, float $left, float $right): string
+    private function seriesColumns(array $series, int $max, int $peak): string
     {
         $count = count($series);
         $step = (int) max(1, ceil($count / 8));
-        $span = max(1, $count - 1);
-        $html = '';
+        $html = '<ol class="progression-columns">';
         foreach ($series as $index => $point) {
-            $isLast = $index === $count - 1;
-            if ($index % $step !== 0 && !$isLast) {
-                continue;
+            $total = $point['total'];
+            $success = min($point['success'], max(0, $total));
+            $height = $max > 0 ? (int) round((100 * $total) / $max) : 0;
+            $successHeight = $total > 0 ? (int) round((100 * $success) / $total) : 0;
+            $showLabel = $index % $step === 0 || $index === $count - 1;
+            $html .= '<li class="progression-columns__item">';
+            $html .= '<span class="progression-columns__value">'
+                . ($index === $peak && $total > 0 ? esc_html((string) $total) : '') . '</span>';
+            $html .= '<span class="progression-columns__plot">';
+            if ($height > 0) {
+                $html .= '<span class="progression-columns__bar" style="height:' . $height . '%">';
+                if ($successHeight > 0) {
+                    $html .= '<span class="progression-columns__success" style="height:'
+                        . $successHeight . '%"></span>';
+                }
+                $html .= '</span>';
             }
-            $x = round($left + ($right - $left) * ($index / $span), 1);
-            $anchor = $index === 0 ? 'start' : ($isLast ? 'end' : 'middle');
-            $html .= '<text x="' . $x . '" y="152" text-anchor="' . $anchor . '">'
-                . esc_html($point['label']) . '</text>';
+            $html .= '</span>';
+            $html .= '<span class="progression-columns__label">'
+                . ($showLabel ? esc_html($point['label']) : '') . '</span>';
+            $html .= '</li>';
         }
 
-        return $html;
+        return $html . '</ol>';
     }
 
     /**
@@ -903,62 +836,6 @@ final class AccountHuntRiddleStatisticsRenderer
         }
 
         return ucfirst($word);
-    }
-
-    private function chartGrid(int $max, float $left, float $right, float $top, float $bottom): string
-    {
-        $html = '<line class="progression-series__grid" x1="' . $left . '" y1="' . $bottom
-            . '" x2="' . $right . '" y2="' . $bottom . '"></line>';
-        $html .= '<line class="progression-series__grid" x1="' . $left . '" y1="' . $top
-            . '" x2="' . $right . '" y2="' . $top . '"></line>';
-        $html .= '<text x="0" y="20">' . esc_html((string) $max) . '</text>';
-        if ($max > 2) {
-            $mid = round(($top + $bottom) / 2, 1);
-            $html .= '<line class="progression-series__grid" x1="' . $left . '" y1="' . $mid
-                . '" x2="' . $right . '" y2="' . $mid . '"></line>';
-            $html .= '<text x="0" y="' . ($mid + 4) . '">' . esc_html((string) (int) round($max / 2)) . '</text>';
-        }
-        $html .= '<text x="0" y="130">0</text>';
-
-        return $html;
-    }
-
-    /**
-     * @param array<int, array{label:string,date:string,total:int,success:int,open:bool}> $series
-     */
-    private function peakMarker(
-        array $series,
-        int $peak,
-        int $max,
-        float $left,
-        float $right,
-        float $top,
-        float $bottom
-    ): string {
-        $count = count($series);
-        [$x, $y] = $this->pointCoordinate($peak, $count, $series[$peak]['total'], $max, $left, $right, $top, $bottom);
-        [, $successY] = $this->pointCoordinate(
-            $peak,
-            $count,
-            $series[$peak]['success'],
-            $max,
-            $left,
-            $right,
-            $top,
-            $bottom
-        );
-        $anchor = $peak === 0 ? 'start' : ($peak === $count - 1 ? 'end' : 'middle');
-        $labelY = $y < $top + 18 ? $y + 16 : $y - 8;
-        $html = '<circle class="progression-series__point progression-series__point--total" cx="' . $x
-            . '" cy="' . $y . '" r="3.5"></circle>';
-        if ($series[$peak]['success'] !== $series[$peak]['total']) {
-            $html .= '<circle class="progression-series__point progression-series__point--success" cx="' . $x
-                . '" cy="' . $successY . '" r="3.5"></circle>';
-        }
-        $html .= '<text class="progression-series__value" x="' . $x . '" y="' . $labelY
-            . '" text-anchor="' . $anchor . '">' . esc_html((string) $series[$peak]['total']) . '</text>';
-
-        return $html;
     }
 
     /**

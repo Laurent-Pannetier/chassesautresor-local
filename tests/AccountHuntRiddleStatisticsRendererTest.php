@@ -190,14 +190,18 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         self::assertStringContainsString('La porte', $html);
         self::assertStringContainsString('75 %', $html);
         self::assertStringContainsString('La plus forte chute de joueurs est à « Le couloir ».', $html);
+        self::assertStringContainsString('progression-steps-chart__row--break', $html);
         self::assertStringContainsString('Réponses finales par semaine', $html);
         self::assertStringContainsString(
             'Semaine du 13/10 : 7 tentatives finales, peu de réussites.',
             $html
         );
-        self::assertStringContainsString('<details class="progression-series" open>', $html);
+        self::assertStringContainsString('<details class="progression-series">', $html);
+        self::assertStringNotContainsString('<details class="progression-series" open>', $html);
+        self::assertStringContainsString('progression-columns', $html);
         self::assertStringContainsString('06/10', $html);
-        self::assertStringContainsString('<polyline', $html);
+        self::assertStringNotContainsString('<polyline', $html);
+        self::assertStringNotContainsString('<table', $html);
         self::assertStringContainsString('Médiane pour résoudre', $html);
         self::assertStringContainsString('3 tentatives', $html);
         self::assertStringNotContainsString('progression-funnel', $html);
@@ -393,11 +397,9 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
             'Semaine du 19 octobre, encore en cours : 36 tentatives finales, peu de réussites.',
             $html
         );
-        self::assertStringContainsString('<details class="progression-series" open>', $html);
+        self::assertStringContainsString('progression-columns', $html);
         self::assertStringContainsString('<details class="progression-series">', $html);
-        self::assertLessThan(
-            strpos($html, '<details class="progression-series">'),
-            strpos($html, '<details class="progression-series" open>')
-        );
+        self::assertStringNotContainsString('<details class="progression-series" open>', $html);
+        self::assertStringNotContainsString('<table', $html);
     }
 }
