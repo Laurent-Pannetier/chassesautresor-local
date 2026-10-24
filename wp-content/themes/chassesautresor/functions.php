@@ -510,17 +510,6 @@ add_action('wp_enqueue_scripts', function () {
     }
 });
 
-add_action('wp_enqueue_scripts', function () {
-    if (!is_singular('chasse')) {
-        wp_dequeue_script('jquery-fancybox');
-        wp_dequeue_script('jquery-metadata');
-        wp_dequeue_script('jquery-easing');
-        wp_dequeue_script('jquery-mousewheel');
-        wp_dequeue_style('fancybox');
-        wp_dequeue_style('fancybox-ie');
-    }
-}, 20);
-
 /**
  * Disables the language dropdown on the login page.
  *
