@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Trophies\TrophyDefinition;
 use ChassesAuTresor\Core\Trophies\TrophyFieldGroupRegistrar;
+use ChassesAuTresor\Core\Trophies\TrophyPageRenderer;
 use ChassesAuTresor\Core\Trophies\TrophyWallCatalog;
 use ChassesAuTresor\Core\Trophies\TrophyWallRenderer;
 use PHPUnit\Framework\TestCase;
@@ -182,6 +183,25 @@ final class TrophyWallTest extends TestCase
 
         self::assertStringContainsString('trophy-card__banner', $html);
         self::assertStringContainsString('Global', $html);
+    }
+
+    public function testPlayerShelfUsesSquareCardsWithoutTheAwardDate(): void
+    {
+        $html = (new TrophyPageRenderer())->render([
+            [
+                'title' => 'Bienvenue',
+                'description' => 'Participer à la chasse',
+                'image_url' => '',
+                'awarded_at' => '2026-10-24 12:00:00',
+                'recipient_types' => ['user'],
+            ],
+        ]);
+
+        self::assertStringContainsString('trophies-grid--player', $html);
+        self::assertStringContainsString('trophy-card--square', $html);
+        self::assertStringContainsString('Bienvenue', $html);
+        self::assertStringNotContainsString('Obtenu', $html);
+        self::assertStringNotContainsString('2026-10-24', $html);
     }
 
     public function testTrophyPageKeepsThePlayerShelfAndAddsTheStaffWall(): void
