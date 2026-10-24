@@ -307,8 +307,10 @@ function cta_shell_ordered_riddle_posts(int $huntId): array
 
 /**
  * Hunt and riddle list under Outils, including the add action when it is allowed.
+ *
+ * @param bool $expanded False keeps the list out of view and out of tab order.
  */
-function cta_shell_render_outils_submenu(): void
+function cta_shell_render_outils_submenu(bool $expanded = true): void
 {
     if (!function_exists('cta_shell_user_sees_outils') || !cta_shell_user_sees_outils()) {
         return;
@@ -333,7 +335,11 @@ function cta_shell_render_outils_submenu(): void
         return;
     }
 
-    echo '<ul class="app-nav__sub" id="app-nav-outils-enigmes">';
+    echo '<ul class="app-nav__sub" id="app-nav-outils-enigmes"';
+    if (!$expanded) {
+        echo ' hidden';
+    }
+    echo '>';
     if ($canEditHunt) {
         $isCurrentHunt = $huntId === $currentHuntId;
         $huntTitle = get_the_title($huntId);

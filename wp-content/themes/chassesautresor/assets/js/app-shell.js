@@ -31,6 +31,48 @@
 
   applyTheme(readTheme());
 
+  var outilsStorageKey = 'cta_outils_submenu';
+  var outilsDisclosure = shell.querySelector('[data-app-nav-disclosure]');
+  var outilsSubmenu = document.getElementById('app-nav-outils-enigmes');
+
+  var setOutilsExpanded = function (expanded, persist) {
+    if (!outilsDisclosure || !outilsSubmenu) {
+      return;
+    }
+    outilsDisclosure.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    if (expanded) {
+      outilsSubmenu.removeAttribute('hidden');
+    } else {
+      outilsSubmenu.setAttribute('hidden', '');
+    }
+    if (!persist) {
+      return;
+    }
+    try {
+      window.localStorage.setItem(outilsStorageKey, expanded ? 'open' : 'closed');
+    } catch (error) {
+      return;
+    }
+  };
+
+  if (
+    outilsDisclosure
+    && outilsSubmenu
+    && outilsDisclosure.getAttribute('data-outils-context') !== '1'
+  ) {
+    var storedOutils = null;
+    try {
+      storedOutils = window.localStorage.getItem(outilsStorageKey);
+    } catch (error) {
+      storedOutils = null;
+    }
+    if (storedOutils === 'open') {
+      setOutilsExpanded(true, false);
+    } else if (storedOutils === 'closed') {
+      setOutilsExpanded(false, false);
+    }
+  }
+
   shell.addEventListener('click', function (event) {
     var target = event.target;
     if (!target || typeof target.closest !== 'function') {
@@ -40,6 +82,12 @@
     var themeButton = target.closest('[data-theme-value]');
     if (themeButton) {
       applyTheme(themeButton.getAttribute('data-theme-value'));
+      return;
+    }
+
+    var outilsToggle = target.closest('[data-app-nav-disclosure]');
+    if (outilsToggle) {
+      setOutilsExpanded(outilsToggle.getAttribute('aria-expanded') !== 'true', true);
       return;
     }
 

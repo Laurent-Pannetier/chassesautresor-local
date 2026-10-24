@@ -36,6 +36,52 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('app-nav__subitem--riddle', $html);
         self::assertStringContainsString('chasse=7', $html);
         self::assertStringContainsString('enigme=11', $html);
+        self::assertDoesNotMatchRegularExpression('/<ul[^>]*\shidden[\s>]/', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testCollapsedListStaysInThePageButOutOfTheTabOrder(): void
+    {
+        $this->stubWordPress();
+        $_GET = [];
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/shell-edition.php';
+
+        ob_start();
+        cta_shell_render_outils_submenu(false);
+        $html = (string) ob_get_clean();
+
+        self::assertMatchesRegularExpression(
+            '/<ul class="app-nav__sub" id="app-nav-outils-enigmes" hidden>/',
+            $html
+        );
+        self::assertStringContainsString('La chasse du phare', $html);
+        self::assertStringContainsString('Première énigme', $html);
+    }
+
+    public function testSidebarDisclosureRendersTheListOnEveryPage(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $sidebar = (string) file_get_contents($theme . '/template-parts/shell/sidebar.php');
+        $styles = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
+        $script = (string) file_get_contents($theme . '/assets/js/app-shell.js');
+
+        self::assertStringContainsString('cta_shell_render_outils_submenu($outils_expanded)', $sidebar);
+        self::assertStringContainsString('data-app-nav-disclosure', $sidebar);
+        self::assertStringContainsString('aria-controls="app-nav-outils-enigmes"', $sidebar);
+        self::assertStringContainsString('data-outils-context', $sidebar);
+        self::assertStringContainsString('cta_outils_submenu', $sidebar);
+        self::assertStringNotContainsString(
+            "=== 'outils' && (!empty(\$item['active']) || !empty(\$item['section']))",
+            $sidebar
+        );
+        self::assertStringContainsString('.app-nav__sub[hidden]', $styles);
+        self::assertStringContainsString('.app-nav__disclosure', $styles);
+        self::assertStringContainsString("data-outils-context') !== '1'", $script);
+        self::assertStringContainsString('cta_outils_submenu', $script);
     }
 
     private function stubWordPress(): void

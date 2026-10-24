@@ -3324,3 +3324,7 @@ msgstr "Connectez-vous pour accéder aux énigmes de %s."
 #: src/Site/PlayerEnigmasAccessHandler.php
 msgid "Connectez-vous pour accéder aux énigmes."
 msgstr "Connectez-vous pour accéder aux énigmes."
+
+#: template-parts/shell/sidebar.php
+msgid "Chasse et énigmes"
+msgstr "Chasse et énigmes"

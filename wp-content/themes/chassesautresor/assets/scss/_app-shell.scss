@@ -551,6 +551,81 @@ img.avatar-pirate {
   color: inherit;
 }
 
+.app-nav__branch {
+  display: flex;
+  align-items: center;
+  min-height: 2.55rem;
+  border-radius: 999px;
+  color: var(--shell-text);
+}
+
+.app-nav__branch:hover,
+.app-nav__branch:focus-within {
+  background: var(--shell-surface-2);
+}
+
+.app-nav__branch.is-active,
+.app-nav__branch.is-active:hover,
+.app-nav__branch.is-active:focus-within {
+  background: var(--shell-accent);
+  color: var(--shell-accent-text);
+}
+
+.app-nav__branch.is-section,
+.app-nav__branch.is-section:hover,
+.app-nav__branch.is-section:focus-within {
+  background: var(--shell-accent-soft);
+  color: var(--shell-text);
+}
+
+.app-nav__branch .app-nav__link {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.app-nav__branch .app-nav__link:hover,
+.app-nav__branch .app-nav__link:focus-visible,
+.app-nav__branch .app-nav__link.is-active,
+.app-nav__branch .app-nav__link.is-section {
+  background: transparent;
+  color: inherit;
+}
+
+.app-nav__disclosure {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2.55rem;
+  height: 2.55rem;
+  margin-right: 0.15rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.app-nav__disclosure:hover,
+.app-nav__disclosure:focus-visible {
+  background: transparent;
+  color: inherit;
+}
+
+.app-nav__disclosure svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  transition: transform 0.15s ease;
+}
+
+.app-nav__disclosure[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+
 .app-nav__badge {
   min-width: 1.35rem;
   margin-left: auto;
@@ -2143,6 +2218,7 @@ html[data-theme="day"] .home-enigmas-preserve {
 .app-topbar__profile:focus-visible,
 .app-topbar__trophies:focus-visible,
 .app-nav__link:focus-visible,
+.app-nav__disclosure:focus-visible,
 .app-theme__option:focus-visible,
 .app-nav-toggle:focus-visible {
   outline: 2px solid var(--shell-accent);
@@ -2473,7 +2549,8 @@ body.admin-bar.shell-edition .app-sidebar {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-sidebar {
+  .app-sidebar,
+  .app-nav__disclosure svg {
     transition: none;
   }
 }
@@ -2481,6 +2558,10 @@ body.admin-bar.shell-edition .app-sidebar {
 .app-nav__link.is-section {
   background: var(--shell-accent-soft);
   color: var(--shell-text);
+}
+
+.app-nav__sub[hidden] {
+  display: none;
 }
 
 .app-nav__sub {
