@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Progress;
 
+use ChassesAuTresor\Core\Content\HintTitleService;
 use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
@@ -433,11 +434,28 @@ final class OrganizerProgressionApplicationService
 
     private function defaultHintTitle(int $hintId): string
     {
-        if ($hintId <= 0 || !function_exists('get_the_title')) {
+        if ($hintId <= 0) {
             return '';
         }
 
-        return (string) get_the_title($hintId);
+        $stored = '';
+        if (function_exists('get_post')) {
+            $post = get_post($hintId);
+            if (is_object($post)) {
+                $stored = trim((string) ($post->post_title ?? ''));
+            }
+        }
+        if ($stored === '' && function_exists('get_the_title')) {
+            $stored = trim((string) get_the_title($hintId));
+        }
+        $default = defined('TITRE_DEFAUT_INDICE') ? (string) TITRE_DEFAUT_INDICE : '';
+        $prefix = defined('INDICE_DEFAULT_PREFIX') ? (string) INDICE_DEFAULT_PREFIX : 'clue-';
+        if (!(new HintTitleService())->usesPlayerRankLabel($stored, $default, $prefix)) {
+            return $stored;
+        }
+        $rank = function_exists('get_post_meta') ? (int) get_post_meta($hintId, 'indice_rank', true) : 0;
+
+        return sprintf(__('Indice #%d', 'chassesautresor-com'), $rank);
     }
 
     /** @return int[] */

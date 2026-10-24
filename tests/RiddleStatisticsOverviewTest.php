@@ -41,6 +41,18 @@ final class RiddleStatisticsOverviewServiceStub extends RiddleStatisticsService
         return $id === 40 ? 2 : 0;
     }
 
+    public function listParticipantHints(int $id, int $userId): array
+    {
+        if ($id !== 40 || $userId !== 7) {
+            return [];
+        }
+
+        return [
+            ['indice_id' => 5, 'date_deblocage' => '2026-10-01 10:00:00'],
+            ['indice_id' => 6, 'date_deblocage' => '2026-10-01 11:00:00'],
+        ];
+    }
+
     public function listSolvers(int $id, array $excludedUserIds = []): array
     {
         if ($id !== 40) {
@@ -117,5 +129,45 @@ final class RiddleStatisticsOverviewTest extends TestCase
         self::assertSame(2, $rows[0]['steps']);
         self::assertSame(1, $rows[0]['step_players']);
         self::assertArrayNotHasKey('ranking', $rows[0]);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testParticipantHintTitlesUseThePlayerRankLabel(): void
+    {
+        function get_post($id)
+        {
+            $post = new stdClass();
+            $post->post_title = (int) $id === 6 ? 'Titre personnalisé' : 'clue-antre-de-feu';
+
+            return $post;
+        }
+        function get_post_meta($id, $key = '', $single = false)
+        {
+            return (int) $id === 5 ? 1 : 2;
+        }
+        function __($text)
+        {
+            return $text;
+        }
+
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Content/HintTitleService.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStatisticsRepository.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStatisticsService.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Progress/StatisticsPeriodService.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Progress/RiddleStatisticsApplicationService.php';
+
+        $hints = (new RiddleStatisticsApplicationService(new RiddleStatisticsOverviewServiceStub()))
+            ->participantHints(40, 7);
+
+        self::assertSame('Indice #1', $hints[0]['title']);
+        self::assertSame('Titre personnalisé', $hints[1]['title']);
     }
 }

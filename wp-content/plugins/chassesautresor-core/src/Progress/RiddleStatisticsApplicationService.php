@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ChassesAuTresor\Core\Progress;
 
 use ChassesAuTresor\Core\Content\RiddleStepQueryService;
+use ChassesAuTresor\Core\Content\HintTitleService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 
 /** Build riddle statistics from core repositories and WordPress relationships. */
@@ -169,12 +170,31 @@ final class RiddleStatisticsApplicationService
 
     private function hintTitle(int $hintId): string
     {
-        if ($hintId <= 0 || !function_exists('get_the_title')) {
+        if ($hintId <= 0) {
             return '';
         }
 
-        $title = trim((string) get_the_title($hintId));
+        $stored = $this->storedHintTitle($hintId);
+        $default = defined('TITRE_DEFAUT_INDICE') ? (string) TITRE_DEFAUT_INDICE : '';
+        $prefix = defined('INDICE_DEFAULT_PREFIX') ? (string) INDICE_DEFAULT_PREFIX : 'clue-';
+        if ((new HintTitleService())->usesPlayerRankLabel($stored, $default, $prefix)) {
+            $rank = function_exists('get_post_meta') ? (int) get_post_meta($hintId, 'indice_rank', true) : 0;
 
-        return $title !== '' ? $title : __('Indice', 'chassesautresor-com');
+            return sprintf(__('Indice #%d', 'chassesautresor-com'), $rank);
+        }
+
+        return $stored;
+    }
+
+    private function storedHintTitle(int $hintId): string
+    {
+        if (function_exists('get_post')) {
+            $post = get_post($hintId);
+            if (is_object($post)) {
+                return trim((string) ($post->post_title ?? ''));
+            }
+        }
+
+        return function_exists('get_the_title') ? trim((string) get_the_title($hintId)) : '';
     }
 }

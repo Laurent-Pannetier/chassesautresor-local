@@ -55,4 +55,12 @@ class HintTitleServiceTest extends TestCase
     {
         $this->assertFalse($this->service->shouldRegenerate('Mon indice', 'Indice', 'clue-'));
     }
+
+    public function testPlayerLabelUsesTheRankForGeneratedSlugsOnly(): void
+    {
+        $this->assertTrue($this->service->usesPlayerRankLabel('clue-antre-de-feu', 'Nouvel indice', 'clue-'));
+        $this->assertTrue($this->service->usesPlayerRankLabel('Nouvel indice', 'Nouvel indice', 'clue-'));
+        $this->assertFalse($this->service->usesPlayerRankLabel('Indice #1', 'Nouvel indice', 'clue-'));
+        $this->assertFalse($this->service->usesPlayerRankLabel('Titre personnalisé', 'Nouvel indice', 'clue-'));
+    }
 }
