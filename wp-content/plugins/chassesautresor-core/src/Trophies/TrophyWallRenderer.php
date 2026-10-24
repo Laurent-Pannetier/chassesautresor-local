@@ -28,7 +28,12 @@ final class TrophyWallRenderer
     private function card(array $card): void
     {
         $count = (int) ($card['count'] ?? 0);
+        $context = trim((string) ($card['context_label'] ?? ''));
+        $editUrl = (string) ($card['edit_url'] ?? '');
         $class = $count > 0 ? 'trophy-card trophy-card--held' : 'trophy-card trophy-card--none';
+        if ($context !== '' || $editUrl !== '') {
+            $class .= ' trophy-card--labeled';
+        }
         $title = (string) ($card['title'] ?? '');
         $description = trim((string) ($card['description'] ?? ''));
         $imageUrl = (string) ($card['image_url'] ?? '');
@@ -38,16 +43,18 @@ final class TrophyWallRenderer
         )));
 
         echo '<article class="' . esc_attr($class) . '">';
+        if ($editUrl !== '') {
+            echo '<a class="trophy-card__gear" href="' . esc_url($editUrl) . '" aria-label="'
+                . esc_attr__('Paramètres', 'chassesautresor-com') . '">';
+            echo '<i class="fa-solid fa-gear" aria-hidden="true"></i>';
+            echo '</a>';
+        }
         if ($imageUrl !== '') {
             echo '<img class="trophy-card__image" src="' . esc_url($imageUrl) . '" alt="">';
         } else {
             echo '<div class="trophy-card__fallback" aria-hidden="true">🏆</div>';
         }
-        $context = trim((string) ($card['context_label'] ?? ''));
         echo '<div class="trophy-card__content">';
-        if ($context !== '') {
-            echo '<p class="trophy-card__context">' . esc_html($context) . '</p>';
-        }
         echo '<h2>' . esc_html($title) . '</h2>';
         if ($description !== '') {
             echo '<p>' . esc_html($description) . '</p>';
@@ -61,12 +68,10 @@ final class TrophyWallRenderer
             }
             echo '</ul></details>';
         }
-        $editUrl = (string) ($card['edit_url'] ?? '');
-        if ($editUrl !== '') {
-            echo '<a class="trophy-card__edit" href="' . esc_url($editUrl) . '">';
-            echo esc_html__('Fiche', 'chassesautresor-com');
-            echo '</a>';
+        echo '</div>';
+        if ($context !== '') {
+            echo '<p class="trophy-card__banner">' . esc_html($context) . '</p>';
         }
-        echo '</div></article>';
+        echo '</article>';
     }
 }

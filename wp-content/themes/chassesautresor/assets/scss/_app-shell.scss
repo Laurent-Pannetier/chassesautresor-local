@@ -3418,11 +3418,44 @@ body.admin-bar.shell-edition .app-sidebar {
   font-size: 0.8rem;
 }
 
-.trophy-card__content p.trophy-card__context {
-  margin: 0 0 0.15rem;
+.trophy-card--labeled {
+  position: relative;
+  overflow: hidden;
+  padding-bottom: 2.35rem;
+}
+
+.trophy-card--labeled .trophy-card__content {
+  padding-right: 1.6rem;
+}
+
+.trophy-card__gear {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
   color: var(--shell-muted);
-  font-size: 0.72rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.trophy-card__banner {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0.35rem 0.85rem;
+  background: rgba(8, 12, 18, 0.55);
+  color: #fff;
+  font-size: 0.75rem;
   font-weight: 700;
+  line-height: 1.3;
 }
 
 .trophy-card--none {
@@ -3465,15 +3498,6 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .trophy-card__holders li + li {
   margin-top: 0.25rem;
-}
-
-.trophy-card__content a.trophy-card__edit {
-  display: inline-block;
-  margin-top: 0.55rem;
-  color: var(--shell-muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-decoration: none;
 }
 
 .trophy-create {

@@ -20,7 +20,7 @@ La fiche utilise :
 Une chasse vide fait du trophée un trophée de plateforme.
 
 L’administrateur ajoute un trophée depuis la page Trophées. Le formulaire publie un trophée actif.
-La tuile admin contient un lien vers la fiche WordPress pour le texte de notification.
+La tuile admin porte une roue en haut à droite, vers la fiche WordPress, et un bandeau en bas avec le titre de la chasse ou « Global ».
 
 Le seul déclencheur livré initialement est `code_event`.
 La participation à une chasse envoie la clé `bienvenue` au joueur qui vient de s’engager.
@@ -56,7 +56,7 @@ Le reset global efface les attributions et les notifications reçues. Les fiches
 
 - `/trophees/` pour un joueur affiche ses trophées et ceux de son équipe active.
 - `/trophees/` pour un organisateur affiche les trophées liés à ses chasses. Le nombre ouvre la liste des joueurs, ou des équipes si le trophée est attribué à l’équipe. Un trophée que personne n’a obtenu a un rendu distinct, sans texte.
-- `/trophees/` pour un administrateur affiche le même mur, y compris les trophées sans chasse. Chaque tuile indique le titre de la chasse, ou « Global » si le trophée n’est lié à aucune. Le décompte ignore les comptes administrateur.
+- `/trophees/` pour un administrateur affiche le même mur, y compris les trophées sans chasse. Le titre de la chasse, ou « Global », est en bandeau translucide en bas de la tuile. Le décompte ignore les comptes administrateur.
 - `/notifications/` affiche les notifications destinées au centre.
 - La sidebar indique le nombre de notifications non lues.
 - Les notifications `overlay` ou `both` sont présentées par priorité, une à la fois.

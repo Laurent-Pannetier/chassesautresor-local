@@ -158,7 +158,7 @@ final class TrophyWallTest extends TestCase
         self::assertStringContainsString(esc_html('Bob <i>'), $html);
         self::assertStringContainsString(esc_html('Pionnier <b>'), $html);
         self::assertStringNotContainsString('>0<', $html);
-        self::assertSame(1, substr_count($html, 'trophy-card__context'));
+        self::assertSame(1, substr_count($html, 'trophy-card__banner'));
         self::assertStringContainsString(esc_html('Forêt enchantée'), $html);
         self::assertSame('', (new TrophyWallRenderer())->render([]));
     }
@@ -180,7 +180,7 @@ final class TrophyWallTest extends TestCase
             ],
         ]);
 
-        self::assertStringContainsString('trophy-card__context', $html);
+        self::assertStringContainsString('trophy-card__banner', $html);
         self::assertStringContainsString('Global', $html);
     }
 

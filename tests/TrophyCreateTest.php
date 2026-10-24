@@ -34,6 +34,12 @@ if (!function_exists('esc_attr')) {
         return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
     }
 }
+if (!function_exists('esc_attr__')) {
+    function esc_attr__($text, $domain = null)
+    {
+        return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+    }
+}
 if (!function_exists('esc_url')) {
     function esc_url($url)
     {
@@ -200,9 +206,10 @@ final class TrophyCreateTest extends TestCase
                 'edit_url' => 'https://example.test/wp-admin/post.php?post=3&action=edit',
             ],
         ]);
-        self::assertStringContainsString('trophy-card__edit', $card);
+        self::assertStringContainsString('trophy-card__gear', $card);
+        self::assertStringContainsString('fa-gear', $card);
         self::assertStringContainsString('action=edit', $card);
-        self::assertStringContainsString('>' . esc_html('Fiche') . '<', $card);
+        self::assertStringNotContainsString('Fiche', $card);
     }
 
     public function testCreateHandlerIsReservedToTheAuthenticatedAdministrator(): void
