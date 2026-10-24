@@ -34,3 +34,8 @@ if (!function_exists('cta_toggle_site_protection')) {
         AdminAjaxHandler::toggleSiteProtection();
     }
 }
+if (!function_exists('cta_toggle_hunt_banner_sphere')) {
+    function cta_toggle_hunt_banner_sphere(): void {
+        AdminAjaxHandler::toggleHuntBannerSphere();
+    }
+}

@@ -25,6 +25,7 @@ final class AdminAjaxHandler
             'recuperer_details_acf' => 'inspectAcf',
             'cta_reset_stats' => 'resetStatistics',
             'cta_toggle_site_protection' => 'toggleSiteProtection',
+            'cta_toggle_hunt_banner_sphere' => 'toggleHuntBannerSphere',
         ];
         foreach ($actions as $action => $method) {
             $addAction('wp_ajax_' . $action, [self::class, $method]);
@@ -167,6 +168,20 @@ final class AdminAjaxHandler
         check_ajax_referer('cta_site_protection', 'nonce');
         $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1' ? '1' : '0';
         update_option('ca_site_password_enabled', $enabled);
+        wp_send_json_success(['enabled' => $enabled]);
+    }
+
+    public static function toggleHuntBannerSphere(): void
+    {
+        if (!self::isAdministrator(__('Non autorisé', 'chassesautresor-com'))) {
+            return;
+        }
+        check_ajax_referer('cta_hunt_banner_sphere', 'nonce');
+        $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1' ? '1' : '0';
+        $option = function_exists('cta_shell_hunt_sphere_option')
+            ? cta_shell_hunt_sphere_option()
+            : 'cta_hunt_banner_sphere_enabled';
+        update_option($option, $enabled);
         wp_send_json_success(['enabled' => $enabled]);
     }
 

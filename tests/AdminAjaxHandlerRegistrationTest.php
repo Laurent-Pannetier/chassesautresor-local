@@ -23,6 +23,7 @@ final class AdminAjaxHandlerRegistrationTest extends TestCase
             'wp_ajax_recuperer_details_acf',
             'wp_ajax_cta_reset_stats',
             'wp_ajax_cta_toggle_site_protection',
+            'wp_ajax_cta_toggle_hunt_banner_sphere',
         ], array_keys($hooks));
     }
 }
