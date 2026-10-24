@@ -746,9 +746,9 @@ img.avatar-pirate {
 }
 
 .hunt-banner {
-  --hunt-banner-height: 12.5rem;
+  --hunt-banner-height: clamp(7.5rem, 18vh, 11rem);
   overflow: hidden;
-  margin: 0 0 1.5rem;
+  margin: 0 0 0.75rem;
   border: 1px solid var(--shell-border);
   border-radius: 1.15rem;
   background: var(--shell-surface);
@@ -867,10 +867,12 @@ html[data-theme="day"] .hunt-banner__sphere::after {
 
 .player-progress-reset {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
-  margin: 0 0 1.5rem;
-  padding: 0.85rem 1rem;
+  margin: 0 0 0.75rem;
+  padding: 0.65rem 0.85rem;
   border: 1px solid var(--shell-border);
   border-radius: 1.15rem;
   background: var(--shell-card-background);
@@ -878,6 +880,8 @@ html[data-theme="day"] .hunt-banner__sphere::after {
 }
 
 .player-progress-reset__text {
+  flex: 1 1 auto;
+  min-width: 0;
   margin: 0;
   color: var(--shell-muted);
   font-size: 0.95rem;
@@ -889,18 +893,10 @@ html[data-theme="day"] .hunt-banner__sphere::after {
 }
 
 .player-progress-reset__button {
-  align-self: flex-start;
+  align-self: center;
   flex: 0 0 auto;
   margin: 0;
   cursor: pointer;
-}
-
-@media (--bp-small) {
-  .player-progress-reset {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
 }
 
 .hunt-edition-notice {
@@ -2153,10 +2149,6 @@ html[data-theme="day"] .home-enigmas-preserve {
   .app-topbar__player {
     display: inline;
   }
-
-  .hunt-banner {
-    --hunt-banner-height: 15rem;
-  }
 }
 
 @media (--bp-tablet) {
@@ -2382,10 +2374,6 @@ html[data-theme="day"] .home-enigmas-preserve {
   .progression-steps-chart__row {
     grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) auto;
   }
-
-  .hunt-banner {
-    --hunt-banner-height: 18rem;
-  }
 }
 
 @media (--bp-desktop) {
@@ -2419,10 +2407,6 @@ html[data-theme="day"] .home-enigmas-preserve {
 
   .progression-organizer .team-stats__grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
-  .hunt-banner {
-    --hunt-banner-height: 22rem;
   }
 }
 

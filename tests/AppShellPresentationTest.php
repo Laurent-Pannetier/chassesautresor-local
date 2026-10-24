@@ -208,7 +208,8 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString("'cta_toggle_hunt_banner_sphere' => 'toggleHuntBannerSphere'", $handler);
         $this->assertStringContainsString("check_ajax_referer('cta_hunt_banner_sphere', 'nonce');", $handler);
         $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
-        $this->assertStringContainsString('--hunt-banner-height', $scss);
+        $this->assertStringContainsString('--hunt-banner-height: clamp(7.5rem, 18vh, 11rem);', $scss);
+        $this->assertStringNotContainsString('--hunt-banner-height: 22rem;', $scss);
         $this->assertStringContainsString('.hunt-banner__frame picture img', $scss);
     }
 
