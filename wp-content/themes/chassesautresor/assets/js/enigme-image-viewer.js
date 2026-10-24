@@ -391,6 +391,12 @@
     img.loading = 'lazy';
     img.decoding = 'async';
     img.referrerPolicy = 'no-referrer';
+    if (page.srcset) {
+      img.srcset = page.srcset;
+    }
+    if (page.sizes) {
+      img.sizes = page.sizes;
+    }
     if (page.width) {
       img.width = Number(page.width);
     }
@@ -404,7 +410,18 @@
     hint.textContent =
       (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
 
-    zoom.appendChild(img);
+    const picture = document.createElement('picture');
+    if (page.webpSrcset) {
+      const source = document.createElement('source');
+      source.type = 'image/webp';
+      source.srcset = page.webpSrcset;
+      if (page.sizes) {
+        source.sizes = page.sizes;
+      }
+      picture.appendChild(source);
+    }
+    picture.appendChild(img);
+    zoom.appendChild(picture);
     zoom.appendChild(hint);
     figure.appendChild(zoom);
     if (nextNav) {

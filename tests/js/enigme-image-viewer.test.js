@@ -284,6 +284,35 @@ describe('enigme image viewer', () => {
     expect(document.querySelector('.galerie-enigme__nav--next').disabled).toBe(true);
   });
 
+  test('serves an unlocked step page with the same srcset as the hero', () => {
+    const index = window.EnigmeGallery.appendPage({
+      imageId: 99,
+      stepId: 8,
+      previewUrl: 'step-large.jpg',
+      fullUrl: 'step-full.jpg',
+      thumbUrl: 'step-thumb.jpg',
+      alt: 'Planche',
+      srcset: 'step-large.jpg 1024w, step-1280.jpg 1280w, step-full.jpg 1920w',
+      webpSrcset: 'step-large.webp 1024w, step-full.webp 1920w',
+      sizes: '(min-aspect-ratio: 16/9) calc(100vh * 16 / 9), 100vw',
+      width: '1024',
+      height: '576',
+    });
+
+    const slide = document.querySelector(`[data-gallery-index="${index}"]`);
+    const image = slide.querySelector('img');
+    const source = slide.querySelector('source');
+    expect(image.getAttribute('src')).toBe('step-large.jpg');
+    expect(image.getAttribute('srcset')).toBe(
+      'step-large.jpg 1024w, step-1280.jpg 1280w, step-full.jpg 1920w'
+    );
+    expect(image.getAttribute('sizes')).toContain('16 / 9');
+    expect(image.getAttribute('width')).toBe('1024');
+    expect(source.getAttribute('type')).toBe('image/webp');
+    expect(source.getAttribute('srcset')).toBe('step-large.webp 1024w, step-full.webp 1920w');
+    expect(source.getAttribute('sizes')).toBe(image.getAttribute('sizes'));
+  });
+
   test('turns pages with previous/next controls', () => {
     document.querySelector('[data-gallery-goto="1"]').click();
     expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(

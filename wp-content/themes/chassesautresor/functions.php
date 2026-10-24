@@ -35,6 +35,9 @@ add_action( 'after_setup_theme', 'cta_load_textdomain' );
 function cta_register_image_sizes() {
     // Allow taller hunt visuals so CSS can scale up to 800px height
     add_image_size( 'chasse-fiche', 1024, 800, false );
+    // Hero planche steps between WordPress "large" (1024) and the original.
+    add_image_size( 'enigme-1280', 1280, 1280, false );
+    add_image_size( 'enigme-1600', 1600, 1600, false );
 }
 add_action( 'after_setup_theme', 'cta_register_image_sizes' );
 
