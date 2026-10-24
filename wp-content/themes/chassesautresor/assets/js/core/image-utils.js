@@ -112,7 +112,7 @@ function initChampImage(bloc) {
               window.mettreAJourResumeInfos();
             }
             if (typeof window.mettreAJourVisuelCPT === 'function') {
-              mettreAJourVisuelCPT(cpt, postId, ficheUrl, fullUrl);
+              mettreAJourVisuelCPT(cpt, postId, ficheUrl);
             }
           } else {
             if (feedback) {

@@ -1337,8 +1337,7 @@
   align-self: start;
 }
 .page-chasse-wrapper--compact .champ-chasse.champ-img,
-.page-chasse-wrapper--compact .header-chasse__image,
-.page-chasse-wrapper--compact .header-chasse__image .image {
+.page-chasse-wrapper--compact .header-chasse__image {
   width: 72px;
   height: 72px;
 }
@@ -1447,8 +1446,7 @@
   }
   .page-chasse-wrapper--compact .chasse-visuel-wrapper,
   .page-chasse-wrapper--compact .champ-chasse.champ-img,
-  .page-chasse-wrapper--compact .header-chasse__image,
-  .page-chasse-wrapper--compact .header-chasse__image .image {
+  .page-chasse-wrapper--compact .header-chasse__image {
     width: 96px;
     height: 96px;
   }
@@ -1460,8 +1458,7 @@
   }
   .page-chasse-wrapper--compact .chasse-visuel-wrapper,
   .page-chasse-wrapper--compact .champ-chasse.champ-img,
-  .page-chasse-wrapper--compact .header-chasse__image,
-  .page-chasse-wrapper--compact .header-chasse__image .image {
+  .page-chasse-wrapper--compact .header-chasse__image {
     width: 120px;
     height: 120px;
   }
