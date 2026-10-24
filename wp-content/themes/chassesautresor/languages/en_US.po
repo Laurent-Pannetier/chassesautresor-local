@@ -3362,3 +3362,7 @@ msgstr "Log in to access the riddles of %s."
 #: src/Site/PlayerEnigmasAccessHandler.php
 msgid "Connectez-vous pour accéder aux énigmes."
 msgstr "Log in to access the riddles."
+
+#: template-parts/shell/sidebar.php
+msgid "Chasse et énigmes"
+msgstr "Hunt and riddles"
