@@ -148,6 +148,10 @@ if ($is_admin && class_exists(ChassesAuTresor\Core\Messages\AccountToolsRenderer
                 <?php echo $protection; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
             <?php endif; ?>
             <?php
+            if ($is_admin && function_exists('cta_shell_render_hunt_sphere_switch')) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+                echo cta_shell_render_hunt_sphere_switch();
+            }
             if ($is_admin) {
                 myaccount_render_dashboard_placeholder(
                     __('Points', 'chassesautresor-com'),

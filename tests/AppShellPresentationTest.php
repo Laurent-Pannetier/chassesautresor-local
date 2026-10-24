@@ -51,6 +51,10 @@ class AppShellPresentationTest extends TestCase
         $GLOBALS['cat_enqueued_scripts'] = [];
 
         eval('function esc_url($url){return $url;}');
+        eval('function get_option($name, $default = false){
+            return $GLOBALS["cat_options"][$name] ?? $default;
+        }');
+        $GLOBALS['cat_options'] = ['cta_hunt_banner_sphere_enabled' => '1'];
         eval('function cat_get_primary_hunt_id(){return 7;}');
         eval('function get_the_title($id = 0){return "Antre de feu";}');
         eval('function get_the_post_thumbnail_url($id, $size = "full"){
@@ -103,6 +107,109 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString('html[data-theme="day"] .hunt-banner__sphere::after', $scss);
         $bundle = (string) file_get_contents($theme . '/assets/js/hunt-banner-sphere.js');
         $this->assertGreaterThan(50000, strlen($bundle));
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_hunt_banner_serves_a_normal_image_when_the_sphere_is_off(): void
+    {
+        $this->bootShell();
+        $GLOBALS['cat_enqueued_scripts'] = [];
+        $GLOBALS['cat_attachment_image'] = null;
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            return ["ID" => 42, "url" => "https://example.test/chasse.jpg"];
+        }');
+        eval('function imagify_get_webp_url($url){return "https://example.test/chasse.jpg.webp";}');
+        eval('function wp_get_attachment_image($id, $size = "thumbnail", $icon = false, $attr = []){
+            $GLOBALS["cat_attachment_image"] = ["id" => $id, "size" => $size, "attr" => $attr];
+            $class = isset($attr["class"]) ? $attr["class"] : "";
+            $alt = isset($attr["alt"]) ? $attr["alt"] : "";
+            return "<img class=\"" . $class . "\" src=\"https://example.test/chasse-1024.jpg\""
+                . " srcset=\"https://example.test/chasse-1024.jpg 1024w, https://example.test/chasse.jpg 1600w\""
+                . " alt=\"" . $alt . "\" loading=\"eager\" fetchpriority=\"high\">";
+        }');
+        eval('function wp_enqueue_script($handle, $src = "", $deps = [], $ver = false, $in_footer = false){
+            $GLOBALS["cat_enqueued_scripts"][] = $handle;
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('hunt-banner__frame', $html);
+        $this->assertStringContainsString('class="hunt-banner__photo"', $html);
+        $this->assertStringContainsString('srcset="https://example.test/chasse-1024.jpg 1024w', $html);
+        $this->assertStringContainsString('alt="Antre de feu"', $html);
+        $this->assertStringContainsString('loading="eager"', $html);
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+        $this->assertStringNotContainsString('.webp', $html);
+        $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+        $this->assertStringNotContainsString('data-hunt-sphere', $html);
+        $this->assertStringNotContainsString('document.currentScript', $html);
+        $this->assertStringNotContainsString('hunt-banner__empty', $html);
+        $this->assertSame([], $GLOBALS['cat_enqueued_scripts']);
+        $this->assertSame(42, $GLOBALS['cat_attachment_image']['id']);
+        $this->assertSame('large', $GLOBALS['cat_attachment_image']['size']);
+        $this->assertSame('eager', $GLOBALS['cat_attachment_image']['attr']['loading']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_hunt_sphere_switch_is_an_admin_tools_tile(): void
+    {
+        $this->bootShell();
+        eval('function esc_html_e($text, $domain = null){echo $text;}');
+        eval('function esc_attr_e($text, $domain = null){echo $text;}');
+        eval('function checked($checked){if ($checked){echo " checked=\"checked\"";}}');
+        eval('function cta_shell_user_is_administrator(){return !empty($GLOBALS["cat_is_admin"]);}');
+        eval('function get_option($name, $default = false){
+            return $GLOBALS["cat_options"][$name] ?? $default;
+        }');
+        $GLOBALS['cat_options'] = [];
+        $GLOBALS['cat_is_admin'] = false;
+
+        $this->assertSame('', cta_shell_render_hunt_sphere_switch());
+
+        $GLOBALS['cat_is_admin'] = true;
+        $off = cta_shell_render_hunt_sphere_switch();
+        $this->assertStringContainsString('id="hunt-banner-sphere-toggle"', $off);
+        $this->assertStringContainsString('Sphère du bandeau', $off);
+        $this->assertStringContainsString('Désactivée', $off);
+        $this->assertStringNotContainsString('checked="checked"', $off);
+
+        $GLOBALS['cat_options'] = ['cta_hunt_banner_sphere_enabled' => '1'];
+        $on = cta_shell_render_hunt_sphere_switch();
+        $this->assertStringContainsString('checked="checked"', $on);
+        $this->assertStringContainsString('Activée', $on);
+
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $outils = (string) file_get_contents($theme . '/template-parts/shell/outils.php');
+        $this->assertStringContainsString(
+            'if ($is_admin && function_exists(\'cta_shell_render_hunt_sphere_switch\'))',
+            $outils
+        );
+        $script = (string) file_get_contents($theme . '/assets/js/hunt-banner-sphere-card.js');
+        $this->assertStringContainsString('action=cta_toggle_hunt_banner_sphere', $script);
+        $enqueue = (string) file_get_contents($theme . '/inc/admin-functions.php');
+        $this->assertStringContainsString("cta_shell_request_slug() === 'outils'", $enqueue);
+        $this->assertStringContainsString("current_user_can('administrator')", $enqueue);
+        $this->assertStringContainsString("'hunt-banner-sphere-card'", $enqueue);
+        $handler = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/plugins/chassesautresor-core/src/Admin/AdminAjaxHandler.php'
+        );
+        $this->assertStringContainsString("'cta_toggle_hunt_banner_sphere' => 'toggleHuntBannerSphere'", $handler);
+        $this->assertStringContainsString("check_ajax_referer('cta_hunt_banner_sphere', 'nonce');", $handler);
+        $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
+        $this->assertStringContainsString('--hunt-banner-height', $scss);
+        $this->assertStringContainsString('.hunt-banner__frame picture img', $scss);
     }
 
     /**

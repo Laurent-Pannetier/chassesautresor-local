@@ -193,33 +193,76 @@ function cta_shell_close(): void
 }
 
 /**
- * Hunt visual used as the home header. No overlay copy is added.
+ * Option that turns the rolling home-banner sphere on. Off is the normal mode.
  */
-function cta_shell_hunt_image_url(int $huntId): string
+function cta_shell_hunt_sphere_option(): string
 {
-    if ($huntId <= 0) {
-        return '';
+    return 'cta_hunt_banner_sphere_enabled';
+}
+
+/**
+ * The sphere is opt-in. Absent or any value other than "1" keeps the still image.
+ */
+function cta_shell_hunt_sphere_enabled(): bool
+{
+    if (!function_exists('get_option')) {
+        return false;
     }
 
-    $image = '';
+    return (string) get_option(cta_shell_hunt_sphere_option(), '0') === '1';
+}
+
+/**
+ * Hunt visual used as the home header. No overlay copy is added.
+ *
+ * @return array{id:int,url:string}
+ */
+function cta_shell_hunt_image_source(int $huntId): array
+{
+    $source = ['id' => 0, 'url' => ''];
+    if ($huntId <= 0) {
+        return $source;
+    }
+
     if (function_exists('get_field')) {
         $imageData = get_field('chasse_principale_image', $huntId);
         if (is_array($imageData)) {
-            if (!empty($imageData['url'])) {
-                $image = (string) $imageData['url'];
-            } elseif (!empty($imageData['ID']) && function_exists('wp_get_attachment_image_url')) {
-                $image = (string) wp_get_attachment_image_url((int) $imageData['ID'], 'full');
+            if (!empty($imageData['ID'])) {
+                $source['id'] = (int) $imageData['ID'];
             }
-        } elseif (!empty($imageData) && function_exists('wp_get_attachment_image_url')) {
-            $image = (string) wp_get_attachment_image_url((int) $imageData, 'full');
+            if (!empty($imageData['url'])) {
+                $source['url'] = (string) $imageData['url'];
+            }
+        } elseif (is_numeric($imageData)) {
+            $source['id'] = (int) $imageData;
+        } elseif (is_string($imageData) && $imageData !== '') {
+            $source['url'] = $imageData;
         }
     }
 
-    if ($image === '' && function_exists('get_the_post_thumbnail_url')) {
-        $thumb = get_the_post_thumbnail_url($huntId, 'full');
-        $image = is_string($thumb) ? $thumb : '';
+    if ($source['id'] <= 0 && function_exists('get_post_thumbnail_id')) {
+        $source['id'] = (int) get_post_thumbnail_id($huntId);
     }
 
+    if ($source['url'] === '' && $source['id'] > 0 && function_exists('wp_get_attachment_image_url')) {
+        $resolved = wp_get_attachment_image_url($source['id'], 'full');
+        $source['url'] = is_string($resolved) ? $resolved : '';
+    }
+
+    if ($source['url'] === '' && function_exists('get_the_post_thumbnail_url')) {
+        $thumb = get_the_post_thumbnail_url($huntId, 'full');
+        $source['url'] = is_string($thumb) ? $thumb : '';
+    }
+
+    return $source;
+}
+
+/**
+ * Direct image URL for the sphere texture. WebP is preferred when Imagify has one.
+ */
+function cta_shell_hunt_image_url(int $huntId): string
+{
+    $image = cta_shell_hunt_image_source($huntId)['url'];
     if ($image !== '' && function_exists('imagify_get_webp_url')) {
         $webp = imagify_get_webp_url($image);
         if (is_string($webp) && $webp !== '') {
@@ -259,13 +302,42 @@ function cta_shell_enqueue_hunt_sphere(): void
 }
 
 /**
- * Renders the hunt header. The image is mapped onto a sphere that rolls sideways.
- * An empty frame is used when no image exists.
+ * Still banner image. WordPress prints the attachment so Imagify can rewrite it.
+ */
+function cta_shell_hunt_banner_photo_markup(int $attachmentId, string $url, string $alt): string
+{
+    if ($attachmentId > 0 && function_exists('wp_get_attachment_image')) {
+        $attributes = [
+            'class' => 'hunt-banner__photo',
+            'loading' => 'eager',
+            'decoding' => 'async',
+            'fetchpriority' => 'high',
+        ];
+        if ($alt !== '') {
+            $attributes['alt'] = $alt;
+        }
+        $html = wp_get_attachment_image($attachmentId, 'large', false, $attributes);
+        if (is_string($html) && $html !== '') {
+            return $html;
+        }
+    }
+
+    if ($url === '' || !function_exists('esc_url') || !function_exists('esc_attr')) {
+        return '';
+    }
+
+    return '<img class="hunt-banner__photo" src="' . esc_url($url) . '" alt="' . esc_attr($alt)
+        . '" loading="eager" decoding="async" fetchpriority="high">';
+}
+
+/**
+ * Renders the hunt header.
+ * The sphere is loaded only when an administrator has switched it on.
+ * Otherwise the hunt image is a normal picture Imagify can optimize.
  */
 function cta_shell_render_hunt_banner(): void
 {
     $huntId = function_exists('cat_get_primary_hunt_id') ? (int) cat_get_primary_hunt_id() : 0;
-    $url = cta_shell_hunt_image_url($huntId);
     $alt = '';
     if ($huntId > 0 && function_exists('get_the_title')) {
         $alt = (string) get_the_title($huntId);
@@ -273,21 +345,106 @@ function cta_shell_render_hunt_banner(): void
 
     $label = esc_attr__('Image de la chasse', 'chassesautresor-com');
     echo '<section class="hunt-banner" aria-label="' . $label . '">';
-    if ($url !== '') {
-        cta_shell_enqueue_hunt_sphere();
-        $src = esc_url($url);
-        echo '<div class="hunt-banner__sphere" data-hunt-sphere data-image="' . $src . '">';
-        echo '<canvas class="hunt-banner__canvas" aria-hidden="true"></canvas>';
-        echo '<img class="hunt-banner__fallback" src="' . $src . '" alt="' . esc_attr($alt) . '">';
-        echo '</div>';
-        echo '<script>(function(){var s=document.currentScript,n=s&&s.previousElementSibling;';
-        echo 'if(n){n.classList.add("is-pending");}})();</script>';
+    if (cta_shell_hunt_sphere_enabled()) {
+        cta_shell_render_hunt_banner_sphere($huntId, $alt);
     } else {
-        echo '<p class="hunt-banner__empty">';
-        echo esc_html__('Emplacement de l’image de la chasse', 'chassesautresor-com');
-        echo '</p>';
+        cta_shell_render_hunt_banner_photo($huntId, $alt);
     }
     echo '</section>';
+}
+
+/**
+ * Rolling sphere. This is the only path that prints the canvas and loads its script.
+ */
+function cta_shell_render_hunt_banner_sphere(int $huntId, string $alt): void
+{
+    $url = cta_shell_hunt_image_url($huntId);
+    if ($url === '') {
+        cta_shell_render_hunt_banner_empty();
+        return;
+    }
+
+    cta_shell_enqueue_hunt_sphere();
+    $src = esc_url($url);
+    echo '<div class="hunt-banner__sphere" data-hunt-sphere data-image="' . $src . '">';
+    echo '<canvas class="hunt-banner__canvas" aria-hidden="true"></canvas>';
+    echo '<img class="hunt-banner__fallback" src="' . $src . '" alt="' . esc_attr($alt) . '">';
+    echo '</div>';
+    echo '<script>(function(){var s=document.currentScript,n=s&&s.previousElementSibling;';
+    echo 'if(n){n.classList.add("is-pending");}})();</script>';
+}
+
+/**
+ * Normal image mode. No canvas, no sphere script, no texture URL rewrite.
+ */
+function cta_shell_render_hunt_banner_photo(int $huntId, string $alt): void
+{
+    $source = cta_shell_hunt_image_source($huntId);
+    $html = cta_shell_hunt_banner_photo_markup($source['id'], $source['url'], $alt);
+    if ($html === '') {
+        cta_shell_render_hunt_banner_empty();
+        return;
+    }
+
+    echo '<div class="hunt-banner__frame">';
+    echo $html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+    echo '</div>';
+}
+
+/**
+ * Empty frame used when the hunt has no image yet.
+ */
+function cta_shell_render_hunt_banner_empty(): void
+{
+    echo '<p class="hunt-banner__empty">';
+    echo esc_html__('Emplacement de l’image de la chasse', 'chassesautresor-com');
+    echo '</p>';
+}
+
+/**
+ * Administrator tile that turns the home-banner sphere on or off.
+ */
+function cta_shell_render_hunt_sphere_switch(): string
+{
+    $isAdmin = function_exists('cta_shell_user_is_administrator') && cta_shell_user_is_administrator();
+    if (!$isAdmin) {
+        return '';
+    }
+
+    $enabled = cta_shell_hunt_sphere_enabled();
+    $status = $enabled
+        ? __('Activée', 'chassesautresor-com')
+        : __('Désactivée', 'chassesautresor-com');
+
+    ob_start();
+    ?>
+    <div class="dashboard-card hunt-banner-sphere-card" data-hunt-banner-sphere>
+        <div class="dashboard-card-header">
+            <i class="fas fa-globe" aria-hidden="true"></i>
+            <h3><?php esc_html_e('Sphère du bandeau', 'chassesautresor-com'); ?></h3>
+        </div>
+        <div class="dashboard-card-content">
+            <label class="switch-control">
+                <input
+                    type="checkbox"
+                    id="hunt-banner-sphere-toggle"
+                    <?php checked($enabled); ?>
+                    aria-label="<?php esc_attr_e('Activer la sphère du bandeau', 'chassesautresor-com'); ?>"
+                >
+                <span class="switch-slider"></span>
+            </label>
+            <span id="hunt-banner-sphere-status"><?php echo esc_html($status); ?></span>
+            <p class="hunt-banner-sphere-card__note">
+                <?php esc_html_e(
+                    'Désactivée, le bandeau sert l’image sans charger le script de la sphère.',
+                    'chassesautresor-com'
+                ); ?>
+            </p>
+        </div>
+    </div>
+    <?php
+
+    return (string) ob_get_clean();
 }
 
 /**

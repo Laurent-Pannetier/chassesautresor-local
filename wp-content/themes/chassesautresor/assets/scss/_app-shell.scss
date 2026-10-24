@@ -746,6 +746,7 @@ img.avatar-pirate {
 }
 
 .hunt-banner {
+  --hunt-banner-height: 12.5rem;
   overflow: hidden;
   margin: 0 0 1.5rem;
   border: 1px solid var(--shell-border);
@@ -753,9 +754,13 @@ img.avatar-pirate {
   background: var(--shell-surface);
 }
 
+.hunt-banner__sphere,
+.hunt-banner__frame {
+  height: var(--hunt-banner-height);
+}
+
 .hunt-banner__sphere {
   position: relative;
-  height: 12.5rem;
   background:
     radial-gradient(circle at 50% 46%, var(--shell-accent-soft), transparent 28rem),
     var(--shell-bg);
@@ -829,6 +834,24 @@ html[data-theme="day"] .hunt-banner__sphere::after {
   .hunt-banner__sphere::after {
     transition: opacity 0.35s ease;
   }
+}
+
+.hunt-banner__frame {
+  overflow: hidden;
+}
+
+.hunt-banner__frame picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hunt-banner__frame picture img,
+.hunt-banner__frame > .hunt-banner__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hunt-banner__empty {
@@ -2131,8 +2154,8 @@ html[data-theme="day"] .home-enigmas-preserve {
     display: inline;
   }
 
-  .hunt-banner__sphere {
-    height: 15rem;
+  .hunt-banner {
+    --hunt-banner-height: 15rem;
   }
 }
 
@@ -2360,8 +2383,8 @@ html[data-theme="day"] .home-enigmas-preserve {
     grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) auto;
   }
 
-  .hunt-banner__sphere {
-    height: 18rem;
+  .hunt-banner {
+    --hunt-banner-height: 18rem;
   }
 }
 
@@ -2398,8 +2421,8 @@ html[data-theme="day"] .home-enigmas-preserve {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
-  .hunt-banner__sphere {
-    height: 22rem;
+  .hunt-banner {
+    --hunt-banner-height: 22rem;
   }
 }
 
