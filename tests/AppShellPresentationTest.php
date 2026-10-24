@@ -226,6 +226,44 @@ class AppShellPresentationTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_banner_video_stays_in_the_same_field_and_uses_the_hunt_image_as_poster(): void
+    {
+        $this->bootShell();
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return [
+                    "ID" => 91,
+                    "url" => "https://example.test/bandeau.mp4",
+                    "mime_type" => "video/mp4",
+                ];
+            }
+            return [
+                "ID" => 42,
+                "url" => "https://example.test/chasse.jpg",
+                "mime_type" => "image/jpeg",
+            ];
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('class="hunt-banner__video"', $html);
+        $this->assertStringContainsString('data-src="https://example.test/bandeau.mp4"', $html);
+        $this->assertStringContainsString('poster="https://example.test/chasse.jpg"', $html);
+        $this->assertStringContainsString('prefers-reduced-motion: reduce', $html);
+        $this->assertDoesNotMatchRegularExpression('/<video[^>]*\ssrc=/', $html);
+        $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_hunt_sphere_switch_is_an_admin_tools_tile(): void
     {
         $this->bootShell();

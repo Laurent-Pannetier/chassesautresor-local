@@ -792,7 +792,8 @@ section.enigme-wrapper {
   border-radius: 0.25rem;
 }
 
-.edition-panel .champ-img.champ-img--bandeau img {
+.edition-panel .champ-img.champ-img--bandeau img,
+.edition-panel .champ-img.champ-img--bandeau video {
   max-width: 12rem;
 }
 

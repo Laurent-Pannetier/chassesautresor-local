@@ -213,14 +213,14 @@ function cta_shell_hunt_sphere_enabled(): bool
 }
 
 /**
- * Reads an ACF image value (array, id or URL) into an attachment source.
+ * Reads an ACF image or file value into an attachment source.
  *
  * @param mixed $imageData
- * @return array{id:int,url:string}
+ * @return array{id:int,url:string,mime:string}
  */
 function cta_shell_image_value_source($imageData): array
 {
-    $source = ['id' => 0, 'url' => ''];
+    $source = ['id' => 0, 'url' => '', 'mime' => ''];
     if (is_array($imageData)) {
         if (!empty($imageData['ID'])) {
             $source['id'] = (int) $imageData['ID'];
@@ -229,6 +229,9 @@ function cta_shell_image_value_source($imageData): array
         }
         if (!empty($imageData['url']) && is_string($imageData['url'])) {
             $source['url'] = $imageData['url'];
+        }
+        if (!empty($imageData['mime_type']) && is_string($imageData['mime_type'])) {
+            $source['mime'] = $imageData['mime_type'];
         }
     } elseif (is_numeric($imageData)) {
         $source['id'] = (int) $imageData;
@@ -240,15 +243,54 @@ function cta_shell_image_value_source($imageData): array
 }
 
 /**
- * Fills a missing URL from the attachment id.
+ * Whether the attachment should play in the home strip instead of being cropped as a picture.
+ */
+function cta_shell_attachment_is_video(string $mime, string $url = ''): bool
+{
+    if (strncmp($mime, 'video/', 6) === 0) {
+        return true;
+    }
+
+    $path = strtolower((string) parse_url($url, PHP_URL_PATH));
+
+    return (bool) preg_match('/\.(mp4|webm|ogg)$/', $path);
+}
+
+/**
+ * Fills a missing MIME type and URL from the attachment id.
  *
- * @param array{id:int,url:string} $source
- * @return array{id:int,url:string}
+ * @param array{id:int,url:string,mime?:string} $source
+ * @return array{id:int,url:string,mime:string}
  */
 function cta_shell_resolve_image_source(array $source): array
 {
-    if ($source['url'] === '' && $source['id'] > 0 && function_exists('wp_get_attachment_image_url')) {
+    if (!isset($source['mime'])) {
+        $source['mime'] = '';
+    }
+
+    if ($source['mime'] === '' && $source['id'] > 0 && function_exists('get_post_mime_type')) {
+        $mime = get_post_mime_type($source['id']);
+        $source['mime'] = is_string($mime) ? $mime : '';
+    }
+
+    $isVideo = cta_shell_attachment_is_video($source['mime'], $source['url']);
+    if (
+        $source['url'] === ''
+        && $source['id'] > 0
+        && !$isVideo
+        && function_exists('wp_get_attachment_image_url')
+    ) {
         $resolved = wp_get_attachment_image_url($source['id'], 'full');
+        $source['url'] = is_string($resolved) ? $resolved : '';
+    }
+
+    if (
+        $source['url'] === ''
+        && $source['id'] > 0
+        && $isVideo
+        && function_exists('wp_get_attachment_url')
+    ) {
+        $resolved = wp_get_attachment_url($source['id']);
         $source['url'] = is_string($resolved) ? $resolved : '';
     }
 
@@ -270,7 +312,7 @@ function cta_shell_image_source_is_empty(array $source): bool
  */
 function cta_shell_hunt_image_source(int $huntId): array
 {
-    $source = ['id' => 0, 'url' => ''];
+    $source = ['id' => 0, 'url' => '', 'mime' => ''];
     if ($huntId <= 0) {
         return $source;
     }
@@ -430,12 +472,48 @@ function cta_shell_render_hunt_banner_sphere(int $huntId, string $alt): void
 }
 
 /**
- * Normal image mode. No canvas, no sphere script, no texture URL rewrite.
+ * Muted looping strip. The file stays unloaded when the visitor prefers less motion.
+ */
+function cta_shell_hunt_banner_video_markup(string $url, string $poster): string
+{
+    if ($url === '' || !function_exists('esc_url') || !function_exists('esc_attr')) {
+        return '';
+    }
+
+    $path = strtolower((string) parse_url($url, PHP_URL_PATH));
+    $type = str_ends_with($path, '.webm') ? 'video/webm' : 'video/mp4';
+    $posterAttr = $poster !== '' ? ' poster="' . esc_url($poster) . '"' : '';
+
+    return '<video class="hunt-banner__video" muted loop playsinline preload="none"'
+        . $posterAttr
+        . ' data-src="' . esc_url($url) . '" data-type="' . esc_attr($type) . '" aria-hidden="true">'
+        . '</video><script>(function(){var v=document.currentScript.previousElementSibling;'
+        . 'if(!v||!v.getAttribute){return;}'
+        . 'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){return;}'
+        . 'v.muted=true;var s=document.createElement("source");'
+        . 's.src=v.getAttribute("data-src");s.type=v.getAttribute("data-type")||"video/mp4";'
+        . 'v.appendChild(s);var play=function(){var p=v.play();if(p&&p.catch){p.catch(function(){});}};'
+        . 'if(v.readyState>=2){play();}else{v.addEventListener("canplay",play,{once:true});}'
+        . '})();</script>';
+}
+
+/**
+ * Normal picture, or the MP4 stored in the same banner field.
+ * No canvas and no sphere script.
  */
 function cta_shell_render_hunt_banner_photo(int $huntId, string $alt): void
 {
     $source = cta_shell_hunt_banner_image_source($huntId);
-    $html = cta_shell_hunt_banner_photo_markup($source['id'], $source['url'], $alt);
+    $mime = (string) ($source['mime'] ?? '');
+    if (cta_shell_attachment_is_video($mime, (string) $source['url'])) {
+        $poster = (string) cta_shell_hunt_image_source($huntId)['url'];
+        if ($poster === $source['url']) {
+            $poster = '';
+        }
+        $html = cta_shell_hunt_banner_video_markup((string) $source['url'], $poster);
+    } else {
+        $html = cta_shell_hunt_banner_photo_markup($source['id'], $source['url'], $alt);
+    }
     if ($html === '') {
         cta_shell_render_hunt_banner_empty();
         return;

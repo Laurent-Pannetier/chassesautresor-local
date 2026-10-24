@@ -847,7 +847,8 @@ html[data-theme="day"] .hunt-banner__sphere::after {
 }
 
 .hunt-banner__frame picture img,
-.hunt-banner__frame > .hunt-banner__photo {
+.hunt-banner__frame > .hunt-banner__photo,
+.hunt-banner__frame > .hunt-banner__video {
   display: block;
   width: 100%;
   height: 100%;

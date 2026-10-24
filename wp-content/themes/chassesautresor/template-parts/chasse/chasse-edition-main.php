@@ -35,8 +35,24 @@ if (is_array($banner_raw)) {
 } elseif (is_numeric($banner_raw)) {
     $banner_id = (int) $banner_raw;
 }
+$banner_mime = '';
+if (is_array($banner_raw) && !empty($banner_raw['mime_type']) && is_string($banner_raw['mime_type'])) {
+    $banner_mime = $banner_raw['mime_type'];
+}
+if ($banner_mime === '' && $banner_id > 0 && function_exists('get_post_mime_type')) {
+    $detected_mime = get_post_mime_type($banner_id);
+    $banner_mime = is_string($detected_mime) ? $detected_mime : '';
+}
+$banner_is_video = strncmp($banner_mime, 'video/', 6) === 0;
 $banner_url = '';
-if ($banner_id > 0) {
+if ($banner_is_video) {
+    if (is_array($banner_raw) && !empty($banner_raw['url']) && is_string($banner_raw['url'])) {
+        $banner_url = $banner_raw['url'];
+    } elseif ($banner_id > 0 && function_exists('wp_get_attachment_url')) {
+        $resolved_banner = wp_get_attachment_url($banner_id);
+        $banner_url = is_string($resolved_banner) ? $resolved_banner : '';
+    }
+} elseif ($banner_id > 0) {
     $banner_src = wp_get_attachment_image_src($banner_id, 'medium');
     $banner_url = is_array($banner_src) ? (string) $banner_src[0] : '';
 }
@@ -253,19 +269,35 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                 <?= esc_html__('Bandeau d’accueil', 'chassesautresor-com'); ?>
                                 <span class="edition-row-hint">
                                     <?= esc_html__(
-                                        'Panorama d’environ 2400 × 400 px. Vide : l’image de la chasse est reprise.',
+                                        'Image fixe ou vidéo MP4. Vide : l’image de la chasse est reprise.',
                                         'chassesautresor-com'
                                     ); ?>
                                 </span>
                             </label>
                             <?php
                         },
-                        'content' => function () use ($banner_url, $banner_id, $peut_editer, $chasse_id) {
+                        'content' => function () use ($banner_url, $banner_id, $banner_is_video, $peut_editer, $chasse_id) {
                             $transparent = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
                             ?>
                             <div class="champ-affichage">
                                 <?php if ($peut_editer) : ?>
-                                    <?php if ($banner_url !== '') : ?>
+                                    <?php if ($banner_is_video && $banner_url !== '') : ?>
+                                        <video
+                                            class="champ-bandeau-preview"
+                                            src="<?= esc_url($banner_url); ?>"
+                                            muted
+                                            playsinline
+                                            preload="metadata"
+                                            aria-hidden="true"
+                                        ></video>
+                                        <button type="button"
+                                            class="champ-modifier"
+                                            data-cpt="chasse"
+                                            data-post-id="<?= esc_attr($chasse_id); ?>"
+                                            aria-label="<?= esc_attr__('Modifier le bandeau', 'chassesautresor-com'); ?>">
+                                            <?= esc_html__('modifier', 'chassesautresor-com'); ?>
+                                        </button>
+                                    <?php elseif ($banner_url !== '') : ?>
                                         <img
                                             src="<?= esc_url($banner_url); ?>"
                                             alt="<?= esc_attr__('Bandeau d’accueil', 'chassesautresor-com'); ?>"
@@ -293,7 +325,16 @@ $isTitreParDefaut = strtolower(trim($titre)) === strtolower($champTitreParDefaut
                                         </button>
                                     <?php endif; ?>
                                 <?php else : ?>
-                                    <?php if ($banner_url !== '') : ?>
+                                    <?php if ($banner_is_video && $banner_url !== '') : ?>
+                                        <video
+                                            class="champ-bandeau-preview"
+                                            src="<?= esc_url($banner_url); ?>"
+                                            muted
+                                            playsinline
+                                            preload="metadata"
+                                            aria-hidden="true"
+                                        ></video>
+                                    <?php elseif ($banner_url !== '') : ?>
                                         <img
                                             src="<?= esc_url($banner_url); ?>"
                                             alt="<?= esc_attr__('Bandeau d’accueil', 'chassesautresor-com'); ?>"
