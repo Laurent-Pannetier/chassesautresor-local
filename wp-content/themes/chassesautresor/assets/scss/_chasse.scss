@@ -832,15 +832,6 @@ a.chasse-badge.chasse-badge--region:focus-visible {
   margin: 0;
 }
 
-/* ========== 🧾 BLOC PRÉSENTATION DE LA CHASSE ========== */
-.chasse-enigmes-header  .liens-placeholder {
-    display:none;
-}
-body.edition-active-chasse .chasse-enigmes-header  .liens-placeholder {
-    display: block;
-}
-
-
 /* ========== 📱 RESPONSIVE PAGE DE CHASSE ========== */
 @media not all and (--bp-tablet) {
   .header-chasse {
