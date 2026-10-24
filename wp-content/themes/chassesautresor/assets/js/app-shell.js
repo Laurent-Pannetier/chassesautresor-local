@@ -91,6 +91,19 @@
       return;
     }
 
+    var cancelCreate = target.closest('[data-trophy-create-cancel]');
+    if (cancelCreate) {
+      var createForm = cancelCreate.closest('form');
+      var createPanel = cancelCreate.closest('.trophy-create');
+      if (createForm && typeof createForm.reset === 'function') {
+        createForm.reset();
+      }
+      if (createPanel) {
+        createPanel.removeAttribute('open');
+      }
+      return;
+    }
+
     var toggle = target.closest('[data-app-nav-toggle]');
     if (toggle) {
       var open = !shell.classList.contains('is-nav-open');

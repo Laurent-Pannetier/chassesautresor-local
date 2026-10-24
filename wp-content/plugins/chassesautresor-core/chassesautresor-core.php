@@ -500,6 +500,12 @@ require_once __DIR__ . '/src/Trophies/TrophyEventDispatcher.php';
 require_once __DIR__ . '/src/Trophies/trophy-functions.php';
 require_once __DIR__ . '/src/Trophies/FirstParticipationTrophyHook.php';
 require_once __DIR__ . '/src/Trophies/TrophyPageRenderer.php';
+require_once __DIR__ . '/src/Trophies/TrophyWallCatalog.php';
+require_once __DIR__ . '/src/Trophies/TrophyWallRenderer.php';
+require_once __DIR__ . '/src/Trophies/TrophyDraft.php';
+require_once __DIR__ . '/src/Trophies/TrophyCreationService.php';
+require_once __DIR__ . '/src/Trophies/TrophyCreateFormRenderer.php';
+require_once __DIR__ . '/src/Trophies/TrophyCreateRequestHandler.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');
@@ -626,6 +632,7 @@ ChassesAuTresor\Core\Progress\HintUnlockAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Progress\RiddleSidebarAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Teams\TeamRequestHandler::register('add_action');
 ChassesAuTresor\Core\Trophies\TrophyPostTypeRegistrar::register('add_action');
+ChassesAuTresor\Core\Trophies\TrophyCreateRequestHandler::register('add_action');
 ChassesAuTresor\Core\Trophies\TrophyFieldGroupRegistrar::register('add_action');
 ChassesAuTresor\Core\Trophies\FirstParticipationTrophyHook::register('add_action');
 

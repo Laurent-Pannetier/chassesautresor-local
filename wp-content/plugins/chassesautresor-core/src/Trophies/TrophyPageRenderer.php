@@ -17,7 +17,7 @@ final class TrophyPageRenderer
         }
 
         ob_start();
-        echo '<div class="trophies-grid">';
+        echo '<div class="trophies-grid trophies-grid--player">';
         foreach ($trophies as $trophy) {
             $this->card($trophy);
         }
@@ -34,7 +34,7 @@ final class TrophyPageRenderer
         $description = trim((string) ($trophy['description'] ?? ''));
         $types = array_map('strval', (array) ($trophy['recipient_types'] ?? []));
 
-        echo '<article class="trophy-card">';
+        echo '<article class="trophy-card trophy-card--square">';
         if ($imageUrl !== '') {
             echo '<img class="trophy-card__image" src="' . esc_url($imageUrl) . '" alt="">';
         } else {
@@ -45,12 +45,6 @@ final class TrophyPageRenderer
         echo '<h2>' . esc_html($title) . '</h2>';
         if ($description !== '') {
             echo '<p>' . esc_html($description) . '</p>';
-        }
-        $date = $this->date((string) ($trophy['awarded_at'] ?? ''));
-        if ($date !== '') {
-            echo '<p class="trophy-card__date">';
-            echo esc_html(sprintf(__('Obtenu le %s', 'chassesautresor-com'), $date));
-            echo '</p>';
         }
         echo '</div></article>';
     }
@@ -66,16 +60,5 @@ final class TrophyPageRenderer
         }
 
         return __('Trophée personnel', 'chassesautresor-com');
-    }
-
-    private function date(string $date): string
-    {
-        if ($date === '') {
-            return '';
-        }
-
-        return function_exists('mysql2date')
-            ? (string) mysql2date(get_option('date_format'), $date)
-            : $date;
     }
 }

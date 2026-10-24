@@ -84,6 +84,23 @@ final class TrophyFieldGroupRegistrar
                 'ui' => true,
             ],
             [
+                'key' => 'field_trophee_chasse',
+                'label' => __('Chasse', 'chassesautresor-com'),
+                'name' => 'trophee_chasse',
+                'type' => 'post_object',
+                'instructions' => __(
+                    'Facultatif. Sans chasse, le trophée n’apparaît que sur le mur de l’administrateur.',
+                    'chassesautresor-com'
+                ),
+                'required' => false,
+                'post_type' => ['chasse'],
+                'taxonomy' => [],
+                'allow_null' => true,
+                'multiple' => false,
+                'return_format' => 'id',
+                'ui' => true,
+            ],
+            [
                 'key' => 'field_trophee_scope',
                 'label' => __('Attribution', 'chassesautresor-com'),
                 'name' => 'trophee_scope',
