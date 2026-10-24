@@ -30,7 +30,9 @@ final class TrophyWallRenderer
         $count = (int) ($card['count'] ?? 0);
         $context = trim((string) ($card['context_label'] ?? ''));
         $editUrl = (string) ($card['edit_url'] ?? '');
-        $class = $count > 0 ? 'trophy-card trophy-card--held' : 'trophy-card trophy-card--none';
+        $class = $count > 0
+            ? 'trophy-card trophy-card--square trophy-card--held'
+            : 'trophy-card trophy-card--square trophy-card--none';
         if ($context !== '' || $editUrl !== '') {
             $class .= ' trophy-card--labeled';
         }

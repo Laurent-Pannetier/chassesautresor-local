@@ -19997,7 +19997,8 @@ body.admin-bar.shell-edition .app-sidebar {
   gap: 1rem;
 }
 
-.trophies-grid--player {
+.trophies-grid--player,
+.trophies-wall {
   grid-template-columns: repeat(auto-fill, 11.75rem);
   justify-content: start;
 }
@@ -20059,6 +20060,7 @@ body.admin-bar.shell-edition .app-sidebar {
 }
 
 .trophy-card--square {
+  position: relative;
   box-sizing: border-box;
   flex-direction: column;
   align-items: stretch;
@@ -20108,8 +20110,16 @@ body.admin-bar.shell-edition .app-sidebar {
   padding-bottom: 2.35rem;
 }
 
+.trophy-card--square.trophy-card--labeled {
+  padding-bottom: 1.8rem;
+}
+
 .trophy-card--labeled .trophy-card__content {
   padding-right: 1.6rem;
+}
+
+.trophy-card--square.trophy-card--labeled .trophy-card__content {
+  padding-right: 0;
 }
 
 .trophy-card__gear {
@@ -20126,6 +20136,14 @@ body.admin-bar.shell-edition .app-sidebar {
   font-size: 0.95rem;
   line-height: 1;
   text-decoration: none;
+}
+
+.trophy-card--square .trophy-card__gear {
+  top: 0.85rem;
+  right: 0.85rem;
+  border-radius: 999px;
+  background: rgba(8, 12, 18, 0.55);
+  color: #fff;
 }
 
 .trophy-card__banner {
@@ -20149,6 +20167,33 @@ body.admin-bar.shell-edition .app-sidebar {
 
 .trophy-card__details {
   margin-top: 0.75rem;
+}
+
+.trophy-card--square .trophy-card__details {
+  position: absolute;
+  top: 5.45rem;
+  left: 0.85rem;
+  z-index: 2;
+  margin-top: 0;
+}
+
+.trophy-card--square:has(details[open]) {
+  z-index: 3;
+  overflow: visible;
+}
+
+.trophy-card--square .trophy-card__details[open] .trophy-card__holders {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  z-index: 4;
+  min-width: 8.5rem;
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 0.7rem;
+  background: var(--shell-surface);
+  box-shadow: var(--shell-shadow);
 }
 
 .trophy-card__count {
@@ -20430,7 +20475,7 @@ body.admin-bar.shell-edition .app-sidebar {
   .equipe-contributions ul {
     grid-template-columns: 1fr 1fr;
   }
-  .trophies-grid:not(.trophies-grid--player) {
+  .trophies-grid:not(.trophies-grid--player):not(.trophies-wall) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .notifications-center__header {

@@ -153,6 +153,8 @@ final class TrophyWallTest extends TestCase
 
         self::assertStringContainsString('trophy-card--none', $html);
         self::assertStringContainsString('trophy-card--held', $html);
+        self::assertStringContainsString('trophy-card--square', $html);
+        self::assertStringContainsString('trophies-wall', $html);
         self::assertSame(1, substr_count($html, 'trophy-card__count'));
         self::assertStringContainsString('>2</summary>', $html);
         self::assertStringContainsString('Alice', $html);
