@@ -63,15 +63,26 @@ class RiddleStatisticsRepository
 
     public function countSolvedPlayers(int $riddleId): int
     {
-        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        return $this->countEligibleSolvedPlayers($riddleId, []);
+    }
 
-        return (int) $this->wpdb->get_var(
-            $this->wpdb->prepare(
-                "SELECT COUNT(DISTINCT user_id) FROM {$table} "
-                . "WHERE enigme_id = %d AND statut IN ('resolue','terminee','terminée')",
-                $riddleId
-            )
-        );
+    /** @param int[] $excludedUserIds */
+    public function countEligibleSolvedPlayers(int $riddleId, array $excludedUserIds): int
+    {
+        $table = $this->wpdb->prefix . 'enigme_statuts_utilisateur';
+        $excludedUserIds = array_values(array_unique(array_filter(
+            array_map('intval', $excludedUserIds),
+            static fn (int $userId): bool => $userId > 0
+        )));
+        $sql = "SELECT COUNT(DISTINCT user_id) FROM {$table} "
+            . "WHERE enigme_id = %d AND statut IN ('resolue','terminee','terminée')";
+        $params = [$riddleId];
+        if ($excludedUserIds !== []) {
+            $sql .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($excludedUserIds), '%d')) . ')';
+            $params = array_merge($params, $excludedUserIds);
+        }
+
+        return (int) $this->wpdb->get_var($this->wpdb->prepare($sql, ...$params));
     }
 
     public function listSolvers(int $riddleId, array $excludedUserIds = []): array

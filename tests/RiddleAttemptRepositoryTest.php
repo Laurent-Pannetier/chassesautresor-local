@@ -168,4 +168,20 @@ class RiddleAttemptRepositoryTest extends TestCase
         );
         $this->assertStringContainsString("resultat = 'faux'", $wpdb->preparedQuery);
     }
+
+    public function testPositionFollowsPendingFirstThenDate(): void
+    {
+        $wpdb = new RiddleAttemptWpdbStub();
+        $wpdb->row = (object) ['enigme_id' => 10, 'tentative_uid' => 'uid-1'];
+        $wpdb->status = '4';
+        $repository = new RiddleAttemptRepository($wpdb);
+
+        $this->assertSame(5, $repository->positionForRiddle(10, 'uid-1'));
+        $this->assertStringContainsString("target.tentative_uid = %s", $wpdb->preparedQuery);
+        $this->assertStringContainsString("resultat = 'attente'", $wpdb->preparedQuery);
+        $this->assertSame(['uid-1', 10], $wpdb->preparedArguments);
+
+        $wpdb->row = (object) ['enigme_id' => 99];
+        $this->assertSame(0, $repository->positionForRiddle(10, 'uid-1'));
+    }
 }

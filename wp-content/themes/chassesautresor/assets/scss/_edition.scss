@@ -2304,6 +2304,11 @@ body.shell-edition .edition-tab.active:focus-visible {
   font-weight: bold;
 }
 
+.table-tentatives tr.tentative-focus {
+  background-color: var(--shell-accent-soft, var(--color-editor-field-hover));
+  box-shadow: inset 3px 0 0 var(--shell-accent, var(--color-editor-accent));
+}
+
 /* ====== Filtres de statistiques ====== */
 
 .stats-filtres {

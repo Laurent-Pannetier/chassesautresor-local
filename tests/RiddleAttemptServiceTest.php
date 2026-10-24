@@ -66,6 +66,14 @@ class RiddleAttemptRepositoryStub extends RiddleAttemptRepository
         return $this->attempts;
     }
 
+    public int $position = 0;
+
+    public function positionForRiddle(int $riddleId, string $uid): int
+    {
+        $this->listArguments = [$riddleId, $uid];
+        return $this->position;
+    }
+
     public function findLatestPendingForUserAndRiddle(int $userId, int $riddleId): ?object
     {
         $this->listArguments = [$userId, $riddleId];
@@ -358,6 +366,20 @@ class RiddleAttemptServiceTest extends TestCase
         $this->assertSame([], $service->findForRiddle(0, 20, 0));
         $this->assertSame([], $service->findForRiddle(10, 0, 0));
         $this->assertSame([], $service->findForRiddle(10, 20, -1));
+    }
+
+    public function testAttemptPageFollowsTheOrderedPosition(): void
+    {
+        $repository = new RiddleAttemptRepositoryStub();
+        $repository->position = 21;
+        $service = new RiddleAttemptService($repository);
+
+        $this->assertSame(2, $service->pageForAttempt(10, 'uid-1', 20));
+        $this->assertSame([10, 'uid-1'], $repository->listArguments);
+
+        $repository->position = 0;
+        $this->assertSame(1, $service->pageForAttempt(10, 'missing', 20));
+        $this->assertSame(1, $service->pageForAttempt(0, 'uid-1', 20));
     }
 
     public function testLatestPendingAttemptLookupIsValidatedAndDelegated(): void

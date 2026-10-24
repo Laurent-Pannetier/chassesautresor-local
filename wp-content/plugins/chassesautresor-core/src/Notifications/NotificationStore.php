@@ -10,6 +10,8 @@ interface NotificationStore
     /** @param array<string, mixed> $notification */
     public function create(array $notification): int;
 
+    public function eventId(string $eventKey): int;
+
     public function addRecipient(int $notificationId, int $userId): void;
 
     /** @return array<int, array<string, mixed>> */

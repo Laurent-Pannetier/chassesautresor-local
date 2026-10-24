@@ -52,6 +52,32 @@ class RiddleAttemptRepository
         return is_array($attempts) ? $attempts : [];
     }
 
+    public function positionForRiddle(int $riddleId, string $uid): int
+    {
+        $attempt = $this->findByUid($uid);
+        if ($attempt === null || (int) ($attempt->enigme_id ?? 0) !== $riddleId) {
+            return 0;
+        }
+
+        $table = $this->wpdb->prefix . 'enigme_tentatives';
+        $before = $this->wpdb->get_var(
+            $this->wpdb->prepare(
+                "SELECT COUNT(*) FROM {$table} AS candidate "
+                . "INNER JOIN {$table} AS target ON target.enigme_id = candidate.enigme_id "
+                . "AND target.tentative_uid = %s WHERE candidate.enigme_id = %d AND ("
+                . "(candidate.resultat = 'attente') > (target.resultat = 'attente') OR ("
+                . "(candidate.resultat = 'attente') = (target.resultat = 'attente') "
+                . "AND candidate.date_tentative > target.date_tentative) OR ("
+                . "(candidate.resultat = 'attente') = (target.resultat = 'attente') "
+                . "AND candidate.date_tentative = target.date_tentative AND candidate.id > target.id))",
+                $uid,
+                $riddleId
+            )
+        );
+
+        return (int) $before + 1;
+    }
+
     public function findLatestPendingForUserAndRiddle(int $userId, int $riddleId): ?object
     {
         $table = $this->wpdb->prefix . 'enigme_tentatives';

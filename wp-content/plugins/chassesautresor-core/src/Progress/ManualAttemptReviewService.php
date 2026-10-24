@@ -107,6 +107,7 @@ final class ManualAttemptReviewService
             ? sprintf(__('Votre demande de résolution de l’énigme %s a été validée.', 'chassesautresor-com'), $link)
             : sprintf(__('Votre demande de résolution de l’énigme %s a été invalidée.', 'chassesautresor-com'), $link);
         $this->messages->addFlash($userId, ['text' => $text, 'type' => $notification['flash_type']]);
+        (new AttemptAlertService())->notifyManualDecision($userId, $riddleId, $result, $uid);
 
         return true;
     }

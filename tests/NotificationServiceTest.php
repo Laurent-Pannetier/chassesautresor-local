@@ -27,6 +27,17 @@ final class MemoryNotificationStore implements NotificationStore
         return $id;
     }
 
+    public function eventId(string $eventKey): int
+    {
+        foreach ($this->notifications as $id => $existing) {
+            if ($existing['event_key'] === $eventKey) {
+                return (int) $id;
+            }
+        }
+
+        return 0;
+    }
+
     public function addRecipient(int $notificationId, int $userId): void
     {
         $this->recipients[$notificationId][$userId] ??= [

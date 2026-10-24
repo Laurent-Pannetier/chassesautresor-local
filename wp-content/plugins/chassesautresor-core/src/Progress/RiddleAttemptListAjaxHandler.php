@@ -44,6 +44,7 @@ class RiddleAttemptListAjaxHandler {
         $attempts = $attemptService->findForRiddle($riddleId, $request['per_page'], $request['offset']);
         $total = $attemptService->countForRiddle($riddleId);
         $pages = (int) ceil($total / $request['per_page']);
+        $focusUid = isset($_POST['uid']) ? sanitize_text_field(wp_unslash((string) $_POST['uid'])) : '';
         $renderer = self::$renderer ?? [new RiddleAttemptListRenderer(), 'render'];
         $html = (string) call_user_func($renderer, [
             'tentatives' => $attempts,
@@ -51,6 +52,7 @@ class RiddleAttemptListAjaxHandler {
             'par_page' => $request['per_page'],
             'total' => $total,
             'pages' => $pages,
+            'focus_uid' => $focusUid,
         ]);
 
         wp_send_json_success([

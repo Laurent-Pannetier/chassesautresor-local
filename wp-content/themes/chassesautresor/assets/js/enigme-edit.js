@@ -1066,17 +1066,22 @@ function initPagerTentatives() {
   }
 
   attachPager();
+  requestAnimationFrame(revealFocus);
 
   function charger(page) {
+    const params = new URLSearchParams({
+      action: 'lister_tentatives_enigme',
+      enigme_id: postId,
+      page,
+      nonce: (window.CHP_ENIGME_DEFAUT && CHP_ENIGME_DEFAUT.nonce) || ''
+    });
+    if (wrapper.dataset.focusUid) {
+      params.set('uid', wrapper.dataset.focusUid);
+    }
     fetch(ajaxurl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        action: 'lister_tentatives_enigme',
-        enigme_id: postId,
-        page,
-        nonce: (window.CHP_ENIGME_DEFAUT && CHP_ENIGME_DEFAUT.nonce) || ''
-      })
+      body: params
     })
       .then(r => r.json())
       .then(res => {
@@ -1087,6 +1092,11 @@ function initPagerTentatives() {
         wrapper.dataset.total = res.data.total;
         if (compteur) compteur.textContent = '(' + res.data.total + ')';
         attachPager();
+        revealFocus();
       });
+  }
+
+  function revealFocus() {
+    wrapper.querySelector('.tentative-focus')?.scrollIntoView({ block: 'nearest' });
   }
 }
