@@ -146,6 +146,7 @@ final class TeamPageRendererTest extends TestCase
             'attempts' => 9,
             'hints' => 1,
             'members' => [['user_id' => 1, 'username' => 'J1', 'resolved' => 2]],
+            'ranking_url' => '/classement/?chasse=12&vue=equipes',
             'leaderboard' => [
                 'rows' => [[
                     'team_id' => 1,
@@ -171,15 +172,56 @@ final class TeamPageRendererTest extends TestCase
 
         self::assertStringContainsString('Progression de l’équipe', $html);
         self::assertStringContainsString('2/4', $html);
-        self::assertStringContainsString('Classement des équipes', $html);
+        self::assertStringContainsString('>Classement<', $html);
+        self::assertStringContainsString('1er', $html);
+        self::assertStringContainsString('href="/classement/?chasse=12&vue=equipes"', $html);
         self::assertStringContainsString('Progression des membres', $html);
-        self::assertStringContainsString('progression-data-table--team-ranking', $html);
         self::assertStringContainsString('<table class="progression-data-table"', $html);
+        self::assertStringNotContainsString('Classement des équipes', $html);
+        self::assertStringNotContainsString('progression-data-table--team-ranking', $html);
         self::assertStringNotContainsString('2026-10-01', $html);
         self::assertStringNotContainsString('reached_at', $html);
     }
 
-    public function testASoloSeesTheMixedRankingWithoutTeamStats(): void
+    public function testAnUnrankedTeamShowsTheSameEmptyRankAsAPlayer(): void
+    {
+        $service = $this->service();
+        $service->create(new TeamActor(1, false), 'Alpha', null);
+        $view = $service->describe(new TeamActor(1, false));
+        $view['performance'] = [
+            'hunt_id' => 12,
+            'team_id' => 1,
+            'resolved' => 0,
+            'resolvable' => 4,
+            'started' => 0,
+            'attempts' => 0,
+            'hints' => 0,
+            'members' => [],
+            'ranking_url' => '/classement/?chasse=12&vue=equipes',
+            'leaderboard' => [
+                'rows' => [],
+                'page' => 1,
+                'pages' => 1,
+                'current_team_id' => 1,
+                'current_position' => 0,
+            ],
+        ];
+
+        $html = (new TeamPageRenderer())->render(
+            $view,
+            '',
+            '/equipe/',
+            static fn (int $id): string => '',
+            '<svg></svg>'
+        );
+
+        self::assertStringContainsString('Pas de classement', $html);
+        self::assertStringContainsString('href="/classement/?chasse=12&vue=equipes"', $html);
+        self::assertStringNotContainsString('1er', $html);
+        self::assertStringNotContainsString('Classement des équipes', $html);
+    }
+
+    public function testASoloDoesNotSeeTheTeamRanking(): void
     {
         $html = (new TeamPageRenderer())->render(
             [
@@ -214,10 +256,8 @@ final class TeamPageRendererTest extends TestCase
         );
 
         self::assertStringContainsString('Créer une équipe', $html);
-        self::assertStringContainsString('Classement des équipes', $html);
-        self::assertStringContainsString('Zoe', $html);
-        self::assertStringContainsString('Solo', $html);
-        self::assertStringContainsString('is-current', $html);
+        self::assertStringNotContainsString('Classement des équipes', $html);
+        self::assertStringNotContainsString('Zoe', $html);
         self::assertStringNotContainsString('Progression de l’équipe', $html);
         self::assertStringNotContainsString('Commencées', $html);
         self::assertStringNotContainsString('2026-10-04', $html);

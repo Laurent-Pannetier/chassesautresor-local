@@ -674,7 +674,8 @@ function cta_shell_render_hunt_sphere_switch(): string
 }
 
 /**
- * Hunt ranking, then one ranking per riddle. An empty note is shown when no hunt applies.
+ * Player ranking or team ranking for the current hunt.
+ * An empty note is shown when no hunt applies.
  */
 function cta_shell_render_player_ranking(): void
 {
@@ -716,11 +717,66 @@ function cta_shell_render_player_ranking(): void
         return;
     }
 
+    $board = 'joueurs';
+    if (isset($_GET['vue'])) {
+        $requestedBoard = function_exists('sanitize_key')
+            ? sanitize_key(wp_unslash((string) $_GET['vue']))
+            : (string) $_GET['vue'];
+        if ($requestedBoard === 'equipes') {
+            $board = 'equipes';
+        }
+    }
+    $currentHuntUrl = '';
+    foreach ($hunts as $hunt) {
+        if ((int) $hunt['id'] === $hunt_id) {
+            $currentHuntUrl = (string) $hunt['url'];
+            break;
+        }
+    }
+    $joueursUrl = function_exists('remove_query_arg')
+        ? (string) remove_query_arg('vue', $currentHuntUrl)
+        : $currentHuntUrl;
+    $equipesUrl = function_exists('add_query_arg')
+        ? (string) add_query_arg('vue', 'equipes', $joueursUrl)
+        : $joueursUrl;
+    if ($board === 'equipes') {
+        foreach ($hunts as $index => $hunt) {
+            $hunts[$index]['url'] = function_exists('add_query_arg')
+                ? (string) add_query_arg('vue', 'equipes', (string) $hunt['url'])
+                : (string) $hunt['url'];
+        }
+    }
+
     global $wpdb;
-    $view = (new \ChassesAuTresor\Core\Progress\PlayerProgressionApplicationService(
-        new \ChassesAuTresor\Core\Progress\ProgressionOverviewRepository($wpdb),
-        new \ChassesAuTresor\Core\Progress\PlayerProgressionRepository($wpdb)
-    ))->rankingPage($user_id, $hunt_id);
+    $views = [
+        [
+            'id' => 'joueurs',
+            'title' => __('Joueurs', 'chassesautresor-com'),
+            'url' => $joueursUrl,
+        ],
+        [
+            'id' => 'equipes',
+            'title' => __('Équipes', 'chassesautresor-com'),
+            'url' => $equipesUrl,
+        ],
+    ];
+    if ($board === 'equipes') {
+        $fragment = cta_shell_team_ranking_fragment($user_id, $hunt_id);
+        $view = [
+            'hunt_id' => $hunt_id,
+            'board' => 'equipes',
+            'views' => $views,
+            'team_ranking_html' => $fragment['html'],
+            'team_ajax' => $fragment['ajax'],
+        ];
+    } else {
+        $view = (new \ChassesAuTresor\Core\Progress\PlayerProgressionApplicationService(
+            new \ChassesAuTresor\Core\Progress\ProgressionOverviewRepository($wpdb),
+            new \ChassesAuTresor\Core\Progress\PlayerProgressionRepository($wpdb)
+        ))->rankingPage($user_id, $hunt_id);
+        $view['board'] = 'joueurs';
+        $view['views'] = $views;
+    }
     echo (new \ChassesAuTresor\Core\Messages\PlayerProgressionRenderer())->renderRanking(
         $view,
         $hunts,
@@ -730,6 +786,47 @@ function cta_shell_render_player_ranking(): void
             'nonce' => function_exists('wp_create_nonce') ? wp_create_nonce('cat_player_progression') : '',
         ]
     );
+}
+
+/**
+ * Team leaderboard shown on the Équipes tab of Classement.
+ *
+ * @return array{html:string,ajax:array{url:string,nonce:string}}
+ */
+function cta_shell_team_ranking_fragment(int $user_id, int $hunt_id): array
+{
+    $ajax = [
+        'url' => function_exists('admin_url') ? admin_url('admin-ajax.php') : '',
+        'nonce' => function_exists('wp_create_nonce') ? wp_create_nonce('cat_team_performance') : '',
+    ];
+    $empty = '<p class="equipe-note">'
+        . esc_html__('Aucune équipe classée.', 'chassesautresor-com') . '</p>';
+    $ready = class_exists(\ChassesAuTresor\Core\Teams\TeamPerformanceApplicationService::class)
+        && class_exists(\ChassesAuTresor\Core\Teams\TeamPerformanceRepository::class)
+        && class_exists(\ChassesAuTresor\Core\Teams\TeamPageRenderer::class)
+        && class_exists(\ChassesAuTresor\Core\Teams\TeamRepository::class);
+    if (!$ready) {
+        return ['html' => $empty, 'ajax' => $ajax];
+    }
+
+    global $wpdb;
+    $teamId = (new \ChassesAuTresor\Core\Teams\TeamRepository($wpdb))->activeTeamId($user_id);
+    $ranking = (new \ChassesAuTresor\Core\Teams\TeamPerformanceApplicationService(
+        new \ChassesAuTresor\Core\Teams\TeamPerformanceRepository($wpdb)
+    ))->ranking($teamId, $hunt_id, 1, $user_id);
+    $renderer = new \ChassesAuTresor\Core\Teams\TeamPageRenderer(
+        static function (int $attachmentId): string {
+            if (!function_exists('wp_get_attachment_image_url')) {
+                return '';
+            }
+            $url = wp_get_attachment_image_url($attachmentId, 'thumbnail');
+
+            return is_string($url) ? $url : '';
+        },
+        function_exists('cta_shell_icon') ? (string) cta_shell_icon('team') : ''
+    );
+
+    return ['html' => $renderer->ranking($ranking), 'ajax' => $ajax];
 }
 
 /**
@@ -876,7 +973,7 @@ function cta_shell_enqueue(): void
         }
     }
 
-    if (function_exists('cta_shell_request_slug') && cta_shell_request_slug() === 'equipe') {
+    if ($shellSlug === 'classement') {
         $teamPath = get_stylesheet_directory() . '/assets/js/team-performance.js';
         if (file_exists($teamPath)) {
             wp_enqueue_script(
