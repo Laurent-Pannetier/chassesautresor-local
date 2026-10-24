@@ -176,6 +176,11 @@ describe('riddle step player positioning', () => {
       fullUrl: 'full.jpg',
       thumbUrl: 'thumb.jpg',
       alt: 'Page',
+      srcset: '',
+      webpSrcset: '',
+      sizes: '',
+      width: '',
+      height: '',
     });
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
     expect(Element.prototype.scrollIntoView.mock.instances[0]).toBe(
