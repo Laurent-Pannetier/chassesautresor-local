@@ -40,6 +40,22 @@ class PointsServiceRepository extends PointsRepository
         return $this->balance;
     }
 
+    public function debitIfAvailable(
+        int $userId,
+        int $amount,
+        string $reason = '',
+        string $originType = 'admin',
+        ?int $originId = null
+    ): bool {
+        if ($userId <= 0 || $amount <= 0 || $this->balance < $amount) {
+            return false;
+        }
+
+        $this->addPoints($userId, -$amount, $reason, $originType, $originId);
+
+        return true;
+    }
+
     public function getTotalPointsUsed(): int
     {
         return 250;

@@ -85,6 +85,8 @@ class HintUnlockPointsServiceStub extends PointsService
 {
     public array $deductArguments = [];
 
+    public bool $allowed = true;
+
     public function __construct()
     {
     }
@@ -95,8 +97,10 @@ class HintUnlockPointsServiceStub extends PointsService
         string $reason = '',
         string $originType = 'admin',
         ?int $originId = null
-    ): void {
+    ): bool {
         $this->deductArguments = [$userId, $amount, $reason, $originType, $originId];
+
+        return $this->allowed;
     }
 }
 
@@ -230,6 +234,17 @@ class HintUnlockServiceTest extends TestCase
         $pointsService->deductArguments = [];
         $this->assertTrue($service->recordUnlock(7, 10, 20, 30, 0, '2026-09-29 12:00:00'));
         $this->assertSame([], $pointsService->deductArguments);
+    }
+
+    public function testRecordUnlockRollsBackWhenTheDebitIsRefused(): void
+    {
+        $repository = new HintUnlockRepositoryStub();
+        $pointsService = new HintUnlockPointsServiceStub();
+        $pointsService->allowed = false;
+        $service = new HintUnlockService($repository, $pointsService);
+
+        $this->assertFalse($service->recordUnlock(7, 10, 20, 30, 5, '2026-09-29 12:00:00', 'Hint unlock'));
+        $this->assertSame(['begin', 'rollback'], $repository->transactionEvents);
     }
 
     public function testRepositoryInsertsUnlockAndEngagement(): void

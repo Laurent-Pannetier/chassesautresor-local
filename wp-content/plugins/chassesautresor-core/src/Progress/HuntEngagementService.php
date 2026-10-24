@@ -53,6 +53,11 @@ class HuntEngagementService
         return $this->repository->insert($userId, $huntId, $engagedAt);
     }
 
+    public function disengage(int $userId, int $huntId): void
+    {
+        $this->repository->deleteHuntLevel($userId, $huntId);
+    }
+
     public function countUniquePlayersForHunts(array $huntIds, array $excludedUserIds = []): int
     {
         return $huntIds === [] ? 0 : $this->repository->countUniquePlayersForHunts($huntIds, $excludedUserIds);

@@ -44,6 +44,7 @@ class RiddleAnswerSubmissionAjaxHandler {
         }
         try {
             global $wpdb;
+            self::database()->query('START TRANSACTION');
             $points = CoreServiceFactory::points($wpdb);
             $attempts = CoreServiceFactory::riddleAttempts($wpdb);
             $cost = (int) get_field('enigme_tentative_cout_points', $riddleId);
@@ -52,7 +53,9 @@ class RiddleAnswerSubmissionAjaxHandler {
                     __("Tentative de réponse pour l'énigme #%d", 'chassesautresor-com'),
                     $riddleId
                 );
-                $points->deduct($userId, $cost, $reason, 'tentative', $riddleId);
+                if (!$points->deduct($userId, $cost, $reason, 'tentative', $riddleId)) {
+                    throw new RuntimeException('points_insuffisants');
+                }
             }
 
             $uid = self::createAttempt($attempts, $userId, $riddleId, $answer, 'attente', $cost);
@@ -73,8 +76,13 @@ class RiddleAnswerSubmissionAjaxHandler {
             );
             (new ManualAnswerNotificationService())->notify($userId, $riddleId, $answer, $uid);
             $timestamp = current_time('timestamp');
+            self::database()->query('COMMIT');
         } catch (Throwable $exception) {
+            self::database()->query('ROLLBACK');
             self::releaseLock($lock, $riddleId, $userId);
+            if ($exception->getMessage() === 'points_insuffisants') {
+                self::reject('points_insuffisants');
+            }
             cat_debug('Erreur tentative : ' . $exception->getMessage());
             self::reject('erreur_interne');
         }
@@ -125,6 +133,9 @@ class RiddleAnswerSubmissionAjaxHandler {
         } catch (Throwable $exception) {
             self::database()->query('ROLLBACK');
             self::releaseLock($lock, $riddleId, $userId);
+            if ($exception->getMessage() === 'points_insuffisants') {
+                self::reject('points_insuffisants');
+            }
             cat_debug('Erreur tentative : ' . $exception->getMessage());
             self::reject('erreur_interne');
         }
@@ -259,14 +270,14 @@ class RiddleAnswerSubmissionAjaxHandler {
         }
 
         $charge = (int) $plan['charge'];
-        if ($charge > 0) {
-            self::points()->deduct(
-                $userId,
-                $charge,
-                sprintf(__("Tentative de réponse pour l'énigme #%d", 'chassesautresor-com'), $riddleId),
-                'tentative',
-                $riddleId
-            );
+        if ($charge > 0 && !self::points()->deduct(
+            $userId,
+            $charge,
+            sprintf(__("Tentative de réponse pour l'énigme #%d", 'chassesautresor-com'), $riddleId),
+            'tentative',
+            $riddleId
+        )) {
+            throw new RuntimeException('points_insuffisants');
         }
 
         $uid = self::createAttempt($attempts, $userId, $riddleId, $answer, $result, $charge);

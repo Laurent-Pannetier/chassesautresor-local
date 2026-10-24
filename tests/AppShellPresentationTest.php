@@ -58,6 +58,7 @@ class AppShellPresentationTest extends TestCase
         }');
         eval('function get_stylesheet_directory(){return $GLOBALS["cat_theme_dir"];}');
         eval('function get_stylesheet_directory_uri(){return "https://example.test/theme";}');
+        eval('function is_front_page(){return true;}');
         eval('function wp_enqueue_script($handle, $src = "", $deps = [], $ver = false, $in_footer = false){
             $GLOBALS["cat_enqueued_scripts"][] = [
                 "handle" => $handle,
@@ -103,6 +104,39 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString('html[data-theme="day"] .hunt-banner__sphere::after', $scss);
         $bundle = (string) file_get_contents($theme . '/assets/js/hunt-banner-sphere.js');
         $this->assertGreaterThan(50000, strlen($bundle));
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_hunt_banner_keeps_a_still_image_off_the_homepage(): void
+    {
+        $this->bootShell();
+        $GLOBALS['cat_theme_dir'] = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $GLOBALS['cat_enqueued_scripts'] = [];
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_the_post_thumbnail_url($id, $size = "full"){
+            return "https://example.test/chasse.jpg";
+        }');
+        eval('function get_stylesheet_directory(){return $GLOBALS["cat_theme_dir"];}');
+        eval('function get_stylesheet_directory_uri(){return "https://example.test/theme";}');
+        eval('function is_front_page(){return false;}');
+        eval('function wp_enqueue_script($handle, $src = "", $deps = [], $ver = false, $in_footer = false){
+            $GLOBALS["cat_enqueued_scripts"][] = $handle;
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('hunt-banner__fallback', $html);
+        $this->assertStringNotContainsString('data-hunt-sphere', $html);
+        $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+        $this->assertSame([], $GLOBALS['cat_enqueued_scripts']);
     }
 
     /**

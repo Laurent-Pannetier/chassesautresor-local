@@ -52,26 +52,69 @@ class PointsRepository
         string $originType = 'admin',
         ?int $originId = null
     ): int {
-        $current = $this->getBalance($userId);
-        $newBalance = max(0, $current + $delta);
+        $balance = $this->withUserLock($userId, function () use (
+            $userId,
+            $delta,
+            $reason,
+            $originType,
+            $originId
+        ): int {
+            $current = $this->getBalance($userId);
+            $newBalance = max(0, $current + $delta);
+            $this->insertMovement(
+                $userId,
+                $newBalance,
+                $delta,
+                $reason,
+                $originType,
+                $originId
+            );
 
-        $data = [
-            'user_id'     => $userId,
-            'balance'     => $newBalance,
-            'points'      => $delta,
-            'reason'      => $reason,
-            'origin_type' => $originType,
-        ];
-        $format = ['%d', '%d', '%d', '%s', '%s'];
+            return $newBalance;
+        });
 
-        if ($originId !== null) {
-            $data['origin_id'] = $originId;
-            $format[] = '%d';
+        return is_int($balance) ? $balance : $this->getBalance($userId);
+    }
+
+    /**
+     * Debit points only when the locked balance covers the full amount.
+     */
+    public function debitIfAvailable(
+        int $userId,
+        int $amount,
+        string $reason = '',
+        string $originType = 'admin',
+        ?int $originId = null
+    ): bool {
+        if ($userId <= 0 || $amount <= 0) {
+            return false;
         }
 
-        $this->wpdb->insert($this->table, $data, $format);
+        $applied = $this->withUserLock($userId, function () use (
+            $userId,
+            $amount,
+            $reason,
+            $originType,
+            $originId
+        ): bool {
+            $current = $this->getBalance($userId);
+            if ($current < $amount) {
+                return false;
+            }
 
-        return $newBalance;
+            $this->insertMovement(
+                $userId,
+                $current - $amount,
+                -$amount,
+                $reason,
+                $originType,
+                $originId
+            );
+
+            return true;
+        });
+
+        return $applied === true;
     }
 
     /**
@@ -136,39 +179,86 @@ class PointsRepository
      */
     public function logConversionRequest(int $userId, int $points, float $amountEur): int
     {
-        $current = $this->getBalance($userId);
-        $newBalance = max(0, $current + $points);
-        $amountEur = round($amountEur, 2);
-        $reason = sprintf(
-            __('Demande de conversion de %d points', 'chassesautresor-com'),
-            abs($points)
-        );
+        $requestId = $this->withUserLock($userId, function () use ($userId, $points, $amountEur): int {
+            $current = $this->getBalance($userId);
+            if ($points < 0 && $current + $points < 0) {
+                return 0;
+            }
 
-        $this->wpdb->insert(
-            $this->table,
-            [
-                'user_id'        => $userId,
-                'balance'        => $newBalance,
-                'points'         => $points,
-                'amount_eur'     => $amountEur,
-                'reason'         => $reason,
-                'origin_type'    => 'conversion',
-                'request_status' => 'pending',
-                'request_date'   => current_time('mysql'),
-            ],
-            ['%d', '%d', '%d', '%f', '%s', '%s', '%s', '%s']
-        );
+            $newBalance = max(0, $current + $points);
+            $amountEur = round($amountEur, 2);
+            $reason = sprintf(
+                __('Demande de conversion de %d points', 'chassesautresor-com'),
+                abs($points)
+            );
+            $this->wpdb->insert(
+                $this->table,
+                [
+                    'user_id'        => $userId,
+                    'balance'        => $newBalance,
+                    'points'         => $points,
+                    'amount_eur'     => $amountEur,
+                    'reason'         => $reason,
+                    'origin_type'    => 'conversion',
+                    'request_status' => 'pending',
+                    'request_date'   => current_time('mysql'),
+                ],
+                ['%d', '%d', '%d', '%f', '%s', '%s', '%s', '%s']
+            );
 
-        $id = (int) $this->wpdb->insert_id;
-        $this->wpdb->update(
-            $this->table,
-            ['origin_id' => $id],
-            ['id' => $id],
-            ['%d'],
-            ['%d']
-        );
+            $id = (int) $this->wpdb->insert_id;
+            if ($id <= 0) {
+                return 0;
+            }
 
-        return $id;
+            $this->wpdb->update(
+                $this->table,
+                ['origin_id' => $id],
+                ['id' => $id],
+                ['%d'],
+                ['%d']
+            );
+
+            return $id;
+        });
+
+        return is_int($requestId) ? $requestId : 0;
+    }
+
+    public function beginTransaction(): void
+    {
+        $this->wpdb->query('START TRANSACTION');
+    }
+
+    public function commit(): void
+    {
+        $this->wpdb->query('COMMIT');
+    }
+
+    public function rollBack(): void
+    {
+        $this->wpdb->query('ROLLBACK');
+    }
+
+    /**
+     * Lock a pending conversion row so a second settlement cannot refund it.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function lockPendingConversion(int $id): ?array
+    {
+        if ($id <= 0) {
+            return null;
+        }
+
+        $sql = $this->wpdb->prepare(
+            "SELECT * FROM {$this->table} WHERE id = %d AND origin_type = 'conversion' "
+                . "AND request_status = 'pending' FOR UPDATE",
+            $id
+        );
+        $row = $this->wpdb->get_row($sql, ARRAY_A);
+
+        return is_array($row) ? $row : null;
     }
 
     /**
@@ -273,5 +363,58 @@ class PointsRepository
         $sql = "SELECT COALESCE(SUM(balance), 0) FROM {$this->table} WHERE id IN ($subquery)";
 
         return (int) $this->wpdb->get_var($sql);
+    }
+
+    /**
+     * @template T
+     * @param callable(): T $callback
+     * @return T|null
+     */
+    private function withUserLock(int $userId, callable $callback)
+    {
+        if ($userId <= 0) {
+            return null;
+        }
+
+        $name = 'cat_points_' . $userId;
+        $acquired = (int) $this->wpdb->get_var(
+            $this->wpdb->prepare('SELECT GET_LOCK(%s, 5)', $name)
+        );
+        if ($acquired !== 1) {
+            return null;
+        }
+
+        try {
+            return $callback();
+        } finally {
+            $this->wpdb->get_var(
+                $this->wpdb->prepare('SELECT RELEASE_LOCK(%s)', $name)
+            );
+        }
+    }
+
+    private function insertMovement(
+        int $userId,
+        int $balance,
+        int $delta,
+        string $reason,
+        string $originType,
+        ?int $originId
+    ): void {
+        $data = [
+            'user_id'     => $userId,
+            'balance'     => $balance,
+            'points'      => $delta,
+            'reason'      => $reason,
+            'origin_type' => $originType,
+        ];
+        $format = ['%d', '%d', '%d', '%s', '%s'];
+
+        if ($originId !== null) {
+            $data['origin_id'] = $originId;
+            $format[] = '%d';
+        }
+
+        $this->wpdb->insert($this->table, $data, $format);
     }
 }

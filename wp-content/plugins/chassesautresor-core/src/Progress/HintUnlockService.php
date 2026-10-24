@@ -77,8 +77,16 @@ class HintUnlockService
             return false;
         }
 
-        if ($pointsSpent > 0) {
-            $this->pointsService->deduct($userId, $pointsSpent, $pointsReason, 'indice', $hintId);
+        if ($pointsSpent > 0 && !$this->pointsService->deduct(
+            $userId,
+            $pointsSpent,
+            $pointsReason,
+            'indice',
+            $hintId
+        )) {
+            $this->repository->rollBack();
+
+            return false;
         }
         $this->repository->commit();
 

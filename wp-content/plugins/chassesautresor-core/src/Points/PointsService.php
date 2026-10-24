@@ -54,12 +54,18 @@ class PointsService
         string $reason = '',
         string $originType = 'admin',
         ?int $originId = null
-    ): void {
+    ): bool {
         if ($userId <= 0 || $amount <= 0) {
-            return;
+            return false;
         }
 
-        $this->changeBalance($userId, -$amount, $reason, $originType, $originId);
+        return $this->repository->debitIfAvailable(
+            $userId,
+            $amount,
+            $reason,
+            $originType,
+            $originId
+        );
     }
 
     public function add(

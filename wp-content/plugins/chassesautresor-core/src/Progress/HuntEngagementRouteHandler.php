@@ -24,6 +24,7 @@ final class HuntEngagementRouteHandler
         global $wpdb;
         $points = CoreServiceFactory::points($wpdb);
         $engagements = CoreServiceFactory::huntEngagement($wpdb);
+        $engaged = false;
         $result = (new HuntEngagementApplicationService())->engage(
             $userId,
             $huntId,
@@ -33,18 +34,25 @@ final class HuntEngagementRouteHandler
             self::isAssociatedOrganizer($userId, $huntId),
             $cost,
             $points->getBalance($userId),
-            static function (int $targetUserId, int $targetHuntId) use ($engagements): bool {
-                $inserted = $engagements->engage($targetUserId, $targetHuntId, current_time('mysql', true));
-                if ($inserted) {
-                    do_action('chasse_engagement_created', $targetHuntId, $targetUserId);
-                }
-                return $inserted;
+            static function (int $targetUserId, int $targetHuntId) use ($engagements, &$engaged): bool {
+                $engaged = $engagements->engage($targetUserId, $targetHuntId, current_time('mysql', true));
+
+                return $engaged;
             },
-            static function (int $targetUserId, int $targetHuntId, int $amount) use ($points): void {
+            static function (int $targetUserId, int $targetHuntId, int $amount) use ($points, $engagements): bool {
                 $reason = sprintf(__('Déblocage de la chasse #%d', 'chassesautresor-com'), $targetHuntId);
-                $points->deduct($targetUserId, $amount, $reason, 'chasse', $targetHuntId);
+                if ($points->deduct($targetUserId, $amount, $reason, 'chasse', $targetHuntId)) {
+                    return true;
+                }
+
+                $engagements->disengage($targetUserId, $targetHuntId);
+
+                return false;
             }
         );
+        if ($result['status'] === 'success' && $engaged) {
+            do_action('chasse_engagement_created', $huntId, $userId);
+        }
 
         if ($result['status'] === 'invalid_nonce') {
             wp_die(__('Échec de vérification de sécurité', 'chassesautresor-com'));

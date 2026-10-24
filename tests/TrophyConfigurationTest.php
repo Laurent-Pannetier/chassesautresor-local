@@ -82,7 +82,7 @@ final class TrophyConfigurationTest extends TestCase
         $route = (string) file_get_contents($root . 'HuntEngagementRouteHandler.php');
         $functions = (string) file_get_contents($root . 'hunt-functions.php');
         self::assertStringContainsString(
-            "do_action('chasse_engagement_created', \$targetHuntId, \$targetUserId)",
+            "do_action('chasse_engagement_created', \$huntId, \$userId)",
             $route
         );
         self::assertStringContainsString(

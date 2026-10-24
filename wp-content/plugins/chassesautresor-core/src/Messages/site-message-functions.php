@@ -57,15 +57,7 @@ function add_site_message(
     }
 
     if (session_status() !== PHP_SESSION_ACTIVE) {
-        if (headers_sent($file, $line)) {
-            $fileInfo = is_string($file) && $file !== '' ? $file : 'unknown';
-            $lineInfo = is_numeric($line) ? (string) $line : 'unknown';
-            error_log(sprintf(
-                '[add_site_message] headers already sent (%s:%s), skipping session storage.',
-                $fileInfo,
-                $lineInfo
-            ));
-
+        if (headers_sent()) {
             return;
         }
 
@@ -76,6 +68,84 @@ function add_site_message(
     $messages[] = $message;
 
     $_SESSION['cat_site_messages'] = $messages;
+    cat_flag_pending_session_messages();
+}
+
+/**
+ * Cookie path shared with WordPress.
+ */
+function cat_site_message_cookie_path(): string {
+    if (defined('COOKIEPATH') && is_string(COOKIEPATH) && COOKIEPATH !== '') {
+        return COOKIEPATH;
+    }
+
+    return '/';
+}
+
+/**
+ * Remember that a flash message is waiting in the PHP session.
+ */
+function cat_flag_pending_session_messages(): void {
+    if (headers_sent()) {
+        return;
+    }
+
+    setcookie('cat_site_msg', '1', cat_site_message_cookie_options(0));
+}
+
+/**
+ * Drop the flash-message cookie once the session queue has been read.
+ */
+function cat_clear_pending_session_messages_flag(): void {
+    if (!headers_sent()) {
+        setcookie('cat_site_msg', '', cat_site_message_cookie_options(time() - 3600));
+    }
+
+    unset($_COOKIE['cat_site_msg']);
+}
+
+/**
+ * @return array{expires:int,path:string,secure:bool,httponly:bool,samesite:string}
+ */
+function cat_site_message_cookie_options(int $expires): array {
+    return [
+        'expires' => $expires,
+        'path' => cat_site_message_cookie_path(),
+        'secure' => function_exists('is_ssl') && is_ssl(),
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ];
+}
+
+/**
+ * Read and empty flash messages without opening a session for every visit.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function cat_consume_session_messages(): array {
+    $active = session_status() === PHP_SESSION_ACTIVE;
+    $flagged = isset($_COOKIE['cat_site_msg']) && (string) $_COOKIE['cat_site_msg'] !== '';
+    if (!$active && !$flagged) {
+        return [];
+    }
+
+    if (!$active) {
+        if (headers_sent()) {
+            return [];
+        }
+
+        session_start();
+    }
+
+    $messages = [];
+    if (!empty($_SESSION['cat_site_messages']) && is_array($_SESSION['cat_site_messages'])) {
+        $messages = $_SESSION['cat_site_messages'];
+        unset($_SESSION['cat_site_messages']);
+    }
+
+    cat_clear_pending_session_messages_flag();
+
+    return $messages;
 }
 
 /**
@@ -99,22 +169,13 @@ function get_site_messages(): string {
 
     $uri = $_SERVER['REQUEST_URI'] ?? '';
     if (str_starts_with($uri, '/voir-image-enigme')) {
-        error_log('[get_site_messages] bypass pour requête image');
         return '';
     }
-    if (headers_sent($file, $line)) {
-        error_log("[get_site_messages] headers déjà envoyés ($file:$line)");
+    if (headers_sent()) {
         return '';
-    }
-    if (session_status() !== PHP_SESSION_ACTIVE) {
-        session_start();
-        error_log('[get_site_messages] session démarrée');
     }
 
-    if (!empty($_SESSION['cat_site_messages'])) {
-        $messages = array_merge($messages, $_SESSION['cat_site_messages']);
-        unset($_SESSION['cat_site_messages']);
-    }
+    $messages = array_merge($messages, cat_consume_session_messages());
 
     $service = cat_get_site_message_service();
     $messages = array_merge($messages, $service->getActive());
