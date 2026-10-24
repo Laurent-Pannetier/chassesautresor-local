@@ -55,7 +55,7 @@ Le reset global efface les attributions et les notifications reçues. Les fiches
 ## Interfaces
 
 - `/trophees/` pour un joueur affiche ses trophées et ceux de son équipe active.
-- `/trophees/` pour un organisateur affiche les trophées liés à ses chasses, dans les mêmes tuiles carrées que le joueur. Le nombre ouvre la liste des joueurs, ou des équipes si le trophée est attribué à l’équipe. Un trophée que personne n’a obtenu a un rendu distinct, sans texte.
+- `/trophees/` pour un organisateur affiche les trophées liés à ses chasses, dans les mêmes tuiles carrées que le joueur. Le nombre, en petite pastille discrète en haut à gauche, ouvre la liste des joueurs, ou des équipes si le trophée est attribué à l’équipe. Un trophée que personne n’a obtenu a un rendu distinct, sans texte.
 - `/trophees/` pour un administrateur affiche le même mur, y compris les trophées sans chasse. Le titre de la chasse, ou « Global », est en bandeau translucide en bas de la tuile. Le décompte ignore les comptes administrateur.
 - `/notifications/` affiche les notifications destinées au centre.
 - La sidebar indique le nombre de notifications non lues.
