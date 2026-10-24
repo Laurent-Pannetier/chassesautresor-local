@@ -71,7 +71,10 @@ final class ShellEditionSaveWiringTest extends TestCase {
         $this->assertStringContainsString('bouton-supprimer-enigme', $template);
         $this->assertStringContainsString('Supprimer l’énigme', $template);
         $this->assertStringNotContainsString('Suppression énigme', $template);
-        $tentatives = strpos($template, 'id="enigme-tab-soumission"');
+        $tentatives = strpos(
+            $template,
+            "cta_shell_edition_tab_panel_attr('enigme', 'enigme-tab-soumission')"
+        );
         $deleteButton = strpos($template, 'bouton-supprimer-enigme');
         $this->assertNotFalse($tentatives);
         $this->assertNotFalse($deleteButton);

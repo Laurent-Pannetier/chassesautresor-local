@@ -11,7 +11,7 @@ use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
 /**
- * Enforce access, engagement and edition redirects on single riddle pages.
+ * Enforce access and engagement redirects on single riddle pages.
  */
 final class RiddleAccessRedirectHandler {
     public static function register(callable $addAction): void {
@@ -108,49 +108,6 @@ final class RiddleAccessRedirectHandler {
         }
 
         (new CompletionCacheManager())->refresh($riddleId);
-        $riddleComplete = (bool) get_field('enigme_cache_complet', $riddleId);
-        $associatedOrganizer = self::isAssociatedOrganizer($userId, $huntId);
-
-        if (
-            $editionActive &&
-            $associatedOrganizer &&
-            !$riddleComplete &&
-            !isset($_GET['edition'])
-        ) {
-            wp_redirect(self::editionUrl($riddleId, 'param'));
-            exit;
-        }
-
-        if (
-            $editionActive
-            && $associatedOrganizer
-            && CoreServiceFactory::riddleAttempts($wpdb)->countPendingForRiddle($riddleId) > 0
-            && !isset($_GET['edition'])
-        ) {
-            wp_redirect(self::editionUrl($riddleId, 'soumission'));
-            exit;
-        }
-    }
-
-    private static function editionUrl(int $riddleId, string $tab): string
-    {
-        if (function_exists('cta_shell_edition_url')) {
-            $section = function_exists('cta_shell_normalize_edition_section')
-                ? cta_shell_normalize_edition_section('enigme', $tab)
-                : 'parametres';
-
-            return cta_shell_edition_url('enigme', $riddleId, $section);
-        }
-
-        $section = $tab === 'soumission' ? 'tentatives' : ($tab === 'stats' ? 'stats' : 'parametres');
-
-        return add_query_arg(
-            [
-                'enigme' => $riddleId,
-                'section' => $section,
-            ],
-            home_url('/outils/')
-        );
     }
 
     private static function gatedEntryUrl(int $huntId, int $userId): string
