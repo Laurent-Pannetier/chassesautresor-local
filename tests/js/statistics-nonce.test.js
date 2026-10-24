@@ -53,7 +53,16 @@ describe('statistics requests', () => {
       json: () => Promise.resolve({ success: true, data: { html: '<ul><li>Carte</li></ul>' } }),
     }));
 
+    const readyState = Object.getOwnPropertyDescriptor(document, 'readyState');
+    Object.defineProperty(document, 'readyState', {
+      configurable: true,
+      get: () => 'loading',
+    });
     require('../../wp-content/themes/chassesautresor/assets/js/enigme-stats.js');
+    document.dispatchEvent(new Event('DOMContentLoaded'));
+    if (readyState) {
+      Object.defineProperty(document, 'readyState', readyState);
+    }
     document.querySelector('.participant-hints').click();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -62,6 +71,9 @@ describe('statistics requests', () => {
     expect(body.get('nonce')).toBe('riddle-nonce');
     expect(body.get('user_id')).toBe('7');
     expect(body.get('enigme_id')).toBe('42');
-    expect(document.querySelector('.participant-hints-detail').textContent).toContain('Carte');
+    const detail = document.querySelector('.participant-hints-detail');
+    expect(detail.hidden).toBe(false);
+    expect(detail.textContent).toContain('Carte');
+    expect(fetch).toHaveBeenCalledTimes(1);
   });
 });

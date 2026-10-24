@@ -1,9 +1,10 @@
 function initEnigmeStats() {
   const container = document.getElementById('enigme-stats');
   const select = document.getElementById('enigme-periode');
-  if (!container || !select) {
+  if (!container || !select || container.dataset.statsBound === '1') {
     return;
   }
+  container.dataset.statsBound = '1';
 
   const cards = {
     participants: container.querySelector('[data-stat="participants"] .stat-value'),
@@ -167,5 +168,8 @@ function initEnigmeStats() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', initEnigmeStats);
-initEnigmeStats();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initEnigmeStats);
+} else {
+  initEnigmeStats();
+}
