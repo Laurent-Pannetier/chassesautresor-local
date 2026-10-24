@@ -90,8 +90,25 @@ final class TrophyDefinitionRepository
             (string) $this->field('trophee_notification_title', $trophyId, ''),
             (string) $this->field('trophee_notification_body', $trophyId, ''),
             (int) $this->field('trophee_notification_priority', $trophyId, 100),
-            $channel
+            $channel,
+            $this->huntId($trophyId)
         );
+    }
+
+    private function huntId(int $trophyId): int
+    {
+        $hunt = $this->field('trophee_chasse', $trophyId, 0);
+        if (is_object($hunt) && isset($hunt->ID)) {
+            return max(0, (int) $hunt->ID);
+        }
+        if (is_array($hunt)) {
+            return max(0, (int) ($hunt['ID'] ?? $hunt['id'] ?? 0));
+        }
+        if (is_numeric($hunt)) {
+            return max(0, (int) $hunt);
+        }
+
+        return 0;
     }
 
     private function imageId(int $trophyId): int

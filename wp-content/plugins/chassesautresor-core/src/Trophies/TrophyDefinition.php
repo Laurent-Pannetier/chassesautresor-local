@@ -21,7 +21,8 @@ final class TrophyDefinition
         public readonly string $notificationTitle,
         public readonly string $notificationBody,
         public readonly int $notificationPriority,
-        public readonly string $notificationChannel
+        public readonly string $notificationChannel,
+        public readonly int $huntId = 0
     ) {
     }
 }

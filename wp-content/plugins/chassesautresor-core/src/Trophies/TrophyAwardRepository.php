@@ -122,6 +122,82 @@ final class TrophyAwardRepository implements TrophyAwardStore
         ));
     }
 
+    /**
+     * Award rows used to count a staff trophy wall.
+     *
+     * @param int[] $trophyIds
+     * @return array<int, array<string, mixed>>
+     */
+    public function rowsForTrophies(array $trophyIds): array
+    {
+        $ids = $this->positiveIds($trophyIds);
+        if ($ids === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        $query = $this->wpdb->prepare(
+            "SELECT trophy_id, recipient_type, recipient_id, actor_user_id
+            FROM {$this->table()}
+            WHERE trophy_id IN ({$placeholders})",
+            ...$ids
+        );
+        $rows = $this->wpdb->get_results($query, ARRAY_A);
+
+        return is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * @param int[] $teamIds
+     * @return array<int, string>
+     */
+    public function teamNames(array $teamIds): array
+    {
+        $ids = $this->positiveIds($teamIds);
+        if ($ids === []) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        $table = $this->wpdb->prefix . 'equipes';
+        $query = $this->wpdb->prepare(
+            "SELECT id, nom FROM {$table} WHERE id IN ({$placeholders})",
+            ...$ids
+        );
+        $rows = $this->wpdb->get_results($query, ARRAY_A);
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $names = [];
+        foreach ($rows as $row) {
+            $id = (int) ($row['id'] ?? 0);
+            $name = trim((string) ($row['nom'] ?? ''));
+            if ($id > 0 && $name !== '') {
+                $names[$id] = $name;
+            }
+        }
+
+        return $names;
+    }
+
+    /**
+     * @param int[] $ids
+     * @return int[]
+     */
+    private function positiveIds(array $ids): array
+    {
+        $values = [];
+        foreach ($ids as $id) {
+            $id = (int) $id;
+            if ($id > 0) {
+                $values[$id] = $id;
+            }
+        }
+
+        return array_values($values);
+    }
+
     private function exists(int $trophyId, string $recipientType, int $recipientId): bool
     {
         return (bool) $this->wpdb->get_var($this->wpdb->prepare(

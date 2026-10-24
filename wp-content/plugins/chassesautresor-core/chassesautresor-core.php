@@ -500,6 +500,8 @@ require_once __DIR__ . '/src/Trophies/TrophyEventDispatcher.php';
 require_once __DIR__ . '/src/Trophies/trophy-functions.php';
 require_once __DIR__ . '/src/Trophies/FirstParticipationTrophyHook.php';
 require_once __DIR__ . '/src/Trophies/TrophyPageRenderer.php';
+require_once __DIR__ . '/src/Trophies/TrophyWallCatalog.php';
+require_once __DIR__ . '/src/Trophies/TrophyWallRenderer.php';
 
 if (!class_exists('PointsRepository', false)) {
     class_alias(ChassesAuTresor\Core\Points\PointsRepository::class, 'PointsRepository');

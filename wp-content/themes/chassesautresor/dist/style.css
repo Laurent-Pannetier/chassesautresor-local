@@ -20058,6 +20058,48 @@ body.admin-bar.shell-edition .app-sidebar {
   font-size: 0.8rem;
 }
 
+.trophy-card--none {
+  border-style: dashed;
+  opacity: 0.72;
+}
+
+.trophy-card__details {
+  margin-top: 0.75rem;
+}
+
+.trophy-card__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.15rem 0.65rem;
+  border: 1px solid var(--shell-border);
+  border-radius: 999px;
+  background: var(--shell-accent-soft);
+  color: var(--shell-accent-strong);
+  font-weight: 800;
+  cursor: pointer;
+  list-style: none;
+}
+
+.trophy-card__count::-webkit-details-marker {
+  display: none;
+}
+
+.trophy-card__count::marker {
+  content: "";
+}
+
+.trophy-card__holders {
+  margin: 0.65rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trophy-card__holders li + li {
+  margin-top: 0.25rem;
+}
+
 .trophies-page__empty,
 .notifications-center__empty {
   color: var(--shell-muted);
