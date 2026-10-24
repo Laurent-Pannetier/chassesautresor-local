@@ -9,6 +9,78 @@ class ChasseEnigmesPayantesTest extends TestCase
      */
     public function test_ignore_enigmes_without_validation_mode(): void
     {
+        $this->bootHuntDisplay();
+
+        global $fields;
+        $fields = [
+            1 => [
+                'chasse_principale_description' => '',
+                'chasse_principale_image' => null,
+                'chasse_principale_liens' => [],
+            ],
+            10 => [
+                'enigme_tentative_cout_points' => 5,
+                'enigme_mode_validation' => 'manuelle',
+            ],
+            11 => [
+                'enigme_tentative_cout_points' => 3,
+                'enigme_mode_validation' => 'aucune',
+            ],
+            12 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation' => 'manuelle',
+            ],
+        ];
+
+        $infos = preparer_infos_affichage_chasse(1, 2);
+        $this->assertSame(1, $infos['nb_enigmes_payantes']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_missing_attachment_image_does_not_read_offset_on_false(): void
+    {
+        $this->bootHuntDisplay();
+
+        global $fields;
+        $fields = [
+            7 => [
+                'chasse_principale_description' => 'Une chasse',
+                'chasse_principale_image' => 99,
+                'chasse_principale_liens' => [],
+            ],
+            8 => [
+                'chasse_principale_description' => 'Une chasse',
+                'chasse_principale_image' => ['ID' => 50],
+                'chasse_principale_liens' => [],
+            ],
+            10 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation' => 'aucune',
+            ],
+            11 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation' => 'aucune',
+            ],
+            12 => [
+                'enigme_tentative_cout_points' => 0,
+                'enigme_mode_validation' => 'aucune',
+            ],
+        ];
+
+        $missing = preparer_infos_affichage_chasse(7, 2);
+        $this->assertSame(99, $missing['image_id']);
+        $this->assertNull($missing['image_url']);
+
+        $present = preparer_infos_affichage_chasse(8, 2);
+        $this->assertSame(50, $present['image_id']);
+        $this->assertSame('https://example.com/chasse-fiche.jpg', $present['image_url']);
+    }
+
+    private function bootHuntDisplay(): void
+    {
         if (!function_exists('get_post_type')) {
             function get_post_type($id) { return 'chasse'; }
         }
@@ -63,6 +135,15 @@ class ChasseEnigmesPayantesTest extends TestCase
         if (!function_exists('get_post_meta')) {
             function get_post_meta($post_id, $key, $single = false) { return null; }
         }
+        if (!function_exists('wp_get_attachment_image_src')) {
+            function wp_get_attachment_image_src($id, $size) {
+                if ((int) $id === 99) {
+                    return false;
+                }
+
+                return ['https://example.com/' . $size . '.jpg', 1024, 800, true];
+            }
+        }
         if (!defined('HOUR_IN_SECONDS')) {
             define('HOUR_IN_SECONDS', 3600);
         }
@@ -85,39 +166,17 @@ class ChasseEnigmesPayantesTest extends TestCase
             function delete_transient($key) {}
         }
 
-require_once __DIR__
-    . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
+        require_once __DIR__
+            . '/../wp-content/plugins/chassesautresor-core/src/Progress/riddle-progress-functions.php';
         require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-functions.php';
         require_once __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-cta-functions.php';
         require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/chasse-functions.php';
 
-        global $fields, $wpdb;
+        global $wpdb;
         $wpdb = new class {
             public string $prefix = 'wp_';
             public function prepare($query, ...$args) { return $query; }
             public function get_var($query) { return null; }
         };
-        $fields = [
-            1 => [
-                'chasse_principale_description' => '',
-                'chasse_principale_image' => null,
-                'chasse_principale_liens' => [],
-            ],
-            10 => [
-                'enigme_tentative_cout_points' => 5,
-                'enigme_mode_validation' => 'manuelle',
-            ],
-            11 => [
-                'enigme_tentative_cout_points' => 3,
-                'enigme_mode_validation' => 'aucune',
-            ],
-            12 => [
-                'enigme_tentative_cout_points' => 0,
-                'enigme_mode_validation' => 'manuelle',
-            ],
-        ];
-
-        $infos = preparer_infos_affichage_chasse(1, 2);
-        $this->assertSame(1, $infos['nb_enigmes_payantes']);
     }
 }

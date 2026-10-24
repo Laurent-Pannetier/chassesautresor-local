@@ -1135,7 +1135,9 @@ function preparer_infos_affichage_chasse(int $chasse_id, ?int $user_id = null): 
 
     $image_raw = get_field('chasse_principale_image', $chasse_id);
     $image_id  = is_array($image_raw) ? ($image_raw['ID'] ?? null) : $image_raw;
-    $image_url = $image_id ? wp_get_attachment_image_src($image_id, 'chasse-fiche')[0] : null;
+    // wp_get_attachment_image_src() renvoie false si le média est absent.
+    $image_src = $image_id ? wp_get_attachment_image_src($image_id, 'chasse-fiche') : false;
+    $image_url = is_array($image_src) ? ($image_src[0] ?? null) : null;
     $image_alt = $image_id ? get_post_meta($image_id, '_wp_attachment_image_alt', true) : '';
     $image_alt = $image_alt !== '' ? $image_alt : get_the_title($chasse_id);
 

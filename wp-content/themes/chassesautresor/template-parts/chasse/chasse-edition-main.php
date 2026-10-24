@@ -27,7 +27,8 @@ $enigme_ids = recuperer_ids_enigmes_pour_chasse($chasse_id);
 $nombre_enigmes = count($enigme_ids);
 
 $image_id   = $infos_chasse['image_id'] ?? null;
-$image_url  = $image_id ? wp_get_attachment_image_src($image_id, 'thumbnail')[0] : null;
+$image_src  = $image_id ? wp_get_attachment_image_src($image_id, 'thumbnail') : false;
+$image_url  = is_array($image_src) ? ($image_src[0] ?? null) : null;
 $banner_raw = function_exists('get_field') ? get_field('chasse_bandeau_accueil', $chasse_id) : null;
 $banner_id  = 0;
 if (is_array($banner_raw)) {
