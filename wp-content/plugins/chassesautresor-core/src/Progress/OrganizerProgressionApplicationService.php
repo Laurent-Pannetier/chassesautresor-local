@@ -87,15 +87,12 @@ final class OrganizerProgressionApplicationService
     }
 
     /**
-     * @param array<string, mixed> $row
-     * @return array<string, mixed>
-     */
-    /**
      * Day or week buckets for the curve. A single day, or a span with no
      * attempts, stays empty so the page does not draw a flat line.
+     * The last bucket is open when the period ends before that bucket does.
      *
      * @param array<int, array<string, mixed>> $buckets
-     * @return array<int, array{label:string,total:int,success:int}>
+     * @return array<int, array{label:string,date:string,total:int,success:int,open:bool}>
      */
     public function fillAttemptSeries(array $buckets, string $grain, string $startAt, string $endAt): array
     {
@@ -139,8 +136,10 @@ final class OrganizerProgressionApplicationService
             $point = $counts[$key] ?? ['total' => 0, 'success' => 0];
             $points[] = [
                 'label' => $cursor->format('d/m'),
+                'date' => $key,
                 'total' => $point['total'],
                 'success' => $point['success'],
+                'open' => false,
             ];
             $cursor = $cursor->modify($grain === 'week' ? '+1 week' : '+1 day');
             $guard++;
@@ -162,8 +161,17 @@ final class OrganizerProgressionApplicationService
             }
         }
         $points = array_values(array_slice($points, $first));
+        if (count($points) < 2) {
+            return [];
+        }
 
-        return count($points) < 2 ? [] : $points;
+        $last = count($points) - 1;
+        $lastStart = new DateTimeImmutable($points[$last]['date']);
+        $exclusiveEnd = $lastStart->modify($grain === 'week' ? '+1 week' : '+1 day');
+        $endInstant = new DateTimeImmutable(substr($endAt, 0, 19));
+        $points[$last]['open'] = $endInstant < $exclusiveEnd;
+
+        return $points;
     }
 
     public function seriesGrain(?string $start, ?string $end): ?string
@@ -250,7 +258,7 @@ final class OrganizerProgressionApplicationService
 
     /**
      * @param int[] $excluded
-     * @return array{points:array<int, array{label:string,total:int,success:int}>,grain:string}
+     * @return array{points:array<int, array{label:string,date:string,total:int,success:int,open:bool}>,grain:string}
      */
     private function attemptSeries(
         int $riddleId,
