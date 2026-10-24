@@ -486,8 +486,9 @@ function cta_shell_render_hunt_banner_sphere(int $huntId, string $alt): void
 }
 
 /**
- * Muted looping strip. The file is on the element itself so playback does not
- * depend on a deferred script or a reduced-motion check.
+ * Muted strip, played once. The file is on the element itself so playback
+ * does not depend on a deferred script or a reduced-motion check.
+ * A late script must not restart a clip that already began.
  */
 function cta_shell_hunt_banner_video_markup(string $url, string $poster): string
 {
@@ -499,10 +500,11 @@ function cta_shell_hunt_banner_video_markup(string $url, string $poster): string
 
     return '<video class="hunt-banner__video" src="' . esc_url($url) . '"'
         . $posterAttr
-        . ' autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>'
+        . ' autoplay muted playsinline preload="auto" aria-hidden="true"></video>'
         . '<script>(function(){var s=document.currentScript;'
         . 'var v=(s&&s.previousElementSibling)||document.querySelector(".hunt-banner__video");'
-        . 'if(!v||!v.play){return;}v.muted=true;'
+        . 'if(!v||!v.play||v.ended||v.currentTime>0){return;}'
+        . 'v.muted=true;v.loop=false;'
         . 'var p=v.play();if(p&&p.catch){p.catch(function(){});}'
         . '})();</script>';
 }

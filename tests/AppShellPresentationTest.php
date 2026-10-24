@@ -255,6 +255,8 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString('class="hunt-banner__video"', $html);
         $this->assertStringContainsString('src="https://example.test/bandeau.mp4"', $html);
         $this->assertStringContainsString('autoplay', $html);
+        $this->assertDoesNotMatchRegularExpression('/<video[^>]*\sloop[\s=>]/', $html);
+        $this->assertStringContainsString('v.loop=false', $html);
         $this->assertStringContainsString('poster="https://example.test/chasse.jpg"', $html);
         $this->assertStringNotContainsString('prefers-reduced-motion', $html);
         $this->assertStringNotContainsString('data-src=', $html);
