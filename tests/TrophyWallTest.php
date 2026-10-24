@@ -218,6 +218,23 @@ final class TrophyWallTest extends TestCase
         self::assertStringContainsString('TrophyWallRenderer', $template);
     }
 
+    public function testHolderListCanBeDismissedFromTheTrophyPage(): void
+    {
+        $shell = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/app-shell.php'
+        );
+        $script = (string) file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/assets/js/trophy-wall.js'
+        );
+
+        self::assertStringContainsString("\$shellSlug === 'trophees'", $shell);
+        self::assertStringContainsString('assets/js/trophy-wall.js', $shell);
+        self::assertStringContainsString("'cta-trophy-wall'", $shell);
+        self::assertStringContainsString("event.key !== 'Escape'", $script);
+        self::assertStringContainsString("addEventListener('pointerdown'", $script);
+        self::assertStringContainsString("addEventListener('click'", $script);
+    }
+
     private function catalog(): TrophyWallCatalog
     {
         return new TrophyWallCatalog();

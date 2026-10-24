@@ -20248,6 +20248,11 @@ body.admin-bar.shell-edition .app-sidebar {
   color: #fff;
   font-size: 0.65rem;
   font-weight: 600;
+  line-height: 1.15rem;
+}
+
+.trophy-card--square .trophy-card__details[open] .trophy-card__count {
+  background: rgba(8, 12, 18, 0.82);
 }
 
 .trophy-card--square:has(details[open]) {
@@ -20261,8 +20266,11 @@ body.admin-bar.shell-edition .app-sidebar {
   left: 0;
   z-index: 4;
   min-width: 8.5rem;
+  max-height: min(16rem, 60vh);
   margin: 0;
   padding: 0.35rem 0.55rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid var(--shell-border);
   border-radius: 0.7rem;
   background: var(--shell-surface);
@@ -20270,9 +20278,7 @@ body.admin-bar.shell-edition .app-sidebar {
 }
 
 .trophy-card__count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
   min-width: 2rem;
   padding: 0.15rem 0.65rem;
   border: 1px solid var(--shell-border);
@@ -20280,6 +20286,8 @@ body.admin-bar.shell-edition .app-sidebar {
   background: var(--shell-accent-soft);
   color: var(--shell-accent-strong);
   font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
   cursor: pointer;
   list-style: none;
 }
