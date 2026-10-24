@@ -163,6 +163,193 @@ class AppShellPresentationTest extends TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
+    public function test_still_banner_prefers_the_panoramic_field(): void
+    {
+        $this->bootShell();
+        $GLOBALS['cat_attachment_image'] = null;
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return ["ID" => 91, "url" => "https://example.test/bandeau.jpg"];
+            }
+            return ["ID" => 42, "url" => "https://example.test/chasse.jpg"];
+        }');
+        eval('function wp_get_attachment_image($id, $size = "thumbnail", $icon = false, $attr = []){
+            $GLOBALS["cat_attachment_image"] = $id;
+            return "<img class=\"hunt-banner__photo\" src=\"https://example.test/" . $id . ".jpg\">";
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('hunt-banner__frame', $html);
+        $this->assertSame(91, $GLOBALS['cat_attachment_image']);
+        $this->assertStringNotContainsString('data-hunt-sphere', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_still_banner_falls_back_to_the_hunt_image(): void
+    {
+        $this->bootShell();
+        $GLOBALS['cat_attachment_image'] = null;
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return null;
+            }
+            return ["ID" => 42, "url" => "https://example.test/chasse.jpg"];
+        }');
+        eval('function wp_get_attachment_image($id, $size = "thumbnail", $icon = false, $attr = []){
+            $GLOBALS["cat_attachment_image"] = $id;
+            return "<img class=\"hunt-banner__photo\" src=\"https://example.test/" . $id . ".jpg\">";
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('hunt-banner__frame', $html);
+        $this->assertSame(42, $GLOBALS['cat_attachment_image']);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_banner_video_stays_in_the_same_field_and_uses_the_hunt_image_as_poster(): void
+    {
+        $this->bootShell();
+
+        eval('function esc_url($url){return $url;}');
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return [
+                    "ID" => 91,
+                    "url" => "https://example.test/bandeau.mp4",
+                    "mime_type" => "video/mp4",
+                ];
+            }
+            return [
+                "ID" => 42,
+                "url" => "https://example.test/chasse.jpg",
+                "mime_type" => "image/jpeg",
+            ];
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('class="hunt-banner__video"', $html);
+        $this->assertStringContainsString('src="https://example.test/bandeau.mp4"', $html);
+        $this->assertStringContainsString('autoplay', $html);
+        $this->assertDoesNotMatchRegularExpression('/<video[^>]*\sloop[\s=>]/', $html);
+        $this->assertStringContainsString('v.loop=false', $html);
+        $this->assertStringContainsString('poster="https://example.test/chasse.jpg"', $html);
+        $this->assertStringNotContainsString('prefers-reduced-motion', $html);
+        $this->assertStringNotContainsString('data-src=', $html);
+        $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_banner_video_plays_even_when_the_sphere_is_enabled(): void
+    {
+        $this->bootShell();
+
+        eval('function esc_url($url){return $url;}');
+        eval('function get_option($name, $default = false){
+            return $GLOBALS["cat_options"][$name] ?? $default;
+        }');
+        $GLOBALS['cat_options'] = ['cta_hunt_banner_sphere_enabled' => '1'];
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return [
+                    "ID" => 91,
+                    "url" => "https://example.test/bandeau.mp4",
+                    "mime_type" => "video/mp4",
+                ];
+            }
+            return [
+                "ID" => 42,
+                "url" => "https://example.test/chasse.jpg",
+                "mime_type" => "image/jpeg",
+            ];
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('src="https://example.test/bandeau.mp4"', $html);
+        $this->assertStringContainsString('poster="https://example.test/chasse.jpg"', $html);
+        $this->assertStringNotContainsString('data-hunt-sphere', $html);
+        $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_home_banner_field_accepts_a_video_without_changing_its_definition(): void
+    {
+        $this->bootShell();
+
+        $field = cta_shell_prepare_home_banner_field([
+            'type' => 'image',
+            'name' => 'chasse_bandeau_accueil',
+            'return_format' => 'url',
+        ]);
+        $this->assertSame('file', $field['type']);
+        $this->assertSame('array', $field['return_format']);
+        $this->assertStringContainsString('mp4', $field['mime_types']);
+        $this->assertSame('all', $field['library']);
+
+        eval('function acf_is_screen($id = ""){return $id === "acf-field-group";}');
+        $untouched = cta_shell_prepare_home_banner_field([
+            'type' => 'image',
+            'name' => 'chasse_bandeau_accueil',
+            'return_format' => 'array',
+        ]);
+        $this->assertSame('image', $untouched['type']);
+
+        $this->assertFalse(cta_shell_banner_field_allows_video(true, [
+            'name' => 'chasse_bandeau_accueil',
+        ]));
+        $this->assertTrue(cta_shell_banner_field_allows_video(true, [
+            'name' => 'chasse_principale_image',
+        ]));
+
+        eval('function get_post_mime_type($id){
+            return (int) $id === 91 ? "video/mp4" : "image/jpeg";
+        }');
+        $this->assertTrue(cta_shell_banner_value_is_allowed('File must be a valid image.', 91));
+        $this->assertSame(
+            'File must be a valid image.',
+            cta_shell_banner_value_is_allowed('File must be a valid image.', 42)
+        );
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function test_hunt_sphere_switch_is_an_admin_tools_tile(): void
     {
         $this->bootShell();
@@ -208,7 +395,8 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString("'cta_toggle_hunt_banner_sphere' => 'toggleHuntBannerSphere'", $handler);
         $this->assertStringContainsString("check_ajax_referer('cta_hunt_banner_sphere', 'nonce');", $handler);
         $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
-        $this->assertStringContainsString('--hunt-banner-height', $scss);
+        $this->assertStringContainsString('--hunt-banner-height: clamp(7.5rem, 18vh, 11rem);', $scss);
+        $this->assertStringNotContainsString('--hunt-banner-height: 22rem;', $scss);
         $this->assertStringContainsString('.hunt-banner__frame picture img', $scss);
     }
 

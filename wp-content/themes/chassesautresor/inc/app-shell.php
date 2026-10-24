@@ -213,41 +213,119 @@ function cta_shell_hunt_sphere_enabled(): bool
 }
 
 /**
- * Hunt visual used as the home header. No overlay copy is added.
+ * Reads an ACF image or file value into an attachment source.
+ *
+ * @param mixed $imageData
+ * @return array{id:int,url:string,mime:string}
+ */
+function cta_shell_image_value_source($imageData): array
+{
+    $source = ['id' => 0, 'url' => '', 'mime' => ''];
+    if (is_array($imageData)) {
+        if (!empty($imageData['ID'])) {
+            $source['id'] = (int) $imageData['ID'];
+        } elseif (!empty($imageData['id'])) {
+            $source['id'] = (int) $imageData['id'];
+        }
+        if (!empty($imageData['url']) && is_string($imageData['url'])) {
+            $source['url'] = $imageData['url'];
+        }
+        if (!empty($imageData['mime_type']) && is_string($imageData['mime_type'])) {
+            $source['mime'] = $imageData['mime_type'];
+        }
+    } elseif (is_numeric($imageData)) {
+        $source['id'] = (int) $imageData;
+    } elseif (is_string($imageData) && $imageData !== '') {
+        $source['url'] = $imageData;
+    }
+
+    return $source;
+}
+
+/**
+ * Whether the attachment should play in the home strip instead of being cropped as a picture.
+ */
+function cta_shell_attachment_is_video(string $mime, string $url = ''): bool
+{
+    if (strncmp($mime, 'video/', 6) === 0) {
+        return true;
+    }
+
+    $path = strtolower((string) parse_url($url, PHP_URL_PATH));
+
+    return (bool) preg_match('/\.(mp4|webm|ogg)$/', $path);
+}
+
+/**
+ * Fills a missing MIME type and URL from the attachment id.
+ *
+ * @param array{id:int,url:string,mime?:string} $source
+ * @return array{id:int,url:string,mime:string}
+ */
+function cta_shell_resolve_image_source(array $source): array
+{
+    if (!isset($source['mime'])) {
+        $source['mime'] = '';
+    }
+
+    if ($source['mime'] === '' && $source['id'] > 0 && function_exists('get_post_mime_type')) {
+        $mime = get_post_mime_type($source['id']);
+        $source['mime'] = is_string($mime) ? $mime : '';
+    }
+
+    $isVideo = cta_shell_attachment_is_video($source['mime'], $source['url']);
+    if (
+        $source['url'] === ''
+        && $source['id'] > 0
+        && !$isVideo
+        && function_exists('wp_get_attachment_image_url')
+    ) {
+        $resolved = wp_get_attachment_image_url($source['id'], 'full');
+        $source['url'] = is_string($resolved) ? $resolved : '';
+    }
+
+    if (
+        $source['url'] === ''
+        && $source['id'] > 0
+        && $isVideo
+        && function_exists('wp_get_attachment_url')
+    ) {
+        $resolved = wp_get_attachment_url($source['id']);
+        $source['url'] = is_string($resolved) ? $resolved : '';
+    }
+
+    return $source;
+}
+
+/**
+ * @param array{id:int,url:string} $source
+ */
+function cta_shell_image_source_is_empty(array $source): bool
+{
+    return $source['id'] <= 0 && $source['url'] === '';
+}
+
+/**
+ * Hunt visual used by the login screen, the cards and the sphere texture.
  *
  * @return array{id:int,url:string}
  */
 function cta_shell_hunt_image_source(int $huntId): array
 {
-    $source = ['id' => 0, 'url' => ''];
+    $source = ['id' => 0, 'url' => '', 'mime' => ''];
     if ($huntId <= 0) {
         return $source;
     }
 
     if (function_exists('get_field')) {
-        $imageData = get_field('chasse_principale_image', $huntId);
-        if (is_array($imageData)) {
-            if (!empty($imageData['ID'])) {
-                $source['id'] = (int) $imageData['ID'];
-            }
-            if (!empty($imageData['url'])) {
-                $source['url'] = (string) $imageData['url'];
-            }
-        } elseif (is_numeric($imageData)) {
-            $source['id'] = (int) $imageData;
-        } elseif (is_string($imageData) && $imageData !== '') {
-            $source['url'] = $imageData;
-        }
+        $source = cta_shell_image_value_source(get_field('chasse_principale_image', $huntId));
     }
 
     if ($source['id'] <= 0 && function_exists('get_post_thumbnail_id')) {
         $source['id'] = (int) get_post_thumbnail_id($huntId);
     }
 
-    if ($source['url'] === '' && $source['id'] > 0 && function_exists('wp_get_attachment_image_url')) {
-        $resolved = wp_get_attachment_image_url($source['id'], 'full');
-        $source['url'] = is_string($resolved) ? $resolved : '';
-    }
+    $source = cta_shell_resolve_image_source($source);
 
     if ($source['url'] === '' && function_exists('get_the_post_thumbnail_url')) {
         $thumb = get_the_post_thumbnail_url($huntId, 'full');
@@ -255,6 +333,25 @@ function cta_shell_hunt_image_source(int $huntId): array
     }
 
     return $source;
+}
+
+/**
+ * Wide home strip. The panoramic field wins; the hunt poster is the fallback.
+ *
+ * @return array{id:int,url:string}
+ */
+function cta_shell_hunt_banner_image_source(int $huntId): array
+{
+    if ($huntId > 0 && function_exists('get_field')) {
+        $banner = cta_shell_resolve_image_source(
+            cta_shell_image_value_source(get_field('chasse_bandeau_accueil', $huntId))
+        );
+        if (!cta_shell_image_source_is_empty($banner)) {
+            return $banner;
+        }
+    }
+
+    return cta_shell_hunt_image_source($huntId);
 }
 
 /**
@@ -332,8 +429,9 @@ function cta_shell_hunt_banner_photo_markup(int $attachmentId, string $url, stri
 
 /**
  * Renders the hunt header.
- * The sphere is loaded only when an administrator has switched it on.
- * Otherwise the hunt image is a normal picture Imagify can optimize.
+ * A video in the home strip plays for every role, even when the sphere is on.
+ * Otherwise the sphere is loaded only when an administrator has switched it on,
+ * and the hunt image stays a normal picture Imagify can optimize.
  */
 function cta_shell_render_hunt_banner(): void
 {
@@ -345,12 +443,25 @@ function cta_shell_render_hunt_banner(): void
 
     $label = esc_attr__('Image de la chasse', 'chassesautresor-com');
     echo '<section class="hunt-banner" aria-label="' . $label . '">';
-    if (cta_shell_hunt_sphere_enabled()) {
+    if (cta_shell_hunt_sphere_enabled() && !cta_shell_hunt_banner_is_video($huntId)) {
         cta_shell_render_hunt_banner_sphere($huntId, $alt);
     } else {
         cta_shell_render_hunt_banner_photo($huntId, $alt);
     }
     echo '</section>';
+}
+
+/**
+ * Whether the home strip field currently stores a video.
+ */
+function cta_shell_hunt_banner_is_video(int $huntId): bool
+{
+    $source = cta_shell_hunt_banner_image_source($huntId);
+
+    return cta_shell_attachment_is_video(
+        (string) ($source['mime'] ?? ''),
+        (string) ($source['url'] ?? '')
+    );
 }
 
 /**
@@ -375,12 +486,46 @@ function cta_shell_render_hunt_banner_sphere(int $huntId, string $alt): void
 }
 
 /**
- * Normal image mode. No canvas, no sphere script, no texture URL rewrite.
+ * Muted strip, played once. The file is on the element itself so playback
+ * does not depend on a deferred script or a reduced-motion check.
+ * A late script must not restart a clip that already began.
+ */
+function cta_shell_hunt_banner_video_markup(string $url, string $poster): string
+{
+    if ($url === '' || !function_exists('esc_url')) {
+        return '';
+    }
+
+    $posterAttr = $poster !== '' ? ' poster="' . esc_url($poster) . '"' : '';
+
+    return '<video class="hunt-banner__video" src="' . esc_url($url) . '"'
+        . $posterAttr
+        . ' autoplay muted playsinline preload="auto" aria-hidden="true"></video>'
+        . '<script>(function(){var s=document.currentScript;'
+        . 'var v=(s&&s.previousElementSibling)||document.querySelector(".hunt-banner__video");'
+        . 'if(!v||!v.play||v.ended||v.currentTime>0){return;}'
+        . 'v.muted=true;v.loop=false;'
+        . 'var p=v.play();if(p&&p.catch){p.catch(function(){});}'
+        . '})();</script>';
+}
+
+/**
+ * Normal picture, or the MP4 stored in the same banner field.
+ * No canvas and no sphere script.
  */
 function cta_shell_render_hunt_banner_photo(int $huntId, string $alt): void
 {
-    $source = cta_shell_hunt_image_source($huntId);
-    $html = cta_shell_hunt_banner_photo_markup($source['id'], $source['url'], $alt);
+    $source = cta_shell_hunt_banner_image_source($huntId);
+    $mime = (string) ($source['mime'] ?? '');
+    if (cta_shell_attachment_is_video($mime, (string) $source['url'])) {
+        $poster = (string) cta_shell_hunt_image_source($huntId)['url'];
+        if ($poster === $source['url']) {
+            $poster = '';
+        }
+        $html = cta_shell_hunt_banner_video_markup((string) $source['url'], $poster);
+    } else {
+        $html = cta_shell_hunt_banner_photo_markup($source['id'], $source['url'], $alt);
+    }
     if ($html === '') {
         cta_shell_render_hunt_banner_empty();
         return;
@@ -400,6 +545,87 @@ function cta_shell_render_hunt_banner_empty(): void
     echo esc_html__('Emplacement de l’image de la chasse', 'chassesautresor-com');
     echo '</p>';
 }
+
+/**
+ * The home strip was created as an ACF image field, which rejects an MP4
+ * and drops a video id the next time the post is saved.
+ *
+ * @param mixed $field
+ * @return mixed
+ */
+function cta_shell_prepare_home_banner_field($field)
+{
+    if (!is_array($field)) {
+        return $field;
+    }
+    if (function_exists('acf_is_screen') && acf_is_screen('acf-field-group')) {
+        return $field;
+    }
+
+    $field['type'] = 'file';
+    $field['return_format'] = 'array';
+    $field['mime_types'] = 'jpg,jpeg,png,gif,webp,mp4,webm';
+    if (empty($field['library'])) {
+        $field['library'] = 'all';
+    }
+
+    return $field;
+}
+add_filter('acf/load_field/name=chasse_bandeau_accueil', 'cta_shell_prepare_home_banner_field');
+
+/**
+ * Keeps image-only attachment checks from blocking this field.
+ *
+ * @param mixed $isImageField
+ * @param mixed $field
+ */
+function cta_shell_banner_field_allows_video($isImageField, $field = null): bool
+{
+    if (is_array($field)) {
+        $name = (string) ($field['_name'] ?? $field['name'] ?? '');
+        if ($name === 'chasse_bandeau_accueil') {
+            return false;
+        }
+    }
+
+    return (bool) $isImageField;
+}
+add_filter(
+    'acf/is_image_field/name=chasse_bandeau_accueil',
+    'cta_shell_banner_field_allows_video',
+    10,
+    2
+);
+
+/**
+ * A video attachment is valid in the home strip. Other failures stay in place.
+ *
+ * @param mixed $valid
+ * @param mixed $value
+ * @param mixed $field
+ * @param mixed $input
+ * @return mixed
+ */
+function cta_shell_banner_value_is_allowed($valid, $value, $field = null, $input = null)
+{
+    unset($field, $input);
+    if (!is_numeric($value) || !function_exists('get_post_mime_type')) {
+        return $valid;
+    }
+
+    $mime = get_post_mime_type((int) $value);
+    if (is_string($mime) && strncmp($mime, 'video/', 6) === 0) {
+        return true;
+    }
+
+    return $valid;
+}
+add_filter(
+    'acf/validate_value/name=chasse_bandeau_accueil',
+    'cta_shell_banner_value_is_allowed',
+    20,
+    4
+);
 
 /**
  * Administrator tile that turns the home-banner sphere on or off.

@@ -792,6 +792,20 @@ section.enigme-wrapper {
   border-radius: 0.25rem;
 }
 
+.edition-panel .champ-img.champ-img--bandeau img,
+.edition-panel .champ-img.champ-img--bandeau video {
+  max-width: 12rem;
+}
+
+.edition-row-hint {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--shell-muted, var(--color-editor-text-muted));
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
 .media-modal.wp-core-ui button.media-modal-close:hover {
   color: white;
 }

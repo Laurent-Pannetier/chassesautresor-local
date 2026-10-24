@@ -178,8 +178,8 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertNotFalse($banner);
         self::assertNotFalse($strip);
         self::assertNotFalse($enigmas);
-        self::assertLessThan($strip, $banner);
-        self::assertLessThan($enigmas, $strip);
+        self::assertLessThan($banner, $strip);
+        self::assertLessThan($enigmas, $banner);
         self::assertStringContainsString('data-reset-my-progress', $home);
         self::assertStringContainsString('cta_reset_my_progress', $home);
         self::assertStringContainsString('Votre participation est conservée.', $home);
@@ -245,6 +245,12 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringContainsString('.sommaire-bd__pointilles', $styles);
         self::assertStringContainsString('font-variant-numeric: tabular-nums;', $styles);
         self::assertStringContainsString('border: 1px solid #1a140f;', $styles);
+        self::assertStringContainsString('font-family: "Skranji", Palatino, "Palatino Linotype", serif;', $styles);
+        self::assertStringContainsString('font-weight: 500;', $styles);
+        self::assertStringContainsString('width: 5rem;', $styles);
+        self::assertStringContainsString('width: 6.25rem;', $styles);
+        $functions = (string) file_get_contents(self::THEME_PATH . '/functions.php');
+        self::assertStringContainsString('family=Skranji:wght@700', $functions);
     }
 
     public function testCompactHuntEnigmaCardsUsePosterLayout(): void
