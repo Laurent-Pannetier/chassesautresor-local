@@ -221,8 +221,7 @@ final class AccountHuntRiddleStatisticsRenderer
             $html .= '<p class="progression-hint">' . esc_html($hint)
                 . $this->scopeBadge('current', $period) . '</p>';
         }
-        $html .= $this->stepsBlock($row, $engaged);
-        $html .= $this->seriesChart($row);
+        $html .= $this->answersDetails($row, $engaged);
         $html .= '</li>';
 
         return $html;
@@ -557,8 +556,60 @@ final class AccountHuntRiddleStatisticsRenderer
         return $title !== '' ? $title : __('Étape', 'chassesautresor-com');
     }
 
-    /** @param array<string, mixed> $row */
-    private function seriesChart(array $row): string
+    /**
+     * Weekly or daily finals, then the step histogram, behind one disclosure.
+     *
+     * @param array<string, mixed> $row
+     */
+    private function answersDetails(array $row, int $engaged): string
+    {
+        $steps = $this->stepsBlock($row, $engaged);
+        $series = $this->seriesParts($row);
+        if ($steps === '' && $series === null) {
+            return '';
+        }
+
+        $hasSeries = $series !== null;
+        $html = '';
+        if ($hasSeries && $series['reading'] !== '') {
+            $html .= '<p class="progression-series__reading">' . esc_html($series['reading']) . '</p>';
+        }
+        $html .= '<details class="progression-series">';
+        $html .= '<summary class="progression-series__summary">' . esc_html($this->answersSummary(
+            $hasSeries ? $series['grain'] : '',
+            $hasSeries,
+            $steps !== ''
+        )) . '</summary>';
+        if ($hasSeries) {
+            $html .= '<p class="screen-reader-text">' . esc_html($series['accessible']) . '</p>';
+            $html .= $series['body'];
+        }
+        $html .= $steps;
+
+        return $html . '</details>';
+    }
+
+    private function answersSummary(string $grain, bool $hasSeries, bool $hasSteps): string
+    {
+        if ($hasSeries && $hasSteps) {
+            return $grain === 'day'
+                ? __('Réponses finales par jour et étapes', 'chassesautresor-com')
+                : __('Réponses finales par semaine et étapes', 'chassesautresor-com');
+        }
+        if ($hasSeries) {
+            return $grain === 'day'
+                ? __('Réponses finales par jour', 'chassesautresor-com')
+                : __('Réponses finales par semaine', 'chassesautresor-com');
+        }
+
+        return __('Étapes', 'chassesautresor-com');
+    }
+
+    /**
+     * @param array<string, mixed> $row
+     * @return array{reading:string,grain:string,accessible:string,body:string}|null
+     */
+    private function seriesParts(array $row): ?array
     {
         $series = [];
         foreach ((array) ($row['attempt_series'] ?? []) as $point) {
@@ -574,16 +625,13 @@ final class AccountHuntRiddleStatisticsRenderer
             ];
         }
         if (count($series) < 2) {
-            return '';
+            return null;
         }
 
         $totals = array_map(static fn (array $point): int => $point['total'], $series);
         $successes = array_map(static fn (array $point): int => $point['success'], $series);
         $max = max(1, max($totals));
         $grain = (string) ($row['attempt_series_grain'] ?? 'week');
-        $caption = $grain === 'day'
-            ? __('Réponses finales par jour', 'chassesautresor-com')
-            : __('Réponses finales par semaine', 'chassesautresor-com');
         $summary = sprintf(
             /* translators: 1: number of buckets, 2: final attempts, 3: correct final answers */
             __('Histogramme des réponses finales : %1$s, %2$s, %3$s.', 'chassesautresor-com'),
@@ -598,29 +646,25 @@ final class AccountHuntRiddleStatisticsRenderer
             )
         );
         $peak = $this->peakIndex($totals);
-
-        $html = '';
-        $reading = $this->seriesReading($series[$peak], $grain);
-        if ($reading !== '') {
-            $html .= '<p class="progression-series__reading">' . esc_html($reading) . '</p>';
-        }
-        $html .= '<details class="progression-series">';
-        $html .= '<summary class="progression-series__summary">' . esc_html($caption) . '</summary>';
-        $html .= '<p class="screen-reader-text">' . esc_html($summary) . '</p>';
-        $html .= $this->seriesColumns($series, $max, $peak);
-        $html .= '<ul class="progression-series__legend">';
-        $html .= '<li><i class="progression-series__swatch progression-series__swatch--total" aria-hidden="true"></i> '
+        $body = $this->seriesColumns($series, $max, $peak);
+        $body .= '<ul class="progression-series__legend">';
+        $body .= '<li><i class="progression-series__swatch progression-series__swatch--total" aria-hidden="true"></i> '
             . esc_html(__('Tentatives finales', 'chassesautresor-com')) . '</li>';
-        $html .= '<li><i class="progression-series__swatch progression-series__swatch--success"'
+        $body .= '<li><i class="progression-series__swatch progression-series__swatch--success"'
             . ' aria-hidden="true"></i> '
             . esc_html(__('Bonnes réponses', 'chassesautresor-com')) . '</li>';
-        $html .= '</ul>';
-        $html .= '<p class="progression-note">' . esc_html(__(
+        $body .= '</ul>';
+        $body .= '<p class="progression-note">' . esc_html(__(
             'Les essais sur les étapes n’y entrent pas.',
             'chassesautresor-com'
-        )) . '</p></details>';
+        )) . '</p>';
 
-        return $html;
+        return [
+            'reading' => $this->seriesReading($series[$peak], $grain),
+            'grain' => $grain,
+            'accessible' => $summary,
+            'body' => $body,
+        ];
     }
 
     /**

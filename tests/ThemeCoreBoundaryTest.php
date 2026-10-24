@@ -1717,7 +1717,11 @@ final class ThemeCoreBoundaryTest extends TestCase
 
         self::assertStringContainsString('HuntEngagementRouteHandler::handle()', $engagement);
         self::assertStringNotContainsString('HuntEngagementApplicationService', $engagement);
-        self::assertStringContainsString('RiddleAttemptMaintenanceService', $attempt);
+        self::assertStringContainsString('cta_shell_edition_url', $attempt);
+        self::assertStringContainsString('ManualAttemptReviewHandler::process', $attempt);
+        self::assertStringNotContainsString('RiddleAttemptMaintenanceService', $attempt);
+        self::assertStringNotContainsString('reset_tentatives', $attempt);
+        self::assertStringNotContainsString('reset_all', $attempt);
         self::assertStringNotContainsString('deleteForRiddle(', $attempt);
         self::assertStringNotContainsString('deleteRiddleStatuses(', $attempt);
     }

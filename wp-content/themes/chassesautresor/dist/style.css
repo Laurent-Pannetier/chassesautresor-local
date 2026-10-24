@@ -18897,6 +18897,10 @@ html[data-theme=day] .home-enigmas-preserve {
   cursor: pointer;
 }
 
+.progression-series .progression-dropoff {
+  margin-top: 0.85rem;
+}
+
 .progression-columns {
   display: flex;
   align-items: stretch;

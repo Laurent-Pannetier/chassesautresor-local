@@ -190,8 +190,19 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         self::assertStringContainsString('La porte', $html);
         self::assertStringContainsString('75 %', $html);
         self::assertStringContainsString('La plus forte chute de joueurs est à « Le couloir ».', $html);
+        self::assertStringContainsString('Réponses finales par semaine et étapes', $html);
+        $details = strpos($html, '<details class="progression-series">');
+        $step = strpos($html, 'La porte');
+        self::assertNotFalse($details);
+        self::assertNotFalse($step);
+        self::assertLessThan($step, $details);
+        self::assertLessThan(strpos($html, '</details>'), $step);
         self::assertStringContainsString('progression-steps-chart__row--break', $html);
         self::assertStringContainsString('Réponses finales par semaine', $html);
+        self::assertLessThan(
+            strpos($html, '<details class="progression-series">'),
+            strpos($html, 'Semaine du 13/10')
+        );
         self::assertStringContainsString(
             'Semaine du 13/10 : 7 tentatives finales, peu de réussites.',
             $html

@@ -26,7 +26,13 @@ final class ManualAnswerNotificationService
 
         $riddleTitle = html_entity_decode((string) get_the_title($riddleId), ENT_QUOTES, 'UTF-8');
         $profileUrl = get_author_posts_url($userId);
-        $reviewUrl = add_query_arg(['uid' => $attemptUid], home_url('/traitement-tentative'));
+        $fallback = add_query_arg(['uid' => $attemptUid], home_url('/traitement-tentative'));
+        $reviewUrl = function_exists('apply_filters')
+            ? (string) apply_filters('chassesautresor_edition_url', $fallback, 'enigme', $riddleId, 'tentatives')
+            : $fallback;
+        if ($reviewUrl === '') {
+            $reviewUrl = $fallback;
+        }
         $message = '<p>' . sprintf(
             esc_html__('Une nouvelle réponse manuelle a été soumise par %s.', 'chassesautresor-com'),
             '<strong><a href="' . esc_url($profileUrl) . '">' . esc_html($user->user_login) . '</a></strong>'
