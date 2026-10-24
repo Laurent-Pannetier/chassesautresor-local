@@ -429,8 +429,9 @@ function cta_shell_hunt_banner_photo_markup(int $attachmentId, string $url, stri
 
 /**
  * Renders the hunt header.
- * The sphere is loaded only when an administrator has switched it on.
- * Otherwise the hunt image is a normal picture Imagify can optimize.
+ * A video in the home strip plays for every role, even when the sphere is on.
+ * Otherwise the sphere is loaded only when an administrator has switched it on,
+ * and the hunt image stays a normal picture Imagify can optimize.
  */
 function cta_shell_render_hunt_banner(): void
 {
@@ -442,12 +443,25 @@ function cta_shell_render_hunt_banner(): void
 
     $label = esc_attr__('Image de la chasse', 'chassesautresor-com');
     echo '<section class="hunt-banner" aria-label="' . $label . '">';
-    if (cta_shell_hunt_sphere_enabled()) {
+    if (cta_shell_hunt_sphere_enabled() && !cta_shell_hunt_banner_is_video($huntId)) {
         cta_shell_render_hunt_banner_sphere($huntId, $alt);
     } else {
         cta_shell_render_hunt_banner_photo($huntId, $alt);
     }
     echo '</section>';
+}
+
+/**
+ * Whether the home strip field currently stores a video.
+ */
+function cta_shell_hunt_banner_is_video(int $huntId): bool
+{
+    $source = cta_shell_hunt_banner_image_source($huntId);
+
+    return cta_shell_attachment_is_video(
+        (string) ($source['mime'] ?? ''),
+        (string) ($source['url'] ?? '')
+    );
 }
 
 /**
@@ -472,28 +486,24 @@ function cta_shell_render_hunt_banner_sphere(int $huntId, string $alt): void
 }
 
 /**
- * Muted looping strip. The file stays unloaded when the visitor prefers less motion.
+ * Muted looping strip. The file is on the element itself so playback does not
+ * depend on a deferred script or a reduced-motion check.
  */
 function cta_shell_hunt_banner_video_markup(string $url, string $poster): string
 {
-    if ($url === '' || !function_exists('esc_url') || !function_exists('esc_attr')) {
+    if ($url === '' || !function_exists('esc_url')) {
         return '';
     }
 
-    $path = strtolower((string) parse_url($url, PHP_URL_PATH));
-    $type = str_ends_with($path, '.webm') ? 'video/webm' : 'video/mp4';
     $posterAttr = $poster !== '' ? ' poster="' . esc_url($poster) . '"' : '';
 
-    return '<video class="hunt-banner__video" muted loop playsinline preload="none"'
+    return '<video class="hunt-banner__video" src="' . esc_url($url) . '"'
         . $posterAttr
-        . ' data-src="' . esc_url($url) . '" data-type="' . esc_attr($type) . '" aria-hidden="true">'
-        . '</video><script>(function(){var v=document.currentScript.previousElementSibling;'
-        . 'if(!v||!v.getAttribute){return;}'
-        . 'if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches){return;}'
-        . 'v.muted=true;var s=document.createElement("source");'
-        . 's.src=v.getAttribute("data-src");s.type=v.getAttribute("data-type")||"video/mp4";'
-        . 'v.appendChild(s);var play=function(){var p=v.play();if(p&&p.catch){p.catch(function(){});}};'
-        . 'if(v.readyState>=2){play();}else{v.addEventListener("canplay",play,{once:true});}'
+        . ' autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>'
+        . '<script>(function(){var s=document.currentScript;'
+        . 'var v=(s&&s.previousElementSibling)||document.querySelector(".hunt-banner__video");'
+        . 'if(!v||!v.play){return;}v.muted=true;'
+        . 'var p=v.play();if(p&&p.catch){p.catch(function(){});}'
         . '})();</script>';
 }
 
@@ -533,6 +543,87 @@ function cta_shell_render_hunt_banner_empty(): void
     echo esc_html__('Emplacement de l’image de la chasse', 'chassesautresor-com');
     echo '</p>';
 }
+
+/**
+ * The home strip was created as an ACF image field, which rejects an MP4
+ * and drops a video id the next time the post is saved.
+ *
+ * @param mixed $field
+ * @return mixed
+ */
+function cta_shell_prepare_home_banner_field($field)
+{
+    if (!is_array($field)) {
+        return $field;
+    }
+    if (function_exists('acf_is_screen') && acf_is_screen('acf-field-group')) {
+        return $field;
+    }
+
+    $field['type'] = 'file';
+    $field['return_format'] = 'array';
+    $field['mime_types'] = 'jpg,jpeg,png,gif,webp,mp4,webm';
+    if (empty($field['library'])) {
+        $field['library'] = 'all';
+    }
+
+    return $field;
+}
+add_filter('acf/load_field/name=chasse_bandeau_accueil', 'cta_shell_prepare_home_banner_field');
+
+/**
+ * Keeps image-only attachment checks from blocking this field.
+ *
+ * @param mixed $isImageField
+ * @param mixed $field
+ */
+function cta_shell_banner_field_allows_video($isImageField, $field = null): bool
+{
+    if (is_array($field)) {
+        $name = (string) ($field['_name'] ?? $field['name'] ?? '');
+        if ($name === 'chasse_bandeau_accueil') {
+            return false;
+        }
+    }
+
+    return (bool) $isImageField;
+}
+add_filter(
+    'acf/is_image_field/name=chasse_bandeau_accueil',
+    'cta_shell_banner_field_allows_video',
+    10,
+    2
+);
+
+/**
+ * A video attachment is valid in the home strip. Other failures stay in place.
+ *
+ * @param mixed $valid
+ * @param mixed $value
+ * @param mixed $field
+ * @param mixed $input
+ * @return mixed
+ */
+function cta_shell_banner_value_is_allowed($valid, $value, $field = null, $input = null)
+{
+    unset($field, $input);
+    if (!is_numeric($value) || !function_exists('get_post_mime_type')) {
+        return $valid;
+    }
+
+    $mime = get_post_mime_type((int) $value);
+    if (is_string($mime) && strncmp($mime, 'video/', 6) === 0) {
+        return true;
+    }
+
+    return $valid;
+}
+add_filter(
+    'acf/validate_value/name=chasse_bandeau_accueil',
+    'cta_shell_banner_value_is_allowed',
+    20,
+    4
+);
 
 /**
  * Administrator tile that turns the home-banner sphere on or off.

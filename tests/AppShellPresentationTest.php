@@ -253,11 +253,95 @@ class AppShellPresentationTest extends TestCase
         $html = (string) ob_get_clean();
 
         $this->assertStringContainsString('class="hunt-banner__video"', $html);
-        $this->assertStringContainsString('data-src="https://example.test/bandeau.mp4"', $html);
+        $this->assertStringContainsString('src="https://example.test/bandeau.mp4"', $html);
+        $this->assertStringContainsString('autoplay', $html);
         $this->assertStringContainsString('poster="https://example.test/chasse.jpg"', $html);
-        $this->assertStringContainsString('prefers-reduced-motion: reduce', $html);
-        $this->assertDoesNotMatchRegularExpression('/<video[^>]*\ssrc=/', $html);
+        $this->assertStringNotContainsString('prefers-reduced-motion', $html);
+        $this->assertStringNotContainsString('data-src=', $html);
         $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_banner_video_plays_even_when_the_sphere_is_enabled(): void
+    {
+        $this->bootShell();
+
+        eval('function esc_url($url){return $url;}');
+        eval('function get_option($name, $default = false){
+            return $GLOBALS["cat_options"][$name] ?? $default;
+        }');
+        $GLOBALS['cat_options'] = ['cta_hunt_banner_sphere_enabled' => '1'];
+        eval('function cat_get_primary_hunt_id(){return 7;}');
+        eval('function get_the_title($id = 0){return "Antre de feu";}');
+        eval('function get_field($key, $id){
+            if ($key === "chasse_bandeau_accueil") {
+                return [
+                    "ID" => 91,
+                    "url" => "https://example.test/bandeau.mp4",
+                    "mime_type" => "video/mp4",
+                ];
+            }
+            return [
+                "ID" => 42,
+                "url" => "https://example.test/chasse.jpg",
+                "mime_type" => "image/jpeg",
+            ];
+        }');
+
+        ob_start();
+        cta_shell_render_hunt_banner();
+        $html = (string) ob_get_clean();
+
+        $this->assertStringContainsString('src="https://example.test/bandeau.mp4"', $html);
+        $this->assertStringContainsString('poster="https://example.test/chasse.jpg"', $html);
+        $this->assertStringNotContainsString('data-hunt-sphere', $html);
+        $this->assertStringNotContainsString('hunt-banner__canvas', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_home_banner_field_accepts_a_video_without_changing_its_definition(): void
+    {
+        $this->bootShell();
+
+        $field = cta_shell_prepare_home_banner_field([
+            'type' => 'image',
+            'name' => 'chasse_bandeau_accueil',
+            'return_format' => 'url',
+        ]);
+        $this->assertSame('file', $field['type']);
+        $this->assertSame('array', $field['return_format']);
+        $this->assertStringContainsString('mp4', $field['mime_types']);
+        $this->assertSame('all', $field['library']);
+
+        eval('function acf_is_screen($id = ""){return $id === "acf-field-group";}');
+        $untouched = cta_shell_prepare_home_banner_field([
+            'type' => 'image',
+            'name' => 'chasse_bandeau_accueil',
+            'return_format' => 'array',
+        ]);
+        $this->assertSame('image', $untouched['type']);
+
+        $this->assertFalse(cta_shell_banner_field_allows_video(true, [
+            'name' => 'chasse_bandeau_accueil',
+        ]));
+        $this->assertTrue(cta_shell_banner_field_allows_video(true, [
+            'name' => 'chasse_principale_image',
+        ]));
+
+        eval('function get_post_mime_type($id){
+            return (int) $id === 91 ? "video/mp4" : "image/jpeg";
+        }');
+        $this->assertTrue(cta_shell_banner_value_is_allowed('File must be a valid image.', 91));
+        $this->assertSame(
+            'File must be a valid image.',
+            cta_shell_banner_value_is_allowed('File must be a valid image.', 42)
+        );
     }
 
     /**
