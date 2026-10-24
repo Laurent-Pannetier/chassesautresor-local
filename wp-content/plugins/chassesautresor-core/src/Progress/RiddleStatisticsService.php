@@ -86,4 +86,10 @@ class RiddleStatisticsService
             ? $this->repository->listParticipants($id, $excludedUserIds, $limit, $offset, $orderBy, $order)
             : [];
     }
+
+    /** @return array<int, array<string, mixed>> */
+    public function listParticipantHints(int $id, int $userId): array
+    {
+        return $id > 0 && $userId > 0 ? $this->repository->listParticipantHints($id, $userId) : [];
+    }
 }

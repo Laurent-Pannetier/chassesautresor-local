@@ -59,6 +59,23 @@ final class RiddleStatisticsApplicationService
         );
     }
 
+    /** @return array<int, array{title:string,unlocked_at:string}> */
+    public function participantHints(int $riddleId, int $userId): array
+    {
+        $hints = [];
+        foreach ($this->statistics->listParticipantHints($riddleId, $userId) as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $hints[] = [
+                'title' => $this->hintTitle((int) ($row['indice_id'] ?? 0)),
+                'unlocked_at' => (string) ($row['date_deblocage'] ?? ''),
+            ];
+        }
+
+        return $hints;
+    }
+
     public function participantCount(int $riddleId): int
     {
         return $this->statistics->countEngagedPlayers(
@@ -148,5 +165,16 @@ final class RiddleStatisticsApplicationService
         }
 
         return array_values(array_unique($relationships->normalizeIds($excluded)));
+    }
+
+    private function hintTitle(int $hintId): string
+    {
+        if ($hintId <= 0 || !function_exists('get_the_title')) {
+            return '';
+        }
+
+        $title = trim((string) get_the_title($hintId));
+
+        return $title !== '' ? $title : __('Indice', 'chassesautresor-com');
     }
 }

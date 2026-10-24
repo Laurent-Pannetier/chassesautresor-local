@@ -119,6 +119,10 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
             . '/../wp-content/plugins/chassesautresor-core/src/Messages/AccountHuntRiddleStatisticsRenderer.php';
 
         $dashboard = static fn (int $huntId, string $period): array => [
+            'hunt_hints_base' => 6,
+            'hunt_hints' => [
+                ['title' => 'Plan', 'unlocks' => 2],
+            ],
             'summary' => [
                 'participants' => 6,
                 'engagement_rate' => 40,
@@ -144,6 +148,11 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
                 'yield' => ['success' => 2, 'total' => 11],
                 'pending' => 1,
                 'median_attempts' => 3,
+                'hints_base' => 4,
+                'hints' => [
+                    ['title' => 'Carte', 'unlocks' => 5],
+                    ['title' => 'Boussole', 'unlocks' => 0],
+                ],
                 'top_hint' => ['title' => 'Carte', 'unlocks' => 5],
                 'steps_detail' => [
                     [
@@ -186,7 +195,13 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         self::assertStringContainsString('1 réponse', $html);
         self::assertStringContainsString('progression-scope', $html);
         self::assertStringContainsString('État actuel', $html);
+        self::assertStringContainsString('Indices de la chasse', $html);
+        self::assertStringContainsString('Indice le plus débloqué : Plan, 2 joueurs sur 6', $html);
+        self::assertLessThan(strpos($html, 'Énigme Alpha'), strpos($html, 'Indices de la chasse'));
         self::assertStringContainsString('Indice le plus débloqué : Carte, 5 joueurs', $html);
+        self::assertStringContainsString('Boussole', $html);
+        self::assertStringContainsString('>0 <span class="progression-steps-chart__share">sur 4</span>', $html);
+        self::assertStringContainsString('<details class="progression-hints">', $html);
         self::assertStringContainsString('La porte', $html);
         self::assertStringContainsString('75 %', $html);
         self::assertStringContainsString('La plus forte chute de joueurs est à « Le couloir ».', $html);
@@ -196,7 +211,7 @@ final class AccountHuntRiddleStatisticsRendererTest extends TestCase
         self::assertNotFalse($details);
         self::assertNotFalse($step);
         self::assertLessThan($step, $details);
-        self::assertLessThan(strpos($html, '</details>'), $step);
+        self::assertLessThan(strpos($html, '</details>', $details), $step);
         self::assertStringContainsString('progression-steps-chart__row--break', $html);
         self::assertStringContainsString('Réponses finales par semaine', $html);
         self::assertLessThan(

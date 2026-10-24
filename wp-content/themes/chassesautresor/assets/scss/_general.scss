@@ -306,6 +306,41 @@ tbody tr:nth-child(even) {
   margin-left: 4px;
 }
 
+button.participant-hints {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.participant-hints-detail td {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.participant-hints__list {
+  margin: 0.25rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.participant-hints__list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.15rem 0;
+}
+
+.participant-hints__list time,
+.participant-hints__empty {
+  color: #646970;
+}
+
 /* Indices table */
 .indices-table {
   width: 100%;

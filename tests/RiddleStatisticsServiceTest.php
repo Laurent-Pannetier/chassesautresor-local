@@ -46,6 +46,11 @@ class RiddleStatisticsRepositoryStub extends RiddleStatisticsRepository
         $this->arguments = [$id, $excluded, $limit, $offset, $orderBy, $order];
         return [['user_id' => 7]];
     }
+    public function listParticipantHints(int $id, int $userId): array
+    {
+        $this->arguments = [$id, $userId];
+        return [['indice_id' => '9', 'date_deblocage' => '2026-10-24 13:04:00']];
+    }
 }
 
 class RiddleStatisticsServiceTest extends TestCase
@@ -109,5 +114,48 @@ class RiddleStatisticsServiceTest extends TestCase
         $this->assertSame([['user_id' => 7]], $service->listParticipants(10, [1, 2], 25, 0, 'date', 'ASC'));
         $this->assertSame([10, [1, 2], 25, 0, 'date', 'ASC'], $repository->arguments);
         $this->assertSame([], $service->listParticipants(0, [], 25, 0, 'date', 'ASC'));
+    }
+
+    public function testParticipantHintsAreDelegated(): void
+    {
+        $repository = new RiddleStatisticsRepositoryStub();
+        $service = new RiddleStatisticsService($repository);
+
+        $this->assertSame(
+            [['indice_id' => '9', 'date_deblocage' => '2026-10-24 13:04:00']],
+            $service->listParticipantHints(10, 7)
+        );
+        $this->assertSame([10, 7], $repository->arguments);
+        $this->assertSame([], $service->listParticipantHints(0, 7));
+    }
+
+    public function testParticipantQueryCountsDistinctHints(): void
+    {
+        $database = new class {
+            public string $prefix = 'wp_';
+            public string $users = 'wp_users';
+            public string $last = '';
+            public function prepare(string $sql, ...$arguments): string
+            {
+                $this->last = $sql;
+
+                return $sql;
+            }
+            public function get_results(string $sql, string $output = ''): array
+            {
+                $this->last = $sql;
+
+                return [];
+            }
+        };
+        $repository = new RiddleStatisticsRepository($database);
+
+        $repository->listParticipants(10, [3], 25, 0, 'date', 'ASC');
+        $this->assertStringContainsString('indices_deblocages', $database->last);
+        $this->assertStringContainsString('COUNT(DISTINCT indice_id)', $database->last);
+
+        $repository->listParticipantHints(10, 7);
+        $this->assertStringContainsString('date_deblocage ASC', $database->last);
+        $this->assertStringContainsString('user_id = %d', $database->last);
     }
 }

@@ -20,6 +20,7 @@ final class OrganizerProgressionApplicationService
     private $stepCatalog;
     private $excludedUserIds;
     private $hintTitle;
+    private $hintCatalog;
 
     public function __construct(
         ?ProgressionOverviewRepository $dashboard = null,
@@ -28,7 +29,8 @@ final class OrganizerProgressionApplicationService
         ?callable $solverAttempts = null,
         ?callable $stepCatalog = null,
         ?callable $excludedUserIds = null,
-        ?callable $hintTitle = null
+        ?callable $hintTitle = null,
+        ?callable $hintCatalog = null
     ) {
         $this->dashboard = $dashboard;
         $this->overview = $overview;
@@ -37,17 +39,23 @@ final class OrganizerProgressionApplicationService
         $this->stepCatalog = $stepCatalog;
         $this->excludedUserIds = $excludedUserIds;
         $this->hintTitle = $hintTitle;
+        $this->hintCatalog = $hintCatalog;
     }
 
     /**
-     * @return array{summary:array<string,mixed>,riddles:array<int,array<string,mixed>>}
+     * @return array{
+     *     summary:array<string,mixed>,
+     *     hunt_hints:array<int,array<string,mixed>>,
+     *     hunt_hints_base:int,
+     *     riddles:array<int,array<string,mixed>>
+     * }
      */
     public function build(int $huntId, string $period = 'total', ?DateTimeImmutable $now = null): array
     {
         $periodService = new StatisticsPeriodService();
         $period = $periodService->normalize($period);
         if ($huntId <= 0) {
-            return ['summary' => [], 'riddles' => []];
+            return ['summary' => [], 'hunt_hints' => [], 'hunt_hints_base' => 0, 'riddles' => []];
         }
 
         [$start, $end] = $periodService->range($period);
@@ -61,9 +69,12 @@ final class OrganizerProgressionApplicationService
             }
             $riddles[] = $this->enrich($row, $start, $end, $now);
         }
+        $huntExcluded = $this->excludedIds($huntId, true);
 
         return [
             'summary' => $summary,
+            'hunt_hints' => $this->hintRows('chasse', $huntId, $huntExcluded),
+            'hunt_hints_base' => $this->dashboard()->countCurrentPlayers('chasse', $huntId, $huntExcluded),
             'riddles' => $riddles,
         ];
     }
@@ -192,8 +203,7 @@ final class OrganizerProgressionApplicationService
     private function enrich(array $row, ?string $start, ?string $end, ?DateTimeImmutable $now): array
     {
         $riddleId = (int) ($row['id'] ?? 0);
-        $excludedProvider = $this->excludedUserIds ?? [$this, 'defaultExcluded'];
-        $excluded = array_values(array_map('intval', (array) $excludedProvider($riddleId)));
+        $excluded = $this->excludedIds($riddleId, false);
         $dashboard = $this->dashboard();
         $breakdown = $dashboard->attemptBreakdown($riddleId, $start, $end, $excluded);
         $solverProvider = $this->solverAttempts ?? [$this, 'defaultSolverAttempts'];
@@ -223,16 +233,8 @@ final class OrganizerProgressionApplicationService
             ];
         }
 
-        $hint = $dashboard->topHint($riddleId, $excluded);
-        $topHint = null;
-        if ($hint !== null) {
-            $titleProvider = $this->hintTitle ?? [$this, 'defaultHintTitle'];
-            $title = trim((string) $titleProvider((int) $hint['indice_id']));
-            $topHint = [
-                'title' => $title !== '' ? $title : __('Indice', 'chassesautresor-com'),
-                'unlocks' => (int) $hint['unlocks'],
-            ];
-        }
+        $hintRows = $this->hintRows('enigme', $riddleId, $excluded);
+        $topHint = $this->leadingHint($hintRows);
 
         $stepCount = (int) ($row['steps'] ?? count($stepsDetail));
         $row['funnel'] = [
@@ -247,6 +249,8 @@ final class OrganizerProgressionApplicationService
         ];
         $row['pending'] = (int) $breakdown['pending'];
         $row['median_attempts'] = $this->median((array) $solverProvider($riddleId, $excluded));
+        $row['hints'] = $hintRows;
+        $row['hints_base'] = $dashboard->countCurrentPlayers('enigme', $riddleId, $excluded);
         $row['top_hint'] = $topHint;
         $row['steps_detail'] = $stepsDetail;
         $series = $this->attemptSeries($riddleId, $start, $end, $excluded, $now);
@@ -434,5 +438,131 @@ final class OrganizerProgressionApplicationService
         }
 
         return (string) get_the_title($hintId);
+    }
+
+    /** @return int[] */
+    private function excludedIds(int $contextId, bool $hunt): array
+    {
+        if ($this->excludedUserIds !== null) {
+            return array_values(array_map('intval', (array) ($this->excludedUserIds)($contextId)));
+        }
+
+        return $hunt ? $this->defaultExcludedHunt($contextId) : $this->defaultExcluded($contextId);
+    }
+
+    /**
+     * Hints in the order a player sees them, then any unlocked hint missing from that list.
+     *
+     * @param int[] $excluded
+     * @return array<int, array{title:string,unlocks:int}>
+     */
+    private function hintRows(string $targetType, int $targetId, array $excluded): array
+    {
+        if ($targetId <= 0 || !in_array($targetType, ['chasse', 'enigme'], true)) {
+            return [];
+        }
+
+        $counts = $targetType === 'enigme'
+            ? $this->dashboard()->hintUnlockCounts($targetId, $excluded)
+            : $this->dashboard()->huntHintUnlockCounts($targetId, $excluded);
+        $catalogProvider = $this->hintCatalog ?? [$this, 'defaultHintCatalog'];
+        $rows = [];
+        $seen = [];
+        foreach (array_values(array_filter((array) $catalogProvider($targetType, $targetId), 'is_array')) as $hint) {
+            $hintId = (int) ($hint['id'] ?? 0);
+            if ($hintId <= 0 || isset($seen[$hintId])) {
+                continue;
+            }
+            $seen[$hintId] = true;
+            $title = trim((string) ($hint['title'] ?? ''));
+            if ($title === '') {
+                $title = $this->resolveHintTitle($hintId);
+            }
+            $rows[] = [
+                'title' => $title !== '' ? $title : __('Indice', 'chassesautresor-com'),
+                'unlocks' => (int) ($counts[$hintId] ?? 0),
+            ];
+        }
+
+        $extraIds = array_map('intval', array_keys($counts));
+        sort($extraIds);
+        foreach ($extraIds as $hintId) {
+            if ($hintId <= 0 || isset($seen[$hintId])) {
+                continue;
+            }
+            $title = $this->resolveHintTitle($hintId);
+            $rows[] = [
+                'title' => $title !== '' ? $title : __('Indice', 'chassesautresor-com'),
+                'unlocks' => (int) $counts[$hintId],
+            ];
+        }
+
+        return $rows;
+    }
+
+    /** @param array<int, array{title:string,unlocks:int}> $rows */
+    private function leadingHint(array $rows): ?array
+    {
+        $leading = null;
+        foreach ($rows as $row) {
+            if ((int) $row['unlocks'] <= 0) {
+                continue;
+            }
+            if ($leading === null || (int) $row['unlocks'] > (int) $leading['unlocks']) {
+                $leading = ['title' => (string) $row['title'], 'unlocks' => (int) $row['unlocks']];
+            }
+        }
+
+        return $leading;
+    }
+
+    private function resolveHintTitle(int $hintId): string
+    {
+        $provider = $this->hintTitle ?? [$this, 'defaultHintTitle'];
+
+        return trim((string) $provider($hintId));
+    }
+
+    /** @return array<int, array{id:int,title:string}> */
+    private function defaultHintCatalog(string $targetType, int $targetId): array
+    {
+        if (
+            $targetId <= 0
+            || !function_exists('get_posts')
+            || !in_array($targetType, ['chasse', 'enigme'], true)
+        ) {
+            return [];
+        }
+
+        $relationKey = $targetType === 'enigme' ? 'indice_enigme_linked' : 'indice_chasse_linked';
+        $posts = get_posts([
+            'post_type' => 'indice',
+            'post_status' => ['publish', 'draft', 'future', 'pending'],
+            'meta_query' => [
+                ['key' => 'indice_cible_type', 'value' => $targetType, 'compare' => '='],
+                ['key' => $relationKey, 'value' => $targetId, 'compare' => '='],
+                [
+                    'key' => 'indice_cache_etat_systeme',
+                    'value' => ['accessible', 'programme'],
+                    'compare' => 'IN',
+                ],
+            ],
+            'orderby' => 'date',
+            'order' => 'ASC',
+            'no_found_rows' => true,
+            'posts_per_page' => -1,
+            'update_post_meta_cache' => false,
+            'update_post_term_cache' => false,
+        ]);
+        $rows = [];
+        foreach ((array) $posts as $post) {
+            $hintId = is_object($post) ? (int) $post->ID : (int) $post;
+            if ($hintId <= 0) {
+                continue;
+            }
+            $rows[] = ['id' => $hintId, 'title' => $this->resolveHintTitle($hintId)];
+        }
+
+        return $rows;
     }
 }

@@ -11141,6 +11141,41 @@ tbody tr:nth-child(even) {
   margin-left: 4px;
 }
 
+button.participant-hints {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  cursor: pointer;
+}
+
+.participant-hints-detail td {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.participant-hints__list {
+  margin: 0.25rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.participant-hints__list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.15rem 0;
+}
+
+.participant-hints__list time,
+.participant-hints__empty {
+  color: #646970;
+}
+
 /* Indices table */
 .indices-table {
   width: 100%;
@@ -18649,6 +18684,29 @@ html[data-theme=day] .home-enigmas-preserve {
   margin-top: 0;
 }
 
+.progression-hints {
+  margin: 0;
+}
+
+.progression-hints__summary {
+  cursor: pointer;
+  color: var(--shell-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.progression-hints-hunt .progression-riddles__title {
+  margin-bottom: 0.35rem;
+}
+
+.progression-hints-chart {
+  margin-top: 0.65rem;
+}
+
+.progression-hints-chart .progression-steps-chart__row {
+  grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr) auto;
+}
+
 .progression-intro,
 .progression-note,
 .progression-hint,
@@ -19229,7 +19287,8 @@ html[data-theme=day] .home-enigmas-preserve {
   .progression-data-table--riddles th:nth-child(6) {
     width: 20%;
   }
-  .progression-steps-chart__row {
+  .progression-steps-chart__row,
+  .progression-hints-chart .progression-steps-chart__row {
     grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) auto;
   }
 }

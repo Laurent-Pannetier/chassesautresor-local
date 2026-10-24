@@ -1953,6 +1953,29 @@ html[data-theme="day"] .home-enigmas-preserve {
   margin-top: 0;
 }
 
+.progression-hints {
+  margin: 0;
+}
+
+.progression-hints__summary {
+  cursor: pointer;
+  color: var(--shell-muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.progression-hints-hunt .progression-riddles__title {
+  margin-bottom: 0.35rem;
+}
+
+.progression-hints-chart {
+  margin-top: 0.65rem;
+}
+
+.progression-hints-chart .progression-steps-chart__row {
+  grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr) auto;
+}
+
 .progression-intro,
 .progression-note,
 .progression-hint,
@@ -2579,7 +2602,8 @@ html[data-theme="day"] .home-enigmas-preserve {
     width: 20%;
   }
 
-  .progression-steps-chart__row {
+  .progression-steps-chart__row,
+  .progression-hints-chart .progression-steps-chart__row {
     grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) auto;
   }
 }
