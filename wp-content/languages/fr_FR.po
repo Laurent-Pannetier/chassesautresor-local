@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the WordPress - 7.1.x - Development package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-10-21 09:08:04+0000\n"
+"PO-Revision-Date: 2026-10-22 11:29:54+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -9543,6 +9543,13 @@ msgstr "<a href=\"%s\">En savoir plus sur la mise à jour de PHP</a>."
 msgid "<a href=\"%s\">Please update WordPress</a>."
 msgstr "<a href=\"%s\">Veuillez mettre à jour WordPress</a>."
 
+#: wp-includes/customize/class-wp-customize-theme-control.php:183
+#: wp-admin/includes/theme.php:983 wp-admin/theme-install.php:342
+#: wp-admin/theme-install.php:547 wp-admin/themes.php:533
+#: wp-admin/themes.php:926 wp-admin/themes.php:1106
+msgid "This theme does not work with your versions of WordPress and PHP."
+msgstr "Ce thème ne fonctionne pas avec votre version de WordPress et de PHP."
+
 #. translators: 1: URL to WordPress Updates screen, 2: URL to Update PHP page.
 #: wp-includes/customize/class-wp-customize-theme-control.php:122
 #: wp-includes/customize/class-wp-customize-theme-control.php:187
@@ -9556,13 +9563,6 @@ msgstr "<a href=\"%s\">Veuillez mettre à jour WordPress</a>."
 #: wp-admin/update-core.php:703
 msgid "<a href=\"%1$s\">Please update WordPress</a>, and then <a href=\"%2$s\">learn more about updating PHP</a>."
 msgstr "<a href=\"%1$s\">Veuillez mettre à jour WordPress</a>, puis <a href=\"%2$s\">apprenez-en plus sur la mise à jour de PHP</a>."
-
-#: wp-includes/customize/class-wp-customize-theme-control.php:183
-#: wp-admin/includes/theme.php:983 wp-admin/theme-install.php:342
-#: wp-admin/theme-install.php:547 wp-admin/themes.php:533
-#: wp-admin/themes.php:926 wp-admin/themes.php:1106
-msgid "This theme does not work with your versions of WordPress and PHP."
-msgstr "Ce thème ne fonctionne pas avec votre version de WordPress et de PHP."
 
 #. translators: %s: register_rest_field
 #: wp-includes/rest-api/endpoints/class-wp-rest-posts-controller.php:2827
@@ -9646,12 +9646,6 @@ msgstr "Recadrer"
 msgid "Notifications"
 msgstr "Notifications"
 
-#: wp-includes/class-wp-customize-manager.php:5044
-#: wp-includes/js/dist/block-editor.js:13239
-#: wp-includes/js/dist/editor.js:91654
-msgid "Desktop"
-msgstr "Ordinateur de bureau"
-
 #: wp-includes/class-wp-customize-manager.php:5051
 #: wp-includes/build/routes/font-list/content.js:11210
 #: wp-includes/js/dist/block-editor.js:13249
@@ -9670,6 +9664,12 @@ msgstr "Mobile"
 #: wp-includes/js/dist/editor.js:91661
 msgid "Tablet"
 msgstr "Tablette"
+
+#: wp-includes/class-wp-customize-manager.php:5044
+#: wp-includes/js/dist/block-editor.js:13239
+#: wp-includes/js/dist/editor.js:91654
+msgid "Desktop"
+msgstr "Ordinateur"
 
 #: wp-includes/class-wp-oembed-controller.php:216
 msgid "Embed Handler"
@@ -18258,6 +18258,10 @@ msgstr "(Non attaché)"
 #: wp-includes/media-template.php:500 wp-admin/includes/media.php:3445
 msgid "Bitrate:"
 msgstr "Débit binaire :"
+
+#: wp-includes/media-template.php:580
+msgid "Edit more details"
+msgstr "Modifier plus de détails"
 
 #. translators: %s: The site/panel title in the Customizer.
 #: wp-includes/class-wp-customize-panel.php:387

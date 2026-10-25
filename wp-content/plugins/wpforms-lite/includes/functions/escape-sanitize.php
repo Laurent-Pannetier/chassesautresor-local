@@ -853,6 +853,74 @@ function wpforms_sanitize_svg_file( string $file_path, string $file_name = '' ):
 }
 
 /**
+ * Expand inline DOCTYPE entity declarations in SVG markup and drop the DOCTYPE.
+ *
+ * SVG-sanitize strips the DOCTYPE first, which leaves Illustrator-style
+ * references like `&ns_extend;` undefined and the file refused.
+ *
+ * @since 2.0.3
+ *
+ * @param string $markup SVG markup.
+ *
+ * @return string Markup with entities expanded and DOCTYPE removed, or the original markup.
+ */
+function wpforms_expand_svg_doctype_entities( string $markup ): string {
+
+	if ( stripos( $markup, '<!DOCTYPE' ) === false ) {
+		return $markup;
+	}
+
+	// No LIBXML_NOENT / LIBXML_DTDLOAD: entities stay unexpanded and external ones are never loaded.
+	$document       = new DOMDocument();
+	$previous_state = libxml_use_internal_errors( true );
+	$is_loaded      = $document->loadXML( $markup, LIBXML_NONET );
+
+	libxml_clear_errors();
+	libxml_use_internal_errors( $previous_state );
+
+	if ( ! $is_loaded || ! $document->doctype ) {
+		return $markup;
+	}
+
+	$subset = (string) $document->doctype->internalSubset;
+
+	$document->removeChild( $document->doctype );
+
+	$markup = (string) $document->saveXML();
+
+	preg_match_all( '~<!ENTITY\s+([A-Za-z_][\w.-]*)\s+(?:"([^"]*)"|\'([^\']*)\')\s*>~', $subset, $matches, PREG_SET_ORDER );
+
+	if ( count( $matches ) > 32 ) {
+		return $markup;
+	}
+
+	$search   = [];
+	$replace  = [];
+	$expanded = 0;
+
+	foreach ( $matches as $match ) {
+		$value = $match[2] !== '' ? $match[2] : ( $match[3] ?? '' );
+
+		if ( strpos( $value, '&' ) !== false ) {
+			continue;
+		}
+
+		$reference = "&{$match[1]};";
+		$escaped   = htmlspecialchars( $value, ENT_QUOTES | ENT_XML1, 'UTF-8' );
+		$expanded += substr_count( $markup, $reference ) * strlen( $escaped );
+
+		$search[]  = $reference;
+		$replace[] = $escaped;
+	}
+
+	if ( $expanded > 65536 ) {
+		return $markup;
+	}
+
+	return str_replace( $search, $replace, $markup );
+}
+
+/**
  * Sanitize an SVG markup string, stripping scripts, event handlers and other
  * potentially malicious markup.
  *
@@ -877,31 +945,13 @@ function wpforms_sanitize_svg_markup( string $markup ) {
 	// Block references to remote resources to prevent SSRF and data exfiltration.
 	$sanitizer->removeRemoteReferences( true );
 
-	$sanitized = $sanitizer->sanitize( $markup );
+	$sanitized = $sanitizer->sanitize( wpforms_expand_svg_doctype_entities( $markup ) );
 
 	if ( $sanitized === false ) {
 		return false;
 	}
 
-	// The sanitizer library only strips remote references wrapped in quotes, e.g. url( 'http://...' ).
-	// Bare references such as fill="url(http://...)" slip through, so strip remote url() targets here.
-	// Local references like url(#gradient) and data: URIs have no // and are intentionally left intact.
-	$sanitized = (string) preg_replace(
-		'~url\(\s*[\'"]?\s*(?:(?:https?|ftp|file):)?//[^)]*\)~i',
-		'url()',
-		$sanitized
-	);
-
-	// The library's removeRemoteReferences() only matches url()-wrapped values, and its href allow-list
-	// explicitly permits bare http(s) URLs. So elements like <image>, <pattern> and <marker> keep a remote
-	// href/xlink:href and silently load the resource (tracking pixel risk) when the file is opened. Strip
-	// any href/xlink:href whose value is a remote reference (scheme://... or protocol-relative //...).
-	// Local fragment references (#id), relative paths (/path) and data: URIs have no // and are kept intact.
-	return (string) preg_replace(
-		'~\s(?:xlink:)?href\s*=\s*([\'"])\s*(?:(?:https?|ftp|file):)?//.*?\1~is',
-		'',
-		$sanitized
-	);
+	return $sanitized;
 }
 
 /**
