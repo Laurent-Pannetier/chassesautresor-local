@@ -276,16 +276,50 @@ if (!function_exists('cat_trophy_user_names')) {
             if (!$user instanceof WP_User) {
                 continue;
             }
-            $name = trim((string) $user->display_name);
-            if ($name === '') {
-                $name = trim((string) $user->user_login);
-            }
+            $name = cat_trophy_public_player_name(
+                (string) $user->nickname,
+                (string) $user->display_name,
+                (string) $user->user_login
+            );
             if ($name !== '') {
                 $names[$userId] = $name;
             }
         }
 
         return $names;
+    }
+}
+
+if (!function_exists('cat_trophy_public_player_name')) {
+    /**
+     * Label shown for a player who holds a trophy.
+     *
+     * The login is the technical id. When the public display name is still that id,
+     * the WordPress pseudonyme (nickname) is used instead.
+     */
+    function cat_trophy_public_player_name(string $nickname, string $displayName, string $login): string
+    {
+        $nickname = trim($nickname);
+        $displayName = trim($displayName);
+        $login = trim($login);
+        $sameAsLogin = static function (string $value) use ($login): bool {
+            return $login !== '' && strcasecmp($value, $login) === 0;
+        };
+
+        if ($displayName !== '' && !$sameAsLogin($displayName)) {
+            return $displayName;
+        }
+        if ($nickname !== '' && !$sameAsLogin($nickname)) {
+            return $nickname;
+        }
+        if ($displayName !== '') {
+            return $displayName;
+        }
+        if ($nickname !== '') {
+            return $nickname;
+        }
+
+        return $login;
     }
 }
 
