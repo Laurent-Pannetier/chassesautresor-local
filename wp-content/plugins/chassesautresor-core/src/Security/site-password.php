@@ -1,7 +1,86 @@
 <?php
 /**
  * Site password protection.
+ *
+ * MCP OAuth discovery and token routes stay public: they authenticate
+ * themselves, and the site-password wall would answer them with HTTP 401.
  */
+
+/**
+ * Pretty paths served by the MCP OAuth library (wp-media/mcp-oauth).
+ *
+ * @return string[]
+ */
+function ca_site_password_public_oauth_paths(): array
+{
+    return [
+        '/.well-known/oauth-protected-resource',
+        '/.well-known/oauth-authorization-server',
+        '/oauth/authorize',
+        '/oauth/authorize-callback',
+        '/oauth/token',
+        '/oauth/consent',
+        '/oauth/revoke',
+    ];
+}
+
+/**
+ * Path of the current request, without the query string.
+ */
+function ca_site_password_request_path(): string
+{
+    $requestUri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+    $path = parse_url($requestUri, PHP_URL_PATH);
+    if (!is_string($path) || $path === '') {
+        return '';
+    }
+
+    $decoded = rawurldecode($path);
+    if ($decoded === '') {
+        return '';
+    }
+
+    return $decoded[0] === '/' ? $decoded : '/' . $decoded;
+}
+
+/**
+ * Whether this request is a public MCP OAuth route.
+ *
+ * @param string|null $homePath Site path prefix. Null resolves it from home_url().
+ */
+function ca_site_password_is_public_oauth_request(?string $homePath = null): bool
+{
+    $requestPath = ca_site_password_request_path();
+    if ($requestPath === '') {
+        return false;
+    }
+
+    if ($homePath === null) {
+        $homePath = '/';
+        if (function_exists('home_url')) {
+            $parsedHome = parse_url((string) home_url('/'), PHP_URL_PATH);
+            if (is_string($parsedHome) && $parsedHome !== '') {
+                $homePath = $parsedHome;
+            }
+        }
+    }
+
+    $homePath = rtrim($homePath, '/');
+    if ($homePath !== '') {
+        if ($requestPath === $homePath) {
+            $requestPath = '/';
+        } elseif (str_starts_with($requestPath, $homePath . '/')) {
+            $requestPath = substr($requestPath, strlen($homePath));
+        }
+    }
+
+    $requestPath = rtrim($requestPath, '/');
+    if ($requestPath === '') {
+        $requestPath = '/';
+    }
+
+    return in_array($requestPath, ca_site_password_public_oauth_paths(), true);
+}
 
 function ca_site_password_protection(): void
 {
@@ -27,6 +106,7 @@ function ca_site_password_protection(): void
         || $is_cron_request
         || $is_ajax_request
         || $is_rest_request
+        || ca_site_password_is_public_oauth_request()
     ) {
         return;
     }
