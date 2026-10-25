@@ -85,7 +85,8 @@ class AccountProfilePresentationTest extends TestCase
         $shell = (string) file_get_contents(self::THEME . '/assets/scss/_app-shell.scss');
 
         $this->assertStringContainsString('color: var(--shell-muted);', $scss);
-        $this->assertStringContainsString('background: var(--shell-accent);', $scss);
+        $this->assertStringContainsString('background: var(--shell-primary-button-bg);', $scss);
+        $this->assertStringContainsString('color: var(--shell-primary-button-text);', $scss);
         $this->assertStringContainsString('.account-avatar', $scss);
         $this->assertStringContainsString('.account-avatar .profile-avatar img.avatar-pirate', $scss);
         $this->assertStringContainsString(
