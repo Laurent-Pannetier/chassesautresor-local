@@ -10,6 +10,14 @@ const srcDir = path.join(themeDir, 'assets', 'scss');
 const distDir = path.join(themeDir, 'dist');
 
 async function build() {
+    if (!fs.existsSync(distDir)) {
+        fs.mkdirSync(distDir, { recursive: true });
+    }
+
+    const variablesFile = path.join(srcDir, '_variables.scss');
+    const variablesResult = sass.compile(variablesFile, { style: 'expanded' });
+    fs.writeFileSync(path.join(distDir, 'variables.css'), variablesResult.css);
+
     const mainFile = path.join(srcDir, 'main.scss');
     const sassResult = sass.compile(mainFile, { style: 'expanded' });
 
