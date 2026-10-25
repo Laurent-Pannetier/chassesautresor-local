@@ -218,6 +218,33 @@ final class TrophyWallTest extends TestCase
         self::assertStringContainsString('TrophyWallRenderer', $template);
     }
 
+    public function testHolderListUsesThePseudoWhenTheDisplayNameIsStillTheLogin(): void
+    {
+        require_once dirname(__DIR__)
+            . '/wp-content/plugins/chassesautresor-core/src/Trophies/trophy-functions.php';
+
+        self::assertSame(
+            'Lolo',
+            cat_trophy_public_player_name('Lolo', 'lolo42', 'lolo42')
+        );
+        self::assertSame(
+            'Super Lolo',
+            cat_trophy_public_player_name('Lolo', 'Super Lolo', 'lolo42')
+        );
+        self::assertSame(
+            'Fletcher',
+            cat_trophy_public_player_name('fletcher', 'Fletcher', 'fletcher')
+        );
+        self::assertSame(
+            'lolo42',
+            cat_trophy_public_player_name('lolo42', 'lolo42', 'lolo42')
+        );
+        self::assertSame(
+            'lolo42',
+            cat_trophy_public_player_name('', '', 'lolo42')
+        );
+    }
+
     public function testHolderListCanBeDismissedFromTheTrophyPage(): void
     {
         $shell = (string) file_get_contents(
