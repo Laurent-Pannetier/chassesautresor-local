@@ -398,6 +398,10 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString('--hunt-banner-height: clamp(7.5rem, 18vh, 11rem);', $scss);
         $this->assertStringNotContainsString('--hunt-banner-height: 22rem;', $scss);
         $this->assertStringContainsString(
+            '.home.cat-single-hunt-cockpit .hunt-banner',
+            $scss
+        );
+        $this->assertStringNotContainsString(
             '.home.cat-single-hunt-cockpit--joueur .hunt-banner',
             $scss
         );
@@ -581,6 +585,34 @@ class AppShellPresentationTest extends TestCase
         $this->assertStringContainsString('class="bloc-enigmes-chasse"', $loop);
         $this->assertStringNotContainsString('team-stat', $loop);
         $this->assertStringNotContainsString('app-shell', $loop);
+        $this->assertStringNotContainsString('Bientôt disponible', $dashboard);
+        $this->assertStringNotContainsString('Équipe et récompenses', $dashboard);
+    }
+
+    public function test_dashboard_pages_share_one_page_frame(): void
+    {
+        $theme = dirname(__DIR__) . '/wp-content/themes/chassesautresor';
+        $placeholder = (string) file_get_contents($theme . '/templates/shell-placeholder.php');
+        $scss = (string) file_get_contents($theme . '/assets/scss/_app-shell.scss');
+
+        $pages = [
+            'app-outils',
+            'app-equipe',
+            'app-classement',
+            'app-progression',
+            'app-trophies',
+            'app-notifications',
+            'app-placeholder',
+        ];
+        foreach ($pages as $page) {
+            $this->assertMatchesRegularExpression(
+                '/<main class="app-page[^"]*' . preg_quote($page, '/') . '/',
+                $placeholder
+            );
+        }
+        $this->assertStringContainsString('.app-page > .app-placeholder__title', $scss);
+        $this->assertStringContainsString('.app-shell .screen-reader-text', $scss);
+        $this->assertStringContainsString('backdrop-filter: none;', $scss);
     }
 
     public function test_staff_homes_keep_the_hunt_banner_before_the_enigmas(): void
