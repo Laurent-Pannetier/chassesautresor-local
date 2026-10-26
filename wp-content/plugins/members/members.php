@@ -3,7 +3,7 @@
  * Plugin Name: Members
  * Plugin URI:  https://members-plugin.com/
  * Description: A user and role management plugin that puts you in full control of your site's permissions. This plugin allows you to edit your roles and their capabilities, clone existing roles, assign multiple roles per user, block post content, or even make your site completely private.
- * Version:     3.2.27
+ * Version:     3.2.28
  * Requires PHP: 7.4
  * Author:      MemberPress
  * Author URI:  https://memberpress.com
@@ -228,7 +228,7 @@ final class Members_Plugin {
 		// Notifications (cannot be included inside is_admin() check or cron won't work)
 		require_once( $this->dir . 'admin/class-notifications.php' );
 
-		// Block editor REST saves run outside is_admin(); post meta + REST routes must load on every request.
+		// The block editor panel saves through a REST route, which runs outside is_admin(), so load on every request.
 		require_once( $this->dir . 'admin/class-content-permissions-editor.php' );
 
 		// Load admin files.
@@ -283,9 +283,6 @@ final class Members_Plugin {
 	 * @return void
 	 */
 	private function setup_actions() {
-		// Migrate add-ons
-		add_action( 'plugins_loaded', array( $this, 'migrate_addons' ) );
-
 		// Administrator Rescue (Magic Link)
 		add_action( 'plugins_loaded', array( $this, 'init_rescue_magic_link' ), 5 );
 
@@ -400,59 +397,6 @@ final class Members_Plugin {
 	}
 
 	/**
-	 * Transition separate add-on plugins into the included add-ons
-	 *
-	 * @return void
-	 */
-	public function migrate_addons() {
-
-		// Bail if we've already migrated the add-ons
-		if ( ! empty( get_option( 'members_addons_migrated' ) ) ) {
-			return;
-		}
-
-		$addons = array();
-
-		$plugins = array(
-			'members-acf-integration' => 'plugin.php',
-			'members-admin-access' => 'members-admin-access.php',
-			'members-block-permissions' => 'plugin.php',
-			'members-category-and-tag-caps' => 'plugin.php',
-			'members-core-create-caps' => 'members-core-create-caps.php',
-			'members-edd-integration' => 'plugin.php',
-			'members-givewp-integration' => 'plugin.php',
-			'members-meta-box-integration' => 'plugin.php',
-			'members-privacy-caps' => 'members-privacy-caps.php',
-			'members-role-hierarchy' => 'members-role-hierarchy.php',
-			'members-role-levels' => 'members-role-levels.php',
-			'members-woocommerce-integration' => 'plugin.php'
-		);
-
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-
-		foreach ( $plugins as $dir => $file ) {
-			if ( is_plugin_active( "{$dir}/{$file}" ) ) {
-
-				// Deactive it
-				deactivate_plugins( "{$dir}/{$file}", true );
-
-				// Delete it
-				delete_plugins( array( "{$dir}/{$file}" ) );
-
-				// Make sure it's stored in our option for active add-ons
-				$addons[] = $dir;
-			}
-		}
-
-		if ( ! empty( $addons ) ) {
-			update_option( 'members_active_addons', $addons );
-		}
-
-		update_option( 'members_addons_migrated', true );
-	}
-
-	/**
 	 * Initialize Administrator Rescue (Magic Link).
 	 * Only runs when the class was loaded (i.e. PHP version requirement met).
 	 *
@@ -475,20 +419,29 @@ final class Members_Plugin {
 	 */
 	public function run_addon_activator( $addon ) {
 
-		if ( $this->is_valid_addon( $addon ) && file_exists( trailingslashit( __DIR__ ) . "addons/{$addon}/src/Activator.php" ) ) {
+		$file = trailingslashit( __DIR__ ) . "addons/{$addon}/src/Activator.php";
 
-			// Require the add-on file
-			include trailingslashit( __DIR__ ) . "addons/{$addon}/src/Activator.php";
+		if ( ! $this->is_valid_addon( $addon ) || ! file_exists( $file ) ) {
+			return;
+		}
 
-			// Read the file contents into memory, and determine the namespace
-			$contents = file_get_contents( trailingslashit( __DIR__ ) . "addons/{$addon}/src/Activator.php" );
-			preg_match( '/[\r\n]namespace\W(.+);[\r\n]/', $contents, $matches );
-			$namespace = $matches[1];
-			// Run the activator
-			if ( ! empty( $namespace ) ) {
-				$namespace .= '\Activator';
-				$namespace::activate();
-			}
+		// Determine the activator's namespace from the file.
+		preg_match( '/[\r\n]namespace\W(.+);[\r\n]/', (string) file_get_contents( $file ), $matches );
+
+		if ( empty( $matches[1] ) ) {
+			return;
+		}
+
+		$class = $matches[1] . '\Activator';
+
+		// Safe to call more than once in a request (Reset Roles runs it for every
+		// active add-on), so don't declare the class twice.
+		if ( ! class_exists( $class, false ) ) {
+			include_once $file;
+		}
+
+		if ( class_exists( $class, false ) ) {
+			$class::activate();
 		}
 	}
 
@@ -516,12 +469,19 @@ final class Members_Plugin {
 
 		$active_addons = get_option( 'members_active_addons', array() );
 		if ( ! in_array( 'members-block-permissions', $active_addons ) && ! members_is_memberpress_active() ) {
-			wp_enqueue_script( 'block-editor-mp-upsell', plugin_dir_url( __FILE__ ) . '/addons/members-block-permissions/public/js/upsell.js' , array(
+			$upsell_dir = 'js/build/block-permissions/'; // npm run build:block-permissions
+			$upsell     = file_exists( __DIR__ . "/{$upsell_dir}upsell.asset.php" ) ? include __DIR__ . "/{$upsell_dir}upsell.asset.php" : array();
+			$version    = isset( $upsell['version'] ) ? $upsell['version'] : null;
+
+			wp_enqueue_script( 'block-editor-mp-upsell', plugin_dir_url( __FILE__ ) . $upsell_dir . 'upsell.js', array(
+				'wp-block-editor',
 				'wp-compose',
 				'wp-element',
 				'wp-hooks',
 				'wp-components'
-			), null, true );
+			), $version, true );
+			wp_enqueue_style( 'block-editor-mp-upsell', plugin_dir_url( __FILE__ ) . $upsell_dir . 'upsell.css', array(), $version );
+			wp_style_add_data( 'block-editor-mp-upsell', 'rtl', 'replace' );
 			wp_localize_script( 'block-editor-mp-upsell', 'membersUpsell', array(
 				'title' => __( 'Permissions', 'members' ),
 				'message' => __( 'To protect this block by paid membership or centrally with a content protection rule, add MemberPress.', 'members' )
@@ -605,6 +565,11 @@ final class Members_Plugin {
 				$admin_role->add_cap( 'delete_roles' ); // Delete existing roles
 				$admin_role->add_cap( 'edit_roles'   ); // Edit existing roles/caps
 			}
+		}
+
+		// Re-run active add-ons' activators so the caps they granted come back.
+		foreach ( array_unique( array_filter( (array) get_option( 'members_active_addons', array() ), 'is_string' ) ) as $addon ) {
+			$this->run_addon_activator( $addon );
 		}
 
 		wp_send_json_success();

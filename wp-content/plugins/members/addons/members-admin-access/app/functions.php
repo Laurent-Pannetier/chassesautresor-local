@@ -5,7 +5,7 @@
  * @package   MembersAdminAccess
  * @author    The MemberPress Team 
  * @copyright Copyright (c) 2018, The MemberPress Team
- * @link      https://members-plugin.com/-admin-access
+ * @link      https://members-plugin.com/
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
  */
 namespace Members\AddOns\AdminAccess;
@@ -56,7 +56,7 @@ function admin_bar_menu( $wp_admin_bar ) {
 		'user-info'
 	];
 
-	apply_filters( app()->namespace . '/remove_toolbar_items', $items );
+	$items = (array) apply_filters( app()->namespace . '/remove_toolbar_items', $items );
 
 	foreach ( $items as $item )
 		$wp_admin_bar->remove_menu( $item );
