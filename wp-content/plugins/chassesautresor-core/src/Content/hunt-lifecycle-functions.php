@@ -40,6 +40,42 @@ if (!function_exists('cat_get_managed_hunt_id_for_user')) {
     }
 }
 
+if (!function_exists('cat_hunt_riddle_creation_link')) {
+    /**
+     * Whether the actor may add a riddle right now, and the URL to do so.
+     *
+     * @return array{allowed:bool,url:string}
+     */
+    function cat_hunt_riddle_creation_link(int $huntId, int $userId = 0): array
+    {
+        $userId = $userId > 0 ? $userId : (int) get_current_user_id();
+        $allowed = $huntId > 0
+            && $userId > 0
+            && function_exists('utilisateur_peut_ajouter_enigme')
+            && utilisateur_peut_ajouter_enigme($huntId, $userId);
+        $url = '';
+        if (
+            $allowed
+            && function_exists('add_query_arg')
+            && function_exists('home_url')
+            && function_exists('wp_create_nonce')
+        ) {
+            $url = (string) add_query_arg(
+                [
+                    'chasse_id' => $huntId,
+                    'nonce' => wp_create_nonce('creer_enigme'),
+                ],
+                home_url('/creer-enigme/')
+            );
+        }
+
+        return [
+            'allowed' => $allowed,
+            'url' => $url,
+        ];
+    }
+}
+
 if (!function_exists('cat_get_hunt_lifecycle_view')) {
     /**
      * @return array<string, mixed>|null

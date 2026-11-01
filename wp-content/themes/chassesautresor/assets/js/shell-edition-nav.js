@@ -111,11 +111,66 @@
     return template.includes('%s') ? template.replace('%s', joined) : template + ' ' + joined;
   }
 
-  function syncAddLink() {
-    const add = document.querySelector('.app-nav__subitem--add');
-    if (!add) return;
-    add.hidden = Boolean(document.querySelector('.app-nav__marker--incomplete'));
+  function addRiddleLabel() {
+    const i18n = window.CtaShellEditionNav || {};
+    return i18n.addRiddle || 'Ajouter une énigme';
   }
+
+  function addRiddleItem() {
+    return document.querySelector('#app-nav-outils-enigmes .app-nav__subitem--add');
+  }
+
+  function addIsAllowed(add) {
+    return add.getAttribute('data-add-allowed') !== '0';
+  }
+
+  function syncAddLink() {
+    const add = addRiddleItem();
+    if (!add) return;
+    const blocked = Boolean(document.querySelector('.app-nav__marker--incomplete'));
+    add.hidden = !addIsAllowed(add) || blocked;
+  }
+
+  // Après « Éditer », la chasse redevient modifiable sans rechargement.
+  // L'icône n'apparaît que si l'ajout est autorisé, et reste masquée
+  // tant qu'une énigme incomplète bloque la création.
+  function syncAddRiddleAvailability(allowed, url) {
+    const list = document.getElementById('app-nav-outils-enigmes');
+    let add = addRiddleItem();
+    if (!allowed) {
+      if (add) {
+        add.setAttribute('data-add-allowed', '0');
+        add.hidden = true;
+      }
+      return;
+    }
+
+    if (!add) {
+      if (!list || !url) return;
+      add = document.createElement('li');
+      add.className = 'app-nav__subitem app-nav__subitem--add';
+      const link = document.createElement('a');
+      link.className = 'app-nav__add';
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-circle-plus';
+      icon.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.textContent = addRiddleLabel();
+      link.appendChild(icon);
+      link.appendChild(label);
+      add.appendChild(link);
+      list.appendChild(add);
+    }
+
+    add.setAttribute('data-add-allowed', '1');
+    const link = add.querySelector('a.app-nav__add');
+    if (link && url) {
+      link.setAttribute('href', url);
+    }
+    syncAddLink();
+  }
+
+  window.ctaSyncAddRiddleAvailability = syncAddRiddleAvailability;
 
   function removeGap(riddleId) {
     const button = document.getElementById('enigme-gaps-btn-' + riddleId);
