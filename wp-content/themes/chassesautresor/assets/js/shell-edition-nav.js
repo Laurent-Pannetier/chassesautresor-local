@@ -89,6 +89,106 @@
       .forEach(bind);
   }
 
+  function copy() {
+    const i18n = window.CtaShellEditionNav || {};
+    return {
+      summary: i18n.incomplete || 'Énigme incomplète : %s',
+      heading: i18n.heading || 'Cette énigme bloque l’activation :',
+    };
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function summaryText(labels) {
+    const template = copy().summary;
+    const joined = labels.join(' ; ');
+    return template.includes('%s') ? template.replace('%s', joined) : template + ' ' + joined;
+  }
+
+  function syncAddLink() {
+    const add = document.querySelector('.app-nav__subitem--add');
+    if (!add) return;
+    add.hidden = Boolean(document.querySelector('.app-nav__marker--incomplete'));
+  }
+
+  function removeGap(riddleId) {
+    const button = document.getElementById('enigme-gaps-btn-' + riddleId);
+    const popover = document.getElementById('enigme-gaps-' + riddleId);
+    if (popover && isOpen(popover) && typeof popover.hidePopover === 'function') {
+      popover.hidePopover();
+    }
+    if (button) button.remove();
+    if (popover) popover.remove();
+  }
+
+  function fillList(popover, labels) {
+    const items = labels.map((label) => '<li>' + escapeHtml(label) + '</li>').join('');
+    const list = popover.querySelector('ul');
+    if (list) {
+      list.innerHTML = items;
+      return;
+    }
+    popover.insertAdjacentHTML('beforeend', '<ul>' + items + '</ul>');
+  }
+
+  // Le marqueur suit l'enregistrement : il disparaît dès que l'énigme est complète.
+  function syncRiddleNavGap(riddleId, labels) {
+    const id = String(riddleId).replace(/[^\d]/g, '');
+    const row = id
+      ? document.querySelector('.app-nav__subitem--riddle[data-riddle-id="' + id + '"]')
+      : null;
+    if (!row) return;
+
+    const clean = Array.isArray(labels)
+      ? labels.map((label) => String(label).trim()).filter((label) => label !== '')
+      : [];
+    if (clean.length === 0) {
+      removeGap(id);
+      syncAddLink();
+      return;
+    }
+
+    const text = summaryText(clean);
+    let button = document.getElementById('enigme-gaps-btn-' + id);
+    let popover = document.getElementById('enigme-gaps-' + id);
+    if (!button || !popover) {
+      if (button) button.remove();
+      if (popover) popover.remove();
+      const markers = row.querySelector('.app-nav__markers');
+      if (!markers) return;
+      const html = '<button type="button" class="app-nav__marker app-nav__marker--incomplete"'
+        + ' id="enigme-gaps-btn-' + id + '"'
+        + ' popovertarget="enigme-gaps-' + id + '"'
+        + ' aria-label="' + escapeHtml(text) + '">'
+        + '<i class="fa-solid fa-exclamation" aria-hidden="true"></i></button>'
+        + '<div id="enigme-gaps-' + id + '" popover class="app-nav__status-pop"'
+        + ' anchor="enigme-gaps-btn-' + id + '">'
+        + '<p class="app-nav__status-pop-title">' + escapeHtml(copy().heading) + '</p>'
+        + '<ul></ul></div>';
+      const draft = markers.querySelector('.app-nav__marker--draft');
+      if (draft) {
+        draft.insertAdjacentHTML('beforebegin', html);
+      } else {
+        markers.insertAdjacentHTML('beforeend', html);
+      }
+      button = document.getElementById('enigme-gaps-btn-' + id);
+      popover = document.getElementById('enigme-gaps-' + id);
+      if (button) bind(button);
+    }
+
+    if (button) button.setAttribute('aria-label', text);
+    if (popover) fillList(popover, clean);
+    syncAddLink();
+  }
+
+  window.ctaSyncRiddleNavGap = syncRiddleNavGap;
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);
   } else {

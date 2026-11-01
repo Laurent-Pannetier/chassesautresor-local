@@ -516,7 +516,8 @@ function cta_shell_render_outils_submenu(bool $expanded = true): void
         }
 
         echo '<li class="app-nav__subitem app-nav__subitem--riddle';
-        echo $isCurrent ? ' is-current">' : '">';
+        echo $isCurrent ? ' is-current' : '';
+        echo '" data-riddle-id="' . esc_attr((string) $riddleId) . '">';
         echo '<a class="app-nav__sublink' . ($isCurrent ? ' is-active' : '') . '" href="';
         echo esc_url(cta_shell_edition_url('enigme', $riddleId, 'parametres')) . '"';
         if ($isCurrent) {
@@ -556,11 +557,7 @@ function cta_shell_render_outils_submenu(bool $expanded = true): void
         echo '</span></li>';
     }
 
-    $canAdd = $huntId > 0
-        && !$hasIncomplete
-        && function_exists('utilisateur_peut_ajouter_enigme')
-        && utilisateur_peut_ajouter_enigme($huntId, $userId);
-    if ($canAdd) {
+    if ($canAddNow) {
         $addUrl = add_query_arg(
             [
                 'chasse_id' => $huntId,
@@ -568,7 +565,8 @@ function cta_shell_render_outils_submenu(bool $expanded = true): void
             ],
             home_url('/creer-enigme/')
         );
-        echo '<li class="app-nav__subitem app-nav__subitem--add">';
+        echo '<li class="app-nav__subitem app-nav__subitem--add"';
+        echo $hasIncomplete ? ' hidden>' : '>';
         echo '<a class="app-nav__add" href="' . esc_url($addUrl) . '">';
         echo '<i class="fa-solid fa-circle-plus" aria-hidden="true"></i>';
         echo '<span>' . esc_html__('Ajouter une énigme', 'chassesautresor-com') . '</span>';
@@ -656,6 +654,10 @@ function cta_shell_enqueue_edition_nav(): void
         (string) filemtime($path),
         true
     );
+    wp_localize_script('cta-shell-edition-nav', 'CtaShellEditionNav', [
+        'incomplete' => __('Énigme incomplète : %s', 'chassesautresor-com'),
+        'heading' => __('Cette énigme bloque l’activation :', 'chassesautresor-com'),
+    ]);
 }
 add_action('wp_enqueue_scripts', 'cta_shell_enqueue_edition_nav');
 

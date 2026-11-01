@@ -39,6 +39,8 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('Cette énigme bloque l’activation', $html);
         self::assertStringContainsString('Réponse automatique : indiquez une réponse.', $html);
         self::assertStringContainsString('id="enigme-gaps-btn-11"', $html);
+        self::assertStringContainsString('data-riddle-id="11"', $html);
+        self::assertStringContainsString('data-riddle-id="12"', $html);
         self::assertStringContainsString('title="Énigme incomplète : Réponse automatique : indiquez une réponse."', $html);
         self::assertDoesNotMatchRegularExpression('/<ul[^>]*\shidden[\s>]/', $html);
     }
@@ -92,6 +94,33 @@ final class ToolsSubmenuTest extends TestCase
             $edition
         );
         self::assertStringContainsString('cta_outils_submenu', $script);
+        self::assertStringContainsString("'CtaShellEditionNav'", $edition);
+        self::assertStringContainsString('Énigme incomplète : %s', $edition);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testAddRiddleLinkStaysPresentButHiddenWhileARiddleIsIncomplete(): void
+    {
+        eval('function utilisateur_peut_ajouter_enigme($hunt_id, $user_id = 0){return true;}');
+        eval('function wp_create_nonce($action){return "nonce";}');
+        eval('function home_url($path = "/"){return "https://example.test" . $path;}');
+        $this->stubWordPress();
+        $_GET = [
+            'chasse' => '7',
+            'section' => 'parametres',
+        ];
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/shell-edition.php';
+
+        ob_start();
+        cta_shell_render_outils_submenu();
+        $html = (string) ob_get_clean();
+
+        self::assertStringContainsString('class="app-nav__subitem app-nav__subitem--add" hidden', $html);
+        self::assertStringContainsString('Ajouter une énigme', $html);
     }
 
     private function stubWordPress(): void
