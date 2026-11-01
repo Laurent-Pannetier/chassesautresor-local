@@ -188,7 +188,6 @@ describe('add riddle icon follows the hunt lifecycle', () => {
     const item = document.querySelector('.app-nav__subitem--add');
     const link = item.querySelector('a.app-nav__add');
     expect(item.hidden).toBe(false);
-    expect(item.getAttribute('data-add-allowed')).toBe('1');
     expect(link.getAttribute('href')).toBe(url);
     expect(link.querySelector('.fa-circle-plus')).not.toBeNull();
     expect(link.textContent).toContain('Ajouter une énigme');
@@ -205,17 +204,15 @@ describe('add riddle icon follows the hunt lifecycle', () => {
     expect(document.querySelector('.app-nav__subitem--add').hidden).toBe(true);
   });
 
-  test('hides an existing icon when adding is no longer allowed', () => {
+  test('removes the icon when adding is no longer allowed', () => {
     document.getElementById('app-nav-outils-enigmes').innerHTML =
-      '<li class="app-nav__subitem app-nav__subitem--add" data-add-allowed="1">'
+      '<li class="app-nav__subitem app-nav__subitem--add">'
       + '<a class="app-nav__add" href="https://example.test/creer-enigme/">Ajouter</a>'
       + '</li>';
 
     window.ctaSyncAddRiddleAvailability(false, '');
 
-    const item = document.querySelector('.app-nav__subitem--add');
-    expect(item.hidden).toBe(true);
-    expect(item.getAttribute('data-add-allowed')).toBe('0');
+    expect(document.querySelector('.app-nav__subitem--add')).toBeNull();
   });
 
   test('does not insert the icon when adding stays forbidden', () => {

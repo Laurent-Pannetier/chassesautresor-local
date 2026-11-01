@@ -120,27 +120,21 @@
     return document.querySelector('#app-nav-outils-enigmes .app-nav__subitem--add');
   }
 
-  function addIsAllowed(add) {
-    return add.getAttribute('data-add-allowed') !== '0';
-  }
-
   function syncAddLink() {
     const add = addRiddleItem();
     if (!add) return;
-    const blocked = Boolean(document.querySelector('.app-nav__marker--incomplete'));
-    add.hidden = !addIsAllowed(add) || blocked;
+    add.hidden = Boolean(document.querySelector('.app-nav__marker--incomplete'));
   }
 
-  // Après « Éditer », la chasse redevient modifiable sans rechargement.
-  // L'icône n'apparaît que si l'ajout est autorisé, et reste masquée
-  // tant qu'une énigme incomplète bloque la création.
+  // « Éditer » réaffiche l'ajout si le serveur l'autorise.
+  // « Activer » retire l'entrée : un simple hidden ne suffit pas,
+  // car .app-nav__subitem est en display:flex.
   function syncAddRiddleAvailability(allowed, url) {
     const list = document.getElementById('app-nav-outils-enigmes');
     let add = addRiddleItem();
     if (!allowed) {
       if (add) {
-        add.setAttribute('data-add-allowed', '0');
-        add.hidden = true;
+        add.remove();
       }
       return;
     }
@@ -162,7 +156,6 @@
       list.appendChild(add);
     }
 
-    add.setAttribute('data-add-allowed', '1');
     const link = add.querySelector('a.app-nav__add');
     if (link && url) {
       link.setAttribute('href', url);
