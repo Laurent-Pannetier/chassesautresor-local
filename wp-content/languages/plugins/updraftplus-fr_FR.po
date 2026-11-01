@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - UpdraftPlus: WP Backup &amp; Migration Plugin - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-10-27 18:13:22+0000\n"
+"PO-Revision-Date: 2026-10-28 02:09:22+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -444,10 +444,6 @@ msgstr "Pouvez-vous traduire ?"
 msgid "Migration"
 msgstr "Migration"
 
-#: includes/updraftplus-notices.php:123
-msgid "See premium features"
-msgstr "Voir les fonbctionnalités premium"
-
 #: includes/updraftplus-notices.php:119
 msgid "Encrypt the database, lock UpdraftPlus settings to other admins and anonymise backups."
 msgstr "Cryptez la base de données, verrouillez les réglages d’UpdraftPlus pour les autres administrateurs et anonymisez les sauvegardes."
@@ -547,6 +543,10 @@ msgstr "Revenez à %1$s avec %2$s."
 #: includes/updraftplus-notices.php:45
 msgid "Backup incremental changes, instead of full backups (saving server resources), %1$s, get more remote storage locations, %2$s and more."
 msgstr "Sauvegardez les modifications incrémentales au lieu de sauvegardes complètes (ce qui permet d’économiser les ressources du serveur), %2$s, obtenez davantage d’emplacements de stockage à distance, %1$s et bien d’autres choses encore."
+
+#: includes/updraftplus-notices.php:123
+msgid "See premium features"
+msgstr "Voir les fonctionnalités premium"
 
 #: templates/wp-admin/advanced/cron-events.php:16
 msgid "Next run"

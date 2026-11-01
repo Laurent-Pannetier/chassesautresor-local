@@ -3,8 +3,8 @@
  * Plugin Name: Members
  * Plugin URI:  https://members-plugin.com/
  * Description: A user and role management plugin that puts you in full control of your site's permissions. This plugin allows you to edit your roles and their capabilities, clone existing roles, assign multiple roles per user, block post content, or even make your site completely private.
- * Version:     3.2.28
- * Requires PHP: 7.4
+ * Version:     3.3.1
+ * Requires PHP: 8.0
  * Author:      MemberPress
  * Author URI:  https://memberpress.com
  * Text Domain: members
@@ -54,7 +54,7 @@ final class Members_Plugin {
 	 * @access public
 	 * @var    string
 	 */
-	private $php_version = '7.4.0';
+	private $php_version = '8.0.0';
 
 	/**
 	 * Plugin directory path.
@@ -231,6 +231,13 @@ final class Members_Plugin {
 		// The block editor panel saves through a REST route, which runs outside is_admin(), so load on every request.
 		require_once( $this->dir . 'admin/class-content-permissions-editor.php' );
 
+		// AI (MCP) abilities. Only does anything on WordPress 6.9+ (Abilities API), but the
+		// settings tab's REST routes load everywhere so it can say what's needed.
+		foreach ( array( 'ability', 'settings', 'confirmation', 'lockout', 'activity-log', 'connection', 'announcement', 'rest-controller', 'role-abilities', 'user-abilities', 'content-abilities', 'site-abilities', 'addon-abilities', 'registrar' ) as $file ) {
+			require_once( $this->dir . "inc/abilities/class-{$file}.php" );
+		}
+		\Members\Abilities\Registrar::boot();
+
 		// Load admin files.
 		if ( is_admin() ) {
 
@@ -304,7 +311,7 @@ final class Members_Plugin {
 	 * @return void
 	 */
 	public function init_growth_tools() {
-		if ( version_compare( phpversion(), '7.4', '>=' ) && class_exists( '\Members\Caseproof\GrowthTools\App' ) ) {
+		if ( class_exists( '\Members\Caseproof\GrowthTools\App' ) ) {
 			$config = new \Members\Caseproof\GrowthTools\Config( [
 				'parentMenuSlug' => 'members',
 				'instanceId'     => 'members',
@@ -455,6 +462,40 @@ final class Members_Plugin {
 	 * @param  string $addon Add-on directory name.
 	 * @return bool
 	 */
+	/**
+	 * Turns a bundled add-on on or off, running its activator when turned on. Shared by the
+	 * Add-Ons screen and the AI (MCP) abilities. The change takes effect on the next request.
+	 *
+	 * @since  3.3.0
+	 * @access public
+	 * @param  string  $addon   Add-on slug, e.g. `members-admin-access`.
+	 * @param  bool    $active  Whether it should be on.
+	 * @return true|\WP_Error
+	 */
+	public function set_addon_active( $addon, $active ) {
+
+		$active_addons = array_values( array_filter( (array) get_option( 'members_active_addons', array() ), 'is_string' ) );
+		$is_active     = in_array( $addon, $active_addons, true );
+
+		// Turning off an add-on whose folder is gone must still work.
+		if ( ! $is_active && ! $this->is_valid_addon( $addon ) ) {
+			return new \WP_Error( 'members_invalid_addon', esc_html__( 'Invalid add-on.', 'members' ) );
+		}
+
+		if ( $active && ! $is_active ) {
+			$active_addons[] = $addon;
+
+			// Run the add-on's activation hook.
+			$this->run_addon_activator( $addon );
+		} elseif ( ! $active && $is_active ) {
+			$active_addons = array_values( array_diff( $active_addons, array( $addon ) ) );
+		}
+
+		update_option( 'members_active_addons', $active_addons );
+
+		return true;
+	}
+
 	public function is_valid_addon( $addon ) {
 		return is_string( $addon )
 			&& 1 === preg_match( '/^[a-z0-9-]+$/D', $addon )

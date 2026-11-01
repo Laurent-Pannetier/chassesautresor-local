@@ -669,6 +669,56 @@ function wpforms_get_allowed_html_tags_for_entry_field_value( $tags, string $con
 }
 
 /**
+ * Get the HTML allowed in a field value that a smart tag prints into front-end markup.
+ *
+ * The `post` allowlist without form controls and `data-*` attributes. Front-end scripts act on both:
+ * jQuery Validation validates any control inside the form and renders its `data-msg` attribute as HTML.
+ *
+ * @since 2.0.3.1
+ *
+ * @param bool $is_iframe_allowed Whether the iframe tag is allowed in the value.
+ *
+ * @return array
+ */
+function wpforms_get_allowed_html_tags_for_smart_tag_value( bool $is_iframe_allowed = false ): array {
+
+	$tags = array_diff_key(
+		wp_kses_allowed_html( 'post' ),
+		array_flip( [ 'button', 'fieldset', 'form', 'input', 'label', 'legend', 'optgroup', 'option', 'select', 'textarea' ] )
+	);
+
+	foreach ( $tags as $tag => $attributes ) {
+		if ( ! is_array( $attributes ) ) {
+			continue;
+		}
+
+		$tags[ $tag ] = array_filter(
+			$attributes,
+			static function ( $attribute ) {
+
+				return strpos( (string) $attribute, 'data-' ) !== 0;
+			},
+			ARRAY_FILTER_USE_KEY
+		);
+	}
+
+	// Added after the `data-*` removal: the iframe needs `data-src`, which the caller URL-validates.
+	if ( $is_iframe_allowed ) {
+		$tags = wpforms_get_allowed_html_tags_for_entry_field_value( $tags, 'post' );
+	}
+
+	/**
+	 * Filter the HTML allowed in a field value that a smart tag prints into front-end markup.
+	 *
+	 * @since 2.0.3.1
+	 *
+	 * @param array $tags              Allowed HTML tags and attributes.
+	 * @param bool  $is_iframe_allowed Whether the iframe tag is allowed in the value.
+	 */
+	return (array) apply_filters( 'wpforms_get_allowed_html_tags_for_smart_tag_value', $tags, $is_iframe_allowed );
+}
+
+/**
  * Decode HTML entities in a string.
  * Do it cycle to decode all possible entities, including cases like `&amp;lt;`.
  *

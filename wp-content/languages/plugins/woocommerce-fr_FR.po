@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - WooCommerce - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-10-18 22:34:44+0000\n"
+"PO-Revision-Date: 2026-10-31 09:57:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -28342,10 +28342,6 @@ msgstr "Ville"
 msgid "Postal code"
 msgstr "Code postal"
 
-#: includes/class-wc-tax.php:921 includes/class-wc-tax.php:959
-msgid "Invalid field"
-msgstr "Champ non valide"
-
 #: includes/class-wc-tax.php:888
 msgid "Tax class slug already exists"
 msgstr "L’identifiant de classe de taxe existe déjà"
@@ -28389,6 +28385,10 @@ msgstr "Texte qui s’affiche en dessous du contenu principal de l’email."
 #: includes/class-wc-tax.php:867
 msgid "Tax class requires a valid name"
 msgstr "La classe de taxe requiert un nom valide"
+
+#: includes/class-wc-tax.php:921 includes/class-wc-tax.php:959
+msgid "Invalid field"
+msgstr "Champ invalide"
 
 #: includes/class-wc-ajax.php:1683
 msgid "Order not editable"

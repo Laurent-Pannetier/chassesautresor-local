@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2026-10-07 14:32:35+0000\n"
+"PO-Revision-Date: 2026-10-30 18:22:24+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -10,6 +10,81 @@ msgstr ""
 "X-Generator: GlotPress/4.1.0\n"
 "Language: fr\n"
 "Project-Id-Version: Plugins - Site Kit by Google &#8211; Analytics, Search Console, AdSense, Speed - Stable (latest release)\n"
+
+#. translators: %s: New features count badge.
+#: includes/Core/Admin/Screens.php:712
+msgid "Add Features %s"
+msgstr "Ajouter %s fonctionnalités"
+
+#: includes/Core/Email_Reporting/Sections_Map.php:147
+msgid "Are people reaching out to my business?"
+msgstr "Les utilisateurs contactent-ils mon entreprise ?"
+
+#: includes/Core/Email_Reporting/Sections_Map.php:142
+msgid "How is my online store performing?"
+msgstr "Quelles sont les performances de ma boutique en ligne ?"
+
+#: includes/Modules/Reader_Revenue_Manager.php:920
+msgid "Reader Revenue Manager: Configured CTAs"
+msgstr "Reader Revenue Manager : appels à l'action configurés"
+
+#: includes/Modules/Reader_Revenue_Manager.php:912
+msgid "Reader Revenue Manager: Organization ID"
+msgstr "Reader Revenue Manager : ID d'organisation"
+
+#: includes/Modules/Analytics_4/Email_Reporting/Site_Goals_Section_Builder.php:671
+msgid "enable data breakdown"
+msgstr "activer la répartition des données"
+
+#. translators: %s: link text, "enable data breakdown".
+#: includes/Modules/Analytics_4/Email_Reporting/Site_Goals_Section_Builder.php:296
+msgid "Your events data may be grouped together across forms. To see separate results by form, %s."
+msgstr "Les données relatives à vos événements peuvent être regroupées entre différents formulaires. Pour afficher les résultats séparément, par formulaire, %s."
+
+#. translators: %s: link text, "enable data breakdown".
+#: includes/Modules/Analytics_4/Email_Reporting/Site_Goals_Section_Builder.php:223
+msgid "Your events data may be grouped together across plugins. To see separate results by plugin, %s."
+msgstr "Les données relatives à vos événements peuvent être regroupées entre différents plugins. Pour afficher les résultats séparément, par plugin, %s."
+
+#: includes/Core/Site_Health/Debug_Data.php:679
+msgid "Enabled (requires a Google Analytics or Google Ads web tag on the page)"
+msgstr "Activé (nécessite un tag Web Google Analytics ou Google Ads sur la page)"
+
+#: includes/Core/Site_Health/Debug_Data.php:673
+msgid "Content events"
+msgstr "Événements de contenu"
+
+#: includes/Core/Email_Reporting/Email_Reporting_Data_Requests.php:215
+msgid "The recipient does not have access to the connected service."
+msgstr "Le destinataire n'a pas accès au service connecté."
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/Content_Events.php:197
+msgid "Vimeo embeds"
+msgstr "Vidéos Vimeo intégrées"
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/Content_Events.php:196
+msgid "external links with rel=\"sponsored\", rel=\"ugc\" or rel=\"nofollow\""
+msgstr "liens externes avec rel=\"sponsored\", rel=\"ugc\" ou rel=\"nofollow\""
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/Content_Events.php:195
+msgid "email, phone, SMS and messaging-app links"
+msgstr "liens vers des adresses e-mail, des numéros de téléphone, des SMS et des applications de chat"
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/Content_Events.php:194
+msgid "posts split into pages"
+msgstr "posts répartis sur plusieurs pages"
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/Content_Events.php:193
+msgid "posts split into pages, bbPress topics"
+msgstr "posts répartis sur plusieurs pages, thèmes bbPress"
+
+#: includes/Core/Conversion_Tracking/Conversion_Event_Providers/Content_Events.php:191
+msgid "single blog posts"
+msgstr "articles de blog individuels"
+
+#: includes/Core/Admin/Screens.php:709
+msgid "Add Features"
+msgstr "Ajouter des fonctionnalités"
 
 #: includes/Modules/Reader_Revenue_Manager/Datapoints/Get_Terms_Of_Service.php:55
 msgid "The Terms of Service could not be retrieved."
