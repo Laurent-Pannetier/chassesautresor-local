@@ -10248,7 +10248,7 @@ body.comic-reader .enigme-mobile-header {
   padding: calc(0.4rem + env(safe-area-inset-top, 0px)) 0.75rem 0.4rem;
 }
 
-/* Retour accueil : coin haut droit de l’image, pas la topbar du site. */
+/* Retour accueil : en haut à droite, révélé sur tout le haut de l’image. */
 .galerie-enigme__home {
   display: none;
 }
@@ -10285,14 +10285,12 @@ body.comic-reader .galerie-enigme__home-icon {
 }
 
 body.comic-reader .galerie-enigme__home.is-edge-visible,
-body.comic-reader .galerie-enigme__home:focus,
 body.comic-reader .galerie-enigme__home:focus-visible {
   opacity: 1;
   pointer-events: auto;
 }
 
 body.comic-reader .galerie-enigme__home:hover,
-body.comic-reader .galerie-enigme__home:focus,
 body.comic-reader .galerie-enigme__home:focus-visible {
   background: rgba(8, 14, 28, 0.92);
   color: var(--color-text-primary, #f5f5dc);

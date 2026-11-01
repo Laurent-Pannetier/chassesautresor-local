@@ -753,7 +753,7 @@ describe('comic reader', () => {
     window.dispatchEvent(new Event('resize'));
   };
 
-  test('shows a home link on the image corner without opening the answer hud', () => {
+  test('shows the home link across the top of the image and lets the click through', () => {
     useFinePointer();
     jest.advanceTimersByTime(2900);
     mockImageFrame();
@@ -767,25 +767,40 @@ describe('comic reader', () => {
     expect(home.classList.contains('is-edge-visible')).toBe(false);
 
     moveMouse(400, 20);
-    expect(home.classList.contains('is-edge-visible')).toBe(false);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    moveMouse(40, 30);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.querySelector('.galerie-enigme__nav--prev').classList.contains('is-edge-visible')).toBe(
+      false
+    );
 
     moveMouse(1200, 40);
     expect(home.classList.contains('is-edge-visible')).toBe(true);
     expect(document.querySelector('.galerie-enigme__nav--next').classList.contains('is-edge-visible')).toBe(
       false
     );
-    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
 
-    moveMouse(1200, 360);
-    expect(home.classList.contains('is-edge-visible')).toBe(false);
-    expect(document.querySelector('.galerie-enigme__nav--next').classList.contains('is-edge-visible')).toBe(
-      true
-    );
+    const click = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 1200,
+      clientY: 40,
+    });
+    home.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(false);
 
+    home.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
     home.focus();
-    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    moveMouse(640, 400);
+    expect(home.classList.contains('is-edge-visible')).toBe(false);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    home.blur();
+    home.focus();
+    moveMouse(640, 360);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
   });
 
   test('places the home link below the wordpress admin bar', () => {
@@ -801,7 +816,7 @@ describe('comic reader', () => {
     expect(home.classList.contains('is-edge-visible')).toBe(false);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
 
-    moveMouse(1200, 50);
+    moveMouse(200, 50);
     expect(home.classList.contains('is-edge-visible')).toBe(true);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
   });

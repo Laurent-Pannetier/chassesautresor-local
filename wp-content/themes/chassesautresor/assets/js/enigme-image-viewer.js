@@ -7,8 +7,8 @@
  * se fait au glissement horizontal, au clavier, ou avec les chevrons qui
  * apparaissent au bord de l’écran (souris). Un compteur discret reste
  * visible. Un tap affiche le bandeau du bas. Le retour vers l’accueil
- * apparaît au survol du coin haut droit de l’image, ou avec le bandeau
- * au toucher. La topbar du site reste masquée.
+ * apparaît au survol du haut de l’image, ou avec le bandeau au toucher.
+ * La topbar du site reste masquée.
  *
  * Avec une souris, un clic arme une loupe ×4 qui suit le pointeur sur
  * l’image. Un second clic ou Échap l’éteint. Au toucher, un double tap ou
@@ -563,8 +563,7 @@
     let controls = null;
     let lastHints = '';
     const HOME_INSET = 12;
-    const HOME_CORNER_X = 168;
-    const HOME_CORNER_Y = 88;
+    const HOME_BAND_Y = 88;
 
     const storageKey = `comic-hud:${gallery.id || 'galerie'}`;
 
@@ -696,16 +695,16 @@
       }
     };
 
-    const inHomeCorner = (point) => {
+    const inHomeBand = (point) => {
       if (!imageBox || !point) {
         return false;
       }
       const top = Math.max(imageBox.top, topEdgeOffset());
       return (
-        point.x >= imageBox.right - HOME_CORNER_X &&
+        point.x >= imageBox.left - HOME_INSET &&
         point.x <= imageBox.right + HOME_INSET &&
         point.y >= top &&
-        point.y <= top + HOME_CORNER_Y
+        point.y <= top + HOME_BAND_Y
       );
     };
 
@@ -713,15 +712,18 @@
       typeof point?.target?.closest === 'function' &&
       !!point.target.closest('.galerie-enigme__home');
 
+    let homeKeyboardFocus = false;
+    let homeFocusFromPointer = false;
+    const homePinnedByKeyboard = () => homeKeyboardFocus;
+
     const syncHomeLink = (point) => {
       if (!readerActive || !finePointerQuery().matches) {
-        if (document.activeElement !== homeLink) {
+        if (!homePinnedByKeyboard()) {
           homeLink.classList.remove('is-edge-visible');
         }
         return;
       }
-      const show =
-        document.activeElement === homeLink || pointerOverHome(point) || inHomeCorner(point);
+      const show = homePinnedByKeyboard() || pointerOverHome(point) || inHomeBand(point);
       homeLink.classList.toggle('is-edge-visible', show);
     };
 
@@ -863,12 +865,22 @@
       });
     };
 
+    const onHomePointerDown = () => {
+      homeFocusFromPointer = true;
+    };
     const onHomeFocus = () => {
-      homeLink.classList.add('is-edge-visible');
+      homeKeyboardFocus = !homeFocusFromPointer;
+      homeFocusFromPointer = false;
+      if (homeKeyboardFocus) {
+        homeLink.classList.add('is-edge-visible');
+      }
     };
     const onHomeBlur = () => {
+      homeKeyboardFocus = false;
+      homeFocusFromPointer = false;
       syncHomeLink(lastPointer);
     };
+    homeLink.addEventListener('pointerdown', onHomePointerDown);
     homeLink.addEventListener('focus', onHomeFocus);
     homeLink.addEventListener('blur', onHomeBlur);
 
@@ -1027,7 +1039,7 @@
       gallery.querySelectorAll('.galerie-enigme__nav.is-edge-visible').forEach((button) => {
         button.classList.remove('is-edge-visible');
       });
-      if (document.activeElement !== homeLink) {
+      if (!homePinnedByKeyboard()) {
         homeLink.classList.remove('is-edge-visible');
       }
     };
@@ -1043,9 +1055,9 @@
       const target = point.target;
       const overNav = (selector) =>
         typeof target?.closest === 'function' && !!target.closest(selector);
-      const homeCorner = pointerOverHome(point) || inHomeCorner(point);
-      const nearLeft = point.x <= SIDE_EDGE_PX;
-      const nearRight = point.x >= window.innerWidth - SIDE_EDGE_PX && !homeCorner;
+      const homeBand = pointerOverHome(point) || inHomeBand(point);
+      const nearLeft = point.x <= SIDE_EDGE_PX && !homeBand;
+      const nearRight = point.x >= window.innerWidth - SIDE_EDGE_PX && !homeBand;
       const showPrev = !!(prev && !prev.disabled && (nearLeft || overNav('.galerie-enigme__nav--prev')));
       const showNext = !!(next && !next.disabled && (nearRight || overNav('.galerie-enigme__nav--next')));
       prev?.classList.toggle('is-edge-visible', showPrev);
@@ -1273,6 +1285,7 @@
       gallery.removeEventListener('comic-page-change', onPageChange);
       gallery.removeEventListener('load', onImageLoad, true);
       window.removeEventListener('resize', onResize);
+      homeLink.removeEventListener('pointerdown', onHomePointerDown);
       homeLink.removeEventListener('focus', onHomeFocus);
       homeLink.removeEventListener('blur', onHomeBlur);
       document.removeEventListener('mousemove', onMouseMove);
@@ -1363,6 +1376,10 @@
   };
 
   const onViewerClick = (event) => {
+    if (event.target.closest?.('.galerie-enigme__home')) {
+      return;
+    }
+
     const stepButton = event.target.closest('[data-gallery-step]');
     if (stepButton) {
       const gallery = galleryFor(stepButton);
