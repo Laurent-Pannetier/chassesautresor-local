@@ -753,7 +753,7 @@ describe('comic reader', () => {
     window.dispatchEvent(new Event('resize'));
   };
 
-  test('shows the home link across the top of the image and lets the click through', () => {
+  test('shows the home link across the top of the screen and lets the click through', () => {
     useFinePointer();
     jest.advanceTimersByTime(2900);
     mockImageFrame();
@@ -832,8 +832,36 @@ describe('comic reader', () => {
     mockImageFrame();
 
     expect(edit.style.getPropertyValue('--galerie-home-top')).toBe('12px');
-    expect(Number.parseFloat(edit.style.left)).toBe(1088);
-    expect(edit.style.right).toBe('auto');
+    expect(edit.style.left).toBe('');
+    expect(edit.style.right).toBe('');
+  });
+
+  test('keeps Accueil at the screen corner beside a portrait image', () => {
+    useFinePointer();
+    jest.advanceTimersByTime(2900);
+    window.innerWidth = 1280;
+    window.innerHeight = 800;
+    const stage = document.querySelector('.galerie-enigme__stage');
+    stage.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 1280,
+      height: 800,
+      right: 1280,
+      bottom: 800,
+    });
+    const img = document.querySelector('.galerie-enigme__slide.is-active img');
+    Object.defineProperty(img, 'naturalWidth', { configurable: true, value: 1080 });
+    Object.defineProperty(img, 'naturalHeight', { configurable: true, value: 1920 });
+    window.dispatchEvent(new Event('resize'));
+
+    const home = document.querySelector('.galerie-enigme__home');
+    expect(home.style.getPropertyValue('--galerie-home-top')).toBe('12px');
+    expect(home.style.getPropertyValue('--galerie-home-right')).toBe('12px');
+
+    moveMouse(1200, 30);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
   });
 
   test('hides the empty answer band and still reveals Accueil', () => {

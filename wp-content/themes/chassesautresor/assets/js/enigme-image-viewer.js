@@ -7,7 +7,7 @@
  * se fait au glissement horizontal, au clavier, ou avec les chevrons qui
  * apparaissent au bord de l’écran (souris). Un compteur discret reste
  * visible. Un tap affiche le bandeau du bas. Le retour vers l’accueil
- * apparaît au survol du haut de l’image, ou avec le bandeau au toucher.
+ * apparaît au survol du haut de l’écran, ou avec le bandeau au toucher.
  * Sans réponse, indice ni texte, le bandeau reste masqué et le retour
  * reste accessible. La topbar du site reste masquée.
  *
@@ -556,7 +556,6 @@
     let pageCounter = null;
     let pinchBase = 0;
     let gesture = null;
-    let imageBox = null;
     const pointers = new Map();
     const parked = [];
     let createdHud = null;
@@ -625,42 +624,6 @@
 
     const homeLink = ensureHomeLink();
 
-    const measureImageBox = () => {
-      const img = gallery.querySelector('.galerie-enigme__slide.is-active img');
-      const stageRect = stage.getBoundingClientRect();
-      if (stageRect.width <= 0 || stageRect.height <= 0) {
-        return null;
-      }
-      const naturalWidth = img?.naturalWidth || 0;
-      const naturalHeight = img?.naturalHeight || 0;
-      const ratioW = naturalWidth > 0 ? naturalWidth : 16;
-      const ratioH = naturalHeight > 0 ? naturalHeight : 9;
-      const scale = Math.min(stageRect.width / ratioW, stageRect.height / ratioH);
-      const width = ratioW * scale;
-      const height = ratioH * scale;
-      const left = stageRect.left + (stageRect.width - width) / 2;
-      const top = stageRect.top + (stageRect.height - height) / 2;
-      return {
-        left,
-        top,
-        right: left + width,
-        bottom: top + height,
-        width,
-        height,
-      };
-    };
-
-    const placeEditToggle = (top, homeLeft) => {
-      const edit = document.querySelector('.enigme-edit-toggle--desktop');
-      if (!(edit instanceof HTMLElement) || !imageBox) {
-        return;
-      }
-      const width = edit.offsetWidth > 0 ? edit.offsetWidth : 40;
-      edit.style.setProperty('--galerie-home-top', `${top}px`);
-      edit.style.right = 'auto';
-      edit.style.left = `${Math.max(imageBox.left + HOME_INSET, homeLeft - 8 - width)}px`;
-    };
-
     const clearEditTogglePlace = () => {
       const edit = document.querySelector('.enigme-edit-toggle--desktop');
       if (!(edit instanceof HTMLElement)) {
@@ -673,45 +636,24 @@
     };
 
     const placeHomeLink = () => {
-      imageBox = measureImageBox();
-      if (!imageBox) {
+      const top = topEdgeOffset() + HOME_INSET;
+      homeLink.style.setProperty('--galerie-home-top', `${top}px`);
+      homeLink.style.setProperty('--galerie-home-right', `${HOME_INSET}px`);
+      const edit = document.querySelector('.enigme-edit-toggle--desktop');
+      if (!(edit instanceof HTMLElement)) {
         return;
       }
-      const top = Math.max(imageBox.top + HOME_INSET, topEdgeOffset() + HOME_INSET);
-      const right = Math.max(HOME_INSET, window.innerWidth - imageBox.right + HOME_INSET);
-      homeLink.style.setProperty('--galerie-home-top', `${top}px`);
-      homeLink.style.setProperty('--galerie-home-right', `${right}px`);
-      const homeWidth = homeLink.offsetWidth > 0 ? homeLink.offsetWidth : 132;
-      const homeLeft = Math.max(imageBox.left + HOME_INSET, imageBox.right - HOME_INSET - homeWidth);
-      placeEditToggle(top, homeLeft);
-      if (homeLink.offsetWidth === 0) {
-        window.requestAnimationFrame(() => {
-          if (readerActive && homeLink.offsetWidth > 0 && imageBox) {
-            placeEditToggle(
-              top,
-              Math.max(imageBox.left + HOME_INSET, imageBox.right - HOME_INSET - homeLink.offsetWidth)
-            );
-          }
-        });
-      }
+      edit.style.setProperty('--galerie-home-top', `${top}px`);
+      edit.style.removeProperty('left');
+      edit.style.removeProperty('right');
     };
 
     const inHomeBand = (point) => {
       if (!point) {
         return false;
       }
-      // Tant que la planche n’est pas mesurée, le haut de l’écran suffit.
-      if (!imageBox) {
-        const fallbackTop = topEdgeOffset();
-        return point.y >= fallbackTop && point.y <= fallbackTop + HOME_BAND_Y;
-      }
-      const top = Math.max(imageBox.top, topEdgeOffset());
-      return (
-        point.x >= imageBox.left - HOME_INSET &&
-        point.x <= imageBox.right + HOME_INSET &&
-        point.y >= top &&
-        point.y <= top + HOME_BAND_Y
-      );
+      const top = topEdgeOffset();
+      return point.y >= top && point.y <= top + HOME_BAND_Y;
     };
 
     const pointerOverHome = (point) =>
@@ -1296,7 +1238,6 @@
       homeLink.style.removeProperty('--galerie-home-right');
       restoreHomeLink();
       clearEditTogglePlace();
-      imageBox = null;
       pageCounter?.removeEventListener('click', onCounterClick);
       pageCounter?.remove();
       pageCounter = null;
