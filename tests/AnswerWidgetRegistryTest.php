@@ -53,6 +53,27 @@ final class AnswerWidgetRegistryTest extends TestCase {
         self::assertSame('faux', $registry->evaluate('129', $configuration)['resultat']);
     }
 
+    public function testRecognizesZeroAndDoubleZeroAsDistinctNumericCodes(): void {
+        $registry = new AnswerWidgetRegistry();
+
+        self::assertSame('bon', $registry->evaluate('0', [
+            'type' => 'numbers',
+            'accepted_sequences' => ['0'],
+        ])['resultat']);
+        self::assertSame('bon', $registry->evaluate('00', [
+            'type' => 'numbers',
+            'accepted_sequences' => ['00'],
+        ])['resultat']);
+        self::assertSame('faux', $registry->evaluate('0', [
+            'type' => 'numbers',
+            'accepted_sequences' => ['00'],
+        ])['resultat']);
+        self::assertSame('faux', $registry->evaluate('00', [
+            'type' => 'numbers',
+            'accepted_sequences' => ['0'],
+        ])['resultat']);
+    }
+
     public function testEvaluatesSafeDialDirectionAndValues(): void {
         $registry = new AnswerWidgetRegistry();
         $configuration = ['type' => 'safe_dial', 'accepted_sequences' => ['H11 A51']];

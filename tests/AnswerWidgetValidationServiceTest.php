@@ -97,6 +97,8 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'French directions' => ['directions', 'direction_sequences', 'N, NE, SO, O, NO'],
             'colors' => ['colors', 'color_sequences', 'red, pink, black'],
             'leading zeroes' => ['numbers', 'number_sequences', '00129'],
+            'single zero' => ['numbers', 'number_sequences', '0'],
+            'double zero' => ['numbers', 'number_sequences', '00'],
             'safe dial' => ['safe_dial', 'safe_dial_sequences', 'H11 A51'],
             'piano' => ['piano', 'piano_sequences', 'F1 F#2 B2 C1'],
         ];
@@ -117,6 +119,26 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
             'gps_coordinates' => '',
             'gps_tolerance' => '',
         ], $changes);
+    }
+
+    public function testKeepsZeroWhenItIsTheOnlyAcceptedNumericCode(): void {
+        $configuration = $this->service->validate($this->configuration([
+            'widget' => 'numbers',
+            'number_sequences' => "123\n0\n\n00\n",
+        ]));
+
+        self::assertIsArray($configuration);
+        self::assertSame("123\n0\n00", $configuration['number_sequences']);
+    }
+
+    public function testKeepsTextAnswerEqualToZero(): void {
+        $configuration = $this->service->validate($this->configuration([
+            'widget' => 'text',
+            'accepted_answers' => "0\n00",
+        ]));
+
+        self::assertIsArray($configuration);
+        self::assertSame("0\n00", $configuration['accepted_answers']);
     }
 
     public function testAcceptsGpsCoordinatesAndTolerance(): void {
