@@ -707,7 +707,7 @@ describe('comic reader', () => {
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
   });
 
-  test('reveals the hud from the top edge and hides it 800ms after leaving', () => {
+  test('reveals the hud from the bottom edge and ignores the top edge', () => {
     window.matchMedia = (query) => ({
       matches: query === '(hover: hover) and (pointer: fine)',
       media: query,
@@ -719,66 +719,176 @@ describe('comic reader', () => {
     jest.advanceTimersByTime(2900);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
 
-    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 400 }));
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 400, clientY: 400 }));
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
 
-    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 20 }));
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 400, clientY: 20 }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 400, clientY: 790 }));
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
 
-    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 400 }));
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 400, clientY: 400 }));
     jest.advanceTimersByTime(799);
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
     jest.advanceTimersByTime(1);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
   });
 
-  test('keeps the hud while the pointer or focus stays on the site topbar', () => {
-    window.matchMedia = (query) => ({
-      matches: query === '(hover: hover) and (pointer: fine)',
-      media: query,
-      addEventListener() {},
-      removeEventListener() {},
+  const mockImageFrame = ({ width = 1280, height = 720, top = 0, left = 0 } = {}) => {
+    window.innerWidth = left + width;
+    window.innerHeight = Math.max(window.innerHeight || 0, top + height, 800);
+    const stage = document.querySelector('.galerie-enigme__stage');
+    stage.getBoundingClientRect = () => ({
+      left,
+      top,
+      width,
+      height,
+      right: left + width,
+      bottom: top + height,
     });
+    const img = document.querySelector('.galerie-enigme__slide.is-active img');
+    Object.defineProperty(img, 'naturalWidth', { configurable: true, value: 1920 });
+    Object.defineProperty(img, 'naturalHeight', { configurable: true, value: 1080 });
+    window.dispatchEvent(new Event('resize'));
+  };
+
+  test('shows the home link across the top of the screen and lets the click through', () => {
+    useFinePointer();
     jest.advanceTimersByTime(2900);
+    mockImageFrame();
 
-    const topbar = document.querySelector('.app-topbar');
-    topbar.dispatchEvent(new Event('pointerenter'));
-    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
-    jest.advanceTimersByTime(4000);
-    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    const home = document.querySelector('.galerie-enigme__home');
+    expect(home).not.toBeNull();
+    expect(home.getAttribute('href')).toBe('/');
+    expect(home.textContent).toContain('Accueil');
+    expect(home.style.getPropertyValue('--galerie-home-top')).toBe('12px');
+    expect(home.style.getPropertyValue('--galerie-home-right')).toBe('12px');
+    expect(home.classList.contains('is-edge-visible')).toBe(false);
 
-    topbar.dispatchEvent(new Event('pointerleave'));
-    jest.advanceTimersByTime(3199);
-    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
-    jest.advanceTimersByTime(1);
+    moveMouse(400, 20);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
 
-    const link = topbar.querySelector('a');
-    link.focus();
-    link.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
-    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
-    topbar.dispatchEvent(new Event('pointerleave'));
-    jest.advanceTimersByTime(4000);
-    expect(document.activeElement).toBe(link);
-    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    moveMouse(40, 30);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.querySelector('.galerie-enigme__nav--prev').classList.contains('is-edge-visible')).toBe(
+      false
+    );
+
+    moveMouse(1200, 40);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.querySelector('.galerie-enigme__nav--next').classList.contains('is-edge-visible')).toBe(
+      false
+    );
+
+    const click = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      clientX: 1200,
+      clientY: 40,
+    });
+    home.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(false);
+
+    home.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
+    home.focus();
+    moveMouse(640, 400);
+    expect(home.classList.contains('is-edge-visible')).toBe(false);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    home.blur();
+    home.focus();
+    moveMouse(640, 360);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
   });
 
-  test('starts the top edge below the wordpress admin bar', () => {
+  test('places the home link below the wordpress admin bar', () => {
     document.body.classList.add('admin-bar');
-    window.matchMedia = (query) => ({
-      matches: query === '(hover: hover) and (pointer: fine)',
-      media: query,
-      addEventListener() {},
-      removeEventListener() {},
-    });
-    window.innerHeight = 800;
+    useFinePointer();
     jest.advanceTimersByTime(2900);
+    mockImageFrame();
 
-    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 10 }));
+    const home = document.querySelector('.galerie-enigme__home');
+    expect(home.style.getPropertyValue('--galerie-home-top')).toBe('44px');
+
+    moveMouse(1200, 10);
+    expect(home.classList.contains('is-edge-visible')).toBe(false);
     expect(document.body.classList.contains('is-hud-visible')).toBe(false);
 
-    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientY: 40 }));
-    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    moveMouse(200, 50);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
+  test('keeps the settings control to the left of the home link', () => {
+    useFinePointer();
+    const edit = document.createElement('a');
+    edit.className = 'enigme-edit-toggle--desktop';
+    edit.href = '/outils/';
+    Object.defineProperty(edit, 'offsetWidth', { value: 40 });
+    document.body.appendChild(edit);
+    jest.advanceTimersByTime(2900);
+    mockImageFrame();
+
+    expect(edit.style.getPropertyValue('--galerie-home-top')).toBe('12px');
+    expect(edit.style.left).toBe('');
+    expect(edit.style.right).toBe('');
+  });
+
+  test('keeps Accueil at the screen corner beside a portrait image', () => {
+    useFinePointer();
+    jest.advanceTimersByTime(2900);
+    window.innerWidth = 1280;
+    window.innerHeight = 800;
+    const stage = document.querySelector('.galerie-enigme__stage');
+    stage.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 1280,
+      height: 800,
+      right: 1280,
+      bottom: 800,
+    });
+    const img = document.querySelector('.galerie-enigme__slide.is-active img');
+    Object.defineProperty(img, 'naturalWidth', { configurable: true, value: 1080 });
+    Object.defineProperty(img, 'naturalHeight', { configurable: true, value: 1920 });
+    window.dispatchEvent(new Event('resize'));
+
+    const home = document.querySelector('.galerie-enigme__home');
+    expect(home.style.getPropertyValue('--galerie-home-top')).toBe('12px');
+    expect(home.style.getPropertyValue('--galerie-home-right')).toBe('12px');
+
+    moveMouse(1200, 30);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
+  test('hides the empty answer band and still reveals Accueil', () => {
+    window.__comicReaderTeardown();
+    document.querySelector('.participation')?.remove();
+    document.querySelector('.contenu-principal')?.remove();
+    document.body.className = '';
+    window.sessionStorage.clear();
+    useFinePointer();
+    eval(source);
+
+    const hud = document.querySelector('.is-comic-hud');
+    expect(hud).not.toBeNull();
+    expect(hud.classList.contains('is-comic-hud--empty')).toBe(true);
+    expect(document.body.classList.contains('is-hud-quiet')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    const home = document.querySelector('.galerie-enigme__home');
+    expect(home.parentElement).toBe(document.body);
+    expect(home.classList.contains('is-edge-visible')).toBe(false);
+
+    moveMouse(200, 20);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 400, clientY: 790 }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
   });
 
   const useFinePointer = () => {

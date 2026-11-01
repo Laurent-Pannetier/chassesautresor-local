@@ -158,6 +158,8 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringContainsString('taille=full', $html);
         $this->assertStringNotContainsString('galerie-enigme__thumbs', $html);
         $this->assertStringNotContainsString('galerie-enigme__nav', $html);
+        $this->assertStringContainsString('class="galerie-enigme__home" href="/"', $html);
+        $this->assertStringContainsString('Accueil', $html);
         $this->assertSame(1, substr_count($html, 'galerie-enigme__slide'));
     }
 
