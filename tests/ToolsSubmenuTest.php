@@ -36,6 +36,10 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('app-nav__subitem--riddle', $html);
         self::assertStringContainsString('chasse=7', $html);
         self::assertStringContainsString('enigme=11', $html);
+        self::assertStringContainsString('Cette énigme bloque l’activation', $html);
+        self::assertStringContainsString('Réponse automatique : indiquez une réponse.', $html);
+        self::assertStringContainsString('id="enigme-gaps-btn-11"', $html);
+        self::assertStringContainsString('title="Énigme incomplète : Réponse automatique : indiquez une réponse."', $html);
         self::assertDoesNotMatchRegularExpression('/<ul[^>]*\shidden[\s>]/', $html);
     }
 
@@ -81,6 +85,12 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('.app-nav__sub[hidden]', $styles);
         self::assertStringContainsString('.app-nav__disclosure', $styles);
         self::assertStringContainsString("data-outils-context') !== '1'", $script);
+        $edition = (string) file_get_contents($theme . '/inc/shell-edition.php');
+        self::assertMatchesRegularExpression(
+            "/function cta_shell_enqueue_edition_nav\\(\\): void\\s*\\{\\s*"
+            . "if \\(!function_exists\\('is_user_logged_in'\\) \\|\\| !is_user_logged_in\\(\\)\\)/",
+            $edition
+        );
         self::assertStringContainsString('cta_outils_submenu', $script);
     }
 
@@ -136,7 +146,11 @@ final class ToolsSubmenuTest extends TestCase
             );
         }
         if (!function_exists('cat_riddle_missing_labels')) {
-            eval('function cat_riddle_missing_labels($id){return [];}');
+            eval(
+                'function cat_riddle_missing_labels($id){'
+                . 'return (int) $id === 11 ? ["Réponse automatique : indiquez une réponse."] : [];'
+                . '}'
+            );
         }
         if (!function_exists('utilisateur_peut_ajouter_enigme')) {
             eval('function utilisateur_peut_ajouter_enigme($hunt_id, $user_id = 0){return false;}');

@@ -27,6 +27,39 @@ final class AnswerWidgetValidationServiceTest extends TestCase {
         self::assertInstanceOf(WP_Error::class, $this->service->validate($this->configuration($changes)));
     }
 
+    /** @dataProvider issueMessageProvider */
+    public function testExplainsWhyAnAnswerConfigurationIsIncomplete(array $changes, string $message): void {
+        self::assertSame($message, $this->service->issueMessage($this->configuration($changes)));
+        $result = $this->service->validate($this->configuration($changes));
+        self::assertInstanceOf(WP_Error::class, $result);
+        self::assertSame($message, $result->get_error_message());
+    }
+
+    public function issueMessageProvider(): array {
+        return [
+            'empty text answers' => [
+                ['widget' => 'text', 'accepted_answers' => ''],
+                'Indiquez au moins une réponse acceptée, une par ligne.',
+            ],
+            'incomplete variant' => [
+                ['widget' => 'text', 'accepted_answers' => 'étoile', 'variants' => 'astre |'],
+                'Chaque variante doit contenir une réponse et un message, séparés par |.',
+            ],
+            'empty direction code' => [
+                ['widget' => 'directions', 'direction_sequences' => ''],
+                'Indiquez au moins un code accepté, un par ligne.',
+            ],
+            'invalid direction code' => [
+                ['widget' => 'directions', 'direction_sequences' => 'N,UP,E'],
+                'Un code ne respecte pas le format attendu pour ce mode de réponse.',
+            ],
+            'empty click label' => [
+                ['widget' => 'click', 'button_label' => ''],
+                'Indiquez le libellé du bouton.',
+            ],
+        ];
+    }
+
     public function invalidConfigurationProvider(): array {
         return [
             'unknown widget' => [['widget' => 'unknown']],

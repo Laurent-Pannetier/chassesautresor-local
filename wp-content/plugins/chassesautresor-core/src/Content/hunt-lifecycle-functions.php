@@ -160,16 +160,36 @@ if (!function_exists('cat_render_hunt_lifecycle_switch')) {
                     <span data-hunt-lifecycle-badge-label><?php echo esc_html($badgeLabel); ?></span>
                 </span>
                 <?php if (!empty($view['gaps']) && is_array($view['gaps'])) : ?>
-                    <?php $gapsId = 'hunt-activation-gaps-' . (int) $view['hunt_id']; ?>
+                    <?php
+                    $gapsId = 'hunt-activation-gaps-' . (int) $view['hunt_id'];
+                    $gapsButtonId = 'hunt-activation-gaps-btn-' . (int) $view['hunt_id'];
+                    $gapLabels = [];
+                    foreach ($view['gaps'] as $gap) {
+                        $gapLabels[] = (string) ($gap['label'] ?? '');
+                    }
+                    $gapSummary = sprintf(
+                        /* translators: %s: blocking items, separated by semicolons. */
+                        __('Activation impossible : %s', 'chassesautresor-com'),
+                        implode(' ; ', array_filter($gapLabels))
+                    );
+                    ?>
                     <button
                         type="button"
+                        id="<?php echo esc_attr($gapsButtonId); ?>"
                         class="hunt-lifecycle-card__gaps"
                         popovertarget="<?php echo esc_attr($gapsId); ?>"
-                        aria-label="<?php esc_attr_e('Éléments manquants', 'chassesautresor-com'); ?>"
+                        title="<?php echo esc_attr($gapSummary); ?>"
+                        aria-label="<?php echo esc_attr($gapSummary); ?>"
                     >
                         <i class="fa-solid fa-exclamation" aria-hidden="true"></i>
                     </button>
-                    <div id="<?php echo esc_attr($gapsId); ?>" popover class="hunt-lifecycle-card__gaps-pop">
+                    <div
+                        id="<?php echo esc_attr($gapsId); ?>"
+                        popover
+                        class="hunt-lifecycle-card__gaps-pop"
+                        anchor="<?php echo esc_attr($gapsButtonId); ?>"
+                    >
+                        <p><?php esc_html_e('L’activation est bloquée par :', 'chassesautresor-com'); ?></p>
                         <ul>
                             <?php foreach ($view['gaps'] as $gap) : ?>
                                 <?php

@@ -34,6 +34,36 @@ final class RiddleStepCompletenessServiceTest extends TestCase {
         ];
     }
 
+    public function testExplainsWhichAnswerConfigurationIsIncomplete(): void {
+        $service = new RiddleStepCompletenessService();
+        $directions = array_merge($this->baseFields(), [
+            'etape_reponse_widget' => 'directions',
+            'etape_directions_sequences' => '',
+        ]);
+        $complete = array_merge($this->baseFields(), [
+            'etape_reponse_widget' => 'click',
+            'etape_reponse_bouton' => 'Continuer',
+            'etape_contenu' => 'Observez.',
+        ]);
+
+        self::assertSame(
+            'Indiquez au moins un code accepté, un par ligne.',
+            $service->issueMessage(
+                13,
+                static fn (int $stepId): string => 'Porte',
+                static fn (string $field, int $stepId) => $directions[$field] ?? ''
+            )
+        );
+        self::assertSame(
+            '',
+            $service->issueMessage(
+                14,
+                static fn (int $stepId): string => 'Étape complète',
+                static fn (string $field, int $stepId) => $complete[$field] ?? ''
+            )
+        );
+    }
+
     public function testRejectsIncompleteContentAndMalformedWidgetConfiguration(): void {
         $service = new RiddleStepCompletenessService();
         $click = array_merge($this->baseFields(), [

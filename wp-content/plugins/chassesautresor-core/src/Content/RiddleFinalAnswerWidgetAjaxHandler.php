@@ -38,7 +38,10 @@ final class RiddleFinalAnswerWidgetAjaxHandler {
         $widget = isset($_POST['widget']) ? sanitize_key(wp_unslash((string) $_POST['widget'])) : 'text';
         if ($widget === 'click') {
             wp_send_json_error([
-                'message' => __('Mode de réponse invalide.', 'chassesautresor-com'),
+                'message' => __(
+                    'Le simple clic n’est pas disponible pour la réponse finale.',
+                    'chassesautresor-com'
+                ),
             ]);
         }
 
@@ -84,11 +87,14 @@ final class RiddleFinalAnswerWidgetAjaxHandler {
 
         do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
 
-        $values = (new RiddleFinalAnswerWidgetPersistenceService())->loadEditorValues($riddleId);
+        $persistence = new RiddleFinalAnswerWidgetPersistenceService();
+        $values = $persistence->loadEditorValues($riddleId);
+        $issue = $persistence->issueMessage($riddleId);
         wp_send_json_success([
             'widget' => $values['widget'],
             'summary' => self::summaryLabel($values['widget']),
-            'complete' => (new RiddleFinalAnswerWidgetPersistenceService())->isComplete($riddleId),
+            'complete' => $issue === '',
+            'issue' => $issue,
         ]);
     }
 

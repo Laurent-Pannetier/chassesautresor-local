@@ -108,11 +108,15 @@ final class RiddleFinalAnswerWidgetPersistenceService {
     }
 
     public function isComplete(int $riddleId, ?callable $getField = null): bool {
+        return $this->issueMessage($riddleId, $getField) === '';
+    }
+
+    public function issueMessage(int $riddleId, ?callable $getField = null): string {
         $values = $this->loadEditorValues($riddleId, $getField);
-        $validated = (new AnswerWidgetValidationService())->validate([
+        $issue = (new AnswerWidgetValidationService())->issueMessage([
             'widget' => $values['widget'],
             'accepted_answers' => $values['accepted_answers'],
-            'case_sensitive' => $values['case_sensitive'] ? 1 : 0,
+            'case_sensitive' => !empty($values['case_sensitive']) ? 1 : 0,
             'variants' => $values['variants'],
             'direction_sequences' => $values['direction_sequences'],
             'color_sequences' => $values['color_sequences'],
@@ -122,17 +126,20 @@ final class RiddleFinalAnswerWidgetPersistenceService {
             'gps_coordinates' => $values['gps_coordinates'],
             'gps_tolerance' => $values['gps_tolerance'],
         ]);
-
-        if (is_wp_error($validated)) {
-            return false;
+        if ($issue !== null) {
+            return $issue;
         }
 
         if (($values['widget'] ?? '') !== 'text') {
-            return true;
+            return '';
         }
 
-        $answers = $this->lines((string) $validated['accepted_answers']);
-        return $this->policy->getAnswersError($answers) === null && $answers !== [];
+        $answers = $this->lines((string) ($values['accepted_answers'] ?? ''));
+        if ($answers === [] || $this->policy->getAnswersError($answers) !== null) {
+            return __('Les réponses acceptées sont invalides.', 'chassesautresor-com');
+        }
+
+        return '';
     }
 
     /** @param array<string,mixed> $configuration @return true|\WP_Error */
