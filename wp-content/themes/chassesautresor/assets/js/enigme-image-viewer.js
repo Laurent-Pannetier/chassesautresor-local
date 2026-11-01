@@ -6,7 +6,9 @@
  * Une page 16:9 occupe le viewport (`object-fit: contain`). Le feuilletage
  * se fait au glissement horizontal, au clavier, ou avec les chevrons qui
  * apparaissent au bord de l’écran (souris). Un compteur discret reste
- * visible. Un tap affiche le bandeau.
+ * visible. Un tap affiche le bandeau du bas. Le retour vers l’accueil
+ * apparaît au survol du coin haut droit de l’image, ou avec le bandeau
+ * au toucher. La topbar du site reste masquée.
  *
  * Avec une souris, un clic arme une loupe ×4 qui suit le pointeur sur
  * l’image. Un second clic ou Échap l’éteint. Au toucher, un double tap ou
@@ -35,6 +37,9 @@
   const showControlsTemplate =
     (window.EnigmeImageViewer && window.EnigmeImageViewer.showControlsLabel) ||
     'Afficher les commandes, page %1$d / %2$d';
+  const homeLabel =
+    (window.EnigmeImageViewer && window.EnigmeImageViewer.homeLabel) || 'Accueil';
+  const homeUrl = (window.EnigmeImageViewer && window.EnigmeImageViewer.homeUrl) || '/';
 
   const formatPageLabel = (current, total) =>
     pageLabelTemplate
@@ -545,19 +550,21 @@
     let tapTimer = null;
     let lastTapAt = 0;
     let pointerOverHud = false;
-    let pointerOverTopbar = false;
     let pointerNearHud = false;
     let lastPointer = null;
     let pageCounter = null;
     let pinchBase = 0;
     let gesture = null;
+    let imageBox = null;
     const pointers = new Map();
     const parked = [];
     let createdHud = null;
     let hud = null;
     let controls = null;
     let lastHints = '';
-    const shellTopbar = document.querySelector('.app-topbar');
+    const HOME_INSET = 12;
+    const HOME_CORNER_X = 168;
+    const HOME_CORNER_Y = 88;
 
     const storageKey = `comic-hud:${gallery.id || 'galerie'}`;
 
@@ -595,9 +602,128 @@
       document.body.classList.contains('riddle-widget-immersive-open') ||
       !!document.querySelector('.indice-display:not(:empty)') ||
       pointerOverHud ||
-      pointerOverTopbar ||
-      (hud && hud.contains(document.activeElement)) ||
-      !!(shellTopbar && shellTopbar.contains(document.activeElement));
+      (hud && hud.contains(document.activeElement));
+
+    const ensureHomeLink = () => {
+      let link = gallery.querySelector('.galerie-enigme__home');
+      if (!(link instanceof HTMLAnchorElement)) {
+        link = document.createElement('a');
+        link.className = 'galerie-enigme__home';
+        link.href = homeUrl;
+        const icon = document.createElement('span');
+        icon.className = 'galerie-enigme__home-icon';
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = '\u2190';
+        const label = document.createElement('span');
+        label.className = 'galerie-enigme__home-label';
+        label.textContent = homeLabel;
+        link.append(icon, label);
+        stage.appendChild(link);
+      }
+      return link;
+    };
+
+    const homeLink = ensureHomeLink();
+
+    const measureImageBox = () => {
+      const img = gallery.querySelector('.galerie-enigme__slide.is-active img');
+      const stageRect = stage.getBoundingClientRect();
+      if (stageRect.width <= 0 || stageRect.height <= 0) {
+        return null;
+      }
+      const naturalWidth = img?.naturalWidth || 0;
+      const naturalHeight = img?.naturalHeight || 0;
+      const ratioW = naturalWidth > 0 ? naturalWidth : 16;
+      const ratioH = naturalHeight > 0 ? naturalHeight : 9;
+      const scale = Math.min(stageRect.width / ratioW, stageRect.height / ratioH);
+      const width = ratioW * scale;
+      const height = ratioH * scale;
+      const left = stageRect.left + (stageRect.width - width) / 2;
+      const top = stageRect.top + (stageRect.height - height) / 2;
+      return {
+        left,
+        top,
+        right: left + width,
+        bottom: top + height,
+        width,
+        height,
+      };
+    };
+
+    const placeEditToggle = (top, homeLeft) => {
+      const edit = document.querySelector('.enigme-edit-toggle--desktop');
+      if (!(edit instanceof HTMLElement) || !imageBox) {
+        return;
+      }
+      const width = edit.offsetWidth > 0 ? edit.offsetWidth : 40;
+      edit.style.setProperty('--galerie-home-top', `${top}px`);
+      edit.style.right = 'auto';
+      edit.style.left = `${Math.max(imageBox.left + HOME_INSET, homeLeft - 8 - width)}px`;
+    };
+
+    const clearEditTogglePlace = () => {
+      const edit = document.querySelector('.enigme-edit-toggle--desktop');
+      if (!(edit instanceof HTMLElement)) {
+        return;
+      }
+      edit.style.removeProperty('--galerie-home-top');
+      edit.style.removeProperty('top');
+      edit.style.removeProperty('left');
+      edit.style.removeProperty('right');
+    };
+
+    const placeHomeLink = () => {
+      imageBox = measureImageBox();
+      if (!imageBox) {
+        return;
+      }
+      const top = Math.max(imageBox.top + HOME_INSET, topEdgeOffset() + HOME_INSET);
+      const right = Math.max(HOME_INSET, window.innerWidth - imageBox.right + HOME_INSET);
+      homeLink.style.setProperty('--galerie-home-top', `${top}px`);
+      homeLink.style.setProperty('--galerie-home-right', `${right}px`);
+      const homeWidth = homeLink.offsetWidth > 0 ? homeLink.offsetWidth : 132;
+      const homeLeft = Math.max(imageBox.left + HOME_INSET, imageBox.right - HOME_INSET - homeWidth);
+      placeEditToggle(top, homeLeft);
+      if (homeLink.offsetWidth === 0) {
+        window.requestAnimationFrame(() => {
+          if (readerActive && homeLink.offsetWidth > 0 && imageBox) {
+            placeEditToggle(
+              top,
+              Math.max(imageBox.left + HOME_INSET, imageBox.right - HOME_INSET - homeLink.offsetWidth)
+            );
+          }
+        });
+      }
+    };
+
+    const inHomeCorner = (point) => {
+      if (!imageBox || !point) {
+        return false;
+      }
+      const top = Math.max(imageBox.top, topEdgeOffset());
+      return (
+        point.x >= imageBox.right - HOME_CORNER_X &&
+        point.x <= imageBox.right + HOME_INSET &&
+        point.y >= top &&
+        point.y <= top + HOME_CORNER_Y
+      );
+    };
+
+    const pointerOverHome = (point) =>
+      typeof point?.target?.closest === 'function' &&
+      !!point.target.closest('.galerie-enigme__home');
+
+    const syncHomeLink = (point) => {
+      if (!readerActive || !finePointerQuery().matches) {
+        if (document.activeElement !== homeLink) {
+          homeLink.classList.remove('is-edge-visible');
+        }
+        return;
+      }
+      const show =
+        document.activeElement === homeLink || pointerOverHome(point) || inHomeCorner(point);
+      homeLink.classList.toggle('is-edge-visible', show);
+    };
 
     const showHud = () => {
       if (!readerActive) {
@@ -737,26 +863,14 @@
       });
     };
 
-    const onTopbarEnter = () => {
-      pointerOverTopbar = true;
-      if (!readerActive) {
-        return;
-      }
-      showHud();
-      clearHide();
+    const onHomeFocus = () => {
+      homeLink.classList.add('is-edge-visible');
     };
-
-    const onTopbarLeave = () => {
-      pointerOverTopbar = false;
-      if (readerActive) {
-        scheduleHide();
-      }
+    const onHomeBlur = () => {
+      syncHomeLink(lastPointer);
     };
-
-    if (shellTopbar) {
-      shellTopbar.addEventListener('pointerenter', onTopbarEnter);
-      shellTopbar.addEventListener('pointerleave', onTopbarLeave);
-    }
+    homeLink.addEventListener('focus', onHomeFocus);
+    homeLink.addEventListener('blur', onHomeBlur);
 
     const openActiveLightbox = () => {
       const trigger = gallery.querySelector(
@@ -913,6 +1027,9 @@
       gallery.querySelectorAll('.galerie-enigme__nav.is-edge-visible').forEach((button) => {
         button.classList.remove('is-edge-visible');
       });
+      if (document.activeElement !== homeLink) {
+        homeLink.classList.remove('is-edge-visible');
+      }
     };
 
     const syncEdgeNav = (point) => {
@@ -920,17 +1037,20 @@
       const next = gallery.querySelector('.galerie-enigme__nav--next');
       if (!readerActive || !finePointerQuery().matches || !point) {
         hideEdgeNav();
+        syncHomeLink(point);
         return;
       }
       const target = point.target;
       const overNav = (selector) =>
         typeof target?.closest === 'function' && !!target.closest(selector);
+      const homeCorner = pointerOverHome(point) || inHomeCorner(point);
       const nearLeft = point.x <= SIDE_EDGE_PX;
-      const nearRight = point.x >= window.innerWidth - SIDE_EDGE_PX;
+      const nearRight = point.x >= window.innerWidth - SIDE_EDGE_PX && !homeCorner;
       const showPrev = !!(prev && !prev.disabled && (nearLeft || overNav('.galerie-enigme__nav--prev')));
       const showNext = !!(next && !next.disabled && (nearRight || overNav('.galerie-enigme__nav--next')));
       prev?.classList.toggle('is-edge-visible', showPrev);
       next?.classList.toggle('is-edge-visible', showNext);
+      syncHomeLink(point);
     };
 
     const onCounterClick = (event) => {
@@ -950,6 +1070,7 @@
     };
 
     const onPageChange = (event) => {
+      placeHomeLink();
       syncEdgeNav(lastPointer);
       if (event.detail?.source === 'edge') {
         return;
@@ -958,21 +1079,33 @@
     };
     gallery.addEventListener('comic-page-change', onPageChange);
 
+    const onImageLoad = (event) => {
+      if (event.target instanceof HTMLImageElement) {
+        placeHomeLink();
+      }
+    };
+    gallery.addEventListener('load', onImageLoad, true);
+
+    const onResize = () => {
+      if (readerActive) {
+        placeHomeLink();
+        syncHomeLink(lastPointer);
+      }
+    };
+    window.addEventListener('resize', onResize);
+
     const onMouseMove = (event) => {
       if (!readerActive || !finePointerQuery().matches) {
         return;
       }
       lastPointer = { x: event.clientX, y: event.clientY, target: event.target };
-      const offset = topEdgeOffset();
-      const nearTop = event.clientY >= offset && event.clientY <= offset + EDGE_PX;
       const nearBottom = event.clientY >= window.innerHeight - EDGE_PX;
       let overCounter = false;
       if (typeof event.target?.closest === 'function') {
-        pointerOverTopbar = !!event.target.closest('.app-topbar');
         overCounter = !!event.target.closest('.comic-page-counter');
       }
       syncEdgeNav(lastPointer);
-      if (((nearTop || nearBottom) && !overCounter) || pointerOverHud || pointerOverTopbar) {
+      if ((nearBottom && !overCounter) || pointerOverHud) {
         pointerNearHud = true;
         showHud();
         clearHide();
@@ -998,7 +1131,7 @@
       if (!readerActive) {
         return;
       }
-      if (event.target.closest?.('.is-comic-hud, .enigme-mobile-header, .app-topbar')) {
+      if (event.target.closest?.('.is-comic-hud, .enigme-mobile-header')) {
         showHud();
         clearHide();
       }
@@ -1074,6 +1207,7 @@
       watchStructure();
       document.body.classList.add('comic-reader');
       gallery.classList.add('is-comic-active');
+      placeHomeLink();
       const activeIndex = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
         (slide) => slide.classList.contains('is-active')
       );
@@ -1087,9 +1221,13 @@
         return;
       }
       readerActive = false;
-      pointerOverTopbar = false;
       lastPointer = null;
       hideEdgeNav();
+      homeLink.classList.remove('is-edge-visible');
+      homeLink.style.removeProperty('--galerie-home-top');
+      homeLink.style.removeProperty('--galerie-home-right');
+      clearEditTogglePlace();
+      imageBox = null;
       pageCounter?.removeEventListener('click', onCounterClick);
       pageCounter?.remove();
       pageCounter = null;
@@ -1133,8 +1271,10 @@
       stage.removeEventListener('pointerup', onPointerUp);
       stage.removeEventListener('pointercancel', onPointerUp);
       gallery.removeEventListener('comic-page-change', onPageChange);
-      shellTopbar?.removeEventListener('pointerenter', onTopbarEnter);
-      shellTopbar?.removeEventListener('pointerleave', onTopbarLeave);
+      gallery.removeEventListener('load', onImageLoad, true);
+      window.removeEventListener('resize', onResize);
+      homeLink.removeEventListener('focus', onHomeFocus);
+      homeLink.removeEventListener('blur', onHomeBlur);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseout', onDocumentMouseOut);
       document.removeEventListener('focusin', onFocusIn);
