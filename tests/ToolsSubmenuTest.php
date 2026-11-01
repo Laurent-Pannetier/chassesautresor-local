@@ -34,6 +34,8 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('app-nav__sublink--hunt is-active', $html);
         self::assertStringContainsString('aria-current="page"', $html);
         self::assertStringContainsString('app-nav__subitem--riddle', $html);
+        self::assertStringContainsString('data-nav-cpt="chasse" data-nav-id="7"', $html);
+        self::assertStringContainsString('data-nav-cpt="enigme" data-nav-id="11"', $html);
         self::assertStringContainsString('chasse=7', $html);
         self::assertStringContainsString('enigme=11', $html);
         self::assertDoesNotMatchRegularExpression('/<ul[^>]*\shidden[\s>]/', $html);
@@ -60,6 +62,30 @@ final class ToolsSubmenuTest extends TestCase
         );
         self::assertStringContainsString('La chasse du phare', $html);
         self::assertStringContainsString('Première énigme', $html);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testNewlyOpenedRiddleIsInsertedInTheOutilsSubmenu(): void
+    {
+        $this->stubWordPress();
+        $_GET = [
+            'enigme' => '99',
+            'section' => 'parametres',
+        ];
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/shell-edition.php';
+
+        ob_start();
+        cta_shell_render_outils_submenu();
+        $html = (string) ob_get_clean();
+
+        self::assertContains(99, $GLOBALS['cta_forced_riddles'] ?? []);
+        self::assertStringContainsString('data-nav-cpt="enigme" data-nav-id="99"', $html);
+        self::assertStringContainsString('app-nav__subitem--riddle is-current', $html);
+        self::assertStringContainsString('Nouvelle énigme', $html);
     }
 
     public function testSidebarDisclosureRendersTheListOnEveryPage(): void
@@ -104,11 +130,33 @@ final class ToolsSubmenuTest extends TestCase
         if (!function_exists('get_current_user_id')) {
             eval('function get_current_user_id(){return 3;}');
         }
+        if (!function_exists('forcer_relation_enigme_dans_chasse_si_absente')) {
+            eval(
+                'function forcer_relation_enigme_dans_chasse_si_absente($id){'
+                . '$GLOBALS["cta_forced_riddles"][] = (int) $id;'
+                . '}'
+            );
+        }
         if (!function_exists('recuperer_enigmes_associees')) {
-            eval('function recuperer_enigmes_associees($hunt_id){return [11, 12];}');
+            eval(
+                'function recuperer_enigmes_associees($hunt_id){'
+                . '$ids = [11, 12];'
+                . 'foreach (($GLOBALS["cta_forced_riddles"] ?? []) as $id) {'
+                . 'if (!in_array($id, $ids, true)) { $ids[] = $id; }'
+                . '}'
+                . 'return $ids;'
+                . '}'
+            );
         }
         if (!function_exists('get_posts')) {
-            eval('function get_posts($args){return [new WP_Post(11), new WP_Post(12)];}');
+            eval(
+                'function get_posts($args){'
+                . '$ids = $args["post__in"] ?? [11, 12];'
+                . '$posts = [];'
+                . 'foreach ($ids as $id) { $posts[] = new WP_Post((int) $id); }'
+                . 'return $posts;'
+                . '}'
+            );
         }
         if (!function_exists('cta_shell_request_slug')) {
             eval('function cta_shell_request_slug(){return "outils";}');
@@ -131,7 +179,8 @@ final class ToolsSubmenuTest extends TestCase
         if (!function_exists('get_the_title')) {
             eval(
                 'function get_the_title($id){'
-                . 'return [7 => "La chasse du phare", 11 => "Première énigme", 12 => "Seconde énigme"][$id] ?? "";'
+                . 'return [7 => "La chasse du phare", 11 => "Première énigme",'
+                . ' 12 => "Seconde énigme", 99 => "Nouvelle énigme"][$id] ?? "";'
                 . '}'
             );
         }
