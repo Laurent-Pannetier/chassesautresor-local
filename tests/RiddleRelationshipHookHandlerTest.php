@@ -31,6 +31,12 @@ final class RiddleRelationshipHookHandlerTest extends TestCase {
                 1,
             ],
             [
+                'chassesautresor_riddle_created',
+                [RiddleRelationshipHookHandler::class, 'handleSave'],
+                10,
+                1,
+            ],
+            [
                 'before_delete_post',
                 [RiddleRelationshipHookHandler::class, 'handleBeforeDelete'],
                 10,
