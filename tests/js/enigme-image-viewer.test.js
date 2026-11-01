@@ -751,12 +751,122 @@ describe('comic reader', () => {
     expect(document.body.classList.contains('is-hud-visible')).toBe(true);
   });
 
+  const useFinePointer = () => {
+    window.matchMedia = (query) => ({
+      matches: query === '(hover: hover) and (pointer: fine)',
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+  };
+
+  const moveMouse = (x, y, target = document) => {
+    target.dispatchEvent(
+      new MouseEvent('mousemove', { bubbles: true, clientX: x, clientY: y })
+    );
+  };
+
+  test('keeps a page counter and opens the hud from it', () => {
+    const counter = document.querySelector('.comic-page-counter');
+    expect(counter).not.toBeNull();
+    expect(counter.textContent).toBe('1 / 2');
+    expect(counter.getAttribute('aria-label')).toBe('Afficher les commandes, page 1 / 2');
+
+    jest.advanceTimersByTime(2900);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    counter.click();
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 1 / 2');
+  });
+
+  test('does not open the hud when the pointer rests on the page counter', () => {
+    useFinePointer();
+    window.innerWidth = 1000;
+    window.innerHeight = 800;
+    jest.advanceTimersByTime(2900);
+
+    const counter = document.querySelector('.comic-page-counter');
+    moveMouse(500, 790, counter);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    moveMouse(500, 790);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
+  test('reveals only the available side chevron and turns the page without the hud', () => {
+    useFinePointer();
+    window.innerWidth = 1000;
+    window.innerHeight = 800;
+    jest.advanceTimersByTime(2900);
+
+    const prev = document.querySelector('.galerie-enigme__nav--prev');
+    const next = document.querySelector('.galerie-enigme__nav--next');
+
+    moveMouse(500, 400);
+    expect(prev.classList.contains('is-edge-visible')).toBe(false);
+    expect(next.classList.contains('is-edge-visible')).toBe(false);
+
+    moveMouse(20, 400);
+    expect(prev.classList.contains('is-edge-visible')).toBe(false);
+    expect(next.classList.contains('is-edge-visible')).toBe(false);
+
+    moveMouse(960, 400);
+    expect(next.classList.contains('is-edge-visible')).toBe(true);
+    expect(prev.classList.contains('is-edge-visible')).toBe(false);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    next.click();
+    expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(
+      true
+    );
+    expect(document.querySelector('.comic-page-counter').textContent).toBe('2 / 2');
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+    expect(next.classList.contains('is-edge-visible')).toBe(false);
+
+    moveMouse(20, 400);
+    expect(prev.classList.contains('is-edge-visible')).toBe(true);
+    expect(next.classList.contains('is-edge-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+    expect(prev.classList.contains('is-edge-visible')).toBe(false);
+  });
+
+  test('ignores the side edges when the pointer cannot hover', () => {
+    window.matchMedia = (query) => ({
+      matches: false,
+      media: query,
+      addEventListener() {},
+      removeEventListener() {},
+    });
+    window.innerWidth = 1000;
+    jest.advanceTimersByTime(2900);
+
+    moveMouse(980, 400);
+    expect(document.querySelector('.galerie-enigme__nav--next').classList.contains('is-edge-visible')).toBe(
+      false
+    );
+  });
+
+  test('still reveals the hud when the keyboard turns the page', () => {
+    jest.advanceTimersByTime(2900);
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+
+    expect(document.querySelector('[data-gallery-index="1"]').classList.contains('is-active')).toBe(
+      true
+    );
+    expect(document.body.classList.contains('is-hud-visible')).toBe(true);
+  });
+
   test('leaves the reader when edition mode starts', async () => {
     expect(document.querySelector('.participation .reponse-launcher')).not.toBeNull();
+    expect(document.querySelector('.comic-page-counter')).not.toBeNull();
     document.body.classList.add('edition-active-enigme');
     await Promise.resolve();
 
     expect(document.body.classList.contains('comic-reader')).toBe(false);
+    expect(document.querySelector('.comic-page-counter')).toBeNull();
     expect(document.querySelector('.galerie-enigme-wrapper .galerie-enigme__pager')).not.toBeNull();
     expect(document.querySelector('.galerie-enigme__dot')).toBeNull();
     expect(document.querySelector('.galerie-enigme__track')).toBeNull();

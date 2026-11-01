@@ -520,6 +520,7 @@ add_action('wp_enqueue_scripts', function () {
             'nextPageLabel' => __('Page suivante', 'chassesautresor-com'),
             'pagesListLabel' => __('Pages de l’énigme', 'chassesautresor-com'),
             'showPageLabel' => __('Afficher la page %d', 'chassesautresor-com'),
+            'showControlsLabel' => __('Afficher les commandes, page %1$d / %2$d', 'chassesautresor-com'),
             'zoomHint' => __('Agrandir', 'chassesautresor-com'),
         ]);
     }

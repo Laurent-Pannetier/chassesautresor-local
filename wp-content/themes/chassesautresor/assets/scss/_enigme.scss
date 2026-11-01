@@ -2593,9 +2593,64 @@ body.comic-reader .page-enigme--reader .enigme-media-zoom:focus-visible img {
   transform: none;
 }
 
-/* Les flèches de page vivent dans le bandeau, à côté des pastilles. */
+/* Chevrons latéraux : visibles seulement quand le pointeur est sur le bord. */
 body.comic-reader .page-enigme--reader .galerie-enigme__nav {
+  z-index: 5;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.75rem;
+  background: rgba(8, 14, 28, 0.78);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, background-color 0.2s ease, visibility 0s linear 0.18s;
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__nav.is-edge-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 0.18s ease, background-color 0.2s ease, visibility 0s linear 0s;
+}
+
+body.comic-reader .page-enigme--reader .galerie-enigme__nav:disabled {
   display: none;
+}
+
+body.comic-reader .comic-page-counter {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: calc(0.65rem + env(safe-area-inset-bottom, 0px));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.2rem 0.7rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(5, 7, 12, 0.55);
+  color: rgba(255, 255, 255, 0.9);
+  font: inherit;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateX(-50%);
+}
+
+body.comic-reader .comic-page-counter:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+body.comic-reader.is-hud-visible .comic-page-counter {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 body.comic-reader .enigme-mobile-header,
@@ -2778,14 +2833,14 @@ body.comic-reader .is-comic-hud .galerie-enigme__pager-nav {
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
   padding: 0;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: #f4f1ea;
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -3047,6 +3102,7 @@ body.comic-reader .is-comic-hud .participation-infos {
   body.comic-reader .is-comic-hud,
   body.comic-reader .enigme-mobile-header,
   body.comic-reader .app-topbar,
+  body.comic-reader .page-enigme--reader .galerie-enigme__nav,
   body.comic-reader .is-comic-hud .galerie-enigme__dot::before {
     transition: none;
   }
