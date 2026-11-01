@@ -33,10 +33,15 @@ final class SingleHuntHomepageTemplateTest extends TestCase
         self::assertStringNotContainsString('single-hunt-home__facts', $template);
         self::assertStringNotContainsString('Première visite', $template);
         self::assertStringContainsString('single-hunt-home__story', $template);
-        self::assertStringContainsString('hero-start', (string) file_get_contents(
+        $hero = (string) file_get_contents(
             self::THEME_PATH . '/template-parts/headers/front-page-latest-hero.php'
-        ));
-        self::assertStringContainsString('Départ le %s', (string) file_get_contents(
+        );
+        self::assertStringContainsString('hero-start__badge', $hero);
+        self::assertStringContainsString('chasse-badge chasse-badge--region', $hero);
+        self::assertStringContainsString('Noël 2027', $hero);
+        self::assertStringContainsString('hero-title--visually-hidden', $hero);
+        self::assertStringNotContainsString('Aperçu de la chasse', $hero);
+        self::assertStringNotContainsString('Départ le %s', (string) file_get_contents(
             self::THEME_PATH . '/inc/single-hunt-home.php'
         ));
         self::assertStringNotContainsString('single-hunt-home__riddles', $template);
