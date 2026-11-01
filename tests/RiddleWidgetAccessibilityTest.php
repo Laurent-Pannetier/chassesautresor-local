@@ -33,8 +33,8 @@ final class RiddleWidgetAccessibilityTest extends TestCase {
         self::assertStringContainsString('setWidgetSequenceLabel(output', $source);
         self::assertStringContainsString("setAttribute('aria-valuetext'", $source);
         self::assertStringContainsString("setAttribute('role', 'alert')", $source);
-        self::assertStringContainsString('focusUnlockedContent(target)', $source);
-        self::assertStringContainsString('syncStepPageToGallery(nextArticle)', $source);
+        self::assertStringContainsString('focusUnlockedContent(scrollTarget)', $source);
+        self::assertStringContainsString('revealSolvedStepPages(parsed, solvedStepId)', $source);
         self::assertStringContainsString('pianoAudioContext.resume()', $source);
         self::assertStringContainsString("classList.add('is-playing')", $source);
     }

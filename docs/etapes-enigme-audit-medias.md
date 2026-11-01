@@ -2,7 +2,8 @@
 
 ## État après sécurisation du rendu joueur
 
-Le champ `etape_image` conserve un identifiant de pièce jointe WordPress. Le rendu joueur appelle directement
+Le champ `etape_image` conserve une galerie d’identifiants de pièces jointes (ou, pour une étape ancienne, un seul
+identifiant relu comme première page). Le rendu joueur appelle directement
 la route `/voir-image-enigme`, sans `srcset` pointant vers la médiathèque. Le contrôleur retrouve l’étape propriétaire,
 vérifie l’accès à l’énigme puis limite l’image aux étapes déjà visibles dans la progression du joueur. Ses réponses sont
 `private` (jamais de cache partagé CDN/proxy), avec un TTL navigateur court et une revalidation `304` via

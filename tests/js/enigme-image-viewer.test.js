@@ -284,6 +284,36 @@ describe('enigme image viewer', () => {
     expect(document.querySelector('.galerie-enigme__nav--next').disabled).toBe(true);
   });
 
+  test('appends every page of one step and opens the first of that series', () => {
+    const gallery = document.querySelector('[data-enigme-gallery]');
+    const first = window.EnigmeGallery.appendPage({
+      imageId: 51,
+      stepId: 7,
+      previewUrl: 'a.jpg',
+      fullUrl: 'a-full.jpg',
+      thumbUrl: 'a-thumb.jpg',
+      alt: 'Page A',
+      select: false,
+    });
+    const second = window.EnigmeGallery.appendPage({
+      imageId: 52,
+      stepId: 7,
+      previewUrl: 'b.jpg',
+      fullUrl: 'b-full.jpg',
+      thumbUrl: 'b-thumb.jpg',
+      alt: 'Page B',
+      select: false,
+    });
+
+    expect(first).toBe(2);
+    expect(second).toBe(3);
+    expect(document.querySelectorAll('.galerie-enigme__slide[data-gallery-step-id="7"]')).toHaveLength(2);
+    expect(document.querySelector('[data-gallery-index="2"]').classList.contains('is-active')).toBe(false);
+    window.EnigmeGallery.selectSlide(gallery, first);
+    expect(document.querySelector('[data-gallery-index="2"]').classList.contains('is-active')).toBe(true);
+    expect(document.querySelector('.galerie-enigme__page-label').textContent).toBe('Page 3 / 4');
+  });
+
   test('serves an unlocked step page with the same srcset as the hero', () => {
     const index = window.EnigmeGallery.appendPage({
       imageId: 99,

@@ -76,14 +76,20 @@ final class RiddleStepFieldGroupRegistrar {
             ],
             [
                 'key' => 'field_etape_image',
-                'label' => __('Image de l’étape', 'chassesautresor-com'),
+                'label' => __('Pages révélées', 'chassesautresor-com'),
                 'name' => 'etape_image',
-                'type' => 'image',
-                'instructions' => __('Illustration affichée avec le texte de cette étape.', 'chassesautresor-com'),
+                'type' => 'gallery',
+                'instructions' => __(
+                    'Pages ajoutées à la BD quand le joueur réussit cette étape. '
+                    . 'La première s’affiche, les suivantes se feuillettent.',
+                    'chassesautresor-com'
+                ),
                 'required' => false,
                 'return_format' => 'id',
                 'preview_size' => 'medium',
                 'library' => 'all',
+                'min' => 0,
+                'insert' => 'append',
                 'mime_types' => 'jpg,jpeg,png,webp,gif',
             ],
             [

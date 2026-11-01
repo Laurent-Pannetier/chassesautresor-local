@@ -40,16 +40,21 @@ final class RiddleStepImageService {
         global $wpdb;
         $orderedIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
         $state = CoreServiceFactory::riddleStepProgress($wpdb)->getState($userId, $riddleId, $orderedIds);
-        return $this->canViewContext($context, $canViewRiddle, $state['visible_step_ids'], $canModify);
+        return $this->canViewContext($context, $canViewRiddle, $state['completed_step_ids'], $canModify);
     }
 
-    /** @param array{step_id:int,riddle_id:int} $context @param int[] $visibleStepIds */
+    /**
+     * A page is readable once its step has been solved. The current step keeps its pages hidden.
+     *
+     * @param array{step_id:int,riddle_id:int} $context
+     * @param int[] $completedStepIds
+     */
     public function canViewContext(
         array $context,
         bool $canViewRiddle,
-        array $visibleStepIds,
+        array $completedStepIds,
         bool $canModify
     ): bool {
-        return $canModify || ($canViewRiddle && in_array($context['step_id'], $visibleStepIds, true));
+        return $canModify || ($canViewRiddle && in_array($context['step_id'], $completedStepIds, true));
     }
 }
