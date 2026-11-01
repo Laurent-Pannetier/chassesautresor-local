@@ -111,11 +111,59 @@
     return template.includes('%s') ? template.replace('%s', joined) : template + ' ' + joined;
   }
 
+  function addRiddleLabel() {
+    const i18n = window.CtaShellEditionNav || {};
+    return i18n.addRiddle || 'Ajouter une énigme';
+  }
+
+  function addRiddleItem() {
+    return document.querySelector('#app-nav-outils-enigmes .app-nav__subitem--add');
+  }
+
   function syncAddLink() {
-    const add = document.querySelector('.app-nav__subitem--add');
+    const add = addRiddleItem();
     if (!add) return;
     add.hidden = Boolean(document.querySelector('.app-nav__marker--incomplete'));
   }
+
+  // « Éditer » réaffiche l'ajout si le serveur l'autorise.
+  // « Activer » retire l'entrée : un simple hidden ne suffit pas,
+  // car .app-nav__subitem est en display:flex.
+  function syncAddRiddleAvailability(allowed, url) {
+    const list = document.getElementById('app-nav-outils-enigmes');
+    let add = addRiddleItem();
+    if (!allowed) {
+      if (add) {
+        add.remove();
+      }
+      return;
+    }
+
+    if (!add) {
+      if (!list || !url) return;
+      add = document.createElement('li');
+      add.className = 'app-nav__subitem app-nav__subitem--add';
+      const link = document.createElement('a');
+      link.className = 'app-nav__add';
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-circle-plus';
+      icon.setAttribute('aria-hidden', 'true');
+      const label = document.createElement('span');
+      label.textContent = addRiddleLabel();
+      link.appendChild(icon);
+      link.appendChild(label);
+      add.appendChild(link);
+      list.appendChild(add);
+    }
+
+    const link = add.querySelector('a.app-nav__add');
+    if (link && url) {
+      link.setAttribute('href', url);
+    }
+    syncAddLink();
+  }
+
+  window.ctaSyncAddRiddleAvailability = syncAddRiddleAvailability;
 
   function removeGap(riddleId) {
     const button = document.getElementById('enigme-gaps-btn-' + riddleId);

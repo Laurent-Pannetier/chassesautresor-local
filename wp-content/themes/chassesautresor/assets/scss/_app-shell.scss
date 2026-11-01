@@ -2676,7 +2676,8 @@ body.admin-bar.shell-edition .app-sidebar {
   color: var(--shell-text);
 }
 
-.app-nav__sub[hidden] {
+.app-nav__sub[hidden],
+.app-nav__subitem[hidden] {
   display: none;
 }
 

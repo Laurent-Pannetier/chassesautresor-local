@@ -76,7 +76,7 @@ describe('sidebar gap marker follows the saved riddle', () => {
 
   beforeEach(() => {
     document.body.innerHTML = `
-      <ul>
+      <ul id="app-nav-outils-enigmes">
         <li class="app-nav__subitem app-nav__subitem--riddle" data-riddle-id="11">
           <span class="app-nav__markers">
             <button type="button" class="app-nav__marker app-nav__marker--incomplete"
@@ -157,5 +157,67 @@ describe('sidebar gap marker follows the saved riddle', () => {
     expect(popover.innerHTML).toContain('Illustrations &lt;photo&gt;');
     expect(popover.textContent).toContain('Cette énigme bloque l’activation');
     expect(document.querySelector('.app-nav__subitem--add').hidden).toBe(true);
+  });
+});
+
+describe('add riddle icon follows the hunt lifecycle', () => {
+  const nativeMatches = Element.prototype.matches;
+
+  afterEach(() => {
+    Element.prototype.matches = nativeMatches;
+    delete window.ctaSyncAddRiddleAvailability;
+    delete window.CtaShellEditionNav;
+  });
+
+  beforeEach(() => {
+    document.body.innerHTML = '<ul id="app-nav-outils-enigmes"></ul>';
+    window.CtaShellEditionNav = { addRiddle: 'Ajouter une énigme' };
+    Element.prototype.matches = function matches(selector) {
+      if (selector === ':popover-open') return this.dataset.open === '1';
+      if (selector === ':focus-visible') return false;
+      return nativeMatches.call(this, selector);
+    };
+    eval(source);
+  });
+
+  test('inserts the icon when adding becomes allowed', () => {
+    const url = 'https://example.test/creer-enigme/?chasse_id=7&nonce=abc';
+
+    window.ctaSyncAddRiddleAvailability(true, url);
+
+    const item = document.querySelector('.app-nav__subitem--add');
+    const link = item.querySelector('a.app-nav__add');
+    expect(item.hidden).toBe(false);
+    expect(link.getAttribute('href')).toBe(url);
+    expect(link.querySelector('.fa-circle-plus')).not.toBeNull();
+    expect(link.textContent).toContain('Ajouter une énigme');
+  });
+
+  test('keeps the icon hidden while a riddle is incomplete', () => {
+    document.getElementById('app-nav-outils-enigmes').innerHTML =
+      '<li class="app-nav__subitem--riddle">'
+      + '<button class="app-nav__marker app-nav__marker--incomplete"></button>'
+      + '</li>';
+
+    window.ctaSyncAddRiddleAvailability(true, 'https://example.test/creer-enigme/?chasse_id=7');
+
+    expect(document.querySelector('.app-nav__subitem--add').hidden).toBe(true);
+  });
+
+  test('removes the icon when adding is no longer allowed', () => {
+    document.getElementById('app-nav-outils-enigmes').innerHTML =
+      '<li class="app-nav__subitem app-nav__subitem--add">'
+      + '<a class="app-nav__add" href="https://example.test/creer-enigme/">Ajouter</a>'
+      + '</li>';
+
+    window.ctaSyncAddRiddleAvailability(false, '');
+
+    expect(document.querySelector('.app-nav__subitem--add')).toBeNull();
+  });
+
+  test('does not insert the icon when adding stays forbidden', () => {
+    window.ctaSyncAddRiddleAvailability(false, '');
+
+    expect(document.querySelector('.app-nav__subitem--add')).toBeNull();
   });
 });

@@ -44,7 +44,9 @@ final class HuntLifecycleApplicationService
      *   status_label:string,
      *   badge_label:string,
      *   badge_icon:string,
-     *   help:string
+     *   help:string,
+     *   can_add_riddle:bool,
+     *   add_riddle_url:string
      * }
      */
     public function getViewModel(int $huntId, int $userId, bool $isDemoMode): array
@@ -68,6 +70,9 @@ final class HuntLifecycleApplicationService
         );
         $canDeactivate = $this->lifecycle->canDeactivate($isAdmin, $isOrg, $isDemoMode, $state);
         $checked = $this->lifecycle->isSwitchOn($state);
+        $addLink = function_exists('cat_hunt_riddle_creation_link')
+            ? cat_hunt_riddle_creation_link($huntId, $userId)
+            : ['allowed' => false, 'url' => ''];
 
         return [
             'hunt_id' => $huntId,
@@ -82,6 +87,8 @@ final class HuntLifecycleApplicationService
             'badge_label' => $this->badgeLabel($state),
             'badge_icon' => $this->lifecycle->stateIcon($state),
             'help' => $this->helpText($state, $isDemoMode, $isAdmin, $canActivate, $contentReady),
+            'can_add_riddle' => !empty($addLink['allowed']),
+            'add_riddle_url' => (string) ($addLink['url'] ?? ''),
         ];
     }
 

@@ -662,6 +662,7 @@ function cta_shell_enqueue_edition_nav(): void
     wp_localize_script('cta-shell-edition-nav', 'CtaShellEditionNav', [
         'incomplete' => __('Énigme incomplète : %s', 'chassesautresor-com'),
         'heading' => __('Cette énigme bloque l’activation :', 'chassesautresor-com'),
+        'addRiddle' => __('Ajouter une énigme', 'chassesautresor-com'),
     ]);
 }
 add_action('wp_enqueue_scripts', 'cta_shell_enqueue_edition_nav');
