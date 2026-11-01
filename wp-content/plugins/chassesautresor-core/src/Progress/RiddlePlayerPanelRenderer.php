@@ -28,7 +28,14 @@ final class RiddlePlayerPanelRenderer {
     public function render(int $riddleId, int $userId, string $responseHtml = ''): string
     {
         $solved = est_enigme_resolue_par_utilisateur($userId, $riddleId);
-        $response = $this->response($riddleId, $userId, $solved, $responseHtml);
+        $information = $this->information->build($riddleId, $userId, $solved);
+        $response = $this->response(
+            $riddleId,
+            $userId,
+            $solved,
+            $responseHtml,
+            (string) $information['validation_mode']
+        );
         $hintHtml = '';
 
         $lists = $this->renderHintLists($riddleId, $userId);
@@ -44,7 +51,6 @@ final class RiddlePlayerPanelRenderer {
             ? '<div class="participation-dock">' . $response . $hintHtml . '</div>'
             : '';
 
-        $information = $this->information->build($riddleId, $userId, $solved);
         $content .= $this->information($information);
         if ($content === '') {
             return '';
@@ -53,10 +59,24 @@ final class RiddlePlayerPanelRenderer {
         return '<section class="participation">' . $this->header($information) . $content . '</section>';
     }
 
-    private function response(int $riddleId, int $userId, bool $solved, string $responseHtml): string
-    {
+    private function response(
+        int $riddleId,
+        int $userId,
+        bool $solved,
+        string $responseHtml,
+        string $validationMode
+    ): string {
         if (!$solved) {
-            return $responseHtml === '' ? '' : '<div class="zone-reponse">' . $responseHtml . '</div>';
+            if (!$this->responseHasPlayerContent($responseHtml)) {
+                return '';
+            }
+
+            return '<div class="zone-reponse">' . $responseHtml . '</div>';
+        }
+
+        // No status block when the riddle expects no answer.
+        if ($validationMode === 'aucune') {
+            return '';
         }
 
         $date = $this->progress()->getRiddleResolutionDate($userId, $riddleId);
@@ -69,6 +89,17 @@ final class RiddlePlayerPanelRenderer {
 
         return '<div class="zone-reponse"><p class="message-joueur-statut">✅ '
             . esc_html($message) . '</p></div>';
+    }
+
+    private function responseHasPlayerContent(string $responseHtml): bool
+    {
+        if ($responseHtml === '') {
+            return false;
+        }
+
+        return strpos($responseHtml, 'reponse-launcher') !== false
+            || strpos($responseHtml, 'message-joueur-statut') !== false
+            || strpos($responseHtml, 'riddle-player-step__content') !== false;
     }
 
     public function renderHintLists(int $riddleId, int $userId): string

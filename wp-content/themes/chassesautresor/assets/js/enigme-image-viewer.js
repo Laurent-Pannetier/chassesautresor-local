@@ -8,7 +8,8 @@
  * apparaissent au bord de l’écran (souris). Un compteur discret reste
  * visible. Un tap affiche le bandeau du bas. Le retour vers l’accueil
  * apparaît au survol du haut de l’image, ou avec le bandeau au toucher.
- * La topbar du site reste masquée.
+ * Sans réponse, indice ni texte, le bandeau reste masqué et le retour
+ * reste accessible. La topbar du site reste masquée.
  *
  * Avec une souris, un clic arme une loupe ×4 qui suit le pointeur sur
  * l’image. Un second clic ou Échap l’éteint. Au toucher, un double tap ou
@@ -696,8 +697,13 @@
     };
 
     const inHomeBand = (point) => {
-      if (!imageBox || !point) {
+      if (!point) {
         return false;
+      }
+      // Tant que la planche n’est pas mesurée, le haut de l’écran suffit.
+      if (!imageBox) {
+        const fallbackTop = topEdgeOffset();
+        return point.y >= fallbackTop && point.y <= fallbackTop + HOME_BAND_Y;
       }
       const top = Math.max(imageBox.top, topEdgeOffset());
       return (
@@ -727,8 +733,36 @@
       homeLink.classList.toggle('is-edge-visible', show);
     };
 
+    const HUD_ACTION_SELECTOR = [
+      '.reponse-launcher',
+      '.message-joueur-statut',
+      '.indice-link',
+      '.indice-label',
+      '.riddle-player-step__content',
+    ].join(', ');
+
+    const hudIsQuiet = () => {
+      if (!hud) {
+        return true;
+      }
+      if (hud.querySelector(HUD_ACTION_SELECTOR)) {
+        return false;
+      }
+      const sheet = hud.querySelector(':scope > .comic-hud__sheet');
+      return !(sheet && sheet.textContent.trim() !== '');
+    };
+
+    const syncHudQuiet = () => {
+      const quiet = hudIsQuiet();
+      hud?.classList.toggle('is-comic-hud--empty', quiet);
+      document.body.classList.toggle('is-hud-quiet', quiet);
+      if (quiet) {
+        document.body.classList.remove('is-hud-visible');
+      }
+    };
+
     const showHud = () => {
-      if (!readerActive) {
+      if (!readerActive || hudIsQuiet()) {
         return;
       }
       document.body.classList.add('is-hud-visible');
@@ -816,6 +850,7 @@
         }
       }
       placing = false;
+      syncHudQuiet();
     };
 
     const buildHud = () => {
@@ -863,6 +898,19 @@
         pointerOverHud = false;
         scheduleHide();
       });
+      syncHudQuiet();
+    };
+
+    const mountHomeLink = () => {
+      if (homeLink.parentElement !== document.body) {
+        document.body.appendChild(homeLink);
+      }
+    };
+
+    const restoreHomeLink = () => {
+      if (stage.isConnected && homeLink.parentElement !== stage) {
+        stage.appendChild(homeLink);
+      }
     };
 
     const onHomePointerDown = () => {
@@ -1219,7 +1267,15 @@
       watchStructure();
       document.body.classList.add('comic-reader');
       gallery.classList.add('is-comic-active');
+      mountHomeLink();
       placeHomeLink();
+      window.requestAnimationFrame(() => {
+        if (!readerActive) {
+          return;
+        }
+        placeHomeLink();
+        syncHomeLink(lastPointer);
+      });
       const activeIndex = [...gallery.querySelectorAll('.galerie-enigme__slide')].findIndex(
         (slide) => slide.classList.contains('is-active')
       );
@@ -1238,6 +1294,7 @@
       homeLink.classList.remove('is-edge-visible');
       homeLink.style.removeProperty('--galerie-home-top');
       homeLink.style.removeProperty('--galerie-home-right');
+      restoreHomeLink();
       clearEditTogglePlace();
       imageBox = null;
       pageCounter?.removeEventListener('click', onCounterClick);
@@ -1260,7 +1317,7 @@
       createdHud = null;
       hud = null;
       gallery.classList.remove('is-comic-active');
-      document.body.classList.remove('comic-reader', 'is-hud-visible');
+      document.body.classList.remove('comic-reader', 'is-hud-visible', 'is-hud-quiet');
     };
 
     const syncEdition = () => {

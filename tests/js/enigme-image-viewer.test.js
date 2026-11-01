@@ -836,6 +836,33 @@ describe('comic reader', () => {
     expect(edit.style.right).toBe('auto');
   });
 
+  test('hides the empty answer band and still reveals Accueil', () => {
+    window.__comicReaderTeardown();
+    document.querySelector('.participation')?.remove();
+    document.querySelector('.contenu-principal')?.remove();
+    document.body.className = '';
+    window.sessionStorage.clear();
+    useFinePointer();
+    eval(source);
+
+    const hud = document.querySelector('.is-comic-hud');
+    expect(hud).not.toBeNull();
+    expect(hud.classList.contains('is-comic-hud--empty')).toBe(true);
+    expect(document.body.classList.contains('is-hud-quiet')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    const home = document.querySelector('.galerie-enigme__home');
+    expect(home.parentElement).toBe(document.body);
+    expect(home.classList.contains('is-edge-visible')).toBe(false);
+
+    moveMouse(200, 20);
+    expect(home.classList.contains('is-edge-visible')).toBe(true);
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+
+    document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 400, clientY: 790 }));
+    expect(document.body.classList.contains('is-hud-visible')).toBe(false);
+  });
+
   const useFinePointer = () => {
     window.matchMedia = (query) => ({
       matches: query === '(hover: hover) and (pointer: fine)',
