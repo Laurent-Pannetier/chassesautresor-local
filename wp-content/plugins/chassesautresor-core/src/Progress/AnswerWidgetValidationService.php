@@ -118,7 +118,10 @@ final class AnswerWidgetValidationService {
 
     /** @return string[] */
     private function lines(string $value): array {
-        return array_values(array_filter(array_map('trim', preg_split('/\R/', $value) ?: [])));
+        return array_values(array_filter(
+            array_map('trim', preg_split('/\R/', $value) ?: []),
+            static fn (string $line): bool => $line !== ''
+        ));
     }
 
     private function isValidSequence(string $type, string $sequence): bool {

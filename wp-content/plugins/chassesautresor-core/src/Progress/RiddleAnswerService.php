@@ -28,6 +28,9 @@ class RiddleAnswerService {
 
     /** @param mixed[] $answers @return string[] */
     private function normalize(array $answers): array {
-        return array_values(array_filter(array_map('strval', $answers)));
+        return array_values(array_filter(
+            array_map('strval', $answers),
+            static fn (string $answer): bool => $answer !== ''
+        ));
     }
 }

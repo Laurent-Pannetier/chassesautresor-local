@@ -171,6 +171,9 @@ final class RiddleFinalAnswerWidgetPersistenceService {
 
     /** @return string[] */
     private function lines(string $value): array {
-        return array_values(array_filter(array_map('trim', preg_split('/\R/', $value) ?: [])));
+        return array_values(array_filter(
+            array_map('trim', preg_split('/\R/', $value) ?: []),
+            static fn (string $line): bool => $line !== ''
+        ));
     }
 }

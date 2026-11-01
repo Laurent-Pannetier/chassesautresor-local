@@ -112,6 +112,29 @@ final class AnswerWidgetConfigurationServiceTest extends TestCase {
         self::assertSame(['H11 A51', 'A4 H92'], $safeDial['accepted_sequences']);
     }
 
+    public function testKeepsZeroAndDoubleZeroAsDistinctNumericCodes(): void {
+        $service = new AnswerWidgetConfigurationService();
+        $stepFields = [
+            'etape_reponse_widget' => 'numbers',
+            'etape_number_sequences' => "0\n00",
+        ];
+        $step = $service->forStep(
+            23,
+            static fn (string $field, int $postId) => $stepFields[$field] ?? null
+        );
+        $riddleFields = [
+            'enigme_reponse_widget' => 'numbers',
+            'enigme_number_sequences' => "0\n00",
+        ];
+        $riddle = $service->forRiddle(
+            24,
+            static fn (string $field, int $postId) => $riddleFields[$field] ?? null
+        );
+
+        self::assertSame(['0', '00'], $step['accepted_sequences']);
+        self::assertSame(['0', '00'], $riddle['accepted_sequences']);
+    }
+
     public function testAdaptsGpsConfiguration(): void {
         $fields = [
             'etape_reponse_widget' => 'gps',
