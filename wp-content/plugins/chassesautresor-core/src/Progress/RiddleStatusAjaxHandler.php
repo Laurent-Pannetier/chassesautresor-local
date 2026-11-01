@@ -26,6 +26,13 @@ class RiddleStatusAjaxHandler {
         }
 
         do_action('chassesautresor_riddle_state_refresh_requested', $riddleId);
-        wp_send_json_success('statut_enigme_recalcule');
+        do_action('chassesautresor_riddle_completeness_refresh_requested', $riddleId);
+        $missing = function_exists('cat_riddle_missing_labels')
+            ? array_values(cat_riddle_missing_labels($riddleId))
+            : [];
+        wp_send_json_success([
+            'missing' => $missing,
+            'complete' => $missing === [],
+        ]);
     }
 }

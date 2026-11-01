@@ -38,6 +38,12 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('data-nav-cpt="enigme" data-nav-id="11"', $html);
         self::assertStringContainsString('chasse=7', $html);
         self::assertStringContainsString('enigme=11', $html);
+        self::assertStringContainsString('Cette énigme bloque l’activation', $html);
+        self::assertStringContainsString('Réponse automatique : indiquez une réponse.', $html);
+        self::assertStringContainsString('id="enigme-gaps-btn-11"', $html);
+        self::assertStringContainsString('data-riddle-id="11"', $html);
+        self::assertStringContainsString('data-riddle-id="12"', $html);
+        self::assertStringContainsString('title="Énigme incomplète : Réponse automatique : indiquez une réponse."', $html);
         self::assertDoesNotMatchRegularExpression('/<ul[^>]*\shidden[\s>]/', $html);
     }
 
@@ -107,7 +113,40 @@ final class ToolsSubmenuTest extends TestCase
         self::assertStringContainsString('.app-nav__sub[hidden]', $styles);
         self::assertStringContainsString('.app-nav__disclosure', $styles);
         self::assertStringContainsString("data-outils-context') !== '1'", $script);
+        $edition = (string) file_get_contents($theme . '/inc/shell-edition.php');
+        self::assertMatchesRegularExpression(
+            "/function cta_shell_enqueue_edition_nav\\(\\): void\\s*\\{\\s*"
+            . "if \\(!function_exists\\('is_user_logged_in'\\) \\|\\| !is_user_logged_in\\(\\)\\)/",
+            $edition
+        );
         self::assertStringContainsString('cta_outils_submenu', $script);
+        self::assertStringContainsString("'CtaShellEditionNav'", $edition);
+        self::assertStringContainsString('Énigme incomplète : %s', $edition);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testAddRiddleLinkStaysPresentButHiddenWhileARiddleIsIncomplete(): void
+    {
+        eval('function utilisateur_peut_ajouter_enigme($hunt_id, $user_id = 0){return true;}');
+        eval('function wp_create_nonce($action){return "nonce";}');
+        eval('function home_url($path = "/"){return "https://example.test" . $path;}');
+        $this->stubWordPress();
+        $_GET = [
+            'chasse' => '7',
+            'section' => 'parametres',
+        ];
+
+        require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/shell-edition.php';
+
+        ob_start();
+        cta_shell_render_outils_submenu();
+        $html = (string) ob_get_clean();
+
+        self::assertStringContainsString('class="app-nav__subitem app-nav__subitem--add" hidden', $html);
+        self::assertStringContainsString('Ajouter une énigme', $html);
     }
 
     private function stubWordPress(): void
@@ -185,7 +224,11 @@ final class ToolsSubmenuTest extends TestCase
             );
         }
         if (!function_exists('cat_riddle_missing_labels')) {
-            eval('function cat_riddle_missing_labels($id){return [];}');
+            eval(
+                'function cat_riddle_missing_labels($id){'
+                . 'return (int) $id === 11 ? ["Réponse automatique : indiquez une réponse."] : [];'
+                . '}'
+            );
         }
         if (!function_exists('utilisateur_peut_ajouter_enigme')) {
             eval('function utilisateur_peut_ajouter_enigme($hunt_id, $user_id = 0){return false;}');

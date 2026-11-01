@@ -14,28 +14,37 @@ final class AnswerWidgetValidationService {
         'piano' => 'piano_sequences',
     ];
 
-    /** @param array<string,mixed> $configuration @return array<string,mixed>|\WP_Error */
-    public function validate(array $configuration) {
+    /**
+     * Reason the configuration cannot be published, or null when it is valid.
+     *
+     * @param array<string,mixed> $configuration
+     */
+    public function issueMessage(array $configuration): ?string {
         $type = (string) ($configuration['widget'] ?? '');
         if (!in_array($type, ['click', 'text', 'directions', 'colors', 'numbers', 'safe_dial', 'piano', 'gps'], true)) {
-            return $this->error();
+            return __('Choisissez un mode de réponse.', 'chassesautresor-com');
         }
 
         if ($type === 'click') {
             return trim((string) ($configuration['button_label'] ?? '')) !== ''
-                ? $configuration
-                : $this->error();
+                ? null
+                : __('Indiquez le libellé du bouton.', 'chassesautresor-com');
         }
 
         if ($type === 'text') {
             $answers = $this->lines((string) ($configuration['accepted_answers'] ?? ''));
-            $variants = $this->lines((string) ($configuration['variants'] ?? ''));
-            if ($answers === [] || !$this->hasValidVariants($variants)) {
-                return $this->error();
+            if ($answers === []) {
+                return __('Indiquez au moins une réponse acceptée, une par ligne.', 'chassesautresor-com');
             }
-            $configuration['accepted_answers'] = implode("\n", $answers);
-            $configuration['variants'] = implode("\n", $variants);
-            return $configuration;
+            $variants = $this->lines((string) ($configuration['variants'] ?? ''));
+            if (!$this->hasValidVariants($variants)) {
+                return __(
+                    'Chaque variante doit contenir une réponse et un message, séparés par |.',
+                    'chassesautresor-com'
+                );
+            }
+
+            return null;
         }
 
         if ($type === 'gps') {
@@ -43,24 +52,66 @@ final class AnswerWidgetValidationService {
             $tolerance = filter_var($configuration['gps_tolerance'] ?? null, FILTER_VALIDATE_FLOAT);
             $invalidTolerance = $tolerance === false || $tolerance < 1 || $tolerance > 100000;
             if (!$this->isValidCoordinates($coordinates) || $invalidTolerance) {
-                return $this->error();
+                return __(
+                    'Indiquez une latitude et une longitude valides, et une tolérance entre 1 et 100000 mètres.',
+                    'chassesautresor-com'
+                );
             }
-            $configuration['gps_coordinates'] = $coordinates;
-            $configuration['gps_tolerance'] = (string) $tolerance;
-            return $configuration;
+
+            return null;
         }
 
-        $field = self::SEQUENCE_FIELDS[$type];
-        $sequences = $this->lines((string) ($configuration[$field] ?? ''));
+        $sequences = $this->lines((string) ($configuration[self::SEQUENCE_FIELDS[$type]] ?? ''));
         if ($sequences === []) {
-            return $this->error();
+            return __('Indiquez au moins un code accepté, un par ligne.', 'chassesautresor-com');
         }
         foreach ($sequences as $sequence) {
             if (!$this->isValidSequence($type, $sequence)) {
-                return $this->error();
+                return __(
+                    'Un code ne respecte pas le format attendu pour ce mode de réponse.',
+                    'chassesautresor-com'
+                );
             }
         }
-        $configuration[$field] = implode("\n", $sequences);
+
+        return null;
+    }
+
+    /** @param array<string,mixed> $configuration @return array<string,mixed>|\WP_Error */
+    public function validate(array $configuration) {
+        $issue = $this->issueMessage($configuration);
+        if ($issue !== null) {
+            return new \WP_Error('invalid_answer_widget', $issue);
+        }
+
+        $type = (string) $configuration['widget'];
+        if ($type === 'text') {
+            $configuration['accepted_answers'] = implode(
+                "\n",
+                $this->lines((string) ($configuration['accepted_answers'] ?? ''))
+            );
+            $configuration['variants'] = implode(
+                "\n",
+                $this->lines((string) ($configuration['variants'] ?? ''))
+            );
+
+            return $configuration;
+        }
+
+        if ($type === 'gps') {
+            $configuration['gps_coordinates'] = trim((string) ($configuration['gps_coordinates'] ?? ''));
+            $configuration['gps_tolerance'] = (string) filter_var(
+                $configuration['gps_tolerance'] ?? null,
+                FILTER_VALIDATE_FLOAT
+            );
+
+            return $configuration;
+        }
+
+        if (isset(self::SEQUENCE_FIELDS[$type])) {
+            $field = self::SEQUENCE_FIELDS[$type];
+            $configuration[$field] = implode("\n", $this->lines((string) ($configuration[$field] ?? '')));
+        }
 
         return $configuration;
     }
@@ -122,12 +173,5 @@ final class AnswerWidgetValidationService {
 
         return abs((float) str_replace(',', '.', $matches[1])) <= 90
             && abs((float) str_replace(',', '.', $matches[2])) <= 180;
-    }
-
-    private function error(): \WP_Error {
-        return new \WP_Error(
-            'invalid_answer_widget',
-            __('Mode de réponse invalide.', 'chassesautresor-com')
-        );
     }
 }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Content\CompletionCacheManager;
 use ChassesAuTresor\Core\Content\HuntCompletionService;
+use ChassesAuTresor\Core\Content\RiddleStepCompletenessService;
+use ChassesAuTresor\Core\Content\RiddleStepQueryService;
 use ChassesAuTresor\Core\Progress\RiddleAnswerService;
+use ChassesAuTresor\Core\Progress\RiddleFinalAnswerWidgetPersistenceService;
 use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 
@@ -124,7 +127,67 @@ if (!function_exists('cat_riddle_missing_labels')) {
     {
         $labels = [];
         foreach (cat_get_completion_cache_manager()->riddleMissingKeys($riddleId) as $key) {
+            if ($key === 'final_answer') {
+                $labels[] = cat_riddle_final_answer_gap_label($riddleId);
+                continue;
+            }
+            if ($key === 'steps') {
+                foreach (cat_riddle_incomplete_step_labels($riddleId) as $label) {
+                    $labels[] = $label;
+                }
+                continue;
+            }
             $labels[] = cat_completion_gap_label($key);
+        }
+
+        return $labels;
+    }
+}
+
+if (!function_exists('cat_riddle_final_answer_gap_label')) {
+    function cat_riddle_final_answer_gap_label(int $riddleId): string
+    {
+        $issue = (new RiddleFinalAnswerWidgetPersistenceService())->issueMessage($riddleId);
+        if ($issue === '') {
+            $issue = __('configuration incomplète', 'chassesautresor-com');
+        }
+
+        return sprintf(
+            /* translators: %s: reason the automatic answer cannot be published. */
+            __('Réponse automatique : %s', 'chassesautresor-com'),
+            $issue
+        );
+    }
+}
+
+if (!function_exists('cat_riddle_incomplete_step_labels')) {
+    /**
+     * @return string[]
+     */
+    function cat_riddle_incomplete_step_labels(int $riddleId): array
+    {
+        $stepIds = (new RiddleStepQueryService())->findOrderedIds($riddleId);
+        $service = new RiddleStepCompletenessService();
+        $labels = [];
+        foreach ($stepIds as $index => $stepId) {
+            $issue = $service->issueMessage($stepId, 'get_the_title', 'get_field');
+            if ($issue === '') {
+                continue;
+            }
+            $title = function_exists('get_the_title') ? (string) get_the_title($stepId) : '';
+            if ($title === '') {
+                $title = __('sans nom', 'chassesautresor-com');
+            }
+            $labels[] = sprintf(
+                /* translators: 1: step number, 2: step title, 3: blocking reason. */
+                __('Étape %1$d « %2$s » : %3$s', 'chassesautresor-com'),
+                $index + 1,
+                $title,
+                $issue
+            );
+        }
+        if ($labels === []) {
+            $labels[] = __('Étapes : configuration incomplète', 'chassesautresor-com');
         }
 
         return $labels;
@@ -142,7 +205,7 @@ if (!function_exists('cat_completion_edition_url')) {
 
 if (!function_exists('cat_collect_hunt_activation_gaps')) {
     /**
-     * Missing hunt fields, organizer fields, and incomplete riddle titles.
+     * Missing hunt fields, organizer fields, and the reasons a riddle blocks activation.
      *
      * @return array<int, array{label:string,url:string}>
      */
@@ -186,12 +249,24 @@ if (!function_exists('cat_collect_hunt_activation_gaps')) {
             ? []
             : array_map('intval', (array) get_posts($query));
         foreach ($riddleIds as $riddleId) {
-            if ($riddleId <= 0 || $cache->riddleMissingKeys($riddleId) === []) {
+            if ($riddleId <= 0) {
+                continue;
+            }
+            $details = cat_riddle_missing_labels($riddleId);
+            if ($details === []) {
                 continue;
             }
             $title = function_exists('get_the_title') ? (string) get_the_title($riddleId) : '';
+            if ($title === '') {
+                $title = __('Énigme', 'chassesautresor-com');
+            }
             $gaps[] = [
-                'label' => $title !== '' ? $title : __('Énigme', 'chassesautresor-com'),
+                'label' => sprintf(
+                    /* translators: 1: riddle title, 2: blocking items. */
+                    __('Énigme « %1$s » — %2$s', 'chassesautresor-com'),
+                    $title,
+                    implode(' — ', $details)
+                ),
                 'url' => cat_completion_edition_url('enigme', $riddleId),
             ];
         }

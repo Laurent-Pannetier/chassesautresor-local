@@ -26,12 +26,16 @@ final class RiddleStepCompletenessService {
     }
 
     public function isStepComplete(int $stepId, callable $getTitle, callable $getField): bool {
+        return $this->issueMessage($stepId, $getTitle, $getField) === '';
+    }
+
+    public function issueMessage(int $stepId, callable $getTitle, callable $getField): string {
         if ($stepId <= 0) {
-            return false;
+            return __('Étape introuvable.', 'chassesautresor-com');
         }
 
         $widget = (string) ($getField('etape_reponse_widget', $stepId) ?: 'click');
-        $configuration = (new AnswerWidgetValidationService())->validate([
+        $issue = (new AnswerWidgetValidationService())->issueMessage([
             'widget' => $widget,
             'button_label' => (string) $getField('etape_reponse_bouton', $stepId),
             'accepted_answers' => (string) $getField('etape_reponses_texte', $stepId),
@@ -45,8 +49,8 @@ final class RiddleStepCompletenessService {
             'gps_coordinates' => (string) $getField('etape_gps_coordinates', $stepId),
             'gps_tolerance' => (string) $getField('etape_gps_tolerance', $stepId),
         ]);
-        if (is_wp_error($configuration)) {
-            return false;
+        if ($issue !== null) {
+            return $issue;
         }
 
         $requiresContent = in_array($widget, ['click', 'text'], true);
@@ -57,6 +61,10 @@ final class RiddleStepCompletenessService {
             $imageId,
             $requiresContent
         );
-        return !is_wp_error($content);
+        if (is_wp_error($content)) {
+            return $content->get_error_message();
+        }
+
+        return '';
     }
 }
