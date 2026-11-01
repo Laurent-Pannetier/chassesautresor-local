@@ -3,7 +3,7 @@ Contributors: wpforms, smub
 Tags: contact form, contact form plugin, forms, form builder, custom form
 Requires at least: 5.5
 Tested up to: 7.1
-Stable tag: 2.0.3
+Stable tag: 2.0.3.1
 Requires PHP: 7.2
 License: GNU General Public License v2.0 or later
 
@@ -392,6 +392,10 @@ Thank you,
 Syed Balkhi
 
 == Changelog ==
+= 2.0.3.1 =
+- Fixed: Field value smart tags could turn submitted text into HTML markup in a Confirmation message or a form or field description.
+- Fixed: Form Analytics caused JavaScript errors on pages with forms in older browsers or when its tracking script failed to load.
+
 = 2.0.3 =
 - Added: New Add Other Choice option for the Checkboxes field lets users type their own answer when none of the predefined choices fit.
 - Added: Prefill by URL now preselects Checkbox Items, Multiple Items, and Dropdown Items choices when the amount in the link is written in the site currency's format, such as 10,50 or 1,200.00.

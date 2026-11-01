@@ -10,6 +10,7 @@ namespace ChassesAuTresor\Core\Content;
 class RiddleRelationshipHookHandler {
     public static function register(callable $addAction): void {
         $addAction('acf/save_post', [self::class, 'handleSave'], 20, 1);
+        $addAction('chassesautresor_riddle_created', [self::class, 'handleSave'], 10, 1);
         $addAction('before_delete_post', [self::class, 'handleBeforeDelete'], 10, 1);
     }
 

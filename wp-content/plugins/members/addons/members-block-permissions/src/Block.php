@@ -64,6 +64,11 @@ class Block {
 		// Gets the permissions type.
 		$type = $block['attrs']['blockPermissionsType'];
 
+		// These types show the block to some visitors and not others.
+		if ( in_array( $type, [ 'user-status', 'role', 'cap' ], true ) && function_exists( 'members_do_not_cache_page' ) ) {
+			members_do_not_cache_page( 'block_permissions' );
+		}
+
 		// Assume that we will render this block by default.
 		$maybe_render = true;
 
@@ -101,6 +106,9 @@ class Block {
 			$message,
 			$block
 		);
+
+		// Block attributes are stored by post authors, so don't trust their type.
+		$message = is_scalar( $message ) ? (string) $message : '';
 
 		// Check if there's an error message and use it if so.
 		if ( $message ) {
@@ -259,10 +267,13 @@ class Block {
 
 		$condition = $block['attrs']['blockPermissionsCondition'];
 
+		// A non-string cap (stored outside the editor) is one nobody has, rather than a fatal error.
+		$has_cap = is_string( $cap ) && current_user_can( $cap );
+
 		if ( '=' === $condition ) {
-			$maybe_render = current_user_can( $cap );
+			$maybe_render = $has_cap;
 		} elseif ( '!=' === $condition ) {
-			$maybe_render = ! current_user_can( $cap );
+			$maybe_render = ! $has_cap;
 		}
 
 		return $maybe_render;

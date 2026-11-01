@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.0.3.1 =
+- Fixed: Field value smart tags could turn submitted text into HTML markup in a Confirmation message or a form or field description.
+- Fixed: Form Analytics caused JavaScript errors on pages with forms in older browsers or when its tracking script failed to load.
 
 = 2.0.3 =
 - Added: New Add Other Choice option for the Checkboxes field lets users type their own answer when none of the predefined choices fit.
