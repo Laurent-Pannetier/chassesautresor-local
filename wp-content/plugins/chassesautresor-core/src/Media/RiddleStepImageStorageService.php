@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ChassesAuTresor\Core\Media;
 
+use ChassesAuTresor\Core\Content\RiddleStepGallery;
+
 /**
  * Keep intermediate-step images under the protected _enigmes storage tree.
  */
@@ -76,20 +78,35 @@ final class RiddleStepImageStorageService
         $migrated = [];
         foreach ($steps as $stepId) {
             $stepId = (int) $stepId;
-            $imageId = (int) $getField('etape_image', $stepId);
+            $imageIds = RiddleStepGallery::idsForStep($stepId, $getField);
             $riddleId = (int) $getField('etape_enigme_associee', $stepId);
-            if ($imageId <= 0 || $riddleId <= 0) {
+            if ($imageIds === [] || $riddleId <= 0) {
                 continue;
             }
 
-            $securedId = $this->ensureProtected($imageId, $riddleId, $stepId);
-            if ($securedId > 0 && $securedId !== $imageId) {
-                $updateField('etape_image', $securedId, $stepId);
+            $securedIds = [];
+            $changed = false;
+            foreach ($imageIds as $imageId) {
+                $securedId = $this->ensureProtected($imageId, $riddleId, $stepId);
+                $finalId = $securedId > 0 ? $securedId : $imageId;
+                if ($finalId !== $imageId) {
+                    $changed = true;
+                }
+                $securedIds[] = $finalId;
+            }
+            if ($changed) {
+                $updateField('etape_image', $securedIds, $stepId);
             }
 
-            $finalId = $securedId > 0 ? $securedId : $imageId;
-            $relative = (string) get_post_meta($finalId, '_wp_attached_file', true);
-            if ($this->isProtectedPath($relative, $riddleId)) {
+            $protected = true;
+            foreach ($securedIds as $finalId) {
+                $relative = (string) get_post_meta($finalId, '_wp_attached_file', true);
+                if (!$this->isProtectedPath($relative, $riddleId)) {
+                    $protected = false;
+                    break;
+                }
+            }
+            if ($protected) {
                 $migrated[] = $stepId;
             }
         }

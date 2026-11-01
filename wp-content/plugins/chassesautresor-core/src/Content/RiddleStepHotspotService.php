@@ -68,7 +68,8 @@ final class RiddleStepHotspotService {
      */
     public function forStep(int $stepId, ?callable $getField = null): array {
         $getField = $getField ?? 'get_field';
-        $imageId = (int) $getField('etape_image', $stepId);
+        $imageIds = RiddleStepGallery::normalize($getField('etape_image', $stepId));
+        $imageId = $imageIds[0] ?? 0;
         $mode = $this->normalizeMode((string) ($getField('etape_widget_affichage', $stepId) ?: ''));
         $zoneRaw = trim((string) ($getField('etape_hotspot_zone', $stepId) ?: ''));
         $label = $this->normalizeLabel((string) ($getField('etape_hotspot_label', $stepId) ?: ''));

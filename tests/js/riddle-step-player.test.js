@@ -119,8 +119,10 @@ describe('riddle step player positioning', () => {
   test('adds the unlocked step without reloading the page', async () => {
     window.sessionStorage.clear();
     const appendPage = jest.fn().mockReturnValue(1);
+    const selectSlide = jest.fn();
     window.EnigmeGallery = {
       appendPage,
+      selectSlide,
       getGallery: () => document.querySelector('[data-enigme-gallery]'),
     };
     document.body.innerHTML = `
@@ -130,6 +132,7 @@ describe('riddle step player positioning', () => {
           <div class="riddle-player-step__content"><p>&nbsp;</p></div>
           <form class="riddle-step-click-form">
             <input name="enigme_id" value="42">
+            <input name="etape_id" value="1">
             <button type="submit">Continue</button>
             <p class="riddle-step-click-form__feedback"></p>
           </form>
@@ -144,16 +147,24 @@ describe('riddle step player positioning', () => {
           current_step_id: 2,
           response_html: `
             <section class="riddle-steps-player">
+              <div class="riddle-step-revealed-pages" data-revealed-step-id="1" hidden>
+                <span
+                  data-step-page-image-id="99"
+                  data-step-page-preview="preview.jpg"
+                  data-step-page-full="full.jpg"
+                  data-step-page-thumb="thumb.jpg"
+                  data-step-page-alt="Page"
+                ></span>
+                <span
+                  data-step-page-image-id="100"
+                  data-step-page-preview="preview-2.jpg"
+                  data-step-page-full="full-2.jpg"
+                  data-step-page-thumb="thumb-2.jpg"
+                  data-step-page-alt="Suite"
+                ></span>
+              </div>
               <article class="riddle-player-step is-completed" data-player-step-id="1"></article>
-              <article
-                class="riddle-player-step is-current"
-                data-player-step-id="2"
-                data-step-page-image-id="99"
-                data-step-page-preview="preview.jpg"
-                data-step-page-full="full.jpg"
-                data-step-page-thumb="thumb.jpg"
-                data-step-page-alt="Page"
-              >Next</article>
+              <article class="riddle-player-step is-current" data-player-step-id="2">Next</article>
             </section>
           `
         }
@@ -167,11 +178,11 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[data-player-step-id="1"] form')).toBeNull();
     expect(document.querySelector('[data-player-step-id="1"]')).toBeNull();
     expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
-    expect(document.activeElement).toBe(document.querySelector('[data-player-step-id="2"]'));
+    expect(document.activeElement).toBe(document.querySelector('[data-enigme-gallery]'));
     expect(document.activeElement.getAttribute('tabindex')).toBe('-1');
-    expect(appendPage).toHaveBeenCalledWith({
+    expect(appendPage).toHaveBeenNthCalledWith(1, {
       imageId: '99',
-      stepId: '2',
+      stepId: '1',
       previewUrl: 'preview.jpg',
       fullUrl: 'full.jpg',
       thumbUrl: 'thumb.jpg',
@@ -181,7 +192,15 @@ describe('riddle step player positioning', () => {
       sizes: '',
       width: '',
       height: '',
+      select: false,
     });
+    expect(appendPage).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      imageId: '100',
+      stepId: '1',
+      previewUrl: 'preview-2.jpg',
+      select: false,
+    }));
+    expect(selectSlide).toHaveBeenCalledWith(document.querySelector('[data-enigme-gallery]'), 1);
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
     expect(Element.prototype.scrollIntoView.mock.instances[0]).toBe(
       document.querySelector('[data-enigme-gallery]')

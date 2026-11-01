@@ -30,7 +30,7 @@ final class RiddleStepImageServiceTest extends TestCase {
         self::assertNull($service->findContext(0));
     }
 
-    public function testPlayerCanOnlyViewImagesFromVisibleSteps(): void {
+    public function testPlayerCanOnlyViewImagesFromCompletedSteps(): void {
         $service = new RiddleStepImageService(new RiddleStepImageRepositoryStub());
         $context = ['step_id' => 12, 'riddle_id' => 9];
 

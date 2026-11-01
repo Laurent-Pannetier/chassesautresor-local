@@ -15,13 +15,13 @@ final class RiddleStepContentServiceTest extends TestCase {
     public function testCanValidateContentWithoutPersistingIt(): void {
         $service = new RiddleStepContentService();
 
-        self::assertTrue($service->validate('Étape', '', 0, false));
-        self::assertInstanceOf(WP_Error::class, $service->validate('', 'Contenu', 0));
-        self::assertInstanceOf(WP_Error::class, $service->validate('Étape', '', 0));
+        self::assertTrue($service->validate('Étape', '', [], false));
+        self::assertInstanceOf(WP_Error::class, $service->validate('', 'Contenu', []));
+        self::assertInstanceOf(WP_Error::class, $service->validate('Étape', '', []));
     }
 
     public function testRequiresTextOrImage(): void {
-        $result = (new RiddleStepContentService())->save(8, 'Étape', '', 0);
+        $result = (new RiddleStepContentService())->save(8, 'Étape', '', []);
 
         self::assertInstanceOf(WP_Error::class, $result);
     }
@@ -33,7 +33,7 @@ final class RiddleStepContentServiceTest extends TestCase {
             8,
             ' Porte ',
             '<p>Observez.</p>',
-            12,
+            [12],
             true,
             static function (array $values) use (&$post): int {
                 $post = $values;
@@ -48,7 +48,7 @@ final class RiddleStepContentServiceTest extends TestCase {
         self::assertSame('Porte', $post['post_title']);
         self::assertSame('publish', $post['post_status']);
         self::assertSame('<p>Observez.</p>', $fields['etape_contenu']);
-        self::assertSame(12, $fields['etape_image']);
+        self::assertSame([12], $fields['etape_image']);
     }
 
     public function testAllowsEmptyContentForSelfContainedWidget(): void {
@@ -56,7 +56,7 @@ final class RiddleStepContentServiceTest extends TestCase {
             8,
             'Code directionnel',
             '',
-            0,
+            [],
             false,
             static fn (array $values): int => 8,
             static function (string $name, $value): void {

@@ -6,34 +6,42 @@ namespace ChassesAuTresor\Core\Content;
 
 /** Validate and persist the non-answer content of an intermediate step. */
 final class RiddleStepContentService {
-    /** @return true|\WP_Error */
-    public function validate(string $title, string $content, int $imageId, bool $requiresContent = true) {
+    /**
+     * @param int[] $imageIds
+     * @return true|\WP_Error
+     */
+    public function validate(string $title, string $content, array $imageIds, bool $requiresContent = true) {
         $title = trim($title);
         $hasContent = trim(wp_strip_all_tags($content)) !== '';
+        $imageIds = RiddleStepGallery::normalize($imageIds);
         if ($title === '') {
             return new \WP_Error('missing_title', __('Le nom de l’étape est obligatoire.', 'chassesautresor-com'));
         }
-        if ($requiresContent && !$hasContent && $imageId <= 0) {
+        if ($requiresContent && !$hasContent && $imageIds === []) {
             return new \WP_Error(
                 'missing_content',
-                __('Ajoutez un texte ou une image à l’étape.', 'chassesautresor-com')
+                __('Ajoutez un texte ou au moins une page à l’étape.', 'chassesautresor-com')
             );
         }
 
         return true;
     }
 
-    /** @return true|\WP_Error */
+    /**
+     * @param int[] $imageIds
+     * @return true|\WP_Error
+     */
     public function save(
         int $stepId,
         string $title,
         string $content,
-        int $imageId,
+        array $imageIds,
         bool $requiresContent = true,
         ?callable $updatePost = null,
         ?callable $updateField = null
     ) {
-        $validation = $this->validate($title, $content, $imageId, $requiresContent);
+        $imageIds = RiddleStepGallery::normalize($imageIds);
+        $validation = $this->validate($title, $content, $imageIds, $requiresContent);
         if (is_wp_error($validation)) {
             return $validation;
         }
@@ -51,7 +59,7 @@ final class RiddleStepContentService {
         }
 
         $updateField('etape_contenu', $content, $stepId);
-        $updateField('etape_image', $imageId > 0 ? $imageId : false, $stepId);
+        $updateField('etape_image', $imageIds === [] ? false : $imageIds, $stepId);
 
         return true;
     }
