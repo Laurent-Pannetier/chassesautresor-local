@@ -13,7 +13,7 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Nom interne | `post_title` | Repère obligatoire réservé à l’organisateur, jamais affiché au joueur. |
 | Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
 | Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
-| Image | `etape_image` | Page BD facultative, 1920 × 1080 px (16:9). Une fois débloquée, elle s’ajoute à la galerie de l’énigme. |
+| Pages | `etape_image` | Galerie facultative, pages 1920 × 1080 px (16:9), dans l’ordre de lecture. Elles rejoignent la BD seulement quand l’étape est réussie. La première page révélée s’affiche ; les suivantes se feuillettent avant la question d’après. Une ancienne image unique reste la page 1. |
 | Affichage du widget | Imposé | Le joueur ouvre le widget avec « Répondre ». L’organisateur ne choisit pas de mode. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
@@ -49,8 +49,9 @@ avec un widget incomplet empêche la validation de la chasse. Un parcours sans �
 ## Progression et tentatives
 
 La table `wp_enigme_etapes_progression` mémorise les étapes réussies. Le parcours est linéaire : les étapes terminées
-et la première étape incomplète sont visibles ; les étapes futures ne sont pas envoyées au navigateur. Après la dernière
-étape, la réponse finale devient disponible.
+et la première étape incomplète sont visibles ; les étapes futures ne sont pas envoyées au navigateur. Les pages d’une
+étape restent cachées tant qu’elle n’est pas réussie. Après la dernière étape, la réponse finale devient disponible,
+avec les pages que cette dernière réussite vient d’ajouter à la BD.
 
 Le clic sur l’étape courante est validé côté serveur, enregistré comme une interaction réussie liée à `etape_id`, puis
 débloque l’étape suivante. Il ne coûte aucun point et ne consomme aucune tentative. Les étapes terminées restent
@@ -69,9 +70,9 @@ Le compteur et le formulaire sont actualisés immédiatement après une erreur ;
 est désactivée sans attendre un rechargement. L’outil administratif de remise à zéro efface aussi la progression des
 étapes afin que les parcours puissent être rejoués pendant les tests.
 
-Après une réussite, l’étape suivante ou le formulaire de réponse finale est injecté dans le panneau par AJAX, sans
-recharger la page. Les visuels protégés déjà affichés ne sont donc pas redemandés et ne déplacent plus la cible pendant
-le changement d’étape.
+Après une réussite, les pages de l’étape résolue sont ajoutées d’un coup à la BD et le lecteur s’ouvre sur la première
+d’entre elles. L’étape suivante ou le formulaire de réponse finale est injecté dans le panneau par AJAX, sans recharger
+la page. Les visuels protégés déjà affichés ne sont pas redemandés.
 
 La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une interaction à une étape. Seul le
 résultat `faux` consomme actuellement le quota : une variante personnalisée et, à terme, un clic de confirmation ne

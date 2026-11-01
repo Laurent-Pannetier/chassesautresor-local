@@ -11,11 +11,12 @@ final class RiddleStepProtectedImageTest extends TestCase {
             . 'template-parts/enigme/partials/enigme-partial-etapes-joueur.php'
         );
 
-        self::assertStringContainsString("site_url('/voir-image-enigme')", $source);
-        self::assertStringContainsString('cta_voir_image_enigme_url', $source);
         self::assertStringContainsString('data-step-page-preview', $source);
+        self::assertStringContainsString('data-revealed-step-id', $source);
+        self::assertStringContainsString('enigme_step_comic_page_view', $source);
         self::assertStringNotContainsString('riddle-player-step__image', $source);
-        self::assertStringNotContainsString('wp_get_attachment_image($imageId', $source);
+        self::assertStringNotContainsString('wp_get_attachment_image(', $source);
+        self::assertStringNotContainsString("get_field('etape_image'", $source);
     }
 
     public function testProtectedControllerUsesProgressAccessAndPrivateCache(): void {
@@ -55,5 +56,9 @@ final class RiddleStepProtectedImageTest extends TestCase {
         self::assertStringContainsString('$activeIndex = 0;', $source);
         self::assertStringNotContainsString('$pageCount - 1', $source);
         self::assertStringContainsString('ensureProtected', $source);
+        self::assertStringContainsString("completed_step_ids", $source);
+        self::assertStringContainsString("site_url('/voir-image-enigme')", $source);
+        self::assertStringContainsString('cta_voir_image_enigme_url', $source);
+        self::assertStringNotContainsString('visible_step_ids', $source);
     }
 }

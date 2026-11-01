@@ -36,6 +36,7 @@ final class RiddleStepFieldGroupRegistrarTest extends TestCase {
         self::assertFalse($group['show_in_rest']);
         self::assertSame('id', $fields['etape_enigme_associee']['return_format']);
         self::assertSame('id', $fields['etape_image']['return_format']);
+        self::assertSame('gallery', $fields['etape_image']['type']);
         self::assertSame(
             [
                 'etape_enigme_associee',

@@ -54,11 +54,11 @@ final class RiddleStepCompletenessService {
         }
 
         $requiresContent = in_array($widget, ['click', 'text'], true);
-        $imageId = (int) $getField('etape_image', $stepId);
+        $imageIds = RiddleStepGallery::idsForStep($stepId, $getField);
         $content = (new RiddleStepContentService())->validate(
             (string) $getTitle($stepId),
             (string) $getField('etape_contenu', $stepId),
-            $imageId,
+            $imageIds,
             $requiresContent
         );
         if (is_wp_error($content)) {
