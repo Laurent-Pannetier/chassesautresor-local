@@ -1305,7 +1305,8 @@ final class ThemeCoreBoundaryTest extends TestCase
 
     public function testHuntNavigationAccessIsNotInjectedByTheme(): void
     {
-        $source = (string) file_get_contents(self::THEME_PATH . '/inc/sidebar.php');
+        $affichage = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/affichage.php');
+        $chasse = (string) file_get_contents(self::THEME_PATH . '/single-chasse.php');
         $handler = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/HuntNavigationAjaxHandler.php'
         );
@@ -1313,8 +1314,11 @@ final class ThemeCoreBoundaryTest extends TestCase
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/hunt-navigation-functions.php'
         );
 
-        self::assertStringNotContainsString('HuntNavigationAjaxHandler::configure', $source);
-        self::assertStringNotContainsString('function sidebar_prepare_chasse_nav', $source);
+        self::assertFileDoesNotExist(self::THEME_PATH . '/inc/sidebar.php');
+        self::assertStringNotContainsString('sidebar_prepare_chasse_nav', $affichage);
+        self::assertStringNotContainsString('sidebar_prepare_chasse_nav', $chasse);
+        self::assertStringNotContainsString('render_sidebar', $affichage);
+        self::assertStringNotContainsString('render_sidebar', $chasse);
         self::assertStringContainsString("?? 'sidebar_prepare_chasse_nav'", $handler);
         self::assertStringContainsString('function sidebar_prepare_chasse_nav', $builder);
     }

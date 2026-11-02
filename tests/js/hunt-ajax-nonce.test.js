@@ -2,12 +2,13 @@ const fs = require('fs');
 const path = require('path');
 
 describe('hunt AJAX request security', () => {
-  test('sidebar navigation sends its nonce', () => {
-    const source = fs.readFileSync(
-      path.resolve(__dirname, '../../wp-content/themes/chassesautresor/assets/sidebar/sidebar.js'),
-      'utf8'
+  test('legacy sidebar no longer posts hunt navigation from the theme', () => {
+    const sidebarJs = path.resolve(
+      __dirname,
+      '../../wp-content/themes/chassesautresor/assets/sidebar/sidebar.js'
     );
-    expect(source).toContain("data.append('nonce', sidebarData.nonce);");
+
+    expect(fs.existsSync(sidebarJs)).toBe(false);
   });
 
   test('validation CTA refresh sends the riddle editor nonce', () => {
