@@ -55,7 +55,18 @@ final class RiddleStepProtectedImageTest extends TestCase {
 
         self::assertStringContainsString('$activeIndex = 0;', $source);
         self::assertStringNotContainsString('$pageCount - 1', $source);
-        self::assertStringContainsString('ensureProtected', $source);
+        self::assertStringNotContainsString('ensureProtected', $source);
+        self::assertStringNotContainsString('update_field', $source);
+        $storage = file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleStepImageStorageService.php'
+        );
+        $hook = file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleStepImageSaveHookHandler.php'
+        );
+        self::assertStringContainsString('function persistProtectedGallery', $storage);
+        self::assertStringContainsString('ensureProtected', $storage);
+        self::assertStringContainsString("'acf/save_post'", $hook);
+        self::assertStringContainsString('persistProtectedGallery', $hook);
         self::assertStringContainsString("completed_step_ids", $source);
         self::assertStringContainsString("site_url('/voir-image-enigme')", $source);
         self::assertStringContainsString('cta_voir_image_enigme_url', $source);

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/../Content/edition-url-functions.php';
+
 if (!function_exists('sidebar_prepare_chasse_nav')) {
     /**
      * Prepare navigation items for a hunt sidebar.
@@ -160,21 +162,8 @@ if (!function_exists('sidebar_prepare_chasse_nav')) {
                 $tab = ($status === 'publish' && get_field('enigme_cache_complet', $post->ID))
                     ? 'stats'
                     : 'param';
-                $edit_url = function_exists('cta_shell_edition_url')
-                    ? cta_shell_edition_url(
-                        'enigme',
-                        (int) $post->ID,
-                        function_exists('cta_shell_normalize_edition_section')
-                            ? cta_shell_normalize_edition_section('enigme', $tab)
-                            : 'parametres'
-                    )
-                    : add_query_arg(
-                        [
-                            'enigme' => (int) $post->ID,
-                            'section' => $tab === 'stats' ? 'stats' : 'parametres',
-                        ],
-                        home_url('/outils/')
-                    );
+                $section = $tab === 'stats' ? 'stats' : 'parametres';
+                $edit_url = cat_product_edition_url('enigme', (int) $post->ID, $section);
                 $edit = '<a class="enigme-menu__edit" href="' . esc_url($edit_url)
                     . '" aria-label="'
                     . esc_attr__("Paramètres", "chassesautresor-com")

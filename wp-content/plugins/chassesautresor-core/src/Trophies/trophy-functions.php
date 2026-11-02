@@ -185,17 +185,7 @@ if (!function_exists('cat_trophy_wall')) {
 if (!function_exists('cat_trophy_viewer_is_admin')) {
     function cat_trophy_viewer_is_admin(int $userId): bool
     {
-        if ($userId <= 0) {
-            return false;
-        }
-        if (
-            function_exists('cta_shell_user_is_administrator')
-            && function_exists('get_current_user_id')
-            && $userId === (int) get_current_user_id()
-        ) {
-            return cta_shell_user_is_administrator();
-        }
-        if (!function_exists('get_userdata')) {
+        if ($userId <= 0 || !function_exists('get_userdata')) {
             return false;
         }
         $user = get_userdata($userId);

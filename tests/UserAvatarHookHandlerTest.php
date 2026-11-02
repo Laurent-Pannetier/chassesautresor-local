@@ -23,9 +23,9 @@ namespace ChassesAuTresor\Core\Media {
         return htmlspecialchars($value, ENT_QUOTES);
     }
 
-    function get_stylesheet_directory_uri(): string
+    function plugins_url(string $path, string $plugin = ''): string
     {
-        return 'https://example.test/theme';
+        return 'https://example.test/plugin/' . ltrim($path, '/');
     }
 }
 
@@ -96,7 +96,7 @@ namespace {
             );
 
             self::assertStringContainsString(
-                'https://example.test/theme/assets/svg/pirate-skull.svg',
+                'https://example.test/plugin/assets/svg/pirate-skull.svg',
                 $avatar
             );
             self::assertStringContainsString("class='avatar avatar-64 photo avatar-pirate'", $avatar);

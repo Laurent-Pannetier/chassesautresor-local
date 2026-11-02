@@ -168,18 +168,20 @@ function ca_site_password_protection(): void
         header('Content-Type: text/html; charset=utf-8');
     }
 
-    $svg_url   = esc_url(get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg');
-    $style_url = esc_url(get_stylesheet_directory_uri() . '/dist/style.css');
+    $pluginFile = dirname(__DIR__, 2) . '/chassesautresor-core.php';
+    $svg_url = function_exists('plugins_url')
+        ? esc_url(plugins_url('assets/svg/pirate-skull.svg', $pluginFile))
+        : '';
 
     $styles = '.ca-site-password-wrapper{'
         . 'display:flex;'
         . 'min-height:100vh;'
         . 'align-items:center;'
         . 'justify-content:center;'
-        . 'padding:var(--space-xl) var(--space-lg);'
-        . 'background:var(--color-background);'
-        . 'color:var(--color-text-primary);'
-        . 'font-family:var(--font-main);'
+        . 'padding:48px 24px;'
+        . 'background:#0B132B;'
+        . 'color:#F5F5DC;'
+        . "font-family:Poppins,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;"
         . 'box-sizing:border-box;'
         . '}'
         . '.ca-site-password-form{'
@@ -190,48 +192,46 @@ function ca_site_password_protection(): void
         . 'display:flex;'
         . 'flex-direction:column;'
         . 'align-items:stretch;'
-        . 'gap:var(--space-md);'
+        . 'gap:16px;'
         . 'font-size:1rem;'
         . '}'
         . '.ca-site-password-form label{'
         . 'display:flex;'
         . 'flex-direction:column;'
-        . 'gap:var(--space-xs);'
+        . 'gap:8px;'
         . 'text-align:left;'
         . '}'
         . '.ca-site-password-form input[type="password"]{'
         . 'width:100%;'
-        . 'padding:var(--space-sm) var(--space-md);'
-        . 'border:1px solid var(--color-grey-dark);'
+        . 'padding:8px 16px;'
+        . 'border:1px solid #333333;'
         . 'border-radius:4px;'
-        . 'background:var(--color-background);'
-        . 'color:var(--color-text-primary);'
+        . 'background:#0B132B;'
+        . 'color:#F5F5DC;'
         . '}'
         . '.ca-site-password-form button{'
         . 'width:100%;'
-        . 'background:var(--color-background-button);'
-        . 'color:var(--color-white);'
-        . 'padding:var(--space-sm) var(--space-md);'
+        . 'background:#880000;'
+        . 'color:#FFFFFF;'
+        . 'padding:8px 16px;'
         . 'border:none;'
         . 'border-radius:4px;'
         . 'cursor:pointer;'
         . 'font-size:1rem;'
         . 'font-weight:600;'
         . '}'
-        . '.ca-site-password-form button:hover{background:var(--color-background-button-hover);}'
-        . '.ca-site-password-error{color:var(--color-error);}'
-        . '.ca-site-password-logo{width:min(195px,45vw);display:block;margin:0 auto var(--space-md);}'
+        . '.ca-site-password-form button:hover{background:#a00000;}'
+        . '.ca-site-password-error{color:#D93025;}'
+        . '.ca-site-password-logo{width:min(195px,45vw);display:block;margin:0 auto 16px;}'
         . '@media (min-width:768px){'
-        . '.ca-site-password-wrapper{padding:calc(var(--space-xl) + var(--space-lg)) var(--space-xl);}'
-        . '.ca-site-password-form{font-size:var(--space-lg);}'
+        . '.ca-site-password-wrapper{padding:72px 48px;}'
+        . '.ca-site-password-form{font-size:1.125rem;}'
         . '.ca-site-password-logo{width:195px;}'
         . '}';
 
     echo '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'
         . esc_html__('Protected Site', 'chassesautresor-com')
-        . '</title><link rel="stylesheet" href="'
-        . $style_url
-        . '"><style>'
+        . '</title><style>'
         . $styles
         . '</style></head><body><div class="ca-site-password-wrapper">'
         . '<form class="ca-site-password-form" method="post">'
