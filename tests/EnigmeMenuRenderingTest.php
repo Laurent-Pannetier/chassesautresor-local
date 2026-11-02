@@ -443,12 +443,14 @@ class EnigmeMenuRenderingTest extends TestCase
         };
     }
 
-    public function test_menu_rendered_for_draft_enigme_for_associated_organizer(): void
+    public function test_enigma_page_omits_legacy_sidebar(): void
     {
         ob_start();
         afficher_enigme_stylisee(101);
         $output = ob_get_clean();
-        $this->assertStringContainsString('enigme-menu', $output);
+        $this->assertStringNotContainsString('enigme-menu', $output);
+        $this->assertStringNotContainsString('enigme-mobile-panel', $output);
+        $this->assertStringNotContainsString('menu-lateral', $output);
     }
 
     public function test_menu_excludes_prerequisite_locked_enigme_for_user(): void
