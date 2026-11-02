@@ -114,6 +114,50 @@ final class RiddleStepImageStorageService
         return $migrated;
     }
 
+    /**
+     * Move a step gallery into protected storage and persist the new ids.
+     *
+     * Called from a save hook, never from a template.
+     */
+    public function persistProtectedGallery(
+        int $stepId,
+        int $riddleId,
+        ?callable $getField = null,
+        ?callable $updateField = null
+    ): bool {
+        if ($stepId <= 0 || $riddleId <= 0) {
+            return false;
+        }
+
+        $getField = $getField ?? 'get_field';
+        $updateField = $updateField ?? 'update_field';
+        $placeholder = defined('ID_IMAGE_PLACEHOLDER_ENIGME') ? (int) ID_IMAGE_PLACEHOLDER_ENIGME : 0;
+        $storedIds = [];
+        $changed = false;
+        foreach (RiddleStepGallery::idsForStep($stepId, $getField) as $imageId) {
+            if ($imageId <= 0) {
+                continue;
+            }
+            if ($placeholder > 0 && $imageId === $placeholder) {
+                $storedIds[] = $imageId;
+                continue;
+            }
+
+            $securedId = $this->ensureProtected($imageId, $riddleId, $stepId);
+            $finalId = $securedId > 0 ? $securedId : $imageId;
+            if ($finalId !== $imageId) {
+                $changed = true;
+            }
+            $storedIds[] = $finalId;
+        }
+
+        if ($changed && $storedIds !== []) {
+            $updateField('etape_image', $storedIds, $stepId);
+        }
+
+        return $changed;
+    }
+
     private function protection(): RiddleImageProtectionService
     {
         return $this->protection ?? new RiddleImageProtectionService();

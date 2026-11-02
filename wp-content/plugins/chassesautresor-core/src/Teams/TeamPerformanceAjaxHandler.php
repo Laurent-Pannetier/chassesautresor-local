@@ -44,7 +44,9 @@ final class TeamPerformanceAjaxHandler
 
                 return is_string($url) ? $url : '';
             },
-            function_exists('cta_shell_icon') ? (string) cta_shell_icon('team') : ''
+            function_exists('apply_filters')
+                ? (string) apply_filters('chassesautresor_shell_icon', '', 'team')
+                : ''
         );
         wp_send_json_success([
             'html' => $renderer->ranking($view),

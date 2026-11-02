@@ -1136,6 +1136,10 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
 
         self::assertStringNotContainsString('add_shortcode(', $shortcodes);
+        self::assertStringContainsString('chassesautresor_manual_answer_shortcode', $shortcodes);
+        self::assertStringContainsString('chassesautresor_points_shortcode', $shortcodes);
+        self::assertStringNotContainsString('afficher_formulaire_reponse_manuelle', $registrar);
+        self::assertStringNotContainsString('afficher_points_utilisateur_callback', $registrar);
         self::assertStringNotContainsString("add_shortcode('formulaire_reponse_manuelle'", $answers);
         foreach (['utilisateur_peut_repondre_manuelle', 'calculer_contexte_points'] as $functionName) {
             self::assertStringNotContainsString("function {$functionName}(", $answers);
@@ -1153,6 +1157,8 @@ final class ThemeCoreBoundaryTest extends TestCase
         );
 
         self::assertStringNotContainsString("add_action('woocommerce_account_dashboard'", $theme);
+        self::assertStringContainsString('chassesautresor_account_engaged_hunts_rendered', $theme);
+        self::assertStringNotContainsString('ca_render_dashboard_engaged_hunts', $handler);
         self::assertStringContainsString("'woocommerce_account_dashboard'", $handler);
         self::assertStringContainsString('new EngagedHuntsRenderer()', $handler);
         self::assertStringContainsString('new UserAttemptsRenderer()', $handler);
@@ -1741,6 +1747,106 @@ final class ThemeCoreBoundaryTest extends TestCase
         foreach ($loaders as $loader) {
             self::assertFileDoesNotExist($loader);
         }
+    }
+
+    public function testThemeDoesNotOwnPaidRiddleOrOrganizerTotals(): void
+    {
+        $utils = (string) file_get_contents(self::THEME_PATH . '/inc/enigme/utils.php');
+        $stats = (string) file_get_contents(self::THEME_PATH . '/inc/organisateur/stats.php');
+        $paid = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Content/riddle-visibility-functions.php'
+        );
+        $totals = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Progress/organizer-statistics-functions.php'
+        );
+
+        self::assertStringNotContainsString('function enigme_is_paid', $utils);
+        self::assertStringNotContainsString('function filter_visible_enigmes', $utils);
+        self::assertStringNotContainsString('function organisateur_compter_joueurs_uniques', $stats);
+        self::assertStringNotContainsString('function organisateur_compter_points_collectes', $stats);
+        self::assertStringContainsString('function enigme_is_paid', $paid);
+        self::assertStringContainsString('function filter_visible_enigmes', $paid);
+        self::assertStringContainsString('function organisateur_compter_joueurs_uniques', $totals);
+        self::assertStringContainsString('function organisateur_compter_points_collectes', $totals);
+    }
+
+    public function testThemeDoesNotRegisterTheAttemptsAccountEndpoint(): void
+    {
+        $theme = (string) file_get_contents(self::THEME_PATH . '/inc/myaccount-functions.php');
+        $endpoint = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Users/AccountTentativesEndpoint.php'
+        );
+
+        self::assertStringNotContainsString('add_rewrite_endpoint', $theme);
+        self::assertStringNotContainsString('update_option', $theme);
+        self::assertStringContainsString("add_rewrite_endpoint('tentatives'", $endpoint);
+        self::assertStringContainsString('ca_myaccount_endpoints_version', $endpoint);
+    }
+
+    public function testPluginDoesNotLoadThemeStylesheetAssets(): void
+    {
+        $root = __DIR__ . '/../wp-content/plugins/chassesautresor-core';
+        $violations = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS)
+        );
+        foreach ($iterator as $file) {
+            $path = str_replace('\\', '/', $file->getPathname());
+            if (!$file->isFile() || $file->getExtension() !== 'php' || strpos($path, '/tests/') !== false) {
+                continue;
+            }
+            $contents = (string) file_get_contents($file->getPathname());
+            if (strpos($contents, 'get_stylesheet_directory') !== false) {
+                $violations[] = str_replace($root . '/', '', $path);
+            }
+        }
+
+        self::assertSame([], $violations);
+    }
+
+    public function testPresentationRenderersStayOnTheAllowlist(): void
+    {
+        $root = __DIR__ . '/../wp-content/plugins/chassesautresor-core/src';
+        $found = [];
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS)
+        );
+        foreach ($iterator as $file) {
+            if (!$file->isFile() || substr($file->getFilename(), -12) !== 'Renderer.php') {
+                continue;
+            }
+            $found[] = str_replace('\\', '/', substr($file->getPathname(), strlen($root) + 1));
+        }
+        sort($found);
+
+        self::assertSame([
+            'Admin/AdminPaymentRenderer.php',
+            'Content/HuntCardRenderer.php',
+            'Messages/AccountHuntRiddleStatisticsRenderer.php',
+            'Messages/AccountOrganizersRenderer.php',
+            'Messages/AccountSectionRenderer.php',
+            'Messages/AccountStatisticsRenderer.php',
+            'Messages/AccountToolsRenderer.php',
+            'Messages/PlayerProgressionRenderer.php',
+            'Notifications/NotificationsPageRenderer.php',
+            'Points/ConversionHistoryRenderer.php',
+            'Points/ConversionModalRenderer.php',
+            'Points/PointsHistoryRenderer.php',
+            'Progress/EngagedHuntsRenderer.php',
+            'Progress/HintUnlockRenderer.php',
+            'Progress/HuntStatisticsParticipantRenderer.php',
+            'Progress/RiddleAttemptListRenderer.php',
+            'Progress/RiddleBarRenderer.php',
+            'Progress/RiddlePlayerPanelRenderer.php',
+            'Progress/RiddleSidebarRenderer.php',
+            'Progress/RiddleStatisticsParticipantRenderer.php',
+            'Progress/UserAttemptsRenderer.php',
+            'Teams/TeamPageRenderer.php',
+            'Trophies/TrophyCreateFormRenderer.php',
+            'Trophies/TrophyPageRenderer.php',
+            'Trophies/TrophyWallRenderer.php',
+            'Users/AccountOrdersRenderer.php',
+        ], $found);
     }
 
     /** @return string[] */

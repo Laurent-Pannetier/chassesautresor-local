@@ -58,7 +58,7 @@ final class UserAvatarHookHandler
 
     public static function defaultAvatarUrl(): string
     {
-        return get_stylesheet_directory_uri() . '/assets/svg/pirate-skull.svg';
+        return plugins_url('assets/svg/pirate-skull.svg', dirname(__DIR__, 2) . '/chassesautresor-core.php');
     }
 
     private static function resolveUserId($idOrEmail): int

@@ -15,8 +15,9 @@ final class AccountDashboardHookHandler {
     }
 
     public static function renderEngagedHunts(): void {
-        if (function_exists('ca_render_dashboard_engaged_hunts')) {
-            ca_render_dashboard_engaged_hunts();
+        $renderedByTheme = function_exists('apply_filters')
+            && apply_filters('chassesautresor_account_engaged_hunts_rendered', false) === true;
+        if ($renderedByTheme) {
             return;
         }
         if (!is_user_logged_in()) {
@@ -40,10 +41,6 @@ final class AccountDashboardHookHandler {
     }
 
     public static function renderAttempts(): void {
-        if (function_exists('ca_render_dashboard_tentatives')) {
-            ca_render_dashboard_tentatives();
-            return;
-        }
         $userId = is_user_logged_in() ? (int) get_current_user_id() : 0;
         if ($userId <= 0) {
             return;

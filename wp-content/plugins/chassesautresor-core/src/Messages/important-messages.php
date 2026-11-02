@@ -6,6 +6,8 @@ use ChassesAuTresor\Core\Content\OrganizerRoleService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Support\CoreServiceFactory;
 
+require_once __DIR__ . '/../Content/edition-url-functions.php';
+
 /**
  * Hunt state notices belong to the platform experience.
  */
@@ -236,17 +238,7 @@ function myaccount_get_important_messages(): string {
         $pendingOwn = CoreServiceFactory::conversion($wpdb)->getRequests($current_user_id, 'pending');
         if (!empty($pendingOwn)) {
             $conversion_url = $organisateur_id
-                ? esc_url(
-                    function_exists('cta_shell_edition_url')
-                        ? cta_shell_edition_url('organisateur', (int) $organisateur_id, 'revenus')
-                        : add_query_arg(
-                            [
-                                'organisateur' => (int) $organisateur_id,
-                                'section' => 'revenus',
-                            ],
-                            home_url('/outils/')
-                        )
-                )
+                ? esc_url(cat_product_edition_url('organisateur', (int) $organisateur_id, 'revenus'))
                 : esc_url(home_url('/mon-compte/'));
 
             $messages[] = [

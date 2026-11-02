@@ -178,10 +178,7 @@ final class AdminAjaxHandler
         }
         check_ajax_referer('cta_hunt_banner_sphere', 'nonce');
         $enabled = isset($_POST['enabled']) && $_POST['enabled'] === '1' ? '1' : '0';
-        $option = function_exists('cta_shell_hunt_sphere_option')
-            ? cta_shell_hunt_sphere_option()
-            : 'cta_hunt_banner_sphere_enabled';
-        update_option($option, $enabled);
+        update_option('cta_hunt_banner_sphere_enabled', $enabled);
         wp_send_json_success(['enabled' => $enabled]);
     }
 

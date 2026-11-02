@@ -7,6 +7,8 @@ use ChassesAuTresor\Core\Relationships\HuntRiddleQueryService;
 use ChassesAuTresor\Core\Relationships\RelationshipService;
 use ChassesAuTresor\Core\Site\SiteExperienceService;
 
+require_once __DIR__ . '/edition-url-functions.php';
+
 if (!function_exists('cat_get_managed_hunt_id_for_user')) {
     /**
      * Resolve the hunt managed from the account home for the current actor.
@@ -118,26 +120,13 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
         if ($showOrganizerLink) {
             $links[] = [
                 'label' => __('Organisateur', 'chassesautresor-com'),
-                'url' => function_exists('cta_shell_edition_url')
-                    ? cta_shell_edition_url('organisateur', $organizerId, 'parametres')
-                    : add_query_arg(
-                        [
-                            'organisateur' => $organizerId,
-                            'section' => 'parametres',
-                        ],
-                        home_url('/outils/')
-                    ),
+                'url' => cat_product_edition_url('organisateur', $organizerId, 'parametres'),
             ];
         }
 
         $links[] = [
             'label' => __('Chasse', 'chassesautresor-com'),
-            'url' => function_exists('cta_shell_edition_url')
-                ? cta_shell_edition_url('chasse', $huntId, 'parametres')
-                : add_query_arg(
-                    ['chasse' => $huntId, 'section' => 'parametres'],
-                    home_url('/outils/')
-                ),
+            'url' => cat_product_edition_url('chasse', $huntId, 'parametres'),
         ];
 
         $riddleIds = array_map(
@@ -148,12 +137,7 @@ if (!function_exists('cat_get_hunt_quick_edit_links')) {
             $title = get_the_title($riddleId);
             $links[] = [
                 'label' => $title !== '' ? $title : __('Énigme', 'chassesautresor-com'),
-                'url' => function_exists('cta_shell_edition_url')
-                    ? cta_shell_edition_url('enigme', $riddleId, 'parametres')
-                    : add_query_arg(
-                        ['enigme' => $riddleId, 'section' => 'parametres'],
-                        home_url('/outils/')
-                    ),
+                'url' => cat_product_edition_url('enigme', $riddleId, 'parametres'),
             ];
         }
 
