@@ -213,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['uid'], $_POST['action
                                 <?php endif; ?>
                               </div>
                               <p class="edition-format-hint"><?= esc_html__(
-                                  'Format BD : 1920 × 1080 px (16:9), une image par page.',
+                                  'Format BD : 1380 × 4000 px, largeur fixe, hauteur 4000, lecture en défilement.',
                                   'chassesautresor-com'
                               ); ?></p>
                               <?php if ($inlineImages) : ?>

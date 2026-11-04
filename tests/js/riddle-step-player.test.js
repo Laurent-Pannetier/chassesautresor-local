@@ -126,7 +126,9 @@ describe('riddle step player positioning', () => {
       getGallery: () => document.querySelector('[data-enigme-gallery]'),
     };
     document.body.innerHTML = `
-      <div class="galerie-enigme-wrapper" data-enigme-gallery></div>
+      <div class="galerie-enigme-wrapper" data-enigme-gallery>
+        <figure class="galerie-enigme__slide" data-gallery-index="1"></figure>
+      </div>
       <section class="riddle-steps-player">
         <article class="riddle-player-step is-current" data-player-step-id="1">
           <div class="riddle-player-step__content"><p>&nbsp;</p></div>
@@ -178,7 +180,8 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[data-player-step-id="1"] form')).toBeNull();
     expect(document.querySelector('[data-player-step-id="1"]')).toBeNull();
     expect(document.querySelector('[data-player-step-id="2"]').textContent).toBe('Next');
-    expect(document.activeElement).toBe(document.querySelector('[data-enigme-gallery]'));
+    const revealed = document.querySelector('.galerie-enigme__slide[data-gallery-index="1"]');
+    expect(document.activeElement).toBe(revealed);
     expect(document.activeElement.getAttribute('tabindex')).toBe('-1');
     expect(appendPage).toHaveBeenNthCalledWith(1, {
       imageId: '99',
@@ -203,7 +206,7 @@ describe('riddle step player positioning', () => {
     expect(selectSlide).toHaveBeenCalledWith(document.querySelector('[data-enigme-gallery]'), 1);
     expect(Element.prototype.scrollIntoView).toHaveBeenCalledTimes(1);
     expect(Element.prototype.scrollIntoView.mock.instances[0]).toBe(
-      document.querySelector('[data-enigme-gallery]')
+      document.querySelector('.galerie-enigme__slide[data-gallery-index="1"]')
     );
   });
 

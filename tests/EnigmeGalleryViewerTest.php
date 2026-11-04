@@ -151,7 +151,9 @@ class EnigmeGalleryViewerTest extends TestCase
         $html = ob_get_clean();
 
         $this->assertStringContainsString('data-enigme-gallery', $html);
-        $this->assertStringContainsString('data-comic-reader', $html);
+        $this->assertStringContainsString('data-webtoon', $html);
+        $this->assertStringNotContainsString('data-comic-reader', $html);
+        $this->assertStringContainsString('min(100vw, 1380px)', $html);
         $this->assertStringContainsString('data-enigme-lightbox-src=', $html);
         $this->assertStringContainsString('enigme-media-zoom', $html);
         $this->assertStringContainsString('enigme-media-zoom__hint', $html);
@@ -164,7 +166,7 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertSame(1, substr_count($html, 'galerie-enigme__slide'));
     }
 
-    public function test_multiple_images_render_thumbnails_and_hidden_slides(): void
+    public function test_multiple_images_stack_without_a_gap_or_page_chrome(): void
     {
         $GLOBALS['test_enigme_gallery'] = [
             ['ID' => 101],
@@ -175,16 +177,13 @@ class EnigmeGalleryViewerTest extends TestCase
         afficher_visuels_enigme(8);
         $html = ob_get_clean();
 
-        $this->assertStringContainsString('galerie-enigme__thumbs', $html);
-        $this->assertStringContainsString('galerie-enigme__nav--prev', $html);
-        $this->assertStringContainsString('galerie-enigme__nav--next', $html);
-        $this->assertStringContainsString('Page 1 / 2', $html);
-        $this->assertStringContainsString('data-gallery-goto="1"', $html);
-        $this->assertStringContainsString('Afficher la page 2', $html);
+        $this->assertStringNotContainsString('galerie-enigme__thumbs', $html);
+        $this->assertStringNotContainsString('galerie-enigme__nav', $html);
+        $this->assertStringNotContainsString('Page 1 / 2', $html);
+        $this->assertStringNotContainsString(' hidden', $html);
         $this->assertSame(2, substr_count($html, 'galerie-enigme__slide'));
-        $this->assertStringContainsString(' hidden', $html);
-        $this->assertStringContainsString('101-thumbnail.jpg', $html);
-        $this->assertStringContainsString('202-thumbnail.jpg', $html);
+        $this->assertStringContainsString('min(100vw, 1380px)', $html);
+        $this->assertStringContainsString('galerie-enigme__slide is-active', $html);
     }
 
     public function test_unlocked_step_images_append_as_comic_pages(): void
@@ -201,7 +200,7 @@ class EnigmeGalleryViewerTest extends TestCase
 
         $this->assertSame(2, substr_count($html, 'data-gallery-index="'));
         $this->assertStringContainsString('data-gallery-step-id="11"', $html);
-        $this->assertStringContainsString('Page 1 / 2', $html);
+        $this->assertStringNotContainsString(' hidden', $html);
         $this->assertStringContainsString('galerie-enigme__slide is-active', $html);
         $this->assertStringContainsString('galerie-enigme__slide--step', $html);
         $this->assertDoesNotMatchRegularExpression(

@@ -80,8 +80,8 @@ final class RiddleStepFieldGroupRegistrar {
                 'name' => 'etape_image',
                 'type' => 'gallery',
                 'instructions' => __(
-                    'Pages ajoutées à la BD quand le joueur réussit cette étape. '
-                    . 'La première s’affiche, les suivantes se feuillettent.',
+                    'Images ajoutées sous la BD quand le joueur réussit cette étape. '
+                    . 'La vue descend à la première, la suite se lit en défilement.',
                     'chassesautresor-com'
                 ),
                 'required' => false,

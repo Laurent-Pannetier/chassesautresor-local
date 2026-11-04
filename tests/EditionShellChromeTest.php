@@ -98,6 +98,8 @@ final class EditionShellChromeTest extends TestCase
         $script = (string) file_get_contents($theme . '/assets/js/enigme-edit.js');
 
         $this->assertStringContainsString('edition-format-hint', $riddle);
+        $this->assertStringContainsString('1380 × 4000 px, largeur fixe, hauteur 4000, lecture en défilement.', $riddle);
+        $this->assertStringNotContainsString('1920 × 1080', $riddle);
         $this->assertStringContainsString('data-empty-label', $riddle);
         $this->assertStringContainsString("esc_html__('Gratuit'", $riddle);
         $this->assertStringNotContainsString("esc_html__('Free'", $riddle);

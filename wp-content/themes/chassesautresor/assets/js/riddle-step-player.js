@@ -436,7 +436,12 @@ document.addEventListener('submit', async event => {
     if (showRevealedPage && typeof window.EnigmeGallery.selectSlide === 'function') {
       window.EnigmeGallery.selectSlide(gallery, unlocked.revealedIndex);
     }
-    const scrollTarget = showRevealedPage ? gallery : unlocked.target;
+    const revealedSlide = showRevealedPage
+      ? gallery.querySelector(
+          `.galerie-enigme__slide[data-gallery-index="${unlocked.revealedIndex}"]`
+        )
+      : null;
+    const scrollTarget = revealedSlide || (showRevealedPage ? gallery : unlocked.target);
     focusUnlockedContent(scrollTarget);
     scrollTarget.scrollIntoView({
       behavior: reducedMotion ? 'auto' : 'smooth',
