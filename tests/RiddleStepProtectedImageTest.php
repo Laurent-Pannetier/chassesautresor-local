@@ -19,33 +19,28 @@ final class RiddleStepProtectedImageTest extends TestCase {
         self::assertStringNotContainsString("get_field('etape_image'", $source);
     }
 
-    public function testProtectedControllerUsesProgressAccessAndPrivateCache(): void {
-        $source = file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
+    public function testUnlockedPagesStayOutOfHtmlAndFilesUseAPublicCache(): void {
+        $gate = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImagePublicationGate.php'
+        );
+        $rules = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImageProtectionService.php'
+        );
+        $routes = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedAssetRouteHandler.php'
         );
 
-        self::assertStringContainsString('riddleStepImages($wpdb)', $source);
-        self::assertStringContainsString('browserCacheControl($exp)', $source);
-        self::assertStringContainsString('X-LiteSpeed-Cache-Control: no-cache', $source);
-        self::assertStringNotContainsString('nocache_headers()', $source);
-        self::assertStringContainsString('http_response_code(304)', $source);
-        self::assertStringContainsString('tryLiteSpeedSend', $source);
-        self::assertStringContainsString('ProtectedRiddleImageSignedUrlService', $source);
-        self::assertStringContainsString('ProtectedRiddleImageRequestPolicy', $source);
-        self::assertStringContainsString(
-            '$signer->verify($image_id, $taille, $uid, $exp, $sig, null, $format)',
-            $source
+        self::assertStringContainsString('canViewRiddle(', $gate);
+        self::assertStringContainsString('->canView(', $gate);
+        self::assertStringContainsString('findContext(', $gate);
+        self::assertStringContainsString('PUBLIC_CACHE_CONTROL', $rules);
+        self::assertStringContainsString('public, max-age=31536000, immutable', $rules);
+        self::assertStringNotContainsString('Cache-Control: private', $rules);
+        self::assertStringNotContainsString('voir-image-enigme', $routes);
+        self::assertStringNotContainsString('X-LiteSpeed-Location', $rules);
+        self::assertFileDoesNotExist(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
         );
-        self::assertStringContainsString('acceptsSignature($signature_valid, $uid, $current_user_id)', $source);
-        self::assertStringNotContainsString('$uid !== $current_user_id', $source);
-        self::assertStringContainsString('canViewRiddle($enigme_id, $current_user_id)', $source);
-        self::assertStringContainsString('private, max-age=0, must-revalidate', $source);
-        self::assertStringContainsString('Lien image invalide ou expiré', $source);
-        self::assertStringContainsString('findContext($image_id)', $source);
-        self::assertStringContainsString('canView($image_id, $current_user_id)', $source);
-        self::assertStringNotContainsString('$enigme_id ? null : $step_image_service->findContext', $source);
-        self::assertStringNotContainsString('Cache-Control: public', $source);
-        self::assertStringNotContainsString('no-store', $source);
     }
 
     public function testGalleryOpensOnFirstPageAndSecuresStepImages(): void {
@@ -68,8 +63,9 @@ final class RiddleStepProtectedImageTest extends TestCase {
         self::assertStringContainsString("'acf/save_post'", $hook);
         self::assertStringContainsString('persistProtectedGallery', $hook);
         self::assertStringContainsString("completed_step_ids", $source);
-        self::assertStringContainsString("site_url('/voir-image-enigme')", $source);
         self::assertStringContainsString('cta_voir_image_enigme_url', $source);
+        self::assertStringContainsString('enigme_direct_image_url', $source);
+        self::assertStringNotContainsString('voir-image-enigme', $source);
         self::assertStringNotContainsString('visible_step_ids', $source);
     }
 }

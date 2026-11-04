@@ -9,60 +9,43 @@ use PHPUnit\Framework\TestCase;
 require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedRiddleImageDeliveryService.php';
 require_once __DIR__
+    . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImageObscureNameService.php';
+require_once __DIR__
     . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImageProtectionService.php';
 
 final class ProtectedRiddleImageDeliveryServiceTest extends TestCase
 {
-    public function testDetectsLiteSpeedServerSoftware(): void
-    {
-        $service = new ProtectedRiddleImageDeliveryService();
-
-        self::assertTrue($service->isLiteSpeedServer('LiteSpeed'));
-        self::assertTrue($service->isLiteSpeedServer('LiteSpeed/6.0'));
-        self::assertFalse($service->isLiteSpeedServer('Apache/2.4'));
-        self::assertFalse($service->isLiteSpeedServer('nginx'));
-    }
-
-    public function testBuildsUriUnderUploadsBase(): void
-    {
-        $service = new ProtectedRiddleImageDeliveryService();
-
-        self::assertSame(
-            '/wp-content/uploads/_enigmes/enigme-12/photo.webp',
-            $service->absolutePathToUri(
-                '/var/www/html/wp-content/uploads/_enigmes/enigme-12/photo.webp',
-                '/var/www/html/wp-content/uploads',
-                'https://example.test/wp-content/uploads'
-            )
-        );
-    }
-
-    public function testRejectsPathOutsideUploadsBase(): void
-    {
-        $service = new ProtectedRiddleImageDeliveryService();
-
-        self::assertNull(
-            $service->absolutePathToUri(
-                '/etc/passwd',
-                '/var/www/html/wp-content/uploads',
-                'https://example.test/wp-content/uploads'
-            )
-        );
-    }
-
-    public function testProtectionRulesAllowLiteSpeedInternalRedirectPattern(): void
+    public function testProtectionRulesAllowDirectReadsWithoutListing(): void
     {
         $service = new RiddleImageProtectionService();
         $rules = $service->rules(42);
 
-        self::assertStringContainsString('ORG_REQ_URI', $rules);
-        self::assertStringContainsString('/_enigmes/', $rules);
+        self::assertStringContainsString('Options -Indexes', $rules);
+        self::assertStringContainsString('IndexIgnore *', $rules);
+        self::assertStringContainsString('REQUEST_FILENAME} -d', $rules);
         self::assertStringContainsString('[F,L]', $rules);
-        self::assertStringNotContainsString('Require all denied', $rules);
         self::assertStringContainsString("énigme 42", $rules);
+        self::assertStringContainsString(RiddleImageProtectionService::PUBLIC_CACHE_CONTROL, $rules);
+        self::assertStringContainsString('Cache-Control', $rules);
+        self::assertStringNotContainsString('ORG_REQ_URI', $rules);
+        self::assertStringNotContainsString('Require all denied', $rules);
         self::assertStringNotContainsString('HTTP_REFERER', $rules);
-        self::assertStringNotContainsString('wp-admin', $rules);
-        self::assertStringContainsString('RewriteRule ^ - [F,L]', $rules);
+        self::assertStringNotContainsString('private', $rules);
+        self::assertStringNotContainsString('voir-image-enigme', $rules);
+    }
+
+    public function testDirectoryStaysClosedWhileAGuessableNameRemains(): void
+    {
+        $source = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImageProtectionService.php'
+        );
+        $check = strpos($source, 'riddleDirectoryIsUnpredictable');
+        $write = strpos($source, 'file_put_contents($protected');
+
+        self::assertNotFalse($check);
+        self::assertNotFalse($write);
+        self::assertLessThan($write, $check);
+        self::assertStringContainsString('return false;', substr($source, $check, $write - $check));
     }
 
     public function testConfinesReadableFilesToTheUploadsDirectory(): void
@@ -85,59 +68,6 @@ final class ProtectedRiddleImageDeliveryServiceTest extends TestCase
         @unlink($outside);
         @rmdir($root . '/_enigmes');
         @rmdir($root);
-    }
-
-    public function testControllerHardensFormatPathAndResponseHeaders(): void
-    {
-        $source = (string) file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
-        );
-
-        self::assertStringContainsString('confineToUploads', $source);
-        self::assertStringContainsString("'fmt'", $source);
-        self::assertStringContainsString('X-Content-Type-Options: nosniff', $source);
-        self::assertStringContainsString('Referrer-Policy: no-referrer', $source);
-        self::assertStringContainsString('image/webp', $source);
-        self::assertLessThan(
-            strpos($source, 'readfile($path)'),
-            strpos($source, 'confineToUploads')
-        );
-    }
-
-    public function testProtectedControllerPrefersLiteSpeedLocationBeforeReadfile(): void
-    {
-        $source = file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
-        );
-
-        self::assertStringContainsString('ProtectedRiddleImageDeliveryService', $source);
-        self::assertStringContainsString('tryLiteSpeedSend', $source);
-        self::assertStringContainsString('X-LiteSpeed-Location', file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedRiddleImageDeliveryService.php'
-        ));
-        self::assertLessThan(
-            strpos($source, 'readfile($path)'),
-            strpos($source, 'tryLiteSpeedSend')
-        );
-    }
-
-    public function testBrowserCacheStaysPrivateAndCapped(): void
-    {
-        $service = new ProtectedRiddleImageDeliveryService();
-        $now = 1_700_000_000;
-
-        self::assertSame(
-            'private, max-age=900, must-revalidate',
-            $service->browserCacheControl($now + 5000, $now)
-        );
-        self::assertSame(
-            'private, max-age=30, must-revalidate',
-            $service->browserCacheControl($now + 30, $now)
-        );
-        self::assertSame(
-            'Tue, 14 Nov 2023 22:28:20 GMT',
-            $service->browserExpires($now + 5000, $now)
-        );
     }
 
     public function testOriginalBytesAreKeptUnlessWebpWasRequested(): void
@@ -165,5 +95,20 @@ final class ProtectedRiddleImageDeliveryServiceTest extends TestCase
         @unlink($jpeg);
         @unlink($webp);
         @rmdir($directory);
+    }
+
+    public function testRouteHandlerNoLongerServesRiddleImages(): void
+    {
+        $source = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedAssetRouteHandler.php'
+        );
+
+        self::assertStringNotContainsString('voir-image-enigme', $source);
+        self::assertStringNotContainsString('protected-riddle-image.php', $source);
+        self::assertStringContainsString('protected-solution-file.php', $source);
+        self::assertStringContainsString('voir-fichier', $source);
+        self::assertFileDoesNotExist(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
+        );
     }
 }

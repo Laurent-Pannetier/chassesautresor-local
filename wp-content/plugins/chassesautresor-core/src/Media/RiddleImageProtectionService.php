@@ -8,8 +8,22 @@ namespace ChassesAuTresor\Core\Media;
  * Manage temporary .htaccess suspension for protected riddle images.
  */
 class RiddleImageProtectionService {
+    public const PUBLIC_CACHE_CONTROL = 'public, max-age=31536000, immutable';
+
     public function protect(int $riddleId, bool $force = false): bool {
         if ($riddleId <= 0 || get_post_type($riddleId) !== 'enigme') {
+            return false;
+        }
+
+        return $this->publishDirectory($riddleId, $force);
+    }
+
+    /**
+     * Hash predictable names, then allow direct reads. A directory that still
+     * contains a guessable image name keeps its current deny rules.
+     */
+    public function publishDirectory(int $riddleId, bool $force = false): bool {
+        if ($riddleId <= 0) {
             return false;
         }
 
@@ -19,18 +33,51 @@ class RiddleImageProtectionService {
             return false;
         }
 
-        $expected = $this->rules($riddleId);
-        if (!$force && file_exists($protected)) {
-            $current = @file_get_contents($protected);
-            if ($current === $expected) {
-                return true;
-            }
-        }
-        if (file_exists($temporary) && !@unlink($temporary)) {
+        $names = new RiddleImageObscureNameService();
+        $names->obscureRiddle($riddleId);
+        $names->obscureDirectory($directory);
+        if (!$names->riddleDirectoryIsUnpredictable($directory)) {
             return false;
         }
 
-        return file_put_contents($protected, $expected, LOCK_EX) !== false;
+        $expected = $this->rules($riddleId);
+        if (!$force && is_file($protected)) {
+            $current = @file_get_contents($protected);
+            if ($current === $expected) {
+                $this->writeStepsRules($directory, $expected);
+
+                return true;
+            }
+        }
+        if (is_file($temporary) && !@unlink($temporary)) {
+            return false;
+        }
+
+        $written = file_put_contents($protected, $expected, LOCK_EX) !== false;
+        if ($written) {
+            $this->writeStepsRules($directory, $expected);
+        }
+
+        return $written;
+    }
+
+    public function openStoredRiddles(): bool {
+        $base = wp_upload_dir()['basedir'] . '/_enigmes';
+        if (!is_dir($base)) {
+            return true;
+        }
+
+        $ready = true;
+        foreach ((array) glob($base . '/enigme-*') as $directory) {
+            if (!is_dir($directory) || !preg_match('/enigme-(\d+)$/', $directory, $matches)) {
+                continue;
+            }
+            if (!$this->publishDirectory((int) $matches[1], true)) {
+                $ready = false;
+            }
+        }
+
+        return $ready;
     }
 
     /** @return array{success:bool,message:string} */
@@ -112,24 +159,39 @@ class RiddleImageProtectionService {
     }
 
     /**
-     * Block every direct HTTP access while allowing LiteSpeed X-LiteSpeed-Location.
-     *
-     * LiteSpeed keeps %{ORG_REQ_URI} as the client-facing URI. A request that started
-     * as /voir-image-enigme can therefore internally fetch /_enigmes/... without matching
-     * the deny rule. Require all denied would also block that internal redirect.
-     *
-     * The referer is not consulted: it is trivial to spoof and would reopen the files.
-     * Media-library uploads still use the temporary rename of this file.
+     * Files are readable. The directory itself is not listable.
+     * The file name is the cache key: it changes only when the bytes change.
      */
     public function rules(int $riddleId): string {
-        return "# Protection des fichiers de l'énigme {$riddleId}\n"
-            . "<IfModule mod_rewrite.c>\nRewriteEngine On\n\n"
-            . "# LiteSpeed: refuse l'accès direct. L'URI d'origine reste /voir-image-enigme.\n"
-            . "RewriteCond %{ORG_REQ_URI} /_enigmes/\n"
-            . "RewriteRule ^ - [F,L]\n\n"
-            . "# Apache / Local: ORG_REQ_URI absent → refuse tout accès HTTP direct.\n"
-            . "RewriteCond %{ORG_REQ_URI} ^$\n"
+        $cache = self::PUBLIC_CACHE_CONTROL;
+
+        return "# Fichiers de l'énigme {$riddleId} : lecture directe, dossier non listable.\n"
+            . "Options -Indexes\n"
+            . "<IfModule mod_autoindex.c>\n"
+            . "IndexIgnore *\n"
+            . "</IfModule>\n"
+            . "<IfModule mod_headers.c>\n"
+            . "<FilesMatch \"\\.(jpe?g|png|gif|webp)$\">\n"
+            . "Header set Cache-Control \"{$cache}\"\n"
+            . "</FilesMatch>\n"
+            . "</IfModule>\n"
+            . "<IfModule mod_rewrite.c>\n"
+            . "RewriteEngine On\n"
+            . "RewriteCond %{REQUEST_FILENAME} -d\n"
             . "RewriteRule ^ - [F,L]\n"
             . "</IfModule>\n";
+    }
+
+    private function writeStepsRules(string $directory, string $rules): void {
+        $steps = $directory . '/etapes';
+        if (!is_dir($steps)) {
+            return;
+        }
+
+        $target = $steps . '/.htaccess';
+        if (is_file($target) && @file_get_contents($target) === $rules) {
+            return;
+        }
+        file_put_contents($target, $rules, LOCK_EX);
     }
 }

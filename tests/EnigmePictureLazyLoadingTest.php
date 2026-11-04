@@ -16,6 +16,12 @@ if (!function_exists('site_url')) {
 if (!function_exists('add_query_arg')) {
     function add_query_arg($args, $url) { return $url . '?' . http_build_query($args); }
 }
+if (!function_exists('wp_get_attachment_image_src')) {
+    function wp_get_attachment_image_src($id, $size = 'full')
+    {
+        return ['https://example.com/uploads/' . $id . '-' . $size . '.jpg', 800, 450];
+    }
+}
 
 require_once __DIR__ . '/../wp-content/themes/chassesautresor/inc/enigme/visuels.php';
 

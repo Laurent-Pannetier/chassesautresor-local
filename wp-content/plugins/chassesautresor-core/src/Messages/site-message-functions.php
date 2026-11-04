@@ -97,11 +97,6 @@ function remove_site_message(string $key): void {
 function get_site_messages(): string {
     $messages = [];
 
-    $uri = $_SERVER['REQUEST_URI'] ?? '';
-    if (str_starts_with($uri, '/voir-image-enigme')) {
-        error_log('[get_site_messages] bypass pour requête image');
-        return '';
-    }
     if (headers_sent($file, $line)) {
         error_log("[get_site_messages] headers déjà envoyés ($file:$line)");
         return '';

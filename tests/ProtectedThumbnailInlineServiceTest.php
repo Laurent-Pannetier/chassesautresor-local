@@ -134,15 +134,20 @@ final class ProtectedThumbnailInlineServiceTest extends TestCase
         self::assertSame('', $service->html(0));
     }
 
-    public function testSignedImageProxyStillChecksAccess(): void
+    public function testDirectUrlStillChecksAccessBeforeItIsEmitted(): void
     {
         $source = (string) file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-image-functions.php'
+        );
+        $gate = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImagePublicationGate.php'
         );
 
-        self::assertStringContainsString('$signature_policy->acceptsSignature(', $source);
-        self::assertStringContainsString('$asset_service->canViewRiddle(', $source);
-        self::assertStringContainsString('$step_image_service->canView(', $source);
+        self::assertStringContainsString('mayPublishUrl(', $source);
+        self::assertStringContainsString("return '';", $source);
+        self::assertStringContainsString('canViewRiddle(', $gate);
+        self::assertStringContainsString('->canView(', $gate);
+        self::assertStringNotContainsString('voir-image-enigme', $source);
     }
 
     /** @param callable(int,string,string):(?array{path:string,mime:string}) $locate */

@@ -2,60 +2,79 @@
 
 declare(strict_types=1);
 
-use ChassesAuTresor\Core\Media\ProtectedRiddleImageRequestPolicy;
-use ChassesAuTresor\Core\Media\ProtectedRiddleImageSignedUrlService;
+use ChassesAuTresor\Core\Media\RiddleImagePublicationGate;
+use ChassesAuTresor\Core\Media\RiddleImagePublicUrlService;
 use PHPUnit\Framework\TestCase;
 
-if (!function_exists('wp_salt')) {
-    function wp_salt(string $scheme = 'auth'): string
-    {
-        unset($scheme);
-
-        return 'test-image-signing-secret';
-    }
-}
-
 require_once __DIR__
-    . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedRiddleImageSignedUrlService.php';
+    . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImagePublicationGate.php';
 require_once __DIR__
-    . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedRiddleImageRequestPolicy.php';
+    . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImagePublicUrlService.php';
 
-final class ProtectedRiddleImageRequestPolicyTest extends TestCase
+final class RiddleImagePublicationGateTest extends TestCase
 {
-    public function testASignatureMintedForTheOrganizerStillReachesThePlayer(): void
+    public function testAnUnlinkedAttachmentKeepsItsPublicUrl(): void
     {
-        $signer = new ProtectedRiddleImageSignedUrlService(3600);
-        $now = 1_700_000_100;
-        $signed = $signer->sign(15, 'thumbnail', 4, $now);
-        $valid = $signer->verify(
-            15,
-            'thumbnail',
-            $signed['uid'],
-            $signed['exp'],
-            $signed['sig'],
-            $now + 5
+        $gate = new RiddleImagePublicationGate(
+            static fn (int $imageId): bool => false,
+            static function (): bool {
+                self::fail('An ordinary attachment must not be access-checked.');
+            }
         );
-        $policy = new ProtectedRiddleImageRequestPolicy();
 
-        self::assertTrue($valid);
-        self::assertTrue($policy->acceptsSignature($valid, $signed['uid'], 9));
-        self::assertFalse($signer->verify(
-            15,
-            'thumbnail',
-            9,
-            $signed['exp'],
-            $signed['sig'],
-            $now + 5
-        ));
+        self::assertTrue($gate->mayPublishUrl(12, 0));
+        self::assertFalse($gate->mayPublishUrl(0, 4));
     }
 
-    public function testABrokenOrAnonymousSignatureIsRefused(): void
+    public function testALockedStepImagePublishesNoUrl(): void
     {
-        $policy = new ProtectedRiddleImageRequestPolicy();
+        $gate = new RiddleImagePublicationGate(
+            static fn (int $imageId): bool => true,
+            static fn (int $imageId, int $userId): bool => false
+        );
+        $urls = new RiddleImagePublicUrlService(
+            static fn (): string => 'https://example.test/uploads/_enigmes/enigme-3/secret.jpg'
+        );
 
-        self::assertFalse($policy->acceptsSignature(false, 4, 9));
-        self::assertFalse($policy->acceptsSignature(true, -1, 9));
-        self::assertFalse($policy->acceptsSignature(true, 4, -1));
-        self::assertTrue($policy->acceptsSignature(true, 4, 0));
+        self::assertFalse($gate->mayPublishUrl(9, 4));
+        $published = $gate->mayPublishUrl(9, 4) ? $urls->url(9, 'full') : '';
+        self::assertSame('', $published);
+    }
+
+    public function testAnAllowedImageUsesTheStaticFileIncludingWebp(): void
+    {
+        $gate = new RiddleImagePublicationGate(
+            static fn (int $imageId): bool => true,
+            static fn (int $imageId, int $userId): bool => $userId === 7
+        );
+        $urls = new RiddleImagePublicUrlService(
+            static function (int $imageId, string $size, string $format): string {
+                $extension = $format === 'webp' ? 'webp' : 'jpg';
+
+                return 'https://example.test/uploads/_enigmes/enigme-3/' . $size . '.' . $extension;
+            }
+        );
+
+        self::assertTrue($gate->mayPublishUrl(9, 7));
+        self::assertSame(
+            'https://example.test/uploads/_enigmes/enigme-3/enigme-1280.jpg',
+            $urls->url(9, 'enigme-1280')
+        );
+        self::assertSame(
+            'https://example.test/uploads/_enigmes/enigme-3/enigme-1600.webp',
+            $urls->url(9, 'enigme-1600', 'webp')
+        );
+        self::assertStringNotContainsString('voir-image-enigme', $urls->url(9, 'full', 'webp'));
+    }
+
+    public function testLinkedImagesStillUseTheRenderAccessChecks(): void
+    {
+        $source = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImagePublicationGate.php'
+        );
+
+        self::assertStringContainsString('canViewRiddle(', $source);
+        self::assertStringContainsString('->canView(', $source);
+        self::assertStringContainsString('findContext(', $source);
     }
 }

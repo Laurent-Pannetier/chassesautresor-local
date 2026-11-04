@@ -43,6 +43,7 @@ final class RiddleStepImageStorageService
 
         $relative = ltrim(str_replace('\\', '/', (string) get_post_meta($imageId, '_wp_attached_file', true)), '/');
         if ($relative !== '' && $this->isProtectedPath($relative, $riddleId)) {
+            $this->names()->obscureAttachment($imageId);
             $this->protection()->protect($riddleId, false);
             return $imageId;
         }
@@ -60,6 +61,7 @@ final class RiddleStepImageStorageService
             return $imageId;
         }
 
+        $this->names()->obscureAttachment($workingId);
         $this->protection()->protect($riddleId, false);
         return $workingId;
     }
@@ -115,6 +117,43 @@ final class RiddleStepImageStorageService
     }
 
     /**
+     * True when a step image is still outside this riddle's _enigmes folder.
+     */
+    public function hasPublicStepImage(?callable $getField = null): bool
+    {
+        if (!function_exists('get_posts') || !function_exists('get_post_meta')) {
+            return false;
+        }
+
+        $getField = $getField ?? 'get_field';
+        $placeholder = defined('ID_IMAGE_PLACEHOLDER_ENIGME') ? (int) ID_IMAGE_PLACEHOLDER_ENIGME : 0;
+        $steps = get_posts([
+            'post_type' => 'enigme_etape',
+            'post_status' => 'any',
+            'posts_per_page' => -1,
+            'fields' => 'ids',
+        ]);
+        foreach ($steps as $stepId) {
+            $stepId = (int) $stepId;
+            $riddleId = (int) $getField('etape_enigme_associee', $stepId);
+            if ($riddleId <= 0) {
+                continue;
+            }
+            foreach (RiddleStepGallery::idsForStep($stepId, $getField) as $imageId) {
+                if ($imageId <= 0 || ($placeholder > 0 && $imageId === $placeholder)) {
+                    continue;
+                }
+                $relative = (string) get_post_meta($imageId, '_wp_attached_file', true);
+                if ($relative !== '' && !$this->isProtectedPath($relative, $riddleId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Move a step gallery into protected storage and persist the new ids.
      *
      * Called from a save hook, never from a template.
@@ -161,6 +200,11 @@ final class RiddleStepImageStorageService
     private function protection(): RiddleImageProtectionService
     {
         return $this->protection ?? new RiddleImageProtectionService();
+    }
+
+    private function names(): RiddleImageObscureNameService
+    {
+        return new RiddleImageObscureNameService();
     }
 
     private function duplicateAttachment(int $imageId, int $parentId): int

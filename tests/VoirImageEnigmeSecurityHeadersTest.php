@@ -30,31 +30,15 @@ if (!function_exists('do_action')) {
 
 final class VoirImageEnigmeSecurityHeadersTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
-    public function test_security_headers_are_preserved(): void
+    public function test_static_files_use_a_long_public_cache(): void
     {
-        global $headers;
-        $headers    = [];
-        $headers[]  = 'X-Content-Type-Options: nosniff';
-        $initialLvl = ob_get_level();
+        $rules = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImageProtectionService.php'
+        );
 
-        ob_start();
-        echo 'buffer';
-
-        while (ob_get_level()) {
-            ob_end_clean();
-        }
-        while (ob_get_level() < $initialLvl) {
-            ob_start();
-        }
-
-        nocache_headers();
-        remove_all_actions('template_redirect');
-        do_action('litespeed_control_set_nocache');
-
-        $this->assertContains('X-Content-Type-Options: nosniff', $headers);
+        $this->assertStringContainsString('public, max-age=31536000, immutable', $rules);
+        $this->assertStringNotContainsString('Cache-Control: private', $rules);
+        $this->assertStringNotContainsString('max-age=0', $rules);
+        $this->assertStringContainsString('Options -Indexes', $rules);
     }
 }

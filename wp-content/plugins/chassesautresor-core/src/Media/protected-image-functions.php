@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 use ChassesAuTresor\Core\Media\ProtectedImagePathService;
 use ChassesAuTresor\Core\Media\ProtectedRiddleImageDeliveryService;
-use ChassesAuTresor\Core\Media\ProtectedRiddleImageSignedUrlService;
 use ChassesAuTresor\Core\Media\ProtectedThumbnailInlineService;
+use ChassesAuTresor\Core\Media\RiddleImagePublicationGate;
+use ChassesAuTresor\Core\Media\RiddleImagePublicUrlService;
 
 if (!function_exists('trouver_chemin_image')) {
     /**
@@ -19,7 +20,10 @@ if (!function_exists('trouver_chemin_image')) {
 
 if (!function_exists('cta_voir_image_enigme_url')) {
     /**
-     * Build a signed proxy URL for a protected riddle/step image.
+     * Static file URL for a riddle or step image the current viewer may see.
+     *
+     * Empty when the image must stay out of the HTML. The attachment id stays
+     * in the content; this address is built at display time.
      */
     function cta_voir_image_enigme_url(
         int $imageId,
@@ -27,17 +31,12 @@ if (!function_exists('cta_voir_image_enigme_url')) {
         ?int $userId = null,
         string $format = ''
     ): string {
-        $userId = $userId ?? get_current_user_id();
-        $service = new ProtectedRiddleImageSignedUrlService();
+        $userId = $userId ?? (int) get_current_user_id();
+        if (!(new RiddleImagePublicationGate())->mayPublishUrl($imageId, (int) $userId)) {
+            return '';
+        }
 
-        return $service->buildUrl(
-            $imageId,
-            $size,
-            (int) $userId,
-            site_url('/voir-image-enigme'),
-            null,
-            $format
-        );
+        return (new RiddleImagePublicUrlService())->url($imageId, $size, $format);
     }
 }
 
@@ -45,8 +44,8 @@ if (!function_exists('cta_inline_riddle_thumbnail')) {
     /**
      * Inline HTML for a sommaire thumbnail.
      *
-     * Empty when the file must stay on the signed proxy. This does not decide
-     * whether the viewer may see the enigma: the page that calls it already has.
+     * Empty when the file is too large: the caller then uses the static file
+     * URL. This does not decide whether the viewer may see the enigma.
      */
     function cta_inline_riddle_thumbnail(int $imageId, string $alt = ''): string
     {
