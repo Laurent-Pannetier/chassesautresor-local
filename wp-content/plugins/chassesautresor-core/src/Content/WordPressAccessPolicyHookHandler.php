@@ -24,6 +24,10 @@ final class WordPressAccessPolicyHookHandler {
         $addAction('pre_get_posts', [self::class, 'extendVisiblePostStatuses']);
     }
 
+    /**
+     * Non-administrators only see the attachments they uploaded.
+     * Administrators keep the full library.
+     */
     public static function restrictMediaToAuthor(array $query): array {
         $user = wp_get_current_user();
         if ($user->exists() && !in_array('administrator', (array) $user->roles, true)) {
@@ -33,33 +37,17 @@ final class WordPressAccessPolicyHookHandler {
         return $query;
     }
 
+    /**
+     * Leave the media query unscoped by folder.
+     *
+     * The native modal always sends the current post id. Using that id to keep
+     * only `_enigmes/enigme-{id}/` while editing an enigma, or to exclude every
+     * `_enigmes/` file on any other post, hid the organizer's own images.
+     * An organizer must see every file they uploaded (hunts, enigmas, unused
+     * uploads), including images already stored for an enigma. Other people's
+     * files stay out through restrictMediaToAuthor.
+     */
     public static function filterRiddleMedia(array $query): array {
-        if (!isset($_REQUEST['post_id'])) {
-            return $query;
-        }
-
-        $postId = (int) $_REQUEST['post_id'];
-        $postType = get_post_type($postId);
-        if ($postType === 'enigme') {
-            $query['meta_query'] = [
-                'relation' => 'AND',
-                [
-                    'key' => '_wp_attached_file',
-                    'value' => '_enigmes/enigme-' . $postId . '/',
-                    'compare' => 'LIKE',
-                ],
-            ];
-        } elseif ($postType) {
-            $query['meta_query'] = [
-                'relation' => 'AND',
-                [
-                    'key' => '_wp_attached_file',
-                    'value' => '_enigmes/',
-                    'compare' => 'NOT LIKE',
-                ],
-            ];
-        }
-
         return $query;
     }
 
