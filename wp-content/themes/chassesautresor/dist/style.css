@@ -9522,10 +9522,15 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 
 .page-enigme.page-enigme--reader .galerie-enigme__slide,
 .page-enigme.page-enigme--reader .galerie-enigme__slide picture,
+.page-enigme.page-enigme--reader .galerie-enigme__stage picture,
+.page-enigme.page-enigme--reader .galerie-enigme__stage img,
+.page-enigme.page-enigme--reader .galerie-enigme__stage .enigme-media-zoom,
 .page-enigme.page-enigme--reader .enigme-media-zoom {
   display: block;
   width: 100%;
   max-width: 100%;
+  height: auto;
+  max-height: none;
   margin: 0;
   padding: 0;
   border: 0;
@@ -9537,7 +9542,7 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 }
 
 .page-enigme.page-enigme--reader .galerie-enigme__slide[hidden] {
-  display: block;
+  display: block !important;
 }
 
 .page-enigme.page-enigme--reader .hero-visuel img,

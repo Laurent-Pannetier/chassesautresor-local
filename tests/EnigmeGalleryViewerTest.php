@@ -208,4 +208,23 @@ class EnigmeGalleryViewerTest extends TestCase
             $html
         );
     }
+
+    public function test_webtoon_strip_keeps_its_full_height_before_the_reply(): void
+    {
+        $css = file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/dist/style.css'
+        );
+
+        $this->assertIsString($css);
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.galerie-enigme__stage picture'
+            . '[\s\S]{0,700}max-height:\s*none/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.galerie-enigme__stage \.enigme-media-zoom'
+            . '[\s\S]{0,700}max-height:\s*none/',
+            $css
+        );
+    }
 }
