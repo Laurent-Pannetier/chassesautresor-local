@@ -363,6 +363,161 @@
     return target;
   };
 
+  const bandIntersectsViewport = (node) => {
+    const rect = node.getBoundingClientRect();
+    const viewport = window.innerHeight || document.documentElement?.clientHeight || 0;
+    return rect.height > 0 && rect.bottom > 0 && rect.top < viewport;
+  };
+
+  const createWebtoonBandScheduler = (gallery) => {
+    const priority = new Set();
+    let released = false;
+
+    const images = () => [...gallery.querySelectorAll('.galerie-enigme__slide img')];
+
+    const settle = () => {
+      if (released || priority.size === 0) {
+        return;
+      }
+      const pending = [...priority].some((image) => image.dataset.bandState !== 'ready');
+      if (pending) {
+        return;
+      }
+      released = true;
+      images().forEach((image) => startImage(image));
+    };
+
+    const startImage = (image) => {
+      if (!(image instanceof HTMLImageElement)) {
+        return;
+      }
+      if (image.dataset.bandState === 'loading' || image.dataset.bandState === 'ready') {
+        return;
+      }
+      const finish = () => {
+        image.dataset.bandState = 'ready';
+        settle();
+      };
+      if (image.complete && image.getAttribute('src')) {
+        image.dataset.bandState = 'ready';
+        return;
+      }
+      image.dataset.bandState = 'loading';
+      image.addEventListener('load', finish, { once: true });
+      image.addEventListener('error', finish, { once: true });
+      const next = image.dataset.bandSrc || '';
+      if (next && image.getAttribute('src') !== next) {
+        image.src = next;
+      }
+    };
+
+    const sync = () => {
+      if (released) {
+        images().forEach((image) => startImage(image));
+        return;
+      }
+      const list = images();
+      let lastVisible = -1;
+      list.forEach((image, index) => {
+        if (bandIntersectsViewport(image)) {
+          lastVisible = index;
+        }
+      });
+      const unmeasured = list.every((image) => image.getBoundingClientRect().height === 0);
+      if (lastVisible < 0 && unmeasured && list[0]) {
+        lastVisible = 0;
+      }
+      for (let index = 0; index <= lastVisible; index += 1) {
+        priority.add(list[index]);
+        startImage(list[index]);
+      }
+      settle();
+    };
+
+    const onScroll = () => sync();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    sync();
+
+    return { sync, stop: () => window.removeEventListener('scroll', onScroll) };
+  };
+
+  const ensureWebtoonBandScheduler = (gallery) => {
+    if (!(gallery instanceof Element)) {
+      return;
+    }
+    if (!gallery.__webtoonBandSync) {
+      const scheduler = createWebtoonBandScheduler(gallery);
+      gallery.__webtoonBandSync = scheduler.sync;
+      gallery.__webtoonBandStop = scheduler.stop;
+      return;
+    }
+    gallery.__webtoonBandSync();
+  };
+
+  const appendSlideVisual = (zoom, page, alt) => {
+    const bands = Array.isArray(page.bands) ? page.bands : [];
+    if (bands.length > 1) {
+      const stack = document.createElement('span');
+      stack.className = 'webtoon-bands';
+      bands.forEach((band, index) => {
+        const image = document.createElement('img');
+        image.className = 'webtoon-band enigme-image--limited';
+        image.dataset.webtoonBand = '';
+        image.dataset.bandSrc = band.url || band.src || '';
+        image.alt = index === 0 ? alt : '';
+        image.decoding = 'async';
+        image.referrerPolicy = 'no-referrer';
+        if (page.sizes) {
+          image.sizes = page.sizes;
+        }
+        const width = Number(band.width || 0);
+        const height = Number(band.height || 0);
+        if (width > 0) {
+          image.width = width;
+        }
+        if (height > 0) {
+          image.height = height;
+        }
+        stack.appendChild(image);
+      });
+      zoom.appendChild(stack);
+      return;
+    }
+
+    const img = document.createElement('img');
+    img.className = 'enigme-image--limited';
+    img.src = page.previewUrl;
+    img.alt = alt;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.referrerPolicy = 'no-referrer';
+    if (page.srcset) {
+      img.srcset = page.srcset;
+    }
+    if (page.sizes) {
+      img.sizes = page.sizes;
+    }
+    if (page.width) {
+      img.width = Number(page.width);
+    }
+    if (page.height) {
+      img.height = Number(page.height);
+    }
+
+    const picture = document.createElement('picture');
+    if (page.webpSrcset) {
+      const source = document.createElement('source');
+      source.type = 'image/webp';
+      source.srcset = page.webpSrcset;
+      if (page.sizes) {
+        source.sizes = page.sizes;
+      }
+      picture.appendChild(source);
+    }
+    picture.appendChild(img);
+    zoom.appendChild(picture);
+  };
+
   const appendGalleryPage = (page) => {
     const gallery = document.querySelector('[data-enigme-gallery]');
     if (!gallery || !page || !page.previewUrl || !page.fullUrl) {
@@ -410,26 +565,7 @@
     zoom.dataset.enigmeLightboxSrc = page.fullUrl;
     zoom.dataset.enigmeLightboxAlt = alt;
     zoom.setAttribute('aria-label', nativeSizeLabel);
-
-    const img = document.createElement('img');
-    img.className = 'enigme-image--limited';
-    img.src = page.previewUrl;
-    img.alt = alt;
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.referrerPolicy = 'no-referrer';
-    if (page.srcset) {
-      img.srcset = page.srcset;
-    }
-    if (page.sizes) {
-      img.sizes = page.sizes;
-    }
-    if (page.width) {
-      img.width = Number(page.width);
-    }
-    if (page.height) {
-      img.height = Number(page.height);
-    }
+    appendSlideVisual(zoom, page, alt);
 
     const hint = document.createElement('span');
     hint.className = 'enigme-media-zoom__hint';
@@ -437,18 +573,6 @@
     hint.textContent =
       (window.EnigmeImageViewer && window.EnigmeImageViewer.zoomHint) || 'Agrandir';
 
-    const picture = document.createElement('picture');
-    if (page.webpSrcset) {
-      const source = document.createElement('source');
-      source.type = 'image/webp';
-      source.srcset = page.webpSrcset;
-      if (page.sizes) {
-        source.sizes = page.sizes;
-      }
-      picture.appendChild(source);
-    }
-    picture.appendChild(img);
-    zoom.appendChild(picture);
     zoom.appendChild(hint);
     figure.appendChild(zoom);
     if (nextNav) {
@@ -483,6 +607,10 @@
         thumb.appendChild(thumbImg);
       }
       thumbs.appendChild(thumb);
+    }
+
+    if (gallery.hasAttribute('data-webtoon') || gallery.dataset.webtoonReady === '1') {
+      ensureWebtoonBandScheduler(gallery);
     }
 
     if (!selectPage) {
@@ -631,8 +759,12 @@
     stage.addEventListener('pointerup', onPointerUp);
     stage.addEventListener('pointercancel', onPointerUp);
     window.addEventListener('resize', onResize);
+    ensureWebtoonBandScheduler(gallery);
 
     window.__comicReaderTeardown = () => {
+      gallery.__webtoonBandStop?.();
+      delete gallery.__webtoonBandSync;
+      delete gallery.__webtoonBandStop;
       stage.removeEventListener('pointerdown', onPointerDown);
       stage.removeEventListener('pointermove', onPointerMove);
       stage.removeEventListener('pointerup', onPointerUp);

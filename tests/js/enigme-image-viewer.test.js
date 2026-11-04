@@ -626,4 +626,60 @@ describe('webtoon reader', () => {
     expect(document.querySelector('.participation .reponse-launcher')).not.toBeNull();
     expect(document.querySelector('.page-enigme .contenu-principal')).not.toBeNull();
   });
+
+  test('loads the visible bands first and the rest only after they are served', () => {
+    window.__enigmeViewerDispose();
+    document.body.innerHTML = `
+      <div class="galerie-enigme-wrapper" data-enigme-gallery data-webtoon id="galerie-enigme-4">
+        <div class="galerie-enigme__stage">
+          <figure class="galerie-enigme__slide is-active">
+            <button type="button" class="enigme-media-zoom">
+              <span class="webtoon-bands">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-0.jpg" src="band-0.jpg" alt="" width="1380" height="1000">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-1.jpg" alt="" width="1380" height="1000">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-2.jpg" alt="" width="1380" height="1000">
+              </span>
+            </button>
+          </figure>
+        </div>
+      </div>
+    `;
+    const images = [...document.querySelectorAll('[data-webtoon-band]')];
+    const boxes = [
+      { top: 0, bottom: 500, height: 500 },
+      { top: 1800, bottom: 2300, height: 500 },
+      { top: 2400, bottom: 2900, height: 500 },
+    ];
+    images.forEach((image, index) => {
+      Object.defineProperty(image, 'complete', { configurable: true, get: () => false });
+      image.getBoundingClientRect = () => ({
+        top: boxes[index].top,
+        bottom: boxes[index].bottom,
+        height: boxes[index].height,
+        left: 0,
+        right: 400,
+        width: 400,
+        x: 0,
+        y: boxes[index].top,
+        toJSON() {
+          return {};
+        },
+      });
+    });
+
+    window.EnigmeGallery.initReader(document.querySelector('[data-enigme-gallery]'));
+
+    expect(images[0].getAttribute('src')).toBe('band-0.jpg');
+    expect(images[1].getAttribute('src')).toBeNull();
+    expect(images[2].getAttribute('src')).toBeNull();
+
+    boxes[1] = { top: 100, bottom: 600, height: 500 };
+    window.dispatchEvent(new Event('scroll'));
+    expect(images[1].getAttribute('src')).toBe('band-1.jpg');
+    expect(images[2].getAttribute('src')).toBeNull();
+
+    images[0].dispatchEvent(new Event('load'));
+    images[1].dispatchEvent(new Event('load'));
+    expect(images[2].getAttribute('src')).toBe('band-2.jpg');
+  });
 });

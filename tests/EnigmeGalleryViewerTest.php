@@ -223,8 +223,25 @@ class EnigmeGalleryViewerTest extends TestCase
         );
         $this->assertMatchesRegularExpression(
             '/\.page-enigme\.page-enigme--reader \.galerie-enigme__stage \.enigme-media-zoom'
-            . '[\s\S]{0,700}max-height:\s*none/',
+            . '[\s\S]{0,900}max-height:\s*none/',
             $css
         );
+    }
+
+    public function test_only_the_first_band_is_requested_before_the_script_runs(): void
+    {
+        $html = enigme_webtoon_band_html([
+            ['url' => 'https://cdn.example/a-band0.jpg', 'width' => 1380, 'height' => 1000],
+            ['url' => 'https://cdn.example/a-band1.jpg', 'width' => 1380, 'height' => 1000],
+            ['url' => 'https://cdn.example/a-band2.jpg', 'width' => 1380, 'height' => 1000],
+        ], 'Forêt', true);
+
+        $this->assertSame(1, substr_count($html, ' src="'));
+        $this->assertStringContainsString('src="https://cdn.example/a-band0.jpg"', $html);
+        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band1.jpg"', $html);
+        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band2.jpg"', $html);
+        $this->assertStringNotContainsString(' src="https://cdn.example/a-band1.jpg"', $html);
+        $this->assertStringNotContainsString(' src="https://cdn.example/a-band2.jpg"', $html);
+        $this->assertStringContainsString('sizes="min(100vw, 1380px)"', $html);
     }
 }

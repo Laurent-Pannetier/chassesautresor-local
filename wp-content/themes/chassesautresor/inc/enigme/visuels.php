@@ -132,6 +132,110 @@ function enigme_hero_picture_sizes(): string
 }
 
 /**
+ * Tranches statiques d’une planche. Une image courte reste un seul fichier.
+ *
+ * @return list<array{url:string,width:int,height:int}>
+ */
+function enigme_reading_bands(int $imageId): array
+{
+    $full = enigme_image_display_url($imageId, 'full');
+    $dimensions = function_exists('wp_get_attachment_image_src')
+        ? wp_get_attachment_image_src($imageId, 'full')
+        : null;
+    $width = is_array($dimensions) ? (int) ($dimensions[1] ?? 0) : 0;
+    $height = is_array($dimensions) ? (int) ($dimensions[2] ?? 0) : 0;
+    $single = [[
+        'url' => $full,
+        'width' => $width > 0 ? $width : 1380,
+        'height' => $height > 0 ? $height : 4000,
+    ]];
+    if (
+        $full === ''
+        || !class_exists(\ChassesAuTresor\Core\Media\RiddleReadingBandService::class)
+        || !function_exists('get_attached_file')
+    ) {
+        return $single;
+    }
+
+    $file = get_attached_file($imageId);
+    if (!is_string($file) || $file === '' || !is_file($file)) {
+        return $single;
+    }
+
+    $bands = (new \ChassesAuTresor\Core\Media\RiddleReadingBandService())->ensure($file);
+    if (count($bands) <= 1) {
+        return $single;
+    }
+
+    $mapped = [];
+    foreach ($bands as $band) {
+        $url = enigme_public_file_url((string) $band['path'], $full, $file);
+        if ($url === '') {
+            return $single;
+        }
+        $mapped[] = [
+            'url' => $url,
+            'width' => (int) $band['width'],
+            'height' => (int) $band['height'],
+        ];
+    }
+
+    return $mapped;
+}
+
+function enigme_public_file_url(string $path, string $fullUrl, string $originalFile): string
+{
+    $path = str_replace('\\', '/', $path);
+    $originalFile = str_replace('\\', '/', $originalFile);
+    if ($path === $originalFile) {
+        return $fullUrl;
+    }
+
+    $originalName = basename($originalFile);
+    $bandName = basename($path);
+    if ($originalName === '' || !str_contains($fullUrl, $originalName)) {
+        return '';
+    }
+
+    return str_replace($originalName, $bandName, $fullUrl);
+}
+
+/**
+ * HTML des tranches. Seule la première de la planche de tête a un src.
+ *
+ * @param list<array{url:string,width:int,height:int}> $bands
+ */
+function enigme_webtoon_band_html(array $bands, string $alt, bool $prime): string
+{
+    $html = '<span class="webtoon-bands">';
+    foreach ($bands as $index => $band) {
+        $url = (string) ($band['url'] ?? '');
+        if ($url === '') {
+            continue;
+        }
+        $width = (int) ($band['width'] ?? 0);
+        $height = (int) ($band['height'] ?? 0);
+        $html .= '<img class="webtoon-band enigme-image--limited"';
+        if ($prime && $index === 0) {
+            $html .= ' id="image-enigme-active" src="' . esc_url($url) . '"';
+        }
+        $html .= ' data-webtoon-band data-band-src="' . esc_url($url) . '"';
+        $html .= ' alt="' . esc_attr($index === 0 ? $alt : '') . '"';
+        if ($width > 0) {
+            $html .= ' width="' . $width . '"';
+        }
+        if ($height > 0) {
+            $html .= ' height="' . $height . '"';
+        }
+        $html .= ' sizes="' . esc_attr(enigme_hero_picture_sizes()) . '"';
+        $html .= ' decoding="async" referrerpolicy="no-referrer">';
+    }
+    $html .= '</span>';
+
+    return $html;
+}
+
+/**
  * Crée une taille de planche manquante à côté du fichier original.
  * Les images déjà en ligne n’ont pas ces dérivés tant qu’elles ne sont pas revues.
  */
@@ -592,7 +696,8 @@ function enigme_step_image_ids(int $stepId): array
  *     webp_srcset:string,
  *     sizes:string,
  *     width:int,
- *     height:int
+ *     height:int,
+ *     bands:list<array{url:string,width:int,height:int}>
  * }
  */
 function enigme_step_comic_page_view(int $imageId): array
@@ -633,6 +738,7 @@ function enigme_step_comic_page_view(int $imageId): array
         'sizes' => $sizes,
         'width' => $width,
         'height' => $height,
+        'bands' => enigme_reading_bands($imageId),
     ];
 }
 
@@ -818,7 +924,12 @@ function afficher_visuels_enigme(
             . ' data-enigme-lightbox-src="' . esc_url($full_url) . '"'
             . ' data-enigme-lightbox-alt="' . esc_attr($alt) . '"'
             . ' aria-label="' . esc_attr__('Agrandir l’image en taille originale', 'chassesautresor-com') . '">';
-        echo build_picture_enigme($image_id, $alt, ['enigme-720', 'full'], $attrs, 'enigme-720');
+        $bands = enigme_reading_bands($image_id);
+        if (count($bands) > 1) {
+            echo enigme_webtoon_band_html($bands, $alt, $index === 0);
+        } else {
+            echo build_picture_enigme($image_id, $alt, ['enigme-720', 'full'], $attrs, 'enigme-720');
+        }
         echo '<span class="enigme-media-zoom__hint" aria-hidden="true">'
             . esc_html__('Agrandir', 'chassesautresor-com') . '</span>';
         echo '</button>';

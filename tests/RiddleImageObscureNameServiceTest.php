@@ -20,6 +20,9 @@ final class RiddleImageObscureNameServiceTest extends TestCase
         self::assertTrue($service->isUnpredictable(str_repeat('b', 32) . '-1280x720.webp'));
         self::assertTrue($service->isUnpredictable(str_repeat('c', 32) . '.jpg.webp'));
         self::assertTrue($service->isUnpredictable(str_repeat('d', 32) . '-scaled.jpg'));
+        self::assertTrue($service->isUnpredictable(str_repeat('e', 32) . '-band0.jpg'));
+        self::assertTrue($service->isUnpredictable(str_repeat('e', 32) . '-band12.jpg'));
+        self::assertFalse($service->isUnpredictable('image-1-band0.jpg'));
     }
 
     public function testRenameFamilyKeepsTheStemAcrossSizesAndWebp(): void
@@ -31,6 +34,7 @@ final class RiddleImageObscureNameServiceTest extends TestCase
         file_put_contents($directory . '/image-1.webp', 'webp-v1');
         file_put_contents($directory . '/image-1-1280x1280.jpg', 'size');
         file_put_contents($directory . '/image-1-1280x1280.webp', 'size-webp');
+        file_put_contents($directory . '/image-1-band0.jpg', 'band');
 
         $service = new RiddleImageObscureNameService();
         $renamed = $service->renameFamily($directory . '/image-1.jpg');
@@ -41,6 +45,7 @@ final class RiddleImageObscureNameServiceTest extends TestCase
         self::assertFileExists($directory . '/' . $stem . '.webp');
         self::assertFileExists($directory . '/' . $stem . '-1280x1280.jpg');
         self::assertFileExists($directory . '/' . $stem . '-1280x1280.webp');
+        self::assertFileExists($directory . '/' . $stem . '-band0.jpg');
         self::assertFileDoesNotExist($directory . '/image-1.jpg');
         self::assertSame($renamed, $service->renameFamily($renamed));
         self::assertTrue($service->riddleDirectoryIsUnpredictable($directory));

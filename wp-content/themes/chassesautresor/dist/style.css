@@ -9525,6 +9525,8 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 .page-enigme.page-enigme--reader .galerie-enigme__stage picture,
 .page-enigme.page-enigme--reader .galerie-enigme__stage img,
 .page-enigme.page-enigme--reader .galerie-enigme__stage .enigme-media-zoom,
+.page-enigme.page-enigme--reader .webtoon-bands,
+.page-enigme.page-enigme--reader .webtoon-band,
 .page-enigme.page-enigme--reader .enigme-media-zoom {
   display: block;
   width: 100%;
@@ -9539,6 +9541,13 @@ form.is-reply-widget.is-immersive-open:focus-visible {
   background: transparent;
   line-height: 0;
   overflow: visible;
+}
+
+.page-enigme.page-enigme--reader .webtoon-bands {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
 }
 
 .page-enigme.page-enigme--reader .galerie-enigme__slide[hidden] {
