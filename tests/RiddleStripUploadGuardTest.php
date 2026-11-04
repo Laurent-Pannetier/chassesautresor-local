@@ -114,6 +114,8 @@ final class RiddleStripUploadGuardTest extends TestCase {
         $photo = '/var/www/uploads/photo.jpg';
 
         $this->assertFalse($guard->threshold(2560, [1380, 4000], $strip, 0));
+        $this->assertFalse($guard->threshold(2560, [1380, 1800], $strip, 0));
+        $this->assertFalse($guard->threshold(2560, [1380, 5200], $strip, 0));
         $this->assertSame(2560, $guard->threshold(2560, [4000, 3000], $photo, 0));
         $this->assertNull($guard->skipImagifyResize(null, 1));
     }

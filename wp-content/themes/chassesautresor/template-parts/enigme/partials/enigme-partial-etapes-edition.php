@@ -148,7 +148,7 @@ if ($riddleId > 0) {
         </div>
         <p class="txt-small">
           <?= esc_html__(
-              'Ces images s’ajoutent sous la bande dessinée quand le joueur réussit l’étape. '
+              'Ces images prolongent la première bande, sans joint. Largeur 1380 px, hauteur libre. '
               . 'La vue descend à la première, puis la lecture continue en défilement. '
               . 'Un texte ou une page est obligatoire pour Simple clic et Réponse texte.',
               'chassesautresor-com'

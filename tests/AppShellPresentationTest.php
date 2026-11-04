@@ -648,9 +648,11 @@ class AppShellPresentationTest extends TestCase
 
         $GLOBALS['cat_test_singular'] = 'enigme';
         $this->assertFalse(cta_shell_shows_sidebar());
+        $this->assertFalse(cta_shell_shows_topbar());
 
         $GLOBALS['cat_test_singular'] = 'page';
         $this->assertTrue(cta_shell_shows_sidebar());
+        $this->assertTrue(cta_shell_shows_topbar());
 
         $shell = (string) file_get_contents(
             dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/app-shell.php'
@@ -659,6 +661,7 @@ class AppShellPresentationTest extends TestCase
             dirname(__DIR__) . '/wp-content/themes/chassesautresor/template-parts/shell/topbar.php'
         );
         $this->assertStringContainsString('app-shell--no-nav', $shell);
+        $this->assertStringContainsString('cta_shell_shows_topbar()', $shell);
         $this->assertStringContainsString('cta_shell_shows_sidebar()', $topbar);
     }
 

@@ -209,6 +209,31 @@ class EnigmeGalleryViewerTest extends TestCase
         );
     }
 
+    public function test_step_page_keeps_the_strip_width_and_a_free_height(): void
+    {
+        $edition = file_get_contents(
+            dirname(__DIR__)
+            . '/wp-content/themes/chassesautresor/template-parts/enigme/partials/enigme-partial-etapes-edition.php'
+        );
+        $css = file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/assets/scss/_enigme.scss'
+        );
+
+        $this->assertIsString($edition);
+        $this->assertStringContainsString('Largeur 1380 px, hauteur libre', $edition);
+        $this->assertStringContainsString('sans joint', $edition);
+        $this->assertIsString($css);
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.galerie-enigme__slide \+ \.galerie-enigme__slide'
+            . '[\s\S]{0,180}margin:\s*0/',
+            $css
+        );
+        $this->assertStringContainsString(
+            'body:has(.page-enigme--reader) .app-topbar',
+            $css
+        );
+    }
+
     public function test_webtoon_strip_keeps_its_full_height_before_the_reply(): void
     {
         $css = file_get_contents(

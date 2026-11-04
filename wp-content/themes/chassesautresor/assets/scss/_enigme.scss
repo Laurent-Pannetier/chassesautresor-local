@@ -2087,6 +2087,11 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 /* Lecture webtoon : colonne 1380 px, bords à bord sous cette largeur, défilement de page. */
 .page-enigme.page-enigme--reader {
   gap: 48px;
+  margin-top: 0;
+}
+
+body:has(.page-enigme--reader) .app-topbar {
+  display: none;
 }
 
 .page-enigme.page-enigme--reader .hero-visuel {
@@ -2146,6 +2151,13 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 
 .page-enigme.page-enigme--reader .galerie-enigme__slide[hidden] {
   display: block !important;
+}
+
+.page-enigme.page-enigme--reader .galerie-enigme__slide + .galerie-enigme__slide,
+.page-enigme.page-enigme--reader .galerie-enigme__slide--step {
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
 .page-enigme.page-enigme--reader .hero-visuel img,
