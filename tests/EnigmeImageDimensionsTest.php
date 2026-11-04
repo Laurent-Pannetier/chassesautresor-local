@@ -39,9 +39,10 @@ if (!function_exists('wp_get_attachment_image_src')) {
             'thumbnail' => 150,
             'medium' => 300,
             'large' => 1024,
-            'enigme-1280' => 1280,
-            'enigme-1600' => 1600,
-            'full' => 1920,
+            'enigme-720' => 720,
+            'enigme-1000' => 1000,
+            'enigme-1380' => 1380,
+            'full' => 1380,
         ];
 
         return [
@@ -68,7 +69,7 @@ class EnigmeImageDimensionsTest extends TestCase
 
         $this->assertStringContainsString('<picture>', $html);
         $this->assertStringContainsString('123-full.jpg', $html);
-        $this->assertStringContainsString('1920w', $html);
+        $this->assertStringContainsString('1380w', $html);
         $this->assertStringContainsString('123-large.jpg', $html);
         $this->assertStringContainsString('1024w', $html);
         $this->assertStringContainsString('123-medium.jpg', $html);
@@ -129,12 +130,25 @@ class EnigmeImageDimensionsTest extends TestCase
         $this->assertSame('', $srcset);
     }
 
+    public function test_strip_column_uses_width_capped_derivatives(): void
+    {
+        $this->assertSame(720, enigme_picture_size_width(0, 'enigme-720'));
+        $this->assertSame(1000, enigme_picture_size_width(0, 'enigme-1000'));
+        $this->assertSame(1380, enigme_picture_size_width(0, 'enigme-1380'));
+        $this->assertSame(1380, enigme_picture_size_width(0, 'full'));
+        $this->assertSame('min(100vw, 1380px)', enigme_hero_picture_sizes());
+        $this->assertSame(
+            ['enigme-720', 'enigme-1000', 'enigme-1380'],
+            enigme_planche_size_names()
+        );
+    }
+
     public function test_hero_planche_keeps_intermediate_widths_when_their_webp_is_missing(): void
     {
         if (!function_exists('get_intermediate_image_sizes')) {
             function get_intermediate_image_sizes(): array
             {
-                return ['thumbnail', 'medium', 'large', 'enigme-1280', 'enigme-1600'];
+                return ['thumbnail', 'medium', 'large', 'enigme-720', 'enigme-1000', 'enigme-1380'];
             }
         }
         if (!function_exists('wp_image_editor_supports')) {
@@ -147,16 +161,16 @@ class EnigmeImageDimensionsTest extends TestCase
         $directory = sys_get_temp_dir() . '/enigme-srcset-' . uniqid('', true);
         mkdir($directory);
         $widths = [
-            'large' => 1024,
-            'enigme-1280' => 1280,
-            'enigme-1600' => 1600,
-            'full' => 1920,
+            'enigme-720' => 720,
+            'enigme-1000' => 1000,
+            'enigme-1380' => 1380,
+            'full' => 1380,
         ];
         foreach (array_keys($widths) as $size) {
             file_put_contents($directory . '/' . $size . '.jpg', 'jpeg');
         }
-        file_put_contents($directory . '/large.webp', 'webp');
-        file_put_contents($directory . '/full.webp', 'webp');
+        file_put_contents($directory . '/enigme-720.webp', 'webp');
+        file_put_contents($directory . '/enigme-1380.webp', 'webp');
 
         if (!function_exists('wp_get_upload_dir')) {
             function wp_get_upload_dir(): array
@@ -173,7 +187,13 @@ class EnigmeImageDimensionsTest extends TestCase
 
         try {
             $sizes = enigme_hero_picture_sizes();
-            $html = build_picture_enigme(42, 'Planche', ['large', 'full'], ['sizes' => $sizes], 'large');
+            $html = build_picture_enigme(
+                42,
+                'Planche',
+                ['enigme-720', 'full'],
+                ['sizes' => $sizes],
+                'enigme-720'
+            );
         } finally {
             foreach (glob($directory . '/*') ?: [] as $file) {
                 unlink($file);
@@ -181,24 +201,24 @@ class EnigmeImageDimensionsTest extends TestCase
             rmdir($directory);
         }
 
-        $this->assertStringContainsString('1024w', $html);
-        $this->assertStringContainsString('1280w', $html);
-        $this->assertStringContainsString('1600w', $html);
-        $this->assertStringContainsString('1920w', $html);
-        $this->assertStringContainsString('enigme-1280.jpg', $html);
-        $this->assertStringContainsString('enigme-1600.jpg', $html);
+        $this->assertSame('min(100vw, 1380px)', $sizes);
+        $this->assertStringContainsString('720w', $html);
+        $this->assertStringContainsString('1000w', $html);
+        $this->assertStringContainsString('1380w', $html);
+        $this->assertStringContainsString('enigme-720.jpg', $html);
+        $this->assertStringContainsString('enigme-1000.jpg', $html);
         $this->assertStringNotContainsString('thumbnail.jpg', $html);
         $this->assertStringNotContainsString('medium.jpg', $html);
+        $this->assertStringNotContainsString('large.jpg', $html);
         $this->assertStringNotContainsString('voir-image-enigme', $html);
         $this->assertStringContainsString('type="image/webp"', $html);
         $this->assertSame(2, substr_count($html, 'sizes="' . $sizes . '"'));
         preg_match('/<source\\b[^>]*>/', $html, $source);
         $this->assertNotEmpty($source);
-        $this->assertStringContainsString('large.webp', $source[0]);
-        $this->assertStringContainsString('full.webp', $source[0]);
+        $this->assertStringContainsString('enigme-720.webp', $source[0]);
+        $this->assertStringContainsString('enigme-1380.webp', $source[0]);
         $this->assertStringNotContainsString('fmt=webp', $source[0]);
-        $this->assertStringNotContainsString('enigme-1280', $source[0]);
-        $this->assertStringNotContainsString('enigme-1600', $source[0]);
+        $this->assertStringNotContainsString('enigme-1000', $source[0]);
         $this->assertStringContainsString('sizes="' . $sizes . '"', $source[0]);
     }
 }

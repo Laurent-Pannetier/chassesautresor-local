@@ -21,7 +21,7 @@ final class RiddleImageObscureNameService
     public function isUnpredictable(string $basename): bool
     {
         return (bool) preg_match(
-            '/^[a-f0-9]{' . self::HASH_LENGTH . '}(?:-scaled)?(?:-\d+x\d+)?'
+            '/^[a-f0-9]{' . self::HASH_LENGTH . '}(?:-scaled)?(?:-\d+x\d+)?(?:-band\d+)?'
             . '\.(?:jpe?g|png|gif|webp)(?:\.webp)?$/i',
             $basename
         );
@@ -368,6 +368,10 @@ final class RiddleImageObscureNameService
                 continue;
             }
             if (preg_match('/-\d+x\d+\.(?:jpe?g|png|gif|webp)$/i', $name)) {
+                continue;
+            }
+            // Bands share the original stem and are renamed with it.
+            if (preg_match('/-band\d+\.(?:jpe?g|png|gif|webp)$/i', $name)) {
                 continue;
             }
             $this->renameFamily($path);

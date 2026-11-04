@@ -13,7 +13,7 @@ de vérité du stockage, même si l’organisateur utilise exclusivement le form
 | Nom interne | `post_title` | Repère obligatoire réservé à l’organisateur, jamais affiché au joueur. |
 | Énigme | `etape_enigme_associee` | Relation obligatoire vers l’énigme parente. |
 | Texte | `etape_contenu` | Contenu affiché au déblocage de l’étape. |
-| Pages | `etape_image` | Galerie facultative, pages 1920 × 1080 px (16:9), dans l’ordre de lecture. Elles rejoignent la BD seulement quand l’étape est réussie. La première page révélée s’affiche ; les suivantes se feuillettent avant la question d’après. Une ancienne image unique reste la page 1. |
+| Pages | `etape_image` | Galerie facultative, bandes 1380 × 4000 px (largeur fixe, hauteur 4000), dans l’ordre de lecture. Elles rejoignent la BD seulement quand l’étape est réussie. La vue descend à la première image ajoutée ; la suite se lit en défilement, sans joint, avant la question d’après. Une ancienne image unique reste la première bande. |
 | Affichage du widget | Imposé | Le joueur ouvre le widget avec « Répondre ». L’organisateur ne choisit pas de mode. |
 | Ordre | `menu_order` | Position linéaire de l’étape dans l’énigme. |
 
@@ -70,8 +70,8 @@ Le compteur et le formulaire sont actualisés immédiatement après une erreur ;
 est désactivée sans attendre un rechargement. L’outil administratif de remise à zéro efface aussi la progression des
 étapes afin que les parcours puissent être rejoués pendant les tests.
 
-Après une réussite, les pages de l’étape résolue sont ajoutées d’un coup à la BD et le lecteur s’ouvre sur la première
-d’entre elles. L’étape suivante ou le formulaire de réponse finale est injecté dans le panneau par AJAX, sans recharger
+Après une réussite, les images de l’étape résolue sont ajoutées d’un coup sous la BD et la vue va à la première
+d’entre elles. L’étape suivante ou le formulaire de réponse finale est injecté sous la bande par AJAX, sans recharger
 la page. Les visuels protégés déjà affichés ne sont pas redemandés.
 
 La colonne nullable `etape_id` de `wp_enigme_tentatives` permet de rattacher une interaction à une étape. Seul le

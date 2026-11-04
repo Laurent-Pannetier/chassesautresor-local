@@ -80,8 +80,9 @@ final class RiddleStepFieldGroupRegistrar {
                 'name' => 'etape_image',
                 'type' => 'gallery',
                 'instructions' => __(
-                    'Pages ajoutées à la BD quand le joueur réussit cette étape. '
-                    . 'La première s’affiche, les suivantes se feuillettent.',
+                    'Même largeur que la première bande : 1380 px. La hauteur est libre, '
+                    . 'souvent plus courte, parfois plus longue. '
+                    . 'L’image prolonge la bande sans joint.',
                     'chassesautresor-com'
                 ),
                 'required' => false,
