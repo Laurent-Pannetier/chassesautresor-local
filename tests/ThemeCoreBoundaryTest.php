@@ -139,12 +139,19 @@ final class ThemeCoreBoundaryTest extends TestCase
 
         self::assertSame([], $violations, $this->formatViolations($violations));
 
-        $imageController = (string) file_get_contents(
-            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-riddle-image.php'
+        $routes = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/ProtectedAssetRouteHandler.php'
         );
-        self::assertStringNotContainsString('trouver_chemin_image', $imageController);
-        self::assertStringNotContainsString('utilisateur_peut_voir_enigme', $imageController);
-        self::assertStringContainsString('ProtectedRiddleAssetService', $imageController);
+        self::assertStringNotContainsString('voir-image-enigme', $routes);
+        self::assertStringNotContainsString('protected-riddle-image.php', $routes);
+        self::assertStringContainsString('protected-solution-file.php', $routes);
+
+        $gate = (string) file_get_contents(
+            __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/RiddleImagePublicationGate.php'
+        );
+        self::assertStringNotContainsString('trouver_chemin_image', $gate);
+        self::assertStringNotContainsString('utilisateur_peut_voir_enigme', $gate);
+        self::assertStringContainsString('ProtectedRiddleAssetService', $gate);
 
         $solutionController = (string) file_get_contents(
             __DIR__ . '/../wp-content/plugins/chassesautresor-core/src/Media/protected-solution-file.php'

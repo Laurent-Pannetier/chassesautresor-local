@@ -32,12 +32,13 @@ final class SommaireVignetteInlineTest extends TestCase
 
         $html = enigme_sommaire_vignette_html(501, 'Vignette');
 
-        self::assertStringContainsString('voir-image-enigme', $html);
-        self::assertStringContainsString('taille=thumbnail', $html);
+        self::assertStringContainsString('thumbnail.jpg', $html);
+        self::assertStringContainsString('150w', $html);
         self::assertStringContainsString('sizes="4.25rem"', $html);
         self::assertStringContainsString('loading="eager"', $html);
         self::assertStringNotContainsString('loading="lazy"', $html);
-        self::assertStringNotContainsString('taille=medium', $html);
+        self::assertStringNotContainsString('medium.jpg', $html);
+        self::assertStringNotContainsString('voir-image-enigme', $html);
         self::assertStringNotContainsString('data:image', $html);
     }
 
@@ -57,6 +58,11 @@ final class SommaireVignetteInlineTest extends TestCase
         }
         if (!function_exists('add_query_arg')) {
             eval('function add_query_arg($args, $url) { return $url . "?" . http_build_query($args); }');
+        }
+        if (!function_exists('cta_voir_image_enigme_url')) {
+            eval('function cta_voir_image_enigme_url($imageId, $size = "full", $userId = null, $format = "") {'
+                . ' $ext = $format === "webp" ? "webp" : "jpg";'
+                . ' return "https://example.com/uploads/_enigmes/enigme-9/" . $size . "." . $ext; }');
         }
         if (!function_exists('cta_inline_riddle_thumbnail')) {
             eval('function cta_inline_riddle_thumbnail($imageId, $alt = "") {'

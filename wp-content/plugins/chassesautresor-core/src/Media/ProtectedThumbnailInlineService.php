@@ -7,10 +7,9 @@ namespace ChassesAuTresor\Core\Media;
 /**
  * Embed a small riddle thumbnail in HTML already rendered for this viewer.
  *
- * A signed /voir-image-enigme URL is a bearer link: the proxy still checks the
- * signature and the current viewer's access on every request. These bytes have
- * no URL of their own. The caller must already have decided that this viewer
- * may see the enigma. A file above the thumbnail cap stays on the proxy.
+ * These bytes have no URL of their own. The caller must already have decided
+ * that this viewer may see the enigma. A file above the thumbnail cap is left
+ * to the static file URL built for that same viewer.
  */
 final class ProtectedThumbnailInlineService
 {

@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 // 🖼️ AFFICHAGE DES VISUELS D’ÉNIGMES
 /**
  * 🔹 define('ID_IMAGE_PLACEHOLDER_ENIGME', 3925) → Définit l’identifiant de l’image placeholder utilisée pour les énigmes.
- * 🔹 enigme_image_display_url() → Retourne l’URL proxy (ou attachment) d’une image d’énigme.
+ * 🔹 enigme_image_display_url() → Retourne l’URL du fichier d’une image d’énigme.
  * 🔹 afficher_visuels_enigme() → Affiche la galerie (slideshow + lightbox) si l’utilisateur y a droit.
  * 🔹 get_image_enigme() → Renvoie l’URL de l’image principale d’une énigme ou un placeholder.
  * 🔹 enigme_a_une_image() → Vérifie si l’énigme a une image définie.
@@ -331,35 +331,15 @@ function enigme_picture_candidates(int $image_id, array $requested, string $floo
         };
     } else {
         $url_builder = static function (int $id, string $size, string $format = ''): string {
-            if (function_exists('cta_voir_image_enigme_url')) {
-                return esc_url(cta_voir_image_enigme_url($id, $size, null, $format));
-            }
-            $args = [
-                'id'     => $id,
-                'taille' => $size,
-            ];
-            if ($format === 'webp') {
-                $args['fmt'] = 'webp';
-            }
-            return esc_url(add_query_arg($args, site_url('/voir-image-enigme')));
+            return esc_url(enigme_direct_image_url($id, $size, $format));
         };
-        // WebP is a distinct signed URL. Clients that cannot decode it keep the original source.
-        $webp_builder = static function (int $id, string $size) use ($can_webp, $url_builder): string {
+        // WebP is a sibling file. Clients that cannot decode it keep the original source.
+        $webp_builder = static function (int $id, string $size) use ($can_webp): string {
             if (!$can_webp) {
                 return '';
             }
-            $data = wp_get_attachment_image_src($id, $size);
-            $url  = $data[0] ?? '';
-            if (!$url) {
-                return '';
-            }
-            $upload_dir = wp_get_upload_dir();
-            $path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $url);
-            $webp_path = preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $path);
-            if (!is_string($webp_path) || $webp_path === $path || !file_exists($webp_path)) {
-                return '';
-            }
-            return $url_builder($id, $size, 'webp');
+
+            return esc_url(enigme_direct_image_url($id, $size, 'webp'));
         };
     }
 
@@ -491,7 +471,42 @@ function enigme_hero_picture_payload(int $image_id): array
 }
 
 /**
- * Retourne l’URL d’affichage d’une image d’énigme (proxy signé ou attachment).
+ * URL du fichier réel. Vide si le joueur ne doit pas recevoir cette image.
+ *
+ * @param int    $image_id ID du média.
+ * @param string $size     Taille WordPress.
+ * @return string
+ */
+function enigme_direct_image_url(int $image_id, string $size = 'full', string $format = ''): string
+{
+    if ($image_id <= 0) {
+        return '';
+    }
+    if (function_exists('cta_voir_image_enigme_url')) {
+        return (string) cta_voir_image_enigme_url($image_id, $size, null, $format);
+    }
+    if (!function_exists('wp_get_attachment_image_src')) {
+        return '';
+    }
+
+    $data = wp_get_attachment_image_src($image_id, $size);
+    $url = is_array($data) ? (string) ($data[0] ?? '') : '';
+    if ($url === '' || $format !== 'webp') {
+        return $url;
+    }
+
+    $webp_url = (string) preg_replace('/\.(jpe?g|png|gif)$/i', '.webp', $url);
+    if ($webp_url === $url || !function_exists('wp_get_upload_dir')) {
+        return '';
+    }
+    $upload_dir = wp_get_upload_dir();
+    $webp_path = str_replace($upload_dir['baseurl'], $upload_dir['basedir'], $webp_url);
+
+    return is_file($webp_path) ? $webp_url : '';
+}
+
+/**
+ * Retourne l’URL d’affichage d’une image d’énigme.
  *
  * @param int    $image_id ID du média.
  * @param string $size     Taille WordPress.
@@ -499,22 +514,13 @@ function enigme_hero_picture_payload(int $image_id): array
  */
 function enigme_image_display_url(int $image_id, string $size = 'full'): string
 {
-    if ($image_id === ID_IMAGE_PLACEHOLDER_ENIGME) {
+    if ($image_id === ID_IMAGE_PLACEHOLDER_ENIGME && function_exists('wp_get_attachment_image_url')) {
         $url = wp_get_attachment_image_url($image_id, $size);
+
         return is_string($url) ? $url : '';
     }
 
-    if (function_exists('cta_voir_image_enigme_url')) {
-        return cta_voir_image_enigme_url($image_id, $size);
-    }
-
-    return add_query_arg(
-        [
-            'id'     => $image_id,
-            'taille' => $size,
-        ],
-        site_url('/voir-image-enigme')
-    );
+    return enigme_direct_image_url($image_id, $size);
 }
 
 /**
@@ -613,28 +619,11 @@ function enigme_step_comic_page_view(int $imageId): array
         $width = (int) $payload['width'];
         $height = (int) $payload['height'];
     } else {
-        $preview = esc_url(
-            function_exists('cta_voir_image_enigme_url')
-                ? cta_voir_image_enigme_url($imageId, 'large')
-                : add_query_arg(
-                    ['id' => $imageId, 'taille' => 'large'],
-                    site_url('/voir-image-enigme')
-                )
-        );
+        $preview = esc_url(enigme_direct_image_url($imageId, 'large'));
     }
 
-    $full = function_exists('cta_voir_image_enigme_url')
-        ? cta_voir_image_enigme_url($imageId, 'full')
-        : add_query_arg(
-            ['id' => $imageId, 'taille' => 'full'],
-            site_url('/voir-image-enigme')
-        );
-    $thumb = function_exists('cta_voir_image_enigme_url')
-        ? cta_voir_image_enigme_url($imageId, 'thumbnail')
-        : add_query_arg(
-            ['id' => $imageId, 'taille' => 'thumbnail'],
-            site_url('/voir-image-enigme')
-        );
+    $full = enigme_direct_image_url($imageId, 'full');
+    $thumb = enigme_direct_image_url($imageId, 'thumbnail');
 
     return [
         'alt' => $alt,
@@ -721,7 +710,7 @@ function enigme_collect_step_comic_pages(int $enigme_id, int $user_id): array
  * Un double tap ou un pincement ouvre l’image en taille d’origine.
  * Les pages des étapes déjà réussies s’ajoutent à la suite.
  *
- * Les images sont servies via proxy (/voir-image-enigme) avec tailles adaptées.
+ * Les images autorisées sont des fichiers statiques, avec les tailles adaptées.
  *
  * @param int      $enigme_id  ID du post de type énigme
  * @param int|null $user_id    Utilisateur courant (pages d’étapes débloquées)
@@ -937,14 +926,7 @@ function get_image_enigme(int $post_id, string $size = 'medium'): ?string
         $image_id = (int) $images[0]['ID'];
     }
 
-    return esc_url(
-        function_exists('cta_voir_image_enigme_url')
-            ? cta_voir_image_enigme_url($image_id, $size)
-            : add_query_arg([
-                'id'     => $image_id,
-                'taille' => $size,
-            ], site_url('/voir-image-enigme'))
-    );
+    return esc_url(enigme_direct_image_url($image_id, $size));
 }
 
 
@@ -963,7 +945,7 @@ function enigme_a_une_image(int $post_id): bool
 
 
 /**
- * Retourne l'URL proxy pour une vignette d’énigme à la taille souhaitée.
+ * Retourne l’URL du fichier de vignette d’énigme à la taille souhaitée.
  *
  * @param int $enigme_id
  * @param string $taille  Taille WordPress (ex: 'thumbnail', 'medium', 'full')
@@ -983,14 +965,7 @@ function get_url_vignette_enigme(int $enigme_id, string $taille = 'thumbnail'): 
     $image_id = $images[0] ?? null; // on récupère l’ID brut directement
     if (!$image_id) return null;
 
-    return esc_url(
-        function_exists('cta_voir_image_enigme_url')
-            ? cta_voir_image_enigme_url((int) $image_id, $taille)
-            : add_query_arg([
-                'id'     => $image_id,
-                'taille' => $taille,
-            ], site_url('/voir-image-enigme'))
-    );
+    return esc_url(enigme_direct_image_url((int) $image_id, $taille));
 }
 
 
@@ -998,9 +973,7 @@ function get_url_vignette_enigme(int $enigme_id, string $taille = 'thumbnail'): 
  * Vignette du sommaire, peinte avec le HTML de la page.
  *
  * Le fichier miniature voyage dans la réponse déjà limitée à ce visiteur.
- * Le proxy /voir-image-enigme garde sa vérification : son URL signée se
- * partage, ces octets non. Un fichier absent ou trop lourd revient au proxy,
- * demandé tout de suite.
+ * Un fichier absent ou trop lourd revient à l’URL statique de la vignette.
  */
 function enigme_sommaire_vignette_html(int $image_id, string $alt = ''): string
 {
@@ -1025,8 +998,8 @@ function enigme_sommaire_vignette_html(int $image_id, string $alt = ''): string
 /**
  * Affiche un bloc <picture> responsive pour une énigme.
  *
- * Génère un élément <picture> HTML avec différentes sources pour les tailles d’image spécifiées,
- * en utilisant le proxy /voir-image-enigme. Si aucune image n’est définie, utilise le placeholder.
+ * Génère un élément <picture> HTML avec différentes sources pour les tailles d’image spécifiées.
+ * Si aucune image n’est définie, utilise le placeholder.
  *
  * @param int    $enigme_id  ID de l’énigme concernée.
  * @param string $alt        Texte alternatif pour l’image.

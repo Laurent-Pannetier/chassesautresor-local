@@ -155,7 +155,8 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringContainsString('data-enigme-lightbox-src=', $html);
         $this->assertStringContainsString('enigme-media-zoom', $html);
         $this->assertStringContainsString('enigme-media-zoom__hint', $html);
-        $this->assertStringContainsString('taille=full', $html);
+        $this->assertStringContainsString('101-full.jpg', $html);
+        $this->assertStringNotContainsString('voir-image-enigme', $html);
         $this->assertStringNotContainsString('galerie-enigme__thumbs', $html);
         $this->assertStringNotContainsString('galerie-enigme__nav', $html);
         $this->assertStringContainsString('class="galerie-enigme__home" href="/"', $html);
@@ -182,7 +183,8 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringContainsString('Afficher la page 2', $html);
         $this->assertSame(2, substr_count($html, 'galerie-enigme__slide'));
         $this->assertStringContainsString(' hidden', $html);
-        $this->assertStringContainsString('taille=thumbnail', $html);
+        $this->assertStringContainsString('101-thumbnail.jpg', $html);
+        $this->assertStringContainsString('202-thumbnail.jpg', $html);
     }
 
     public function test_unlocked_step_images_append_as_comic_pages(): void

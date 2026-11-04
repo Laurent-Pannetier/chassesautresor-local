@@ -13,6 +13,7 @@ class RiddleImageProtectionLifecycle {
     public static function register(callable $addAction, callable $addFilter): void {
         $addFilter('acf/upload_prefilter/name=enigme_visuel_image', [self::class, 'beginUpload'], 10, 3);
         $addFilter('acf/upload_file/name=enigme_visuel_image', [self::class, 'finishUpload'], 10, 1);
+        $addFilter('wp_generate_attachment_metadata', [self::class, 'obscureGeneratedMetadata'], 99, 2);
         $addAction('acf/save_post', [self::class, 'protectAfterSave'], 20, 1);
         $addAction('acf/save_post', [self::class, 'restoreAfterSave'], 99, 1);
         $addAction('wp', [self::class, 'schedule'], 10, 1);
@@ -28,6 +29,20 @@ class RiddleImageProtectionLifecycle {
     public static function finishUpload($file) {
         remove_filter('upload_dir', [self::class, 'filterUploadDirectory']);
         return $file;
+    }
+
+    /**
+     * @param array<string, mixed> $metadata
+     * @return array<string, mixed>
+     */
+    public static function obscureGeneratedMetadata($metadata, $attachmentId) {
+        if (!is_array($metadata)) {
+            return $metadata;
+        }
+
+        $updated = (new RiddleImageObscureNameService())->obscureAttachment((int) $attachmentId, $metadata);
+
+        return is_array($updated) ? $updated : $metadata;
     }
 
     public static function filterUploadDirectory(array $directories): array {
