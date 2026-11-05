@@ -64,3 +64,26 @@ Détail : [`docs/deploy.md`](docs/deploy.md).
 3. Synchroniser le thème vers `chassesautresor-wp`, puis déployer via Hostinger Git.
 4. Si le Core a changé : déployer le **même état** de `chassesautresor-core` via l’UI Hostinger.
 5. Vérifier ACF / migrations SQL si le lot en dépend.
+
+## Cursor Cloud specific instructions
+
+- PHP 8.2 is required. PHP 8.3 changes `strtotime()` and fails
+  `RiddleSolutionFilePolicyServiceTest` and `RiddleSolutionFileSchedulerTest`.
+  On the Cloud Agent image, `php` is 8.2.
+- systemd does not supervise MariaDB in this VM. The environment start script
+  launches `mariadbd` and `wp server` at `http://127.0.0.1:8080`. The database
+  name is `local`; credentials are those already committed in `wp-config.php`.
+- A working front needs the plugins `chassesautresor-core`, `woocommerce`, and
+  `advanced-custom-fields-pro`. The theme calls WooCommerce `is_account_page()`
+  while rendering pages.
+- The root `.gitignore` rule `vendor/` drops a few WooCommerce Composer packages
+  that the plugin still loads. The environment install restores the pinned
+  copies: `wordpress/abilities-api`, `wordpress/mcp-adapter`,
+  `automattic/block-delimiter`, and six Jetpack class files.
+- The front is behind `ca_site_password_protection`. Until that option is
+  changed, the password is the `citizen` fallback in
+  `wp-content/plugins/chassesautresor-core/src/Security/site-password.php`.
+- From the repo root, after `npm ci`: `npm test` and `npm run build:css`.
+- `EnigmeGalleryViewerTest::test_unlocked_step_images_append_as_comic_pages`
+  fails on current `main`: the gallery opens on page 1, while the test still
+  expects `Page 2 / 2`.
