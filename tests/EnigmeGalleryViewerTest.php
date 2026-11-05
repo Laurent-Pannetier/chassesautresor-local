@@ -253,6 +253,34 @@ class EnigmeGalleryViewerTest extends TestCase
         );
     }
 
+    public function test_reply_block_under_the_strip_is_centered_with_its_text(): void
+    {
+        $css = file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/dist/style.css'
+        );
+
+        $this->assertIsString($css);
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.participation-dock\s*\{[^}]*align-items:\s*center/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.riddle-player-step__content,\s*'
+            . '\.page-enigme\.page-enigme--reader \.riddle-player-step__content p'
+            . '[^}]*text-align:\s*center/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.reponse-launcher\s*\{[^}]*justify-content:\s*center/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/form\.is-reply-widget\.is-immersive-open > input\[type=text\]'
+            . '[^}]*text-align:\s*center/',
+            $css
+        );
+    }
+
     public function test_only_the_first_band_is_requested_before_the_script_runs(): void
     {
         $html = enigme_webtoon_band_html([

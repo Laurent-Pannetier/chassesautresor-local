@@ -8644,8 +8644,24 @@ form.is-reply-widget.is-immersive-open {
   background: linear-gradient(180deg, rgba(28, 34, 48, 0.99), rgba(14, 18, 28, 0.98));
   color: var(--color-text-primary, #f4f1ea);
   box-shadow: 0 22px 56px rgba(0, 0, 0, 0.55);
+  text-align: center;
   transform: translate(-50%, -50%);
   animation: riddle-widget-rise 0.28s ease-out;
+}
+
+form.is-reply-widget.is-immersive-open > label,
+form.is-reply-widget.is-immersive-open > h3,
+form.is-reply-widget.is-immersive-open > p,
+form.is-reply-widget.is-immersive-open > .message-limite {
+  width: 100%;
+  text-align: center;
+}
+
+form.is-reply-widget.is-immersive-open > input[type=text],
+form.is-reply-widget.is-immersive-open > textarea {
+  width: min(100%, 22rem);
+  max-width: 22rem;
+  text-align: center;
 }
 
 form.is-reply-widget.is-immersive-open:focus {
@@ -8822,11 +8838,17 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 
 .riddle-step-text-form {
   display: grid;
+  justify-items: center;
   gap: var(--space-sm);
+  width: min(100%, 22rem);
+  max-width: 22rem;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .riddle-step-text-form input[type=text] {
   width: 100%;
+  text-align: center;
 }
 
 .riddle-step-numbers-form,
@@ -9624,6 +9646,58 @@ body:has(.page-enigme--reader) .enigme-edit-toggle--desktop {
 }
 body:has(.page-enigme--reader) {
   overflow-x: clip;
+}
+
+/*
+ * Sous la bande, le bloc de réponse occupe sa propre ligne et se cale
+ * au centre. Le texte de l’étape suit le même axe, au lieu de rester
+ * collé au bord gauche de la colonne.
+ */
+.page-enigme.page-enigme--reader .participation-dock {
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-enigme.page-enigme--reader .participation-dock > .zone-reponse {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 36rem);
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .riddle-steps-player,
+.page-enigme.page-enigme--reader .riddle-player-step,
+.page-enigme.page-enigme--reader .reponse-launcher {
+  width: 100%;
+}
+
+.page-enigme.page-enigme--reader .riddle-player-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .riddle-player-step__content,
+.page-enigme.page-enigme--reader .riddle-player-step__content p,
+.page-enigme.page-enigme--reader .riddle-player-step label {
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .riddle-player-step__content ul,
+.page-enigme.page-enigme--reader .riddle-player-step__content ol {
+  width: -moz-fit-content;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-left: 0;
+  list-style-position: inside;
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .reponse-launcher {
+  justify-content: center;
 }
 
 /* Placeholder for future enigma style variants */
