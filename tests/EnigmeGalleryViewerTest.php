@@ -275,10 +275,23 @@ class EnigmeGalleryViewerTest extends TestCase
             $css
         );
         $this->assertMatchesRegularExpression(
-            '/form\.is-reply-widget\.is-immersive-open > input\[type=text\]'
-            . '[^}]*text-align:\s*center/',
+            '/form\.is-reply-widget:not\(\.is-immersive-open\)\s*\{[^}]*display:\s*flex/',
             $css
         );
+        $this->assertDoesNotMatchRegularExpression(
+            '/form\.is-reply-widget:not\(\.is-immersive-open\)\s*\{[^}]*display:\s*none/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/form\.is-reply-widget > input\[type=text\][^}]*text-align:\s*center/',
+            $css
+        );
+
+        $reply = file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/inc/enigme/reponses.php'
+        );
+        $this->assertIsString($reply);
+        $this->assertStringNotContainsString('data-riddle-open-widget', $reply);
     }
 
     public function test_only_the_first_band_is_requested_before_the_script_runs(): void

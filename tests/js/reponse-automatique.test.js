@@ -16,12 +16,8 @@ describe('automatic reply success', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     document.body.innerHTML = `
-      <div class="reponse-launcher">
-        <button type="button" data-riddle-open-widget data-riddle-reply-key="final-9">Répondre</button>
-        <form class="formulaire-reponse-auto is-reply-widget is-immersive-open" data-riddle-reply-key="final-9">
-          <div class="riddle-widget-immersive__chrome">
-            <button type="button" data-riddle-close-widget>×</button>
-          </div>
+      <div class="reponse-launcher" data-riddle-reply-key="final-9">
+        <form class="formulaire-reponse-auto is-reply-widget" data-riddle-reply-key="final-9">
           <h3>Votre réponse</h3>
           <div class="reponse-feedback"></div>
           <input name="reponse" value="orpheline">
@@ -30,9 +26,7 @@ describe('automatic reply success', () => {
           <button type="submit">Valider</button>
         </form>
       </div>
-      <div class="riddle-widget-immersive-backdrop"></div>
     `;
-    document.body.classList.add('riddle-widget-immersive-open');
     window.closeImmersiveReplyWidget = (form) => {
       form.hidden = true;
       form.classList.remove('is-immersive-open');
@@ -57,22 +51,20 @@ describe('automatic reply success', () => {
     document.body.className = '';
   });
 
-  test('keeps the confirmation, then closes the overlay and retires Répondre', async () => {
+  test('keeps the confirmation, then retires the inline widget', async () => {
     document.querySelector('form').dispatchEvent(
       new Event('submit', { bubbles: true, cancelable: true })
     );
     await flush();
 
     expect(document.querySelector('.reponse-feedback').textContent).toContain('Bonne réponse');
-    expect(document.querySelector('[data-riddle-close-widget]')).not.toBeNull();
-    expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(true);
+    expect(document.querySelector('form.is-reply-widget')).not.toBeNull();
 
     jest.advanceTimersByTime(1500);
 
     expect(document.querySelector('form.is-reply-widget')).toBeNull();
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
     expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(false);
-    expect(document.querySelector('[data-riddle-open-widget]')).toBeNull();
     expect(document.querySelector('.reponse-launcher__solved').textContent).toContain('Énigme résolue');
   });
 });

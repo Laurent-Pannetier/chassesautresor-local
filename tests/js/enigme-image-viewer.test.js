@@ -516,8 +516,10 @@ describe('webtoon reader', () => {
       <section class="participation">
         <div class="participation-dock">
           <div class="zone-reponse">
-            <div class="reponse-launcher">
-              <button type="button" class="reponse-launcher__open" data-riddle-open-widget>Répondre</button>
+            <div class="reponse-launcher" data-riddle-reply-key="final-9">
+              <form class="formulaire-reponse-auto is-reply-widget" data-riddle-reply-key="final-9">
+                <input type="text" name="reponse">
+              </form>
             </div>
           </div>
           <div class="zone-indices" data-hint-display="global">

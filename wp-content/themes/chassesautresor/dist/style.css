@@ -8606,10 +8606,43 @@ body.no-scroll {
   margin-bottom: 0;
 }
 
-/* Author display:flex on widget forms overrides the HTML hidden attribute. */
-form.is-reply-widget[hidden],
-form.is-reply-widget:not(.is-immersive-open) {
+/* A leftover hidden attribute must win over display:flex on the form. */
+form.is-reply-widget[hidden] {
   display: none !important;
+}
+
+form.is-reply-widget:not(.is-immersive-open) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  text-align: center;
+}
+
+form.is-reply-widget > label,
+form.is-reply-widget > h3,
+form.is-reply-widget > p,
+form.is-reply-widget > .message-limite {
+  width: 100%;
+  margin-top: 0;
+  margin-inline: auto;
+  text-align: center;
+}
+
+form.is-reply-widget > input[type=text],
+form.is-reply-widget > textarea {
+  width: min(100%, 22rem);
+  max-width: 22rem;
+  text-align: center;
+}
+
+form.is-reply-widget .reponse-cta-row .bouton-cta,
+form.is-reply-widget button[type=submit] {
+  width: auto;
+  align-self: center;
 }
 
 .riddle-widget-immersive-backdrop {
@@ -8647,21 +8680,6 @@ form.is-reply-widget.is-immersive-open {
   text-align: center;
   transform: translate(-50%, -50%);
   animation: riddle-widget-rise 0.28s ease-out;
-}
-
-form.is-reply-widget.is-immersive-open > label,
-form.is-reply-widget.is-immersive-open > h3,
-form.is-reply-widget.is-immersive-open > p,
-form.is-reply-widget.is-immersive-open > .message-limite {
-  width: 100%;
-  text-align: center;
-}
-
-form.is-reply-widget.is-immersive-open > input[type=text],
-form.is-reply-widget.is-immersive-open > textarea {
-  width: min(100%, 22rem);
-  max-width: 22rem;
-  text-align: center;
 }
 
 form.is-reply-widget.is-immersive-open:focus {
@@ -9698,6 +9716,12 @@ body:has(.page-enigme--reader) {
 
 .page-enigme.page-enigme--reader .reponse-launcher {
   justify-content: center;
+}
+
+.page-enigme--compact .zone-reponse form.is-reply-widget .bouton-cta,
+.page-enigme--compact .zone-reponse form.is-reply-widget button[type=submit] {
+  width: auto;
+  align-self: center;
 }
 
 /* Placeholder for future enigma style variants */

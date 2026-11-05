@@ -106,7 +106,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
             $usedFailures
         );
         $replyKey = 'step-' . $stepId;
-        echo cat_reponse_launcher_open($replyKey, cat_reponse_launcher_label());
+        echo cat_reponse_launcher_open($replyKey);
         ?>
         <form
           class="<?= esc_attr($widgetView['form_class']); ?> is-reply-widget"
@@ -114,9 +114,7 @@ if ($riddleId <= 0 || $visibleIds === []) {
           data-widget-action="<?= esc_attr($widgetView['action']); ?>"
           data-retry-state="<?= esc_attr(wp_json_encode($retryState)); ?>"
           aria-busy="false"
-          hidden
         >
-          <?= cat_reponse_widget_chrome(); ?>
           <input type="hidden" name="enigme_id" value="<?= esc_attr($riddleId); ?>">
           <input type="hidden" name="etape_id" value="<?= esc_attr($stepId); ?>">
           <input
