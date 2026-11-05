@@ -296,7 +296,7 @@ describe('riddle step player positioning', () => {
     expect(document.querySelector('[name="reponse"]').value).toBe('');
   });
 
-  test('unlocks the next step when a portaled reply widget succeeds', async () => {
+  test('unlocks the next step when the inline reply widget succeeds', async () => {
     window.sessionStorage.clear();
     window.EnigmeGallery = {
       appendPage: jest.fn().mockReturnValue(1),
@@ -307,13 +307,11 @@ describe('riddle step player positioning', () => {
       <div class="galerie-enigme-wrapper" data-enigme-gallery></div>
       <section class="riddle-steps-player">
         <article class="riddle-player-step is-current" data-player-step-id="12">
-          <div class="reponse-launcher">
-            <button type="button" data-riddle-open-widget data-riddle-reply-key="step-12">Répondre</button>
+          <div class="reponse-launcher" data-riddle-reply-key="step-12">
             <form
               class="riddle-step-text-form riddle-step-directions-form is-reply-widget"
               data-riddle-reply-key="step-12"
               data-widget-action="soumettre_reponse_etape"
-              hidden
             >
               <input name="enigme_id" value="42">
               <input name="etape_id" value="12">
@@ -348,11 +346,9 @@ describe('riddle step player positioning', () => {
     });
 
     eval(source);
-    document.querySelector('[data-riddle-open-widget]').dispatchEvent(
-      new MouseEvent('click', { bubbles: true, cancelable: true })
-    );
     const form = document.querySelector('form.is-reply-widget');
-    expect(form.parentElement).toBe(document.body);
+    expect(form.closest('.riddle-player-step')).not.toBeNull();
+    expect(form.classList.contains('is-immersive-open')).toBe(false);
 
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     await new Promise(resolve => window.setTimeout(resolve, 0));
@@ -364,14 +360,12 @@ describe('riddle step player positioning', () => {
     expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(false);
   });
 
-  test('opens and closes the reply widget from the Répondre button', () => {
+  test('keeps the reply widget in the step instead of a second box', () => {
     window.sessionStorage.clear();
     document.body.innerHTML = `
       <article class="riddle-player-step is-current" data-player-step-id="12">
-        <div class="reponse-launcher">
-          <button type="button" data-riddle-open-widget data-riddle-reply-key="step-12">Répondre</button>
-          <form class="riddle-step-directions-form is-reply-widget" data-riddle-reply-key="step-12" hidden>
-            <button type="button" data-riddle-close-widget>Close</button>
+        <div class="reponse-launcher" data-riddle-reply-key="step-12">
+          <form class="riddle-step-directions-form is-reply-widget" data-riddle-reply-key="step-12">
             <button type="submit">Validate</button>
           </form>
         </div>
@@ -380,26 +374,11 @@ describe('riddle step player positioning', () => {
     eval(source);
 
     const form = document.querySelector('form.is-reply-widget');
-    expect(form.hasAttribute('hidden')).toBe(true);
-
-    document.querySelector('[data-riddle-open-widget]').dispatchEvent(
-      new MouseEvent('click', { bubbles: true, cancelable: true })
-    );
     expect(form.hidden).toBe(false);
-    expect(form.classList.contains('is-immersive-open')).toBe(true);
-    expect(form.parentElement).toBe(document.body);
-    expect(document.body.classList.contains('riddle-widget-immersive-open')).toBe(true);
-    expect(document.querySelector('.riddle-widget-immersive-backdrop')).not.toBeNull();
-    expect(document.activeElement).toBe(form);
-    expect(form.getAttribute('tabindex')).toBe('-1');
-
-    document.querySelector('[data-riddle-close-widget]').dispatchEvent(
-      new MouseEvent('click', { bubbles: true, cancelable: true })
-    );
-    expect(form.hidden).toBe(true);
     expect(form.classList.contains('is-immersive-open')).toBe(false);
     expect(form.closest('.riddle-player-step')).not.toBeNull();
     expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
+    expect(document.querySelector('[data-riddle-open-widget]')).toBeNull();
   });
 
   test('does not open the reply widget from the picture', () => {
@@ -409,8 +388,7 @@ describe('riddle step player positioning', () => {
         <img class="enigme-lightbox__image" width="100" height="100">
       </button>
       <article class="riddle-player-step is-current" data-player-step-id="12">
-        <button type="button" data-riddle-open-widget data-riddle-reply-key="step-12">Répondre</button>
-        <form class="riddle-step-directions-form is-reply-widget" data-riddle-reply-key="step-12" hidden>
+        <form class="riddle-step-directions-form is-reply-widget" data-riddle-reply-key="step-12">
           <button type="submit">Validate</button>
         </form>
       </article>
@@ -423,6 +401,7 @@ describe('riddle step player positioning', () => {
 
     const form = document.querySelector('form.is-reply-widget');
     expect(form.classList.contains('is-immersive-open')).toBe(false);
-    expect(form.hasAttribute('hidden')).toBe(true);
+    expect(form.closest('.riddle-player-step')).not.toBeNull();
+    expect(document.querySelector('.riddle-widget-immersive-backdrop')).toBeNull();
   });
 });

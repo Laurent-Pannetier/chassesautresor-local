@@ -1282,10 +1282,43 @@ body.no-scroll {
   margin-bottom: 0;
 }
 
-/* Author display:flex on widget forms overrides the HTML hidden attribute. */
-form.is-reply-widget[hidden],
-form.is-reply-widget:not(.is-immersive-open) {
+/* A leftover hidden attribute must win over display:flex on the form. */
+form.is-reply-widget[hidden] {
   display: none !important;
+}
+
+form.is-reply-widget:not(.is-immersive-open) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  text-align: center;
+}
+
+form.is-reply-widget > label,
+form.is-reply-widget > h3,
+form.is-reply-widget > p,
+form.is-reply-widget > .message-limite {
+  width: 100%;
+  margin-top: 0;
+  margin-inline: auto;
+  text-align: center;
+}
+
+form.is-reply-widget > input[type='text'],
+form.is-reply-widget > textarea {
+  width: min(100%, 22rem);
+  max-width: 22rem;
+  text-align: center;
+}
+
+form.is-reply-widget .reponse-cta-row .bouton-cta,
+form.is-reply-widget button[type='submit'] {
+  width: auto;
+  align-self: center;
 }
 
 .riddle-widget-immersive-backdrop {
@@ -1321,6 +1354,7 @@ form.is-reply-widget.is-immersive-open {
     linear-gradient(180deg, rgba(28, 34, 48, 0.99), rgba(14, 18, 28, 0.98));
   color: var(--color-text-primary, #f4f1ea);
   box-shadow: 0 22px 56px rgba(0, 0, 0, 0.55);
+  text-align: center;
   transform: translate(-50%, -50%);
   animation: riddle-widget-rise 0.28s ease-out;
 }
@@ -1512,11 +1546,17 @@ form.is-reply-widget.is-immersive-open:focus-visible {
 
 .riddle-step-text-form {
   display: grid;
+  justify-items: center;
   gap: var(--space-sm);
+  width: min(100%, 22rem);
+  max-width: 22rem;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .riddle-step-text-form input[type='text'] {
   width: 100%;
+  text-align: center;
 }
 
 .riddle-step-numbers-form,
@@ -2218,4 +2258,224 @@ body:has(.page-enigme--reader) .enigme-edit-toggle--desktop {
 
 body:has(.page-enigme--reader) {
   overflow-x: clip;
+}
+
+/*
+ * Sous la bande, la réponse est une ligne courte : légende, champ et
+ * Valider, puis les indices en pastilles. Pas de carte vide autour.
+ */
+.page-enigme.page-enigme--reader .participation {
+  width: min(100%, 36rem);
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  gap: var(--space-md);
+}
+
+.page-enigme.page-enigme--reader .participation-dock {
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.page-enigme.page-enigme--reader .participation-dock > .zone-reponse,
+.page-enigme.page-enigme--reader .participation-dock > .zone-indices {
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.page-enigme.page-enigme--reader .participation-dock > .zone-reponse {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: start;
+}
+
+.page-enigme.page-enigme--reader .zone-indices {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  opacity: 1;
+}
+
+.page-enigme.page-enigme--reader .zone-indices .zone-indices-line {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.page-enigme.page-enigme--reader .zone-indices .zone-indices-line__label {
+  flex: 0 0 auto;
+  flex-basis: auto;
+  color: var(--color-titre-enigme);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.page-enigme.page-enigme--reader .riddle-steps-player,
+.page-enigme.page-enigme--reader .riddle-player-step,
+.page-enigme.page-enigme--reader .reponse-launcher {
+  width: 100%;
+}
+
+.page-enigme.page-enigme--reader .riddle-player-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .riddle-player-step__content,
+.page-enigme.page-enigme--reader .riddle-player-step__content p,
+.page-enigme.page-enigme--reader .riddle-player-step label {
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .riddle-player-step__content ul,
+.page-enigme.page-enigme--reader .riddle-player-step__content ol {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding-left: 0;
+  list-style-position: inside;
+  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .reponse-launcher {
+  justify-content: center;
+}
+
+.page-enigme--compact .zone-reponse form.is-reply-widget .bouton-cta,
+.page-enigme--compact .zone-reponse form.is-reply-widget button[type='submit'] {
+  width: auto;
+  align-self: center;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > h3,
+.page-enigme.page-enigme--reader form.is-reply-widget > label {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+  margin: 0;
+  color: var(--color-titre-enigme);
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > h3 .badge-validation {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-titre-enigme);
+  font-size: 0.85rem;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > input[type='text'],
+.page-enigme.page-enigme--reader form.is-reply-widget > textarea,
+.page-enigme.page-enigme--reader form.riddle-step-text-form input[type='text'] {
+  width: 100%;
+  max-width: none;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(229, 192, 123, 0.45);
+  border-radius: 8px;
+  background: rgba(8, 12, 24, 0.92);
+  color: var(--color-text-primary);
+  text-align: start;
+  box-shadow: none;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > input[type='text']:focus,
+.page-enigme.page-enigme--reader form.is-reply-widget > textarea:focus,
+.page-enigme.page-enigme--reader form.riddle-step-text-form input[type='text']:focus {
+  border-color: var(--color-titre-enigme);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  justify-items: stretch;
+  gap: var(--space-xs);
+  width: 100%;
+  text-align: start;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget .reponse-cta-row {
+  margin: 0;
+  width: auto;
+  justify-content: flex-start;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget .reponse-cta-row .bouton-cta,
+.page-enigme.page-enigme--reader form.is-reply-widget > button[type='submit'] {
+  width: auto;
+  min-height: 2.75rem;
+  margin: 0;
+  justify-self: start;
+  align-self: center;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > .points-sousligne,
+.page-enigme.page-enigme--reader form.is-reply-widget > .message-limite {
+  margin: 0;
+  text-align: start;
+}
+
+@media (--bp-small) {
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-sm);
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > h3,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > label,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .reponse-feedback,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .message-limite,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .points-sousligne,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .riddle-step-click-form__feedback {
+    grid-column: 1 / -1;
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > input[type='text'],
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > textarea {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .reponse-cta-row,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > button[type='submit'] {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:has(.message-limite) > .reponse-cta-row {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
 }

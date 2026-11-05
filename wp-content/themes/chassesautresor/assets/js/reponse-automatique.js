@@ -4,10 +4,8 @@ function dismissResolvedReply(form) {
   if (!form || form.dataset.replySettled === '1') return;
   form.dataset.replySettled = '1';
   const key = form.dataset.riddleReplyKey || '';
-  const opener = key
-    ? document.querySelector(`[data-riddle-open-widget][data-riddle-reply-key="${key}"]`)
-    : null;
-  const launcher = opener?.closest('.reponse-launcher');
+  const launcher = form.closest('.reponse-launcher')
+    || (key ? document.querySelector(`.reponse-launcher[data-riddle-reply-key="${key}"]`) : null);
   if (typeof window.closeImmersiveReplyWidget === 'function') {
     window.closeImmersiveReplyWidget(form);
   } else {
@@ -25,8 +23,7 @@ function dismissResolvedReply(form) {
     'Énigme résolue',
     'chassesautresor-com'
   )}`;
-  if (opener) opener.replaceWith(solved);
-  else launcher.append(solved);
+  launcher.append(solved);
 }
 
 function resetInteractiveFinalAnswerWidget(form) {

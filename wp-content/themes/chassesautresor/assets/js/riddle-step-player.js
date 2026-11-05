@@ -55,14 +55,11 @@ const playPianoNote = (note, delay = 0, key = null) => {
 const initializeGpsWidgets = root => {
   if (typeof window.L === 'undefined' || !root) return;
   const forms = [];
-  const canInit = form => !(
-    form.classList.contains('is-reply-widget') && !form.classList.contains('is-immersive-open')
-  );
-  if (root.matches?.('.riddle-step-gps-form:not([data-map-ready])') && canInit(root)) {
+  if (root.matches?.('.riddle-step-gps-form:not([data-map-ready])')) {
     forms.push(root);
   }
   root.querySelectorAll?.('.riddle-step-gps-form:not([data-map-ready])').forEach(form => {
-    if (canInit(form)) forms.push(form);
+    forms.push(form);
   });
   forms.forEach(form => {
     const container = form.querySelector('.riddle-gps__map');
