@@ -294,6 +294,43 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringNotContainsString('data-riddle-open-widget', $reply);
     }
 
+    public function test_reply_block_is_a_short_line_without_an_empty_card(): void
+    {
+        $css = file_get_contents(
+            dirname(__DIR__) . '/wp-content/themes/chassesautresor/dist/style.css'
+        );
+
+        $this->assertIsString($css);
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.participation\s*\{[^}]*border:\s*0/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.participation\s*\{[^}]*background:\s*transparent/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.participation-dock > \.zone-reponse,\s*'
+            . '\.page-enigme\.page-enigme--reader \.participation-dock > \.zone-indices\s*'
+            . '\{[^}]*flex:\s*0 0 auto/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.zone-indices\s*\{[^}]*background:\s*transparent/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader form\.is-reply-widget > input\[type=text\]'
+            . '[^}]*background:\s*rgba\(8,\s*12,\s*24,\s*0?\.92\)/',
+            $css
+        );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader form\.is-reply-widget > input\[type=text\]'
+            . '[^}]*text-align:\s*start/',
+            $css
+        );
+    }
+
     public function test_only_the_first_band_is_requested_before_the_script_runs(): void
     {
         $html = enigme_webtoon_band_html([

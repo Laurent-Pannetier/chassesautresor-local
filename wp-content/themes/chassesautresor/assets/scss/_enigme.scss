@@ -2261,21 +2261,64 @@ body:has(.page-enigme--reader) {
 }
 
 /*
- * Sous la bande, le bloc de réponse occupe sa propre ligne et se cale
- * au centre. Le texte de l’étape suit le même axe, au lieu de rester
- * collé au bord gauche de la colonne.
+ * Sous la bande, la réponse est une ligne courte : légende, champ et
+ * Valider, puis les indices en pastilles. Pas de carte vide autour.
  */
+.page-enigme.page-enigme--reader .participation {
+  width: min(100%, 36rem);
+  max-width: 36rem;
+  margin-inline: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  gap: var(--space-md);
+}
+
 .page-enigme.page-enigme--reader .participation-dock {
   flex-direction: column;
   align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.page-enigme.page-enigme--reader .participation-dock > .zone-reponse,
+.page-enigme.page-enigme--reader .participation-dock > .zone-indices {
+  flex: 0 0 auto;
+  width: 100%;
 }
 
 .page-enigme.page-enigme--reader .participation-dock > .zone-reponse {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  text-align: start;
+}
+
+.page-enigme.page-enigme--reader .zone-indices {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  opacity: 1;
+}
+
+.page-enigme.page-enigme--reader .zone-indices .zone-indices-line {
+  justify-content: flex-start;
   align-items: center;
-  width: min(100%, 36rem);
-  text-align: center;
+}
+
+.page-enigme.page-enigme--reader .zone-indices .zone-indices-line__label {
+  flex: 0 0 auto;
+  flex-basis: auto;
+  color: var(--color-titre-enigme);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .page-enigme.page-enigme--reader .riddle-steps-player,
@@ -2315,4 +2358,124 @@ body:has(.page-enigme--reader) {
 .page-enigme--compact .zone-reponse form.is-reply-widget button[type='submit'] {
   width: auto;
   align-self: center;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > h3,
+.page-enigme.page-enigme--reader form.is-reply-widget > label {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto;
+  margin: 0;
+  color: var(--color-titre-enigme);
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > h3 .badge-validation {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-titre-enigme);
+  font-size: 0.85rem;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > input[type='text'],
+.page-enigme.page-enigme--reader form.is-reply-widget > textarea,
+.page-enigme.page-enigme--reader form.riddle-step-text-form input[type='text'] {
+  width: 100%;
+  max-width: none;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(229, 192, 123, 0.45);
+  border-radius: 8px;
+  background: rgba(8, 12, 24, 0.92);
+  color: var(--color-text-primary);
+  text-align: start;
+  box-shadow: none;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > input[type='text']:focus,
+.page-enigme.page-enigme--reader form.is-reply-widget > textarea:focus,
+.page-enigme.page-enigme--reader form.riddle-step-text-form input[type='text']:focus {
+  border-color: var(--color-titre-enigme);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  justify-items: stretch;
+  gap: var(--space-xs);
+  width: 100%;
+  text-align: start;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget .reponse-cta-row {
+  margin: 0;
+  width: auto;
+  justify-content: flex-start;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget .reponse-cta-row .bouton-cta,
+.page-enigme.page-enigme--reader form.is-reply-widget > button[type='submit'] {
+  width: auto;
+  min-height: 2.75rem;
+  margin: 0;
+  justify-self: start;
+  align-self: center;
+}
+
+.page-enigme.page-enigme--reader form.is-reply-widget > .points-sousligne,
+.page-enigme.page-enigme--reader form.is-reply-widget > .message-limite {
+  margin: 0;
+  text-align: start;
+}
+
+@media (--bp-small) {
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) {
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-sm);
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > h3,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > label,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .reponse-feedback,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .message-limite,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .points-sousligne,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .riddle-step-click-form__feedback {
+    grid-column: 1 / -1;
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > input[type='text'],
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > textarea {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > .reponse-cta-row,
+  .page-enigme.page-enigme--reader form.is-reply-widget:not(.riddle-step-directions-form):not(.riddle-step-numbers-form):not(.riddle-step-colors-form):not(.riddle-step-safe_dial-form):not(.riddle-step-gps-form):not(.riddle-step-piano-form):not(.riddle-step-click-form) > button[type='submit'] {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .page-enigme.page-enigme--reader form.is-reply-widget:has(.message-limite) > .reponse-cta-row {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
 }
