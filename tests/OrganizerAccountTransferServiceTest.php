@@ -27,6 +27,51 @@ final class OrganizerAccountTransferServiceTest extends TestCase
         self::assertSame('orphan', $plan['attachments'][1]['reason']);
     }
 
+    public function testAuditConfirmsTheLinkWithoutOpeningTheTargetSession(): void
+    {
+        $service = new OrganizerAccountTransferService();
+        $plan = $service->plan($this->snapshot());
+        $checks = $service->audit([
+            'associated_user_ids' => [8],
+            'organizer_author' => 8,
+            'target_roles' => ['subscriber', 'organisateur'],
+            'source_roles' => ['subscriber'],
+        ], $plan);
+
+        self::assertSame(
+            [
+                ['code' => 'target_associated', 'ok' => true],
+                ['code' => 'author_is_target', 'ok' => true],
+                ['code' => 'source_detached', 'ok' => true],
+                ['code' => 'role_granted', 'ok' => true],
+                ['code' => 'role_revoked', 'ok' => true],
+            ],
+            $checks
+        );
+    }
+
+    public function testAuditFlagsARoleThatDidNotMove(): void
+    {
+        $service = new OrganizerAccountTransferService();
+        $plan = $service->plan($this->snapshot());
+        $checks = $service->audit([
+            'associated_user_ids' => [3],
+            'organizer_author' => 3,
+            'target_roles' => ['subscriber'],
+            'source_roles' => ['subscriber', 'organisateur'],
+        ], $plan);
+        $byCode = [];
+        foreach ($checks as $check) {
+            $byCode[$check['code']] = $check['ok'];
+        }
+
+        self::assertFalse($byCode['target_associated']);
+        self::assertFalse($byCode['author_is_target']);
+        self::assertFalse($byCode['source_detached']);
+        self::assertFalse($byCode['role_granted']);
+        self::assertFalse($byCode['role_revoked']);
+    }
+
     public function testPlanKeepsOtherAssociatedUsersAndAForeignAuthor(): void
     {
         $plan = (new OrganizerAccountTransferService())->plan($this->snapshot([

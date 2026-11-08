@@ -88,6 +88,52 @@ final class OrganizerAccountTransferService
     }
 
     /**
+     * Check the saved result while the administrator stays on their own account.
+     *
+     * @param array<string, mixed> $observed
+     * @param array<string, mixed> $plan
+     * @return array<int, array{code:string,ok:bool}>
+     */
+    public function audit(array $observed, array $plan): array
+    {
+        $targetId = (int) ($plan['target_user_id'] ?? 0);
+        $sourceId = (int) ($plan['source_user_id'] ?? 0);
+        $associated = $this->intList($observed['associated_user_ids'] ?? []);
+        $targetRoles = $this->stringList($observed['target_roles'] ?? []);
+        $sourceRoles = $this->stringList($observed['source_roles'] ?? []);
+        $expected = $this->stringList($plan['roles_granted'] ?? []);
+        $revoked = $this->stringList($plan['roles_revoked'] ?? []);
+        $checks = [
+            [
+                'code' => 'target_associated',
+                'ok' => $targetId > 0 && in_array($targetId, $associated, true),
+            ],
+            [
+                'code' => 'author_is_target',
+                'ok' => $targetId > 0 && (int) ($observed['organizer_author'] ?? 0) === $targetId,
+            ],
+            [
+                'code' => 'source_detached',
+                'ok' => $sourceId > 0 && !in_array($sourceId, $associated, true),
+            ],
+        ];
+        if ($expected !== []) {
+            $checks[] = [
+                'code' => 'role_granted',
+                'ok' => array_diff($expected, $targetRoles) === [],
+            ];
+        }
+        if ($revoked !== []) {
+            $checks[] = [
+                'code' => 'role_revoked',
+                'ok' => array_intersect($revoked, $sourceRoles) === [],
+            ];
+        }
+
+        return $checks;
+    }
+
+    /**
      * @param mixed $value
      */
     public function containsId($value, int $id): bool

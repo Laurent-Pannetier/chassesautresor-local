@@ -48,6 +48,7 @@ final class OrganizerAccountTransferPage
         $state = self::stateFromRequest();
         $input = $state['input'];
         $plan = $state['plan'];
+        $choices = self::userChoices();
         ?>
         <div class="wrap">
             <h1><?php esc_html_e('Transférer un organisateur', 'chassesautresor-com'); ?></h1>
@@ -55,6 +56,13 @@ final class OrganizerAccountTransferPage
                 <?php esc_html_e(
                     'La chasse, les énigmes et les indices restent sur la fiche organisateur. '
                     . 'Cet écran change le compte qui la possède.',
+                    'chassesautresor-com'
+                ); ?>
+            </p>
+            <p>
+                <?php esc_html_e(
+                    'Vous restez connecté avec votre compte administrateur. '
+                    . 'Le mot de passe de l’autre compte n’est pas demandé, et sa session n’est pas ouverte.',
                     'chassesautresor-com'
                 ); ?>
             </p>
@@ -96,17 +104,15 @@ final class OrganizerAccountTransferPage
                             </label>
                         </th>
                         <td>
-                            <input
-                                type="text"
-                                required
-                                class="regular-text"
-                                id="cat-transfer-source"
-                                name="source_user"
-                                value="<?php echo esc_attr($input['source_user']); ?>"
-                            >
+                            <?php self::renderUserSelect(
+                                'cat-transfer-source',
+                                'source_user',
+                                $input['source_user'],
+                                $choices
+                            ); ?>
                             <p class="description">
                                 <?php esc_html_e(
-                                    'ID, identifiant ou e-mail. Exemple : organisateur1.',
+                                    'Le compte de test qui possède la fiche aujourd’hui.',
                                     'chassesautresor-com'
                                 ); ?>
                             </p>
@@ -120,17 +126,16 @@ final class OrganizerAccountTransferPage
                             </label>
                         </th>
                         <td>
-                            <input
-                                type="text"
-                                required
-                                class="regular-text"
-                                id="cat-transfer-target"
-                                name="target_user"
-                                value="<?php echo esc_attr($input['target_user']); ?>"
-                            >
+                            <?php self::renderUserSelect(
+                                'cat-transfer-target',
+                                'target_user',
+                                $input['target_user'],
+                                $choices
+                            ); ?>
                             <p class="description">
                                 <?php esc_html_e(
-                                    'ID, identifiant ou e-mail du compte déjà inscrit.',
+                                    'Le compte inscrit qui doit devenir organisateur. '
+                                    . 'Choisissez-le dans la liste, sans vous connecter à sa place.',
                                     'chassesautresor-com'
                                 ); ?>
                             </p>
@@ -205,6 +210,7 @@ final class OrganizerAccountTransferPage
             'source_label' => '',
             'target_label' => '',
             'confirm_error' => false,
+            'audit' => [],
         ];
         if (!self::isSubmission()) {
             return $state;
@@ -231,6 +237,14 @@ final class OrganizerAccountTransferPage
         if ((string) $input['action'] === 'apply' && empty($plan['blocked'])) {
             self::apply($plan);
             $state['applied'] = true;
+            $state['audit'] = $service->audit(
+                self::observed(
+                    (int) $plan['organizer_id'],
+                    (int) $plan['source_user_id'],
+                    (int) $plan['target_user_id']
+                ),
+                $plan
+            );
         }
         $state['plan'] = $plan;
 
@@ -555,6 +569,39 @@ final class OrganizerAccountTransferPage
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    private static function observed(int $organizerId, int $sourceId, int $targetId): array
+    {
+        $post = function_exists('get_post') ? get_post($organizerId) : null;
+
+        return [
+            'associated_user_ids' => function_exists('get_post_meta')
+                ? self::storedIds(get_post_meta($organizerId, 'utilisateurs_associes', true))
+                : [],
+            'organizer_author' => $post instanceof \WP_Post ? (int) $post->post_author : 0,
+            'target_roles' => self::freshRoles($targetId),
+            'source_roles' => self::freshRoles($sourceId),
+        ];
+    }
+
+    /**
+     * @return string[]
+     */
+    private static function freshRoles(int $userId): array
+    {
+        if ($userId <= 0 || !function_exists('get_userdata')) {
+            return [];
+        }
+        if (function_exists('clean_user_cache')) {
+            clean_user_cache($userId);
+        }
+        $user = get_userdata($userId);
+
+        return $user instanceof \WP_User ? array_values((array) $user->roles) : [];
+    }
+
+    /**
      * @param mixed $value
      */
     private static function writeField(string $name, $value, int $postId): void
@@ -582,6 +629,9 @@ final class OrganizerAccountTransferPage
         foreach ($roles as $role) {
             $user->add_role($role);
         }
+        if (function_exists('clean_user_cache')) {
+            clean_user_cache($userId);
+        }
     }
 
     /**
@@ -595,6 +645,9 @@ final class OrganizerAccountTransferPage
         $user = new \WP_User($userId);
         foreach ($roles as $role) {
             $user->remove_role($role);
+        }
+        if (function_exists('clean_user_cache')) {
+            clean_user_cache($userId);
         }
     }
 
@@ -647,10 +700,14 @@ final class OrganizerAccountTransferPage
             echo '<div class="notice notice-success"><p>';
             echo esc_html(sprintf(
                 /* translators: %s: organizer title */
-                __('Transfert effectué pour « %s ».', 'chassesautresor-com'),
+                __(
+                    'Transfert effectué pour « %s ». Vous êtes resté sur votre compte administrateur.',
+                    'chassesautresor-com'
+                ),
                 (string) $plan['organizer_title']
             ));
             echo '</p></div>';
+            self::renderAudit(is_array($state['audit']) ? $state['audit'] : [], $plan);
         }
         if (!empty($plan['blocked'])) {
             echo '<div class="notice notice-error"><p>';
@@ -723,6 +780,107 @@ final class OrganizerAccountTransferPage
             return;
         }
         echo '<p class="description">' . esc_html($label) . '</p>';
+    }
+
+    /**
+     * @param array<int, array{id:int,label:string}> $choices
+     */
+    private static function renderUserSelect(string $id, string $name, string $selectedValue, array $choices): void
+    {
+        echo '<select class="regular-text" required id="' . esc_attr($id) . '" name="' . esc_attr($name) . '">';
+        echo '<option value="">' . esc_html__('Choisir un compte', 'chassesautresor-com') . '</option>';
+        foreach ($choices as $choice) {
+            $value = (string) $choice['id'];
+            echo '<option value="' . esc_attr($value) . '" ' . selected($selectedValue, $value, false) . '>';
+            echo esc_html($choice['label']);
+            echo '</option>';
+        }
+        echo '</select>';
+    }
+
+    /**
+     * @return array<int, array{id:int,label:string}>
+     */
+    private static function userChoices(): array
+    {
+        if (!function_exists('get_users')) {
+            return [];
+        }
+        $users = get_users([
+            'orderby' => 'display_name',
+            'order' => 'ASC',
+            'number' => 500,
+        ]);
+        $choices = [];
+        foreach ($users as $user) {
+            if (!$user instanceof \WP_User) {
+                continue;
+            }
+            $name = $user->display_name !== '' ? $user->display_name : $user->user_login;
+            $choices[] = [
+                'id' => (int) $user->ID,
+                'label' => sprintf(
+                    '%s — %s — ID %d — %s',
+                    $name,
+                    $user->user_email,
+                    (int) $user->ID,
+                    implode(', ', (array) $user->roles)
+                ),
+            ];
+        }
+
+        return $choices;
+    }
+
+    /**
+     * @param array<int, array{code:string,ok:bool}> $checks
+     * @param array<string, mixed> $plan
+     */
+    private static function renderAudit(array $checks, array $plan): void
+    {
+        if ($checks === []) {
+            return;
+        }
+        echo '<h2>' . esc_html__('Contrôle depuis votre compte', 'chassesautresor-com') . '</h2>';
+        echo '<ul>';
+        foreach ($checks as $check) {
+            $result = !empty($check['ok'])
+                ? __('oui', 'chassesautresor-com')
+                : __('non', 'chassesautresor-com');
+            echo '<li>' . esc_html(self::auditLabel((string) $check['code']) . ' : ' . $result) . '</li>';
+        }
+        echo '</ul>';
+        $edit = function_exists('get_edit_post_link')
+            ? get_edit_post_link((int) ($plan['organizer_id'] ?? 0), 'raw')
+            : '';
+        if (is_string($edit) && $edit !== '') {
+            echo '<p><a href="' . esc_url($edit) . '">';
+            echo esc_html__('Ouvrir la fiche organisateur', 'chassesautresor-com');
+            echo '</a></p>';
+        }
+        if (function_exists('admin_url')) {
+            echo '<p><a href="' . esc_url(admin_url('users.php')) . '">';
+            echo esc_html__('Voir les comptes et leurs rôles', 'chassesautresor-com');
+            echo '</a></p>';
+        }
+    }
+
+    private static function auditLabel(string $code): string
+    {
+        switch ($code) {
+            case 'target_associated':
+                return __('Le nouveau compte est associé à la fiche', 'chassesautresor-com');
+            case 'author_is_target':
+                return __('Le nouveau compte est l’auteur de la fiche', 'chassesautresor-com');
+            case 'source_detached':
+                return __('L’ancien compte n’est plus associé', 'chassesautresor-com');
+            case 'role_granted':
+                return __('Le rôle organisateur est sur le nouveau compte', 'chassesautresor-com');
+            case 'role_revoked':
+                return __('Le rôle organisateur a été retiré de l’ancien compte', 'chassesautresor-com');
+            default:
+                return $code;
+        }
     }
 
     private static function errorMessage(string $code): string
