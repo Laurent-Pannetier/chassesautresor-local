@@ -251,6 +251,11 @@ class EnigmeGalleryViewerTest extends TestCase
             . '[\s\S]{0,900}max-height:\s*none/',
             $css
         );
+        $this->assertMatchesRegularExpression(
+            '/\.page-enigme\.page-enigme--reader \.webtoon-band \+ \.webtoon-band'
+            . '\s*\{[^}]*margin-top:\s*-1px/',
+            $css
+        );
     }
 
     public function test_reply_block_under_the_strip_is_centered_with_its_text(): void
@@ -333,18 +338,74 @@ class EnigmeGalleryViewerTest extends TestCase
 
     public function test_only_the_first_band_is_requested_before_the_script_runs(): void
     {
+        $srcset = 'https://cdn.example/a-band0-w720.webp 720w, https://cdn.example/a-band0.webp 1380w';
         $html = enigme_webtoon_band_html([
-            ['url' => 'https://cdn.example/a-band0.jpg', 'width' => 1380, 'height' => 1000],
-            ['url' => 'https://cdn.example/a-band1.jpg', 'width' => 1380, 'height' => 1000],
-            ['url' => 'https://cdn.example/a-band2.jpg', 'width' => 1380, 'height' => 1000],
+            [
+                'url' => 'https://cdn.example/a-band0.webp',
+                'width' => 1380,
+                'height' => 1008,
+                'srcset' => $srcset,
+            ],
+            [
+                'url' => 'https://cdn.example/a-band1.webp',
+                'width' => 1380,
+                'height' => 1008,
+                'srcset' => 'https://cdn.example/a-band1-w720.webp 720w, https://cdn.example/a-band1.webp 1380w',
+            ],
+            [
+                'url' => 'https://cdn.example/a-band2.webp',
+                'width' => 1380,
+                'height' => 486,
+                'srcset' => 'https://cdn.example/a-band2-w720.webp 720w, https://cdn.example/a-band2.webp 1380w',
+            ],
         ], 'Forêt', true);
 
         $this->assertSame(1, substr_count($html, ' src="'));
-        $this->assertStringContainsString('src="https://cdn.example/a-band0.jpg"', $html);
-        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band1.jpg"', $html);
-        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band2.jpg"', $html);
-        $this->assertStringNotContainsString(' src="https://cdn.example/a-band1.jpg"', $html);
-        $this->assertStringNotContainsString(' src="https://cdn.example/a-band2.jpg"', $html);
+        $this->assertSame(1, substr_count($html, ' srcset="'));
+        $this->assertSame(1, substr_count($html, 'fetchpriority='));
+        $this->assertStringContainsString('srcset="' . $srcset . '"', $html);
+        $this->assertLessThan(
+            strpos($html, ' src="https://cdn.example/a-band0.webp"'),
+            strpos($html, ' srcset="' . $srcset . '"')
+        );
+        $this->assertStringContainsString('src="https://cdn.example/a-band0.webp"', $html);
+        $this->assertStringContainsString('fetchpriority="high"', $html);
+        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band1.webp"', $html);
+        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band2.webp"', $html);
+        $this->assertStringNotContainsString(' src="https://cdn.example/a-band1.webp"', $html);
+        $this->assertStringNotContainsString(' src="https://cdn.example/a-band2.webp"', $html);
+        $this->assertStringContainsString(
+            'data-band-srcset="https://cdn.example/a-band1-w720.webp 720w, https://cdn.example/a-band1.webp 1380w"',
+            $html
+        );
         $this->assertStringContainsString('sizes="min(100vw, 1380px)"', $html);
+
+        $later = enigme_webtoon_band_html([
+            [
+                'url' => 'https://cdn.example/b-band0.webp',
+                'width' => 1380,
+                'height' => 1008,
+                'srcset' => 'https://cdn.example/b-band0.webp 1380w',
+            ],
+        ], 'Suite', false);
+        $this->assertStringNotContainsString(' src="', $later);
+        $this->assertStringNotContainsString('fetchpriority=', $later);
+        $this->assertStringContainsString('data-band-src="https://cdn.example/b-band0.webp"', $later);
+    }
+
+    public function test_band_srcset_keeps_each_variant_url_next_to_the_original(): void
+    {
+        $srcset = enigme_band_srcset([
+            ['path' => '/uploads/_enigmes/planche-band0-w720.webp', 'width' => 720],
+            ['path' => '/uploads/_enigmes/planche-band0-w1000.webp', 'width' => 1000],
+            ['path' => '/uploads/_enigmes/planche-band0.webp', 'width' => 1380],
+        ], 'https://cdn.example/_enigmes/planche.webp', '/uploads/_enigmes/planche.webp');
+
+        $this->assertSame(
+            'https://cdn.example/_enigmes/planche-band0-w720.webp 720w, '
+            . 'https://cdn.example/_enigmes/planche-band0-w1000.webp 1000w, '
+            . 'https://cdn.example/_enigmes/planche-band0.webp 1380w',
+            $srcset
+        );
     }
 }
