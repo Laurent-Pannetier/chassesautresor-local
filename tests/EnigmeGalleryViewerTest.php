@@ -393,6 +393,35 @@ class EnigmeGalleryViewerTest extends TestCase
         $this->assertStringContainsString('data-band-src="https://cdn.example/b-band0.webp"', $later);
     }
 
+    public function test_a_band_still_being_cut_is_not_requested(): void
+    {
+        $html = enigme_webtoon_band_html([
+            [
+                'url' => 'https://cdn.example/a-band0.webp',
+                'width' => 1380,
+                'height' => 1008,
+                'srcset' => 'https://cdn.example/a-band0.webp 1380w',
+                'ready' => false,
+            ],
+            [
+                'url' => 'https://cdn.example/a-band1.webp',
+                'width' => 1380,
+                'height' => 1008,
+                'srcset' => 'https://cdn.example/a-band1.webp 1380w',
+                'ready' => true,
+            ],
+        ], 'Forêt', true);
+
+        $this->assertStringNotContainsString(' src="', $html);
+        $this->assertStringNotContainsString('fetchpriority=', $html);
+        $this->assertSame(1, substr_count($html, 'data-band-pending="1"'));
+        $this->assertStringContainsString('data-band-src="https://cdn.example/a-band0.webp"', $html);
+        $this->assertStringContainsString(
+            'data-band-srcset="https://cdn.example/a-band1.webp 1380w"',
+            $html
+        );
+    }
+
     public function test_band_srcset_keeps_each_variant_url_next_to_the_original(): void
     {
         $srcset = enigme_band_srcset([

@@ -251,6 +251,8 @@ require_once __DIR__ . '/src/Media/RiddleImageProtectionAjaxHandler.php';
 require_once __DIR__ . '/src/Media/RiddleImageProtectionLifecycle.php';
 require_once __DIR__ . '/src/Media/RiddleStripUploadGuard.php';
 require_once __DIR__ . '/src/Media/RiddleReadingBandService.php';
+require_once __DIR__ . '/src/Media/RiddleReadingBandPreparation.php';
+require_once __DIR__ . '/src/Media/RiddleReadingBandAjaxHandler.php';
 require_once __DIR__ . '/src/Media/UserAvatarUploadAjaxHandler.php';
 require_once __DIR__ . '/src/Media/UserAvatarHookHandler.php';
 require_once __DIR__ . '/src/Media/ProtectedAssetRouteHandler.php';
@@ -620,6 +622,7 @@ ChassesAuTresor\Core\Media\RiddleImageProtectionAjaxHandler::register('add_actio
 ChassesAuTresor\Core\Media\RiddleImageProtectionLifecycle::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Media\RiddleStripUploadGuard::register('add_action', 'add_filter');
 ChassesAuTresor\Core\Media\RiddleReadingBandService::register('add_filter');
+ChassesAuTresor\Core\Media\RiddleReadingBandAjaxHandler::register('add_action');
 ChassesAuTresor\Core\Media\RiddleStepImageStorageLifecycle::register('add_action');
 ChassesAuTresor\Core\Media\RiddleImageStaticMigration::register('add_action');
 ChassesAuTresor\Core\Media\RiddleStepImageSaveHookHandler::register('add_action');

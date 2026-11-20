@@ -129,12 +129,50 @@ final class RiddleReadingBandServiceTest extends TestCase
         $this->assertFalse(RiddleReadingBandService::splits(1008));
     }
 
+    public function testHeadLimitWritesOnlyTheFirstMissingBands(): void
+    {
+        $source = $this->jpeg(20, 2500);
+        $service = new RiddleReadingBandService();
+        $stale = $this->directory . '/planche-band9.jpg';
+        file_put_contents($stale, 'old');
+
+        $described = $service->ensure($source, 0);
+        $this->assertCount(3, $described);
+        $this->assertFalse($described[0]['ready']);
+        $this->assertFileDoesNotExist($described[0]['path']);
+        $this->assertFileExists($stale);
+
+        $head = $service->ensure($source, 1);
+        $this->assertTrue($head[0]['ready']);
+        $this->assertFalse($head[1]['ready']);
+        $this->assertFalse($head[2]['ready']);
+        $this->assertFileExists($head[0]['path']);
+        $this->assertFileDoesNotExist($head[1]['path']);
+        $this->assertFileExists($stale);
+        $headHash = md5_file($head[0]['path']);
+
+        $done = $service->ensure($source);
+        $this->assertTrue($done[0]['ready']);
+        $this->assertTrue($done[1]['ready']);
+        $this->assertTrue($done[2]['ready']);
+        $this->assertSame($headHash, md5_file($done[0]['path']));
+        $this->assertFileExists($done[2]['path']);
+        $this->assertFileDoesNotExist($stale);
+
+        $again = $service->ensure($source, 1);
+        $this->assertTrue($again[2]['ready']);
+        $this->assertFileExists($again[2]['path']);
+    }
+
     public function testShortImageStaysTheOriginalFile(): void
     {
         $source = $this->jpeg(20, 400);
         $bands = (new RiddleReadingBandService())->ensure($source);
 
-        $this->assertSame([['path' => $source, 'width' => 20, 'height' => 400]], $bands);
+        $this->assertSame(
+            [['path' => $source, 'width' => 20, 'height' => 400, 'ready' => true]],
+            $bands
+        );
         $this->assertSame([$source], glob($this->directory . '/*') ?: []);
     }
 

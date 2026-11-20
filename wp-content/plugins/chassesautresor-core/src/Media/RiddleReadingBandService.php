@@ -7,7 +7,9 @@ namespace ChassesAuTresor\Core\Media;
 /**
  * Cut a tall riddle strip into static horizontal bands.
  *
- * The reader fetches the bands on screen, plus about one viewport ahead.
+ * The first response cuts only the head of a strip. The reader then asks
+ * for the rest, and fetches the bands on screen plus about one viewport
+ * ahead.
  * Each band is an ordinary file next to the original, so a later move of
  * uploads/_enigmes to Cloudflare (CDN or R2) caches them as-is. No view-time
  * crop, and no cdn-cgi window: Cloudflare image resizing cannot extract an
@@ -21,6 +23,12 @@ namespace ChassesAuTresor\Core\Media;
 class RiddleReadingBandService
 {
     public const BAND_HEIGHT = 1008;
+
+    /**
+     * Bands written before the HTML is sent. Four bands cover a tall phone
+     * once the column is scaled to the screen. The rest is cut afterwards.
+     */
+    public const HEAD_BANDS = 4;
 
     public const OVERLAP = 1;
 
@@ -49,6 +57,9 @@ class RiddleReadingBandService
     }
 
     /**
+     * Prepare the first screen while the file is uploaded. The rest of a
+     * strip is cut after the page is shown, so this request stays short.
+     *
      * @param mixed $metadata
      * @param mixed $attachmentId
      * @return mixed
@@ -65,7 +76,7 @@ class RiddleReadingBandService
             return $metadata;
         }
 
-        (new self())->ensure($file);
+        (new self())->ensure($file, self::HEAD_BANDS);
 
         return $metadata;
     }
@@ -96,16 +107,21 @@ class RiddleReadingBandService
     }
 
     /**
-     * Bands ready to serve. A short image stays the original file.
+     * Bands of a strip. A short image stays the original file.
+     *
+     * Null writes every missing band. A positive limit writes only the
+     * first bands that are not on disk yet. Zero describes the strip and
+     * writes nothing. Each returned band says whether its file is ready.
      *
      * @return list<array{
      *     path:string,
      *     width:int,
      *     height:int,
+     *     ready:bool,
      *     sources?:list<array{path:string,width:int,height:int}>
      * }>
      */
-    public function ensure(string $absoluteFile): array
+    public function ensure(string $absoluteFile, ?int $limit = null): array
     {
         if (!is_file($absoluteFile)) {
             return [];
@@ -118,23 +134,33 @@ class RiddleReadingBandService
             return [];
         }
 
-        $single = [['path' => $absoluteFile, 'width' => $width, 'height' => $height]];
+        $described = ['path' => $absoluteFile, 'width' => $width, 'height' => $height];
         if (!self::splits($height) || $this->isBandFile($absoluteFile)) {
-            return $single;
+            $described['ready'] = true;
+
+            return [$described];
         }
 
         $expected = $this->expected($absoluteFile, $width, $height);
+        $target = $limit === null ? $expected : array_slice($expected, 0, max(0, $limit));
+        $missing = $this->missing($target);
+        if ($missing !== []) {
+            $written = $this->write($absoluteFile, $width, $missing);
+            if ($limit === null && (!$written || !$this->ready($expected))) {
+                $described['ready'] = false;
+
+                return [$described];
+            }
+            if (!$written && !$this->ready([$expected[0]])) {
+                $described['ready'] = false;
+
+                return [$described];
+            }
+        }
+
         if ($this->ready($expected)) {
             $this->forgetStale($absoluteFile, $expected);
-
-            return $this->publish($expected);
         }
-
-        if (!$this->write($absoluteFile, $width, $expected) || !$this->ready($expected)) {
-            return $single;
-        }
-
-        $this->forgetStale($absoluteFile, $expected);
 
         return $this->publish($expected);
     }
@@ -271,6 +297,22 @@ class RiddleReadingBandService
 
     /**
      * @param list<array{sources:list<array{path:string,width:int,height:int}>}> $bands
+     * @return list<array{sources:list<array{path:string,width:int,height:int}>}>
+     */
+    private function missing(array $bands): array
+    {
+        $missing = [];
+        foreach ($bands as $band) {
+            if (!$this->ready([$band])) {
+                $missing[] = $band;
+            }
+        }
+
+        return $missing;
+    }
+
+    /**
+     * @param list<array{sources:list<array{path:string,width:int,height:int}>}> $bands
      */
     private function ready(array $bands): bool
     {
@@ -319,6 +361,7 @@ class RiddleReadingBandService
     {
         $public = [];
         foreach ($bands as $band) {
+            $band['ready'] = $this->ready([$band]);
             unset($band['top']);
             $public[] = $band;
         }

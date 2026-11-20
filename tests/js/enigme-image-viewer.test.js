@@ -734,4 +734,93 @@ describe('webtoon reader', () => {
 
     expect(document.querySelector('.enigme-lightbox__image').getAttribute('src')).toBe('band-1.webp');
   });
+
+  test('waits for a band that is still being cut, and ignores unmeasured ones', async () => {
+    window.__enigmeViewerDispose();
+    window.innerHeight = 800;
+    const previousFetch = window.fetch;
+    window.fetch = jest.fn(() => Promise.resolve({
+      json: () => Promise.resolve({ success: true, data: { image_ids: [12] } }),
+    }));
+    window.EnigmeImageViewer = {
+      ...window.EnigmeImageViewer,
+      bandPrepareUrl: '/wp-admin/admin-ajax.php',
+      bandPrepareAction: 'cta_prepare_riddle_bands',
+      bandPrepareNonce: 'nonce',
+    };
+    document.body.innerHTML = `
+      <div class="galerie-enigme-wrapper" data-enigme-gallery data-webtoon id="galerie-enigme-6">
+        <div class="galerie-enigme__stage">
+          <figure class="galerie-enigme__slide is-active" data-gallery-image-id="12">
+            <button type="button" class="enigme-media-zoom" data-enigme-lightbox-src="full.webp">
+              <span class="webtoon-bands">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-0.webp" src="band-0.webp" alt="" width="1380" height="1008">
+                <img class="webtoon-band" data-webtoon-band data-band-pending="1" data-band-src="band-1.webp" alt="" width="1380" height="1008">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-far.webp" alt="" width="1380" height="1008">
+              </span>
+            </button>
+          </figure>
+        </div>
+      </div>
+    `;
+    const images = [...document.querySelectorAll('[data-webtoon-band]')];
+    const boxes = [
+      { top: 0, bottom: 500, height: 500 },
+      { top: 500, bottom: 1000, height: 500 },
+      { top: 4000, bottom: 4000, height: 0 },
+    ];
+    images.forEach((image, index) => {
+      Object.defineProperty(image, 'complete', {
+        configurable: true,
+        get: () => Boolean(image.getAttribute('src')),
+      });
+      image.getBoundingClientRect = () => ({
+        top: boxes[index].top,
+        bottom: boxes[index].bottom,
+        height: boxes[index].height,
+        left: 0,
+        right: 400,
+        width: 400,
+        x: 0,
+        y: boxes[index].top,
+        toJSON() {
+          return {};
+        },
+      });
+    });
+
+    window.EnigmeGallery.initReader(document.querySelector('[data-enigme-gallery]'));
+
+    expect(images[1].getAttribute('src')).toBeNull();
+    expect(images[2].getAttribute('src')).toBeNull();
+    for (let step = 0; step < 8; step += 1) {
+      await Promise.resolve();
+    }
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+    expect(String(window.fetch.mock.calls[0][1].body)).toContain('image_ids%5B%5D=12');
+    expect(images[1].hasAttribute('data-band-pending')).toBe(false);
+    expect(images[1].getAttribute('src')).toBe('band-1.webp');
+    expect(images[2].getAttribute('src')).toBeNull();
+    window.fetch = previousFetch;
+  });
+
+  test('marks a newly unlocked band pending until its file exists', () => {
+    const gallery = document.querySelector('[data-enigme-gallery]');
+    window.EnigmeGallery.appendPage({
+      imageId: 88,
+      previewUrl: 'next.jpg',
+      fullUrl: 'next-full.jpg',
+      alt: 'Suite',
+      select: false,
+      bands: [
+        { url: 'step-band-0.webp', width: 1380, height: 1008, ready: true },
+        { url: 'step-band-1.webp', width: 1380, height: 1008, ready: false },
+      ],
+    });
+    const images = gallery.querySelectorAll('[data-gallery-image-id="88"] img');
+
+    expect(images[0].hasAttribute('data-band-pending')).toBe(false);
+    expect(images[1].getAttribute('data-band-pending')).toBe('1');
+    expect(images[1].getAttribute('src')).toBeNull();
+  });
 });
