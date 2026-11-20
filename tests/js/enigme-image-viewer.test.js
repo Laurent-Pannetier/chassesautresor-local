@@ -218,6 +218,24 @@ describe('enigme image viewer', () => {
     }
   });
 
+  test('zooms the band under the pointer instead of the whole strip', () => {
+    const restorePointer = useFinePointer();
+    try {
+      const trigger = document.querySelector('[data-enigme-lightbox-src="full-1.jpg"]');
+      const img = trigger.querySelector('img');
+      img.setAttribute('data-webtoon-band', '');
+      img.setAttribute('data-band-src', 'band-0.webp');
+      boxImage(img, { left: 0, top: 0, width: 400, height: 300 });
+
+      clickMouse(img, 120, 80);
+
+      const zoomed = document.querySelector('.enigme-loupe__image');
+      expect(zoomed.getAttribute('src')).toBe('band-0.webp');
+    } finally {
+      restorePointer();
+    }
+  });
+
   test('hides the lens while dragging and ignores the letterbox around a contained image', () => {
     const restorePointer = useFinePointer();
     try {
@@ -629,17 +647,18 @@ describe('webtoon reader', () => {
     expect(document.querySelector('.page-enigme .contenu-principal')).not.toBeNull();
   });
 
-  test('loads the visible bands first and the rest only after they are served', () => {
+  test('loads the visible bands and one viewport ahead, not the rest', () => {
     window.__enigmeViewerDispose();
+    window.innerHeight = 800;
     document.body.innerHTML = `
       <div class="galerie-enigme-wrapper" data-enigme-gallery data-webtoon id="galerie-enigme-4">
         <div class="galerie-enigme__stage">
           <figure class="galerie-enigme__slide is-active">
-            <button type="button" class="enigme-media-zoom">
+            <button type="button" class="enigme-media-zoom" data-enigme-lightbox-src="full-planche.webp" data-enigme-lightbox-alt="Planche">
               <span class="webtoon-bands">
-                <img class="webtoon-band" data-webtoon-band data-band-src="band-0.jpg" src="band-0.jpg" alt="" width="1380" height="1000">
-                <img class="webtoon-band" data-webtoon-band data-band-src="band-1.jpg" alt="" width="1380" height="1000">
-                <img class="webtoon-band" data-webtoon-band data-band-src="band-2.jpg" alt="" width="1380" height="1000">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-0.webp" data-band-srcset="band-0-w720.webp 720w, band-0.webp 1380w" src="band-0.webp" alt="" width="1380" height="1008">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-1.webp" data-band-srcset="band-1-w720.webp 720w, band-1.webp 1380w" alt="" width="1380" height="1008">
+                <img class="webtoon-band" data-webtoon-band data-band-src="band-2.webp" data-band-srcset="band-2-w720.webp 720w, band-2.webp 1380w" alt="" width="1380" height="1008">
               </span>
             </button>
           </figure>
@@ -649,7 +668,7 @@ describe('webtoon reader', () => {
     const images = [...document.querySelectorAll('[data-webtoon-band]')];
     const boxes = [
       { top: 0, bottom: 500, height: 500 },
-      { top: 1800, bottom: 2300, height: 500 },
+      { top: 900, bottom: 1400, height: 500 },
       { top: 2400, bottom: 2900, height: 500 },
     ];
     images.forEach((image, index) => {
@@ -671,17 +690,48 @@ describe('webtoon reader', () => {
 
     window.EnigmeGallery.initReader(document.querySelector('[data-enigme-gallery]'));
 
-    expect(images[0].getAttribute('src')).toBe('band-0.jpg');
-    expect(images[1].getAttribute('src')).toBeNull();
-    expect(images[2].getAttribute('src')).toBeNull();
-
-    boxes[1] = { top: 100, bottom: 600, height: 500 };
-    window.dispatchEvent(new Event('scroll'));
-    expect(images[1].getAttribute('src')).toBe('band-1.jpg');
+    expect(images[0].getAttribute('src')).toBe('band-0.webp');
+    expect(images[1].getAttribute('src')).toBe('band-1.webp');
+    expect(images[1].getAttribute('srcset')).toBe('band-1-w720.webp 720w, band-1.webp 1380w');
     expect(images[2].getAttribute('src')).toBeNull();
 
     images[0].dispatchEvent(new Event('load'));
     images[1].dispatchEvent(new Event('load'));
-    expect(images[2].getAttribute('src')).toBe('band-2.jpg');
+    expect(images[2].getAttribute('src')).toBeNull();
+
+    boxes[2] = { top: 1000, bottom: 1500, height: 500 };
+    window.dispatchEvent(new Event('scroll'));
+    expect(images[2].getAttribute('src')).toBe('band-2.webp');
+  });
+
+  test('opens the band under the pointer instead of the whole strip', () => {
+    window.__enigmeViewerDispose();
+    document.body.innerHTML = `
+      <div class="galerie-enigme-wrapper" data-enigme-gallery data-webtoon id="galerie-enigme-5">
+        <div class="galerie-enigme__stage">
+          <figure class="galerie-enigme__slide is-active">
+            <button type="button" class="enigme-media-zoom" data-enigme-lightbox-src="full-planche.webp" data-enigme-lightbox-alt="Planche">
+              <img class="webtoon-band" data-webtoon-band data-band-src="band-0.webp" alt="">
+              <img class="webtoon-band" data-webtoon-band data-band-src="band-1.webp" alt="">
+            </button>
+          </figure>
+        </div>
+      </div>
+    `;
+    window.EnigmeGallery.initReader(document.querySelector('[data-enigme-gallery]'));
+    const band = document.querySelector('[data-band-src="band-1.webp"]');
+    const tap = (x, y) => {
+      band.dispatchEvent(new TestPointerEvent('pointerup', {
+        bubbles: true,
+        pointerId: 1,
+        pointerType: 'touch',
+        clientX: x,
+        clientY: y,
+      }));
+    };
+    tap(30, 40);
+    tap(32, 41);
+
+    expect(document.querySelector('.enigme-lightbox__image').getAttribute('src')).toBe('band-1.webp');
   });
 });
