@@ -236,6 +236,85 @@ describe('enigme image viewer', () => {
     }
   });
 
+  test('magnifies the band under the pointer when the click lands on the button', () => {
+    const restorePointer = useFinePointer();
+    try {
+      const trigger = document.querySelector('[data-enigme-lightbox-src="full-1.jpg"]');
+      trigger.replaceChildren();
+      const upper = document.createElement('img');
+      upper.dataset.webtoonBand = '';
+      upper.dataset.bandSrc = 'band-0.webp';
+      const lower = document.createElement('img');
+      lower.dataset.webtoonBand = '';
+      lower.dataset.bandSrc = 'band-1.webp';
+      trigger.append(upper, lower);
+      boxImage(upper, { left: 0, top: 0, width: 400, height: 200 });
+      boxImage(lower, { left: 0, top: 200, width: 400, height: 200 });
+
+      clickMouse(trigger, 40, 280);
+
+      const lens = document.querySelector('.enigme-loupe');
+      expect(lens.hidden).toBe(false);
+      expect(lens.querySelector('.enigme-loupe__image').getAttribute('src')).toBe('band-1.webp');
+    } finally {
+      restorePointer();
+    }
+  });
+
+  test('keeps the lens on the pointer when fixed positioning is shifted by scroll', () => {
+    const restorePointer = useFinePointer();
+    try {
+      const trigger = document.querySelector('.riddle-player-step__zoom');
+      const img = trigger.querySelector('img');
+      boxImage(img, { left: 100, top: 50, width: 200, height: 100 });
+      const lens = document.querySelector('.enigme-loupe');
+      lens.getBoundingClientRect = () => {
+        const left = parseFloat(lens.style.left) || 0;
+        const top = parseFloat(lens.style.top) || 0;
+        return {
+          left: left - 480,
+          top: top - 900,
+          width: 240,
+          height: 240,
+          right: left - 240,
+          bottom: top - 660,
+          x: left - 480,
+          y: top - 900,
+          toJSON() {},
+        };
+      };
+
+      clickMouse(img, 150, 80);
+
+      expect(lens.hidden).toBe(false);
+      expect(lens.style.left).toBe('510px');
+      expect(lens.style.top).toBe('860px');
+    } finally {
+      restorePointer();
+    }
+  });
+
+  test('follows the picture when the page scrolls under a still pointer', () => {
+    const restorePointer = useFinePointer();
+    try {
+      const trigger = document.querySelector('.riddle-player-step__zoom');
+      const img = trigger.querySelector('img');
+      boxImage(img, { left: 100, top: 50, width: 200, height: 100 });
+
+      clickMouse(img, 150, 80);
+      const zoomed = document.querySelector('.enigme-loupe__image');
+      expect(zoomed.style.left).toBe('-80px');
+
+      boxImage(img, { left: 80, top: 40, width: 200, height: 100 });
+      window.dispatchEvent(new Event('scroll'));
+
+      expect(document.querySelector('.enigme-loupe').hidden).toBe(false);
+      expect(zoomed.style.left).toBe('-160px');
+    } finally {
+      restorePointer();
+    }
+  });
+
   test('hides the lens while dragging and ignores the letterbox around a contained image', () => {
     const restorePointer = useFinePointer();
     try {
